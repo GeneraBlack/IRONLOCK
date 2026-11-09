@@ -1,0 +1,158 @@
+id = "river_crossing"
+name = "River Crossing (Naval & Bridge)"
+width = 48
+height = 48
+tile_size = 2.0
+mission_objective = "Secure the bridgehead, capture the neutral Industrial Plant, and eliminate enemy forces."
+ore_regen_per_sec = 8.0
+
+[[ore_patches]]
+position = [10, 14]
+radius = 3
+amount_per_tile = 1400
+
+[[ore_patches]]
+position = [36, 33]
+radius = 3
+amount_per_tile = 1400
+
+[[ore_patches]]
+position = [24, 10]
+radius = 3
+amount_per_tile = 1600
+
+[[water_rects]]
+min = [21, 0]
+max = [26, 47]
+
+[[bridge_rects]]
+min = [21, 22]
+max = [26, 25]
+
+[[elevation_rects]]
+min = [14, 20]
+max = [18, 26]
+
+[[ramp_rects]]
+min = [13, 22]
+max = [14, 24]
+
+[[preplaced_entities]]
+player_id = 0
+building_id = "soviet_industrial_plant"
+tile_pos = [15, 36]
+
+[[props]]
+kind = "tree"
+tile_pos = [12, 20]
+
+[[props]]
+kind = "tree"
+tile_pos = [12, 26]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [20, 22]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [16, 35]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [17, 35]
+
+[[trigger_zones]]
+id = "industrial_plant_captured_bonus"
+min = [14, 35]
+max = [17, 38]
+once = true
+script_hook = ""
+condition = { type = "building_captured", building_id = "soviet_industrial_plant", by_player_id = 1 }
+actions = [
+    { type = "grant_credits", player_id = 1, amount = 1000 },
+    { type = "spawn_reinforcements", player_id = 1, unit_id = "grizzly_tank", count = 2, tile = [14, 34] },
+    { type = "set_objective", text = "Industrial Plant secured! Cross the bridge and destroy the Soviet command center." },
+]
+
+[[spawns]]
+player_id = 1
+faction = "allies"
+base_tile = [6, 8]
+
+[[spawns.initial_buildings]]
+building_id = "allied_conyard"
+tile_pos = [6, 8]
+
+[[spawns.initial_buildings]]
+building_id = "allied_power_plant"
+tile_pos = [10, 8]
+
+[[spawns.initial_buildings]]
+building_id = "allied_refinery"
+tile_pos = [8, 12]
+
+[[spawns.initial_buildings]]
+building_id = "allied_barracks"
+tile_pos = [5, 12]
+
+[[spawns.initial_buildings]]
+building_id = "allied_war_factory"
+tile_pos = [12, 11]
+
+[[spawns.initial_units]]
+unit_id = "allied_gi"
+tile_pos = [7, 15]
+
+[[spawns.initial_units]]
+unit_id = "allied_engineer"
+tile_pos = [9, 15]
+
+[[spawns.initial_units]]
+unit_id = "grizzly_tank"
+tile_pos = [13, 15]
+
+[[spawns.initial_units]]
+unit_id = "chrono_miner"
+tile_pos = [10, 15]
+
+[[spawns]]
+player_id = 2
+faction = "soviets"
+base_tile = [38, 38]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_conyard"
+tile_pos = [38, 38]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_tesla_reactor"
+tile_pos = [35, 38]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_refinery"
+tile_pos = [36, 34]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_barracks"
+tile_pos = [40, 34]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_war_factory"
+tile_pos = [32, 34]
+
+[[spawns.initial_units]]
+unit_id = "soviet_conscript"
+tile_pos = [37, 31]
+
+[[spawns.initial_units]]
+unit_id = "soviet_engineer"
+tile_pos = [39, 31]
+
+[[spawns.initial_units]]
+unit_id = "rhino_tank"
+tile_pos = [32, 30]
+
+[[spawns.initial_units]]
+unit_id = "war_miner"
+tile_pos = [35, 32]

@@ -1,0 +1,124 @@
+id = "mp_03_blood_feud"
+name = "Skirmish: Anytown, America (2-4)"
+width = 80
+height = 85
+tile_size = 2.0
+ore_regen_per_sec = 4.0
+mission_objective = "Anytown, America (2-4)"
+
+[[ore_patches]]
+position = [13, 43]
+radius = 3
+amount_per_tile = 1400
+
+[[ore_patches]]
+position = [34, 5]
+radius = 3
+amount_per_tile = 1400
+
+[[ore_patches]]
+position = [40, 42]
+radius = 4
+amount_per_tile = 2000
+
+[[ore_patches]]
+position = [37, 27]
+radius = 3
+amount_per_tile = 1500
+
+[[ore_patches]]
+position = [51, 19]
+radius = 3
+amount_per_tile = 1500
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "tech_hospital"
+tile_pos = [23, 54]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "tech_hospital"
+tile_pos = [57, 45]
+
+[[spawns]]
+player_id = 1
+faction = "allies"
+base_tile = [5, 43]
+
+[[spawns.initial_buildings]]
+building_id = "allied_conyard"
+tile_pos = [5, 43]
+
+[[spawns.initial_buildings]]
+building_id = "allied_power_plant"
+tile_pos = [8, 43]
+
+[[spawns.initial_buildings]]
+building_id = "allied_refinery"
+tile_pos = [5, 40]
+
+[[spawns.initial_buildings]]
+building_id = "allied_barracks"
+tile_pos = [8, 40]
+
+[[spawns.initial_buildings]]
+building_id = "allied_war_factory"
+tile_pos = [11, 43]
+
+[[spawns.initial_units]]
+unit_id = "allied_gi"
+tile_pos = [7, 38]
+
+[[spawns.initial_units]]
+unit_id = "allied_gi"
+tile_pos = [9, 38]
+
+[[spawns.initial_units]]
+unit_id = "grizzly_tank"
+tile_pos = [11, 39]
+
+[[spawns.initial_units]]
+unit_id = "chrono_miner"
+tile_pos = [7, 39]
+
+[[spawns]]
+player_id = 2
+faction = "soviets"
+base_tile = [42, 5]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_conyard"
+tile_pos = [42, 5]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_tesla_reactor"
+tile_pos = [39, 5]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_refinery"
+tile_pos = [42, 8]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_barracks"
+tile_pos = [39, 8]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_war_factory"
+tile_pos = [36, 5]
+
+[[spawns.initial_units]]
+unit_id = "soviet_conscript"
+tile_pos = [40, 10]
+
+[[spawns.initial_units]]
+unit_id = "soviet_conscript"
+tile_pos = [38, 10]
+
+[[spawns.initial_units]]
+unit_id = "rhino_tank"
+tile_pos = [36, 9]
+
+[[spawns.initial_units]]
+unit_id = "war_miner"
+tile_pos = [40, 9]

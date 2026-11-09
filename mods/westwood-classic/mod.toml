@@ -1,0 +1,14 @@
+id = "westwood_classic"
+name = "Westwood Mod (westwood-classic)"
+version = "0.1.0"
+authors = ["rts-mod-tools Westwood Converter"]
+description = "Converted from legacy Westwood INI, VXL & SHP data"
+engine_version = "0.1.0"
+entry_map = "maps/converted_skirmish.toml"
+scripts = []
+
+[catalogs]
+factions = "factions/factions.toml"
+weapons = "weapons/weapons.toml"
+buildings = "buildings/buildings.toml"
+units = "units/units.toml"

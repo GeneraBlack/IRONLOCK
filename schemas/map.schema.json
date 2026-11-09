@@ -1,0 +1,57 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "properties": {
+    "gem_patches": {
+      "items": {
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "height": {
+      "minimum": 16,
+      "type": "integer"
+    },
+    "id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "ore_patches": {
+      "items": {
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "ore_regen_per_sec": {
+      "type": "number"
+    },
+    "spawns": {
+      "items": {
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "tile_size": {
+      "type": "number"
+    },
+    "trigger_zones": {
+      "items": {
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "width": {
+      "minimum": 16,
+      "type": "integer"
+    }
+  },
+  "required": [
+    "id",
+    "name",
+    "width",
+    "height"
+  ],
+  "title": "MapDef",
+  "type": "object"
+}

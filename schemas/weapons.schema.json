@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "properties": {
+    "status_effects": {
+      "items": {
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "weapons": {
+      "items": {
+        "properties": {
+          "armor_multipliers": {
+            "type": "object"
+          },
+          "cooldown_secs": {
+            "type": "number"
+          },
+          "damage": {
+            "type": "number"
+          },
+          "effects": {
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "projectile_speed": {
+            "type": "number"
+          },
+          "projectile_style": {
+            "type": "string"
+          },
+          "range": {
+            "type": "number"
+          },
+          "splash_radius": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "damage",
+          "range",
+          "cooldown_secs",
+          "projectile_speed"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "weapons"
+  ],
+  "title": "WeaponCatalog",
+  "type": "object"
+}

@@ -1,0 +1,351 @@
+id = "ra2_soviet_05_city_of_lights"
+name = "RA2 Soviet 05: City of Lights (Paris)"
+width = 48
+height = 66
+tile_size = 2.0
+ore_regen_per_sec = 4.0
+mission_objective = "The European nations are planning to join with the crippled Americans. We must not let this act of aggresion go unpunished. You will lay waste to their beautiful Paris. We will show the Allies the true meaning of power by turning their own precious monuments into weapons of mass destruction. \n \n Objective 1: Energize the PARIS TOWER with 3 TESLA TROOPERS. \n Objective 2: Defend the PARIS TOWER from Allied attack. \n Objective 3: Defeat all remaining Allied troops."
+
+[[ore_patches]]
+position = [24, 42]
+radius = 3
+amount_per_tile = 1400
+
+[[ore_patches]]
+position = [27, 52]
+radius = 3
+amount_per_tile = 1400
+
+[[ore_patches]]
+position = [24, 33]
+radius = 4
+amount_per_tile = 2000
+
+[[ore_patches]]
+position = [22, 31]
+radius = 3
+amount_per_tile = 1500
+
+[[ore_patches]]
+position = [28, 31]
+radius = 3
+amount_per_tile = 1500
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "eiffel_tower"
+tile_pos = [20, 19]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_pillbox"
+tile_pos = [30, 40]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_pillbox"
+tile_pos = [37, 36]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_pillbox"
+tile_pos = [33, 28]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_pillbox"
+tile_pos = [34, 28]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_pillbox"
+tile_pos = [27, 27]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_pillbox"
+tile_pos = [22, 27]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_pillbox"
+tile_pos = [26, 27]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_pillbox"
+tile_pos = [23, 27]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_pillbox"
+tile_pos = [22, 12]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_pillbox"
+tile_pos = [23, 12]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_pillbox"
+tile_pos = [18, 18]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_pillbox"
+tile_pos = [28, 52]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_pillbox"
+tile_pos = [23, 35]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_pillbox"
+tile_pos = [29, 35]
+
+[[preplaced_entities]]
+player_id = 1
+building_id = "soviet_barracks"
+tile_pos = [35, 44]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_pillbox"
+tile_pos = [18, 21]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "soviet_tesla_coil"
+tile_pos = [36, 50]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "tech_oil_derrick"
+tile_pos = [28, 57]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "grizzly_tank"
+tile_pos = [36, 37]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "grizzly_tank"
+tile_pos = [24, 19]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "grizzly_tank"
+tile_pos = [26, 19]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "grizzly_tank"
+tile_pos = [26, 21]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "ifv"
+tile_pos = [30, 58]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "grizzly_tank"
+tile_pos = [26, 52]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "grizzly_tank"
+tile_pos = [19, 45]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "grizzly_tank"
+tile_pos = [19, 38]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "grizzly_tank"
+tile_pos = [22, 26]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "grizzly_tank"
+tile_pos = [23, 26]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "grizzly_tank"
+tile_pos = [26, 26]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "grizzly_tank"
+tile_pos = [27, 26]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "grizzly_tank"
+tile_pos = [28, 33]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "ifv"
+tile_pos = [22, 33]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "flak_track"
+tile_pos = [23, 50]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "ifv"
+tile_pos = [12, 20]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "grizzly_tank"
+tile_pos = [24, 21]
+
+[[preplaced_entities]]
+player_id = 1
+unit_id = "crazy_ivan"
+tile_pos = [37, 48]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "tesla_trooper"
+tile_pos = [35, 50]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "allied_gi"
+tile_pos = [31, 50]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "allied_gi"
+tile_pos = [31, 49]
+
+[[spawns]]
+player_id = 1
+faction = "soviets"
+base_tile = [32, 42]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_conyard"
+tile_pos = [32, 42]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_tesla_reactor"
+tile_pos = [29, 42]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_refinery"
+tile_pos = [32, 39]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_barracks"
+tile_pos = [29, 39]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_war_factory"
+tile_pos = [26, 42]
+
+[[spawns.initial_units]]
+unit_id = "soviet_conscript"
+tile_pos = [30, 37]
+
+[[spawns.initial_units]]
+unit_id = "soviet_conscript"
+tile_pos = [28, 37]
+
+[[spawns.initial_units]]
+unit_id = "rhino_tank"
+tile_pos = [26, 38]
+
+[[spawns.initial_units]]
+unit_id = "war_miner"
+tile_pos = [30, 38]
+
+[[spawns]]
+player_id = 2
+faction = "allies"
+base_tile = [35, 52]
+
+[[spawns.initial_buildings]]
+building_id = "allied_conyard"
+tile_pos = [35, 52]
+
+[[spawns.initial_buildings]]
+building_id = "allied_power_plant"
+tile_pos = [32, 52]
+
+[[spawns.initial_buildings]]
+building_id = "allied_refinery"
+tile_pos = [35, 49]
+
+[[spawns.initial_buildings]]
+building_id = "allied_barracks"
+tile_pos = [32, 49]
+
+[[spawns.initial_buildings]]
+building_id = "allied_war_factory"
+tile_pos = [29, 52]
+
+[[spawns.initial_units]]
+unit_id = "allied_gi"
+tile_pos = [33, 47]
+
+[[spawns.initial_units]]
+unit_id = "allied_gi"
+tile_pos = [31, 47]
+
+[[spawns.initial_units]]
+unit_id = "grizzly_tank"
+tile_pos = [29, 48]
+
+[[spawns.initial_units]]
+unit_id = "chrono_miner"
+tile_pos = [33, 48]
+
+[[trigger_zones]]
+id = "mission_stage_init"
+min = [6, 6]
+max = [12, 12]
+once = true
+condition = { type = "timer_elapsed", secs = 1.0 }
+actions = [
+    { type = "set_variable", name = "mission_stage", value = 1 },
+    { type = "eva_transmission", speaker = "ZOFIA", text = "Battle Control Online. Primary tactical objectives initialized." },
+    { type = "reveal_area", tile = [32, 42], radius = 14 }
+]
+
+[[trigger_zones]]
+id = "tactical_reinforcement_wave"
+min = [31, 40]
+max = [35, 44]
+once = true
+condition = { type = "all", conditions = [{ type = "timer_elapsed", secs = 45.0 }, { type = "variable_equals", name = "mission_stage", value = 1 }] }
+actions = [
+    { type = "set_variable", name = "mission_stage", value = 2 },
+    { type = "spawn_reinforcements", player_id = 1, unit_id = "tesla_tank", count = 2, tile = [31, 40] },
+    { type = "grant_credits", player_id = 1, amount = 1500 },
+    { type = "eva_transmission", speaker = "ZOFIA", text = "Reinforcements have arrived. Forward command has authorized 1500 bonus credits." }
+]
+
+[[trigger_zones]]
+id = "decisive_campaign_victory"
+min = [2, 2]
+max = [6, 6]
+once = true
+condition = { type = "all_buildings_destroyed", player_id = 2 }
+actions = [
+    { type = "set_variable", name = "mission_stage", value = 3 },
+    { type = "eva_transmission", speaker = "ZOFIA", text = "Mission Accomplished. All primary hostile command structures neutralized." },
+    { type = "declare_winner", player_id = 1 }
+]

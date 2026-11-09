@@ -1,0 +1,134 @@
+id = "mp_yr_two_peaks"
+name = "Skirmish: Twin Peaks (2)"
+width = 80
+height = 96
+tile_size = 2.0
+ore_regen_per_sec = 4.0
+mission_objective = "Twin Peaks (2)"
+
+[[ore_patches]]
+position = [33, 29]
+radius = 3
+amount_per_tile = 1400
+
+[[ore_patches]]
+position = [32, 66]
+radius = 3
+amount_per_tile = 1400
+
+[[ore_patches]]
+position = [40, 48]
+radius = 4
+amount_per_tile = 2000
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "tech_airport"
+tile_pos = [35, 49]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "tech_machine_shop"
+tile_pos = [43, 44]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "tech_oil_derrick"
+tile_pos = [31, 55]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "tech_oil_derrick"
+tile_pos = [32, 55]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "tech_oil_derrick"
+tile_pos = [46, 40]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "tech_oil_derrick"
+tile_pos = [47, 40]
+
+[[spawns]]
+player_id = 1
+faction = "allies"
+base_tile = [41, 29]
+
+[[spawns.initial_buildings]]
+building_id = "allied_conyard"
+tile_pos = [41, 29]
+
+[[spawns.initial_buildings]]
+building_id = "allied_power_plant"
+tile_pos = [38, 29]
+
+[[spawns.initial_buildings]]
+building_id = "allied_refinery"
+tile_pos = [41, 32]
+
+[[spawns.initial_buildings]]
+building_id = "allied_barracks"
+tile_pos = [38, 32]
+
+[[spawns.initial_buildings]]
+building_id = "allied_war_factory"
+tile_pos = [35, 29]
+
+[[spawns.initial_units]]
+unit_id = "allied_gi"
+tile_pos = [39, 34]
+
+[[spawns.initial_units]]
+unit_id = "allied_gi"
+tile_pos = [37, 34]
+
+[[spawns.initial_units]]
+unit_id = "grizzly_tank"
+tile_pos = [35, 33]
+
+[[spawns.initial_units]]
+unit_id = "chrono_miner"
+tile_pos = [39, 33]
+
+[[spawns]]
+player_id = 2
+faction = "yuri"
+base_tile = [40, 66]
+
+[[spawns.initial_buildings]]
+building_id = "yuri_conyard"
+tile_pos = [40, 66]
+
+[[spawns.initial_buildings]]
+building_id = "yuri_bio_reactor"
+tile_pos = [37, 66]
+
+[[spawns.initial_buildings]]
+building_id = "yuri_slave_refinery"
+tile_pos = [40, 63]
+
+[[spawns.initial_buildings]]
+building_id = "yuri_barracks"
+tile_pos = [37, 63]
+
+[[spawns.initial_buildings]]
+building_id = "yuri_war_factory"
+tile_pos = [34, 66]
+
+[[spawns.initial_units]]
+unit_id = "yuri_initiate"
+tile_pos = [38, 61]
+
+[[spawns.initial_units]]
+unit_id = "yuri_initiate"
+tile_pos = [36, 61]
+
+[[spawns.initial_units]]
+unit_id = "lasher_tank"
+tile_pos = [34, 62]
+
+[[spawns.initial_units]]
+unit_id = "yuri_slave_miner"
+tile_pos = [38, 62]

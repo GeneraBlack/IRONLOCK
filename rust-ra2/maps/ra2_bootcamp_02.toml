@@ -1,0 +1,216 @@
+id = "ra2_bootcamp_02"
+name = "RA2 Boot Camp 02: Base Defense & Counterattack"
+width = 48
+height = 48
+tile_size = 2.0
+ore_regen_per_sec = 4.0
+mission_objective = "This is the last day of your basic training. Time is short and the Soviets may attack soon. Listen to your sergeant, learn what you can, and prepare for battle."
+
+[[ore_patches]]
+position = [22, 34]
+radius = 3
+amount_per_tile = 1400
+
+[[ore_patches]]
+position = [28, 21]
+radius = 3
+amount_per_tile = 1400
+
+[[ore_patches]]
+position = [24, 24]
+radius = 4
+amount_per_tile = 2000
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_conyard"
+tile_pos = [25, 31]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_refinery"
+tile_pos = [25, 36]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_barracks"
+tile_pos = [30, 32]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_power_plant"
+tile_pos = [32, 31]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_power_plant"
+tile_pos = [21, 36]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_power_plant"
+tile_pos = [23, 36]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "chrono_miner"
+tile_pos = [28, 38]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "allied_gi"
+tile_pos = [27, 28]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "allied_gi"
+tile_pos = [35, 27]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "allied_gi"
+tile_pos = [34, 28]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "allied_gi"
+tile_pos = [27, 29]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "allied_gi"
+tile_pos = [27, 31]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "allied_gi"
+tile_pos = [27, 33]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "allied_gi"
+tile_pos = [28, 33]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "allied_gi"
+tile_pos = [31, 31]
+
+[[spawns]]
+player_id = 1
+faction = "allies"
+base_tile = [30, 34]
+
+[[spawns.initial_buildings]]
+building_id = "allied_conyard"
+tile_pos = [30, 34]
+
+[[spawns.initial_buildings]]
+building_id = "allied_power_plant"
+tile_pos = [27, 34]
+
+[[spawns.initial_buildings]]
+building_id = "allied_refinery"
+tile_pos = [30, 31]
+
+[[spawns.initial_buildings]]
+building_id = "allied_barracks"
+tile_pos = [27, 31]
+
+[[spawns.initial_buildings]]
+building_id = "allied_war_factory"
+tile_pos = [24, 34]
+
+[[spawns.initial_units]]
+unit_id = "allied_gi"
+tile_pos = [28, 29]
+
+[[spawns.initial_units]]
+unit_id = "allied_gi"
+tile_pos = [26, 29]
+
+[[spawns.initial_units]]
+unit_id = "grizzly_tank"
+tile_pos = [24, 30]
+
+[[spawns.initial_units]]
+unit_id = "chrono_miner"
+tile_pos = [28, 30]
+
+[[spawns]]
+player_id = 2
+faction = "soviets"
+base_tile = [36, 21]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_conyard"
+tile_pos = [36, 21]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_tesla_reactor"
+tile_pos = [33, 21]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_refinery"
+tile_pos = [36, 24]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_barracks"
+tile_pos = [33, 24]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_war_factory"
+tile_pos = [30, 21]
+
+[[spawns.initial_units]]
+unit_id = "soviet_conscript"
+tile_pos = [34, 26]
+
+[[spawns.initial_units]]
+unit_id = "soviet_conscript"
+tile_pos = [32, 26]
+
+[[spawns.initial_units]]
+unit_id = "rhino_tank"
+tile_pos = [30, 25]
+
+[[spawns.initial_units]]
+unit_id = "war_miner"
+tile_pos = [34, 25]
+
+[[trigger_zones]]
+id = "mission_stage_init"
+min = [6, 6]
+max = [12, 12]
+once = true
+condition = { type = "timer_elapsed", secs = 1.0 }
+actions = [
+    { type = "set_variable", name = "mission_stage", value = 1 },
+    { type = "eva_transmission", speaker = "EVA", text = "Battle Control Online. Primary tactical objectives initialized." },
+    { type = "reveal_area", tile = [30, 34], radius = 14 }
+]
+
+[[trigger_zones]]
+id = "tactical_reinforcement_wave"
+min = [29, 32]
+max = [33, 36]
+once = true
+condition = { type = "all", conditions = [{ type = "timer_elapsed", secs = 45.0 }, { type = "variable_equals", name = "mission_stage", value = 1 }] }
+actions = [
+    { type = "set_variable", name = "mission_stage", value = 2 },
+    { type = "spawn_reinforcements", player_id = 1, unit_id = "grizzly_tank", count = 2, tile = [29, 32] },
+    { type = "grant_credits", player_id = 1, amount = 1500 },
+    { type = "eva_transmission", speaker = "EVA", text = "Reinforcements have arrived. Forward command has authorized 1500 bonus credits." }
+]
+
+[[trigger_zones]]
+id = "decisive_campaign_victory"
+min = [2, 2]
+max = [6, 6]
+once = true
+condition = { type = "all_buildings_destroyed", player_id = 2 }
+actions = [
+    { type = "set_variable", name = "mission_stage", value = 3 },
+    { type = "eva_transmission", speaker = "EVA", text = "Mission Accomplished. All primary hostile command structures neutralized." },
+    { type = "declare_winner", player_id = 1 }
+]

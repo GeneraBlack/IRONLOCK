@@ -1,0 +1,151 @@
+id = "skirmish_valley"
+name = "Skirmish Valley (2-Player)"
+width = 48
+height = 48
+tile_size = 2.0
+
+[[ore_patches]]
+position = [12, 16]
+radius = 3
+amount_per_tile = 1200
+
+[[ore_patches]]
+position = [35, 31]
+radius = 3
+amount_per_tile = 1200
+
+[[ore_patches]]
+position = [24, 24]
+radius = 4
+amount_per_tile = 1800
+
+[[gem_patches]]
+position = [24, 24]
+radius = 2
+amount_per_tile = 1800
+
+[[obstacles]]
+min = [20, 12]
+max = [23, 18]
+
+[[obstacles]]
+min = [25, 29]
+max = [28, 35]
+
+[[elevation_rects]]
+min = [14, 22]
+max = [18, 26]
+
+[[elevation_rects]]
+min = [30, 21]
+max = [34, 25]
+
+[[ramp_rects]]
+min = [13, 23]
+max = [14, 25]
+
+[[ramp_rects]]
+min = [18, 23]
+max = [19, 25]
+
+[[ramp_rects]]
+min = [29, 22]
+max = [30, 24]
+
+[[ramp_rects]]
+min = [34, 22]
+max = [35, 24]
+
+[[spawns]]
+player_id = 1
+faction = "allies"
+base_tile = [6, 8]
+
+[[spawns.initial_buildings]]
+building_id = "allied_conyard"
+tile_pos = [6, 8]
+
+[[spawns.initial_buildings]]
+building_id = "allied_power_plant"
+tile_pos = [10, 8]
+
+[[spawns.initial_buildings]]
+building_id = "allied_refinery"
+tile_pos = [8, 12]
+
+[[spawns.initial_buildings]]
+building_id = "allied_barracks"
+tile_pos = [5, 12]
+
+[[spawns.initial_buildings]]
+building_id = "allied_war_factory"
+tile_pos = [12, 11]
+
+[[spawns.initial_units]]
+unit_id = "allied_gi"
+tile_pos = [7, 15]
+
+[[spawns.initial_units]]
+unit_id = "allied_gi"
+tile_pos = [9, 15]
+
+[[spawns.initial_units]]
+unit_id = "grizzly_tank"
+tile_pos = [13, 15]
+
+[[spawns.initial_units]]
+unit_id = "grizzly_tank"
+tile_pos = [15, 15]
+
+[[spawns.initial_units]]
+unit_id = "chrono_miner"
+tile_pos = [10, 15]
+
+[[spawns]]
+player_id = 2
+faction = "soviets"
+base_tile = [38, 38]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_conyard"
+tile_pos = [38, 38]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_tesla_reactor"
+tile_pos = [35, 38]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_refinery"
+tile_pos = [36, 34]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_barracks"
+tile_pos = [40, 34]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_war_factory"
+tile_pos = [32, 34]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_tesla_coil"
+tile_pos = [34, 31]
+
+[[spawns.initial_units]]
+unit_id = "soviet_conscript"
+tile_pos = [37, 31]
+
+[[spawns.initial_units]]
+unit_id = "soviet_conscript"
+tile_pos = [39, 31]
+
+[[spawns.initial_units]]
+unit_id = "rhino_tank"
+tile_pos = [32, 30]
+
+[[spawns.initial_units]]
+unit_id = "rhino_tank"
+tile_pos = [30, 30]
+
+[[spawns.initial_units]]
+unit_id = "war_miner"
+tile_pos = [35, 32]

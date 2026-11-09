@@ -1,0 +1,106 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "properties": {
+    "buildings": {
+      "items": {
+        "properties": {
+          "armor": {
+            "enum": [
+              "none",
+              "light",
+              "heavy",
+              "structure"
+            ],
+            "type": "string"
+          },
+          "build_time_secs": {
+            "minimum": 0.1,
+            "type": "number"
+          },
+          "container": {
+            "type": "object"
+          },
+          "cost": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "death_effect": {
+            "type": "object"
+          },
+          "faction": {
+            "type": "string"
+          },
+          "footprint": {
+            "items": {
+              "type": "integer"
+            },
+            "maxItems": 2,
+            "minItems": 2,
+            "type": "array"
+          },
+          "health": {
+            "minimum": 1.0,
+            "type": "number"
+          },
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "point_defense": {
+            "type": "object"
+          },
+          "power_delta": {
+            "type": "integer"
+          },
+          "prerequisites": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "primary_weapon": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "stealth": {
+            "type": "object"
+          },
+          "support_aura": {
+            "type": "object"
+          },
+          "vision_range": {
+            "type": "number"
+          },
+          "visual": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "faction",
+          "role",
+          "cost",
+          "build_time_secs",
+          "health",
+          "armor",
+          "footprint",
+          "power_delta",
+          "vision_range",
+          "visual"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "buildings"
+  ],
+  "title": "BuildingCatalog",
+  "type": "object"
+}

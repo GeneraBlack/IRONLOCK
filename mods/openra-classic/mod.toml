@@ -1,0 +1,14 @@
+id = "openra_classic"
+name = "OpenRA Mod (openra-classic)"
+version = "0.1.0"
+authors = ["rts-mod-tools OpenRA Converter"]
+description = "Converted from OpenRA MiniYAML rules, weapons, and map"
+engine_version = "0.1.0"
+entry_map = "maps/openra_classic_clash.toml"
+scripts = []
+
+[catalogs]
+factions = "factions/factions.toml"
+weapons = "weapons/weapons.toml"
+buildings = "buildings/buildings.toml"
+units = "units/units.toml"

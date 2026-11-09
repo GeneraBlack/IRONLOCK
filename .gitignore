@@ -1,0 +1,20 @@
+# Rust build artifacts
+/engine/target/
+/target/
+**/*.rs.bk
+
+# Node.js build & dependencies
+/centralwebserver/node_modules/
+/centralwebserver/dist/
+npm-debug.log*
+
+# Raw legacy ISO / MIX import staging
+/legacy-imports/
+
+# Runtime logs and local saves
+*.log
+/saves/
+
+# OS metadata
+.DS_Store
+Thumbs.db

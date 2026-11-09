@@ -1,0 +1,128 @@
+id = "converted_skirmish"
+name = "Converted Skirmish Arena"
+width = 40
+height = 40
+tile_size = 2.0
+ore_regen_per_sec = 0.0
+gem_patches = []
+water_rects = []
+bridge_rects = []
+elevation_rects = []
+ramp_rects = []
+preplaced_entities = []
+props = []
+trigger_zones = []
+
+[[ore_patches]]
+position = [
+    12,
+    10,
+]
+radius = 3
+amount_per_tile = 600
+
+[[ore_patches]]
+position = [
+    26,
+    28,
+]
+radius = 3
+amount_per_tile = 600
+
+[[obstacles]]
+min = [
+    18,
+    18,
+]
+max = [
+    21,
+    21,
+]
+
+[[spawns]]
+player_id = 1
+faction = "allies"
+base_tile = [
+    6,
+    6,
+]
+team_id = 0
+
+[[spawns.initial_buildings]]
+building_id = "gacnst"
+tile_pos = [
+    6,
+    6,
+]
+
+[[spawns.initial_units]]
+unit_id = "e1"
+tile_pos = [
+    10,
+    7,
+]
+
+[[spawns.initial_units]]
+unit_id = "e1"
+tile_pos = [
+    10,
+    9,
+]
+
+[[spawns.initial_units]]
+unit_id = "mtnk"
+tile_pos = [
+    11,
+    8,
+]
+
+[[spawns.initial_units]]
+unit_id = "cmin"
+tile_pos = [
+    9,
+    10,
+]
+
+[[spawns]]
+player_id = 2
+faction = "soviets"
+base_tile = [
+    32,
+    32,
+]
+team_id = 0
+
+[[spawns.initial_buildings]]
+building_id = "nacnst"
+tile_pos = [
+    32,
+    32,
+]
+
+[[spawns.initial_units]]
+unit_id = "e2"
+tile_pos = [
+    29,
+    30,
+]
+
+[[spawns.initial_units]]
+unit_id = "e2"
+tile_pos = [
+    29,
+    32,
+]
+
+[[spawns.initial_units]]
+unit_id = "htnk"
+tile_pos = [
+    28,
+    31,
+]
+
+[[spawns.initial_units]]
+unit_id = "harv"
+tile_pos = [
+    30,
+    29,
+]

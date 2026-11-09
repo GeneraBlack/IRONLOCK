@@ -1,0 +1,114 @@
+id = "mp_yr_bridge_the_gap"
+name = "Skirmish: Bridging the Gap (2-6)"
+width = 65
+height = 78
+tile_size = 2.0
+ore_regen_per_sec = 4.0
+mission_objective = "Bridging the Gap (2-6)"
+
+[[ore_patches]]
+position = [51, 32]
+radius = 3
+amount_per_tile = 1400
+
+[[ore_patches]]
+position = [33, 55]
+radius = 3
+amount_per_tile = 1400
+
+[[ore_patches]]
+position = [32, 39]
+radius = 4
+amount_per_tile = 2000
+
+[[ore_patches]]
+position = [53, 45]
+radius = 3
+amount_per_tile = 1500
+
+[[ore_patches]]
+position = [55, 22]
+radius = 3
+amount_per_tile = 1500
+
+[[spawns]]
+player_id = 1
+faction = "allies"
+base_tile = [59, 32]
+
+[[spawns.initial_buildings]]
+building_id = "allied_conyard"
+tile_pos = [59, 32]
+
+[[spawns.initial_buildings]]
+building_id = "allied_power_plant"
+tile_pos = [56, 32]
+
+[[spawns.initial_buildings]]
+building_id = "allied_refinery"
+tile_pos = [59, 35]
+
+[[spawns.initial_buildings]]
+building_id = "allied_barracks"
+tile_pos = [56, 35]
+
+[[spawns.initial_buildings]]
+building_id = "allied_war_factory"
+tile_pos = [53, 32]
+
+[[spawns.initial_units]]
+unit_id = "allied_gi"
+tile_pos = [57, 37]
+
+[[spawns.initial_units]]
+unit_id = "allied_gi"
+tile_pos = [55, 37]
+
+[[spawns.initial_units]]
+unit_id = "grizzly_tank"
+tile_pos = [53, 36]
+
+[[spawns.initial_units]]
+unit_id = "chrono_miner"
+tile_pos = [57, 36]
+
+[[spawns]]
+player_id = 2
+faction = "yuri"
+base_tile = [41, 55]
+
+[[spawns.initial_buildings]]
+building_id = "yuri_conyard"
+tile_pos = [41, 55]
+
+[[spawns.initial_buildings]]
+building_id = "yuri_bio_reactor"
+tile_pos = [38, 55]
+
+[[spawns.initial_buildings]]
+building_id = "yuri_slave_refinery"
+tile_pos = [41, 52]
+
+[[spawns.initial_buildings]]
+building_id = "yuri_barracks"
+tile_pos = [38, 52]
+
+[[spawns.initial_buildings]]
+building_id = "yuri_war_factory"
+tile_pos = [35, 55]
+
+[[spawns.initial_units]]
+unit_id = "yuri_initiate"
+tile_pos = [39, 50]
+
+[[spawns.initial_units]]
+unit_id = "yuri_initiate"
+tile_pos = [37, 50]
+
+[[spawns.initial_units]]
+unit_id = "lasher_tank"
+tile_pos = [35, 51]
+
+[[spawns.initial_units]]
+unit_id = "yuri_slave_miner"
+tile_pos = [39, 51]

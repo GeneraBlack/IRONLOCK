@@ -1,0 +1,114 @@
+id = "mp_yr_blood_feud"
+name = "Skirmish: Blood Feud (2)"
+width = 60
+height = 52
+tile_size = 2.0
+ore_regen_per_sec = 4.0
+mission_objective = "Blood Feud (2)"
+
+[[ore_patches]]
+position = [23, 35]
+radius = 3
+amount_per_tile = 1400
+
+[[ore_patches]]
+position = [31, 17]
+radius = 3
+amount_per_tile = 1400
+
+[[ore_patches]]
+position = [30, 26]
+radius = 4
+amount_per_tile = 2000
+
+[[ore_patches]]
+position = [5, 30]
+radius = 3
+amount_per_tile = 1500
+
+[[ore_patches]]
+position = [15, 30]
+radius = 3
+amount_per_tile = 1500
+
+[[spawns]]
+player_id = 1
+faction = "soviets"
+base_tile = [15, 35]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_conyard"
+tile_pos = [15, 35]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_tesla_reactor"
+tile_pos = [18, 35]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_refinery"
+tile_pos = [15, 32]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_barracks"
+tile_pos = [18, 32]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_war_factory"
+tile_pos = [21, 35]
+
+[[spawns.initial_units]]
+unit_id = "soviet_conscript"
+tile_pos = [17, 30]
+
+[[spawns.initial_units]]
+unit_id = "soviet_conscript"
+tile_pos = [19, 30]
+
+[[spawns.initial_units]]
+unit_id = "rhino_tank"
+tile_pos = [21, 31]
+
+[[spawns.initial_units]]
+unit_id = "war_miner"
+tile_pos = [17, 31]
+
+[[spawns]]
+player_id = 2
+faction = "yuri"
+base_tile = [39, 17]
+
+[[spawns.initial_buildings]]
+building_id = "yuri_conyard"
+tile_pos = [39, 17]
+
+[[spawns.initial_buildings]]
+building_id = "yuri_bio_reactor"
+tile_pos = [36, 17]
+
+[[spawns.initial_buildings]]
+building_id = "yuri_slave_refinery"
+tile_pos = [39, 20]
+
+[[spawns.initial_buildings]]
+building_id = "yuri_barracks"
+tile_pos = [36, 20]
+
+[[spawns.initial_buildings]]
+building_id = "yuri_war_factory"
+tile_pos = [33, 17]
+
+[[spawns.initial_units]]
+unit_id = "yuri_initiate"
+tile_pos = [37, 22]
+
+[[spawns.initial_units]]
+unit_id = "yuri_initiate"
+tile_pos = [35, 22]
+
+[[spawns.initial_units]]
+unit_id = "lasher_tank"
+tile_pos = [33, 21]
+
+[[spawns.initial_units]]
+unit_id = "yuri_slave_miner"
+tile_pos = [37, 21]

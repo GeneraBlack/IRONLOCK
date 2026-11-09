@@ -1,0 +1,596 @@
+[[buildings]]
+id = "gacnst"
+name = "Allied Construction Yard"
+faction = "allies"
+role = "construction_yard"
+cost = 2500
+build_time_secs = 25.0
+health = 1500.0
+armor = "structure"
+footprint = [
+    3,
+    3,
+]
+power_delta = 0
+vision_range = 16.0
+prerequisites = []
+sub_factions = []
+build_limit = 0
+upgrade_cost = 0
+upgrade_time_secs = 0.0
+water_bound = false
+cloning_vats = false
+grinder = false
+capture_cash_bonus = 0
+unlocks_units = []
+stolen_tech_units = []
+crushable = false
+supply_provided = 0
+abilities = []
+support_powers = []
+airfield_pads = 0
+container = { capacity = 0, accepts_vehicles = false, passengers_can_fire = false, tunnel_network = false, power_per_occupant = 0 }
+stealth = { detects_cloak = false, detects_disguise = false, cloak_field_radius = 0.0, psychic_sensor_radius = 0.0 }
+death_effect = { explosion_damage = 0.0, explosion_radius = 0.0, leaves_radiation = false, survivor_chance = 0.0 }
+point_defense = { intercept_radius = 0.0, cooldown_secs = 0.0 }
+support_aura = { heals_infantry_per_sec = 0.0, repairs_vehicles_per_sec = 0.0, repairs_ships_per_sec = 0.0, cash_trickle_per_sec = 0, ore_refine_multiplier = 0.0, vehicle_cost_discount = 0.0 }
+
+[buildings.script_hooks]
+
+[buildings.visual]
+model = "assets/models/gacnst.glb"
+archetype = "construction_yard"
+scale = [
+    2.6999998092651367,
+    1.399999976158142,
+    2.6999998092651367,
+]
+primary_color = [
+    0.2199999988079071,
+    0.44999998807907104,
+    0.8199999928474426,
+]
+team_color_tint = true
+
+[[buildings]]
+id = "gapowr"
+name = "Allied Power Plant"
+faction = "allies"
+role = "power_plant"
+cost = 800
+build_time_secs = 8.0
+health = 750.0
+armor = "structure"
+footprint = [
+    2,
+    2,
+]
+power_delta = 200
+vision_range = 16.0
+prerequisites = ["gacnst"]
+sub_factions = []
+build_limit = 0
+upgrade_cost = 0
+upgrade_time_secs = 0.0
+water_bound = false
+cloning_vats = false
+grinder = false
+capture_cash_bonus = 0
+unlocks_units = []
+stolen_tech_units = []
+crushable = false
+supply_provided = 0
+abilities = []
+support_powers = []
+airfield_pads = 0
+container = { capacity = 0, accepts_vehicles = false, passengers_can_fire = false, tunnel_network = false, power_per_occupant = 0 }
+stealth = { detects_cloak = false, detects_disguise = false, cloak_field_radius = 0.0, psychic_sensor_radius = 0.0 }
+death_effect = { explosion_damage = 0.0, explosion_radius = 0.0, leaves_radiation = false, survivor_chance = 0.0 }
+point_defense = { intercept_radius = 0.0, cooldown_secs = 0.0 }
+support_aura = { heals_infantry_per_sec = 0.0, repairs_vehicles_per_sec = 0.0, repairs_ships_per_sec = 0.0, cash_trickle_per_sec = 0, ore_refine_multiplier = 0.0, vehicle_cost_discount = 0.0 }
+
+[buildings.script_hooks]
+
+[buildings.visual]
+model = "assets/models/gapowr.glb"
+archetype = "power_plant"
+scale = [
+    1.7999999523162842,
+    1.399999976158142,
+    1.7999999523162842,
+]
+primary_color = [
+    0.2199999988079071,
+    0.44999998807907104,
+    0.8199999928474426,
+]
+team_color_tint = true
+
+[[buildings]]
+id = "tesla"
+name = "Tesla Coil"
+faction = "soviets"
+role = "defense"
+cost = 1500
+build_time_secs = 15.0
+health = 650.0
+armor = "structure"
+footprint = [
+    1,
+    1,
+]
+power_delta = -75
+vision_range = 16.0
+primary_weapon = "teslazap"
+prerequisites = ["napowr"]
+sub_factions = []
+build_limit = 0
+upgrade_cost = 0
+upgrade_time_secs = 0.0
+water_bound = false
+cloning_vats = false
+grinder = false
+capture_cash_bonus = 0
+unlocks_units = []
+stolen_tech_units = []
+crushable = false
+supply_provided = 0
+abilities = []
+support_powers = []
+airfield_pads = 0
+container = { capacity = 0, accepts_vehicles = false, passengers_can_fire = false, tunnel_network = false, power_per_occupant = 0 }
+stealth = { detects_cloak = false, detects_disguise = false, cloak_field_radius = 0.0, psychic_sensor_radius = 0.0 }
+death_effect = { explosion_damage = 0.0, explosion_radius = 0.0, leaves_radiation = false, survivor_chance = 0.0 }
+point_defense = { intercept_radius = 0.0, cooldown_secs = 0.0 }
+support_aura = { heals_infantry_per_sec = 0.0, repairs_vehicles_per_sec = 0.0, repairs_ships_per_sec = 0.0, cash_trickle_per_sec = 0, ore_refine_multiplier = 0.0, vehicle_cost_discount = 0.0 }
+
+[buildings.script_hooks]
+
+[buildings.visual]
+model = "assets/models/tesla.glb"
+archetype = "turret"
+scale = [
+    0.8999999761581421,
+    1.399999976158142,
+    0.8999999761581421,
+]
+primary_color = [
+    0.7799999713897705,
+    0.18000000715255737,
+    0.18000000715255737,
+]
+team_color_tint = true
+
+[[buildings]]
+id = "gapile"
+name = "Allied Barracks"
+faction = "allies"
+role = "barracks"
+cost = 500
+build_time_secs = 5.0
+health = 800.0
+armor = "structure"
+footprint = [
+    2,
+    2,
+]
+power_delta = -20
+vision_range = 16.0
+prerequisites = ["gapowr"]
+sub_factions = []
+build_limit = 0
+upgrade_cost = 0
+upgrade_time_secs = 0.0
+water_bound = false
+cloning_vats = false
+grinder = false
+capture_cash_bonus = 0
+unlocks_units = []
+stolen_tech_units = []
+crushable = false
+supply_provided = 0
+abilities = []
+support_powers = []
+airfield_pads = 0
+container = { capacity = 0, accepts_vehicles = false, passengers_can_fire = false, tunnel_network = false, power_per_occupant = 0 }
+stealth = { detects_cloak = false, detects_disguise = false, cloak_field_radius = 0.0, psychic_sensor_radius = 0.0 }
+death_effect = { explosion_damage = 0.0, explosion_radius = 0.0, leaves_radiation = false, survivor_chance = 0.0 }
+point_defense = { intercept_radius = 0.0, cooldown_secs = 0.0 }
+support_aura = { heals_infantry_per_sec = 0.0, repairs_vehicles_per_sec = 0.0, repairs_ships_per_sec = 0.0, cash_trickle_per_sec = 0, ore_refine_multiplier = 0.0, vehicle_cost_discount = 0.0 }
+
+[buildings.script_hooks]
+
+[buildings.visual]
+model = "assets/models/gapile.glb"
+archetype = "barracks"
+scale = [
+    1.7999999523162842,
+    1.399999976158142,
+    1.7999999523162842,
+]
+primary_color = [
+    0.2199999988079071,
+    0.44999998807907104,
+    0.8199999928474426,
+]
+team_color_tint = true
+
+[[buildings]]
+id = "garefn"
+name = "Allied Ore Refinery"
+faction = "allies"
+role = "refinery"
+cost = 2000
+build_time_secs = 20.0
+health = 1000.0
+armor = "structure"
+footprint = [
+    3,
+    3,
+]
+power_delta = -50
+vision_range = 16.0
+prerequisites = ["gapowr"]
+spawns_unit_on_complete = "cmin"
+sub_factions = []
+build_limit = 0
+upgrade_cost = 0
+upgrade_time_secs = 0.0
+water_bound = false
+cloning_vats = false
+grinder = false
+capture_cash_bonus = 0
+unlocks_units = []
+stolen_tech_units = []
+crushable = false
+supply_provided = 0
+abilities = []
+support_powers = []
+airfield_pads = 0
+container = { capacity = 0, accepts_vehicles = false, passengers_can_fire = false, tunnel_network = false, power_per_occupant = 0 }
+stealth = { detects_cloak = false, detects_disguise = false, cloak_field_radius = 0.0, psychic_sensor_radius = 0.0 }
+death_effect = { explosion_damage = 0.0, explosion_radius = 0.0, leaves_radiation = false, survivor_chance = 0.0 }
+point_defense = { intercept_radius = 0.0, cooldown_secs = 0.0 }
+support_aura = { heals_infantry_per_sec = 0.0, repairs_vehicles_per_sec = 0.0, repairs_ships_per_sec = 0.0, cash_trickle_per_sec = 0, ore_refine_multiplier = 0.0, vehicle_cost_discount = 0.0 }
+
+[buildings.script_hooks]
+
+[buildings.visual]
+model = "assets/models/garefn.glb"
+archetype = "refinery"
+scale = [
+    2.6999998092651367,
+    1.399999976158142,
+    2.6999998092651367,
+]
+primary_color = [
+    0.2199999988079071,
+    0.44999998807907104,
+    0.8199999928474426,
+]
+team_color_tint = true
+
+[[buildings]]
+id = "gaweap"
+name = "Allied War Factory"
+faction = "allies"
+role = "war_factory"
+cost = 2000
+build_time_secs = 20.0
+health = 1100.0
+armor = "structure"
+footprint = [
+    3,
+    3,
+]
+power_delta = -50
+vision_range = 16.0
+prerequisites = ["garefn"]
+sub_factions = []
+build_limit = 0
+upgrade_cost = 0
+upgrade_time_secs = 0.0
+water_bound = false
+cloning_vats = false
+grinder = false
+capture_cash_bonus = 0
+unlocks_units = []
+stolen_tech_units = []
+crushable = false
+supply_provided = 0
+abilities = []
+support_powers = []
+airfield_pads = 0
+container = { capacity = 0, accepts_vehicles = false, passengers_can_fire = false, tunnel_network = false, power_per_occupant = 0 }
+stealth = { detects_cloak = false, detects_disguise = false, cloak_field_radius = 0.0, psychic_sensor_radius = 0.0 }
+death_effect = { explosion_damage = 0.0, explosion_radius = 0.0, leaves_radiation = false, survivor_chance = 0.0 }
+point_defense = { intercept_radius = 0.0, cooldown_secs = 0.0 }
+support_aura = { heals_infantry_per_sec = 0.0, repairs_vehicles_per_sec = 0.0, repairs_ships_per_sec = 0.0, cash_trickle_per_sec = 0, ore_refine_multiplier = 0.0, vehicle_cost_discount = 0.0 }
+
+[buildings.script_hooks]
+
+[buildings.visual]
+model = "assets/models/gaweap.glb"
+archetype = "war_factory"
+scale = [
+    2.6999998092651367,
+    1.399999976158142,
+    2.6999998092651367,
+]
+primary_color = [
+    0.2199999988079071,
+    0.44999998807907104,
+    0.8199999928474426,
+]
+team_color_tint = true
+
+[[buildings]]
+id = "nacnst"
+name = "Soviet Construction Yard"
+faction = "soviets"
+role = "construction_yard"
+cost = 2500
+build_time_secs = 25.0
+health = 1500.0
+armor = "structure"
+footprint = [
+    3,
+    3,
+]
+power_delta = 0
+vision_range = 16.0
+prerequisites = []
+sub_factions = []
+build_limit = 0
+upgrade_cost = 0
+upgrade_time_secs = 0.0
+water_bound = false
+cloning_vats = false
+grinder = false
+capture_cash_bonus = 0
+unlocks_units = []
+stolen_tech_units = []
+crushable = false
+supply_provided = 0
+abilities = []
+support_powers = []
+airfield_pads = 0
+container = { capacity = 0, accepts_vehicles = false, passengers_can_fire = false, tunnel_network = false, power_per_occupant = 0 }
+stealth = { detects_cloak = false, detects_disguise = false, cloak_field_radius = 0.0, psychic_sensor_radius = 0.0 }
+death_effect = { explosion_damage = 0.0, explosion_radius = 0.0, leaves_radiation = false, survivor_chance = 0.0 }
+point_defense = { intercept_radius = 0.0, cooldown_secs = 0.0 }
+support_aura = { heals_infantry_per_sec = 0.0, repairs_vehicles_per_sec = 0.0, repairs_ships_per_sec = 0.0, cash_trickle_per_sec = 0, ore_refine_multiplier = 0.0, vehicle_cost_discount = 0.0 }
+
+[buildings.script_hooks]
+
+[buildings.visual]
+model = "assets/models/nacnst.glb"
+archetype = "construction_yard"
+scale = [
+    2.6999998092651367,
+    1.399999976158142,
+    2.6999998092651367,
+]
+primary_color = [
+    0.7799999713897705,
+    0.18000000715255737,
+    0.18000000715255737,
+]
+team_color_tint = true
+
+[[buildings]]
+id = "napowr"
+name = "Soviet Tesla Reactor"
+faction = "soviets"
+role = "power_plant"
+cost = 600
+build_time_secs = 6.0
+health = 750.0
+armor = "structure"
+footprint = [
+    2,
+    2,
+]
+power_delta = 150
+vision_range = 16.0
+prerequisites = ["nacnst"]
+sub_factions = []
+build_limit = 0
+upgrade_cost = 0
+upgrade_time_secs = 0.0
+water_bound = false
+cloning_vats = false
+grinder = false
+capture_cash_bonus = 0
+unlocks_units = []
+stolen_tech_units = []
+crushable = false
+supply_provided = 0
+abilities = []
+support_powers = []
+airfield_pads = 0
+container = { capacity = 0, accepts_vehicles = false, passengers_can_fire = false, tunnel_network = false, power_per_occupant = 0 }
+stealth = { detects_cloak = false, detects_disguise = false, cloak_field_radius = 0.0, psychic_sensor_radius = 0.0 }
+death_effect = { explosion_damage = 0.0, explosion_radius = 0.0, leaves_radiation = false, survivor_chance = 0.0 }
+point_defense = { intercept_radius = 0.0, cooldown_secs = 0.0 }
+support_aura = { heals_infantry_per_sec = 0.0, repairs_vehicles_per_sec = 0.0, repairs_ships_per_sec = 0.0, cash_trickle_per_sec = 0, ore_refine_multiplier = 0.0, vehicle_cost_discount = 0.0 }
+
+[buildings.script_hooks]
+
+[buildings.visual]
+model = "assets/models/napowr.glb"
+archetype = "power_plant"
+scale = [
+    1.7999999523162842,
+    1.399999976158142,
+    1.7999999523162842,
+]
+primary_color = [
+    0.7799999713897705,
+    0.18000000715255737,
+    0.18000000715255737,
+]
+team_color_tint = true
+
+[[buildings]]
+id = "nahand"
+name = "Soviet Barracks"
+faction = "soviets"
+role = "barracks"
+cost = 500
+build_time_secs = 5.0
+health = 800.0
+armor = "structure"
+footprint = [
+    2,
+    2,
+]
+power_delta = -20
+vision_range = 16.0
+prerequisites = ["napowr"]
+sub_factions = []
+build_limit = 0
+upgrade_cost = 0
+upgrade_time_secs = 0.0
+water_bound = false
+cloning_vats = false
+grinder = false
+capture_cash_bonus = 0
+unlocks_units = []
+stolen_tech_units = []
+crushable = false
+supply_provided = 0
+abilities = []
+support_powers = []
+airfield_pads = 0
+container = { capacity = 0, accepts_vehicles = false, passengers_can_fire = false, tunnel_network = false, power_per_occupant = 0 }
+stealth = { detects_cloak = false, detects_disguise = false, cloak_field_radius = 0.0, psychic_sensor_radius = 0.0 }
+death_effect = { explosion_damage = 0.0, explosion_radius = 0.0, leaves_radiation = false, survivor_chance = 0.0 }
+point_defense = { intercept_radius = 0.0, cooldown_secs = 0.0 }
+support_aura = { heals_infantry_per_sec = 0.0, repairs_vehicles_per_sec = 0.0, repairs_ships_per_sec = 0.0, cash_trickle_per_sec = 0, ore_refine_multiplier = 0.0, vehicle_cost_discount = 0.0 }
+
+[buildings.script_hooks]
+
+[buildings.visual]
+model = "assets/models/nahand.glb"
+archetype = "barracks"
+scale = [
+    1.7999999523162842,
+    1.399999976158142,
+    1.7999999523162842,
+]
+primary_color = [
+    0.7799999713897705,
+    0.18000000715255737,
+    0.18000000715255737,
+]
+team_color_tint = true
+
+[[buildings]]
+id = "narefn"
+name = "Soviet Ore Refinery"
+faction = "soviets"
+role = "refinery"
+cost = 2000
+build_time_secs = 20.0
+health = 1000.0
+armor = "structure"
+footprint = [
+    3,
+    3,
+]
+power_delta = -50
+vision_range = 16.0
+prerequisites = ["napowr"]
+spawns_unit_on_complete = "harv"
+sub_factions = []
+build_limit = 0
+upgrade_cost = 0
+upgrade_time_secs = 0.0
+water_bound = false
+cloning_vats = false
+grinder = false
+capture_cash_bonus = 0
+unlocks_units = []
+stolen_tech_units = []
+crushable = false
+supply_provided = 0
+abilities = []
+support_powers = []
+airfield_pads = 0
+container = { capacity = 0, accepts_vehicles = false, passengers_can_fire = false, tunnel_network = false, power_per_occupant = 0 }
+stealth = { detects_cloak = false, detects_disguise = false, cloak_field_radius = 0.0, psychic_sensor_radius = 0.0 }
+death_effect = { explosion_damage = 0.0, explosion_radius = 0.0, leaves_radiation = false, survivor_chance = 0.0 }
+point_defense = { intercept_radius = 0.0, cooldown_secs = 0.0 }
+support_aura = { heals_infantry_per_sec = 0.0, repairs_vehicles_per_sec = 0.0, repairs_ships_per_sec = 0.0, cash_trickle_per_sec = 0, ore_refine_multiplier = 0.0, vehicle_cost_discount = 0.0 }
+
+[buildings.script_hooks]
+
+[buildings.visual]
+model = "assets/models/narefn.glb"
+archetype = "refinery"
+scale = [
+    2.6999998092651367,
+    1.399999976158142,
+    2.6999998092651367,
+]
+primary_color = [
+    0.7799999713897705,
+    0.18000000715255737,
+    0.18000000715255737,
+]
+team_color_tint = true
+
+[[buildings]]
+id = "naweap"
+name = "Soviet War Factory"
+faction = "soviets"
+role = "war_factory"
+cost = 2000
+build_time_secs = 20.0
+health = 1100.0
+armor = "structure"
+footprint = [
+    3,
+    3,
+]
+power_delta = -50
+vision_range = 16.0
+prerequisites = ["narefn"]
+sub_factions = []
+build_limit = 0
+upgrade_cost = 0
+upgrade_time_secs = 0.0
+water_bound = false
+cloning_vats = false
+grinder = false
+capture_cash_bonus = 0
+unlocks_units = []
+stolen_tech_units = []
+crushable = false
+supply_provided = 0
+abilities = []
+support_powers = []
+airfield_pads = 0
+container = { capacity = 0, accepts_vehicles = false, passengers_can_fire = false, tunnel_network = false, power_per_occupant = 0 }
+stealth = { detects_cloak = false, detects_disguise = false, cloak_field_radius = 0.0, psychic_sensor_radius = 0.0 }
+death_effect = { explosion_damage = 0.0, explosion_radius = 0.0, leaves_radiation = false, survivor_chance = 0.0 }
+point_defense = { intercept_radius = 0.0, cooldown_secs = 0.0 }
+support_aura = { heals_infantry_per_sec = 0.0, repairs_vehicles_per_sec = 0.0, repairs_ships_per_sec = 0.0, cash_trickle_per_sec = 0, ore_refine_multiplier = 0.0, vehicle_cost_discount = 0.0 }
+
+[buildings.script_hooks]
+
+[buildings.visual]
+model = "assets/models/naweap.glb"
+archetype = "war_factory"
+scale = [
+    2.6999998092651367,
+    1.399999976158142,
+    2.6999998092651367,
+]
+primary_color = [
+    0.7799999713897705,
+    0.18000000715255737,
+    0.18000000715255737,
+]
+team_color_tint = true

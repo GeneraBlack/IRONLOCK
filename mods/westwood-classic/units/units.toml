@@ -1,0 +1,479 @@
+[[units]]
+id = "e1"
+name = "GI Squad"
+faction = "allies"
+role = "infantry"
+cost = 200
+build_time_secs = 2.0
+health = 125.0
+armor = "light"
+speed = 3.200000047683716
+vision_range = 15.0
+harvest_capacity = 0
+primary_weapon = "m60"
+prerequisites = ["gapile"]
+sub_factions = []
+build_limit = 0
+movement_domain = "ground"
+cruise_altitude = 0.0
+immobile_when_deployed = false
+lands_when_deployed = false
+chrono_harvester = false
+lays_mines = false
+mine_damage = 0.0
+mine_radius = 0.0
+spy_infiltrator = false
+plants_c4 = false
+subterranean = false
+cash_bounty_ratio = 0.0
+mind_control_limit = 0
+kamikaze = false
+max_ammo = 0
+supply_cost = 1
+crushes_infantry = false
+crushes_vehicles = false
+uncrushable = false
+max_drones = 0
+chrono_locomotion = false
+immune_to_mind_control = false
+immune_to_radiation = false
+mind_control_overload_dps = 0.0
+mobile_refinery = false
+psi_wave_radius = 0.0
+psi_wave_damage = 0.0
+garrison_damage_multiplier = 0.0
+self_heal_per_sec = 0.0
+abilities = []
+container = { capacity = 0, accepts_vehicles = false, passengers_can_fire = false, adapts_weapon_to_passenger = false }
+stealth = { cloaked = false, detects_cloak = false, detects_disguise = false, cloak_field_radius = 0.0, disguises_as_terrain = false, can_disguise_as_enemy = false, reveal_on_fire_secs = 0.0 }
+death_effect = { explosion_damage = 0.0, explosion_radius = 0.0, survivor_chance = 0.0, drops_salvage = false }
+point_defense = { intercept_radius = 0.0, cooldown_secs = 0.0 }
+support_aura = { mobile_heal_per_sec = 0.0, mobile_heal_radius = 0.0 }
+
+[units.script_hooks]
+
+[units.visual]
+model = "assets/models/e1.glb"
+archetype = "infantry"
+scale = [
+    0.8999999761581421,
+    1.0,
+    0.8999999761581421,
+]
+primary_color = [
+    0.2199999988079071,
+    0.44999998807907104,
+    0.8199999928474426,
+]
+team_color_tint = true
+
+[[units]]
+id = "e2"
+name = "Conscript"
+faction = "soviets"
+role = "infantry"
+cost = 100
+build_time_secs = 2.0
+health = 110.0
+armor = "light"
+speed = 3.200000047683716
+vision_range = 12.5
+harvest_capacity = 0
+primary_weapon = "ak47"
+prerequisites = ["nahand"]
+sub_factions = []
+build_limit = 0
+movement_domain = "ground"
+cruise_altitude = 0.0
+immobile_when_deployed = false
+lands_when_deployed = false
+chrono_harvester = false
+lays_mines = false
+mine_damage = 0.0
+mine_radius = 0.0
+spy_infiltrator = false
+plants_c4 = false
+subterranean = false
+cash_bounty_ratio = 0.0
+mind_control_limit = 0
+kamikaze = false
+max_ammo = 0
+supply_cost = 1
+crushes_infantry = false
+crushes_vehicles = false
+uncrushable = false
+max_drones = 0
+chrono_locomotion = false
+immune_to_mind_control = false
+immune_to_radiation = false
+mind_control_overload_dps = 0.0
+mobile_refinery = false
+psi_wave_radius = 0.0
+psi_wave_damage = 0.0
+garrison_damage_multiplier = 0.0
+self_heal_per_sec = 0.0
+abilities = []
+container = { capacity = 0, accepts_vehicles = false, passengers_can_fire = false, adapts_weapon_to_passenger = false }
+stealth = { cloaked = false, detects_cloak = false, detects_disguise = false, cloak_field_radius = 0.0, disguises_as_terrain = false, can_disguise_as_enemy = false, reveal_on_fire_secs = 0.0 }
+death_effect = { explosion_damage = 0.0, explosion_radius = 0.0, survivor_chance = 0.0, drops_salvage = false }
+point_defense = { intercept_radius = 0.0, cooldown_secs = 0.0 }
+support_aura = { mobile_heal_per_sec = 0.0, mobile_heal_radius = 0.0 }
+
+[units.script_hooks]
+
+[units.visual]
+model = "assets/models/e2.glb"
+archetype = "infantry"
+scale = [
+    0.8999999761581421,
+    1.0,
+    0.8999999761581421,
+]
+primary_color = [
+    0.7799999713897705,
+    0.18000000715255737,
+    0.18000000715255737,
+]
+team_color_tint = true
+
+[[units]]
+id = "engineer"
+name = "Combat Engineer"
+faction = "allies"
+role = "engineer"
+cost = 500
+build_time_secs = 5.0
+health = 80.0
+armor = "none"
+speed = 3.200000047683716
+vision_range = 16.0
+harvest_capacity = 0
+prerequisites = ["gapile"]
+sub_factions = []
+build_limit = 0
+movement_domain = "ground"
+cruise_altitude = 0.0
+immobile_when_deployed = false
+lands_when_deployed = false
+chrono_harvester = false
+lays_mines = false
+mine_damage = 0.0
+mine_radius = 0.0
+spy_infiltrator = false
+plants_c4 = false
+subterranean = false
+cash_bounty_ratio = 0.0
+mind_control_limit = 0
+kamikaze = false
+max_ammo = 0
+supply_cost = 1
+crushes_infantry = false
+crushes_vehicles = false
+uncrushable = false
+max_drones = 0
+chrono_locomotion = false
+immune_to_mind_control = false
+immune_to_radiation = false
+mind_control_overload_dps = 0.0
+mobile_refinery = false
+psi_wave_radius = 0.0
+psi_wave_damage = 0.0
+garrison_damage_multiplier = 0.0
+self_heal_per_sec = 0.0
+abilities = []
+container = { capacity = 0, accepts_vehicles = false, passengers_can_fire = false, adapts_weapon_to_passenger = false }
+stealth = { cloaked = false, detects_cloak = false, detects_disguise = false, cloak_field_radius = 0.0, disguises_as_terrain = false, can_disguise_as_enemy = false, reveal_on_fire_secs = 0.0 }
+death_effect = { explosion_damage = 0.0, explosion_radius = 0.0, survivor_chance = 0.0, drops_salvage = false }
+point_defense = { intercept_radius = 0.0, cooldown_secs = 0.0 }
+support_aura = { mobile_heal_per_sec = 0.0, mobile_heal_radius = 0.0 }
+
+[units.script_hooks]
+
+[units.visual]
+model = "assets/models/engineer.glb"
+archetype = "infantry"
+scale = [
+    0.8999999761581421,
+    1.0,
+    0.8999999761581421,
+]
+primary_color = [
+    0.2199999988079071,
+    0.44999998807907104,
+    0.8199999928474426,
+]
+team_color_tint = true
+
+[[units]]
+id = "mtnk"
+name = "Grizzly Tank (VXL)"
+faction = "allies"
+role = "vehicle"
+cost = 700
+build_time_secs = 7.0
+health = 400.0
+armor = "heavy"
+speed = 5.599999904632568
+vision_range = 20.0
+harvest_capacity = 0
+primary_weapon = "id_105mm"
+prerequisites = ["gaweap"]
+sub_factions = []
+build_limit = 0
+movement_domain = "ground"
+cruise_altitude = 0.0
+immobile_when_deployed = false
+lands_when_deployed = false
+chrono_harvester = false
+lays_mines = false
+mine_damage = 0.0
+mine_radius = 0.0
+spy_infiltrator = false
+plants_c4 = false
+subterranean = false
+cash_bounty_ratio = 0.0
+mind_control_limit = 0
+kamikaze = false
+max_ammo = 0
+supply_cost = 1
+crushes_infantry = true
+crushes_vehicles = false
+uncrushable = false
+max_drones = 0
+chrono_locomotion = false
+immune_to_mind_control = false
+immune_to_radiation = false
+mind_control_overload_dps = 0.0
+mobile_refinery = false
+psi_wave_radius = 0.0
+psi_wave_damage = 0.0
+garrison_damage_multiplier = 0.0
+self_heal_per_sec = 0.0
+abilities = []
+container = { capacity = 0, accepts_vehicles = false, passengers_can_fire = false, adapts_weapon_to_passenger = false }
+stealth = { cloaked = false, detects_cloak = false, detects_disguise = false, cloak_field_radius = 0.0, disguises_as_terrain = false, can_disguise_as_enemy = false, reveal_on_fire_secs = 0.0 }
+death_effect = { explosion_damage = 0.0, explosion_radius = 0.0, survivor_chance = 0.0, drops_salvage = false }
+point_defense = { intercept_radius = 0.0, cooldown_secs = 0.0 }
+support_aura = { mobile_heal_per_sec = 0.0, mobile_heal_radius = 0.0 }
+
+[units.script_hooks]
+
+[units.visual]
+model = "assets/models/mtnk.glb"
+archetype = "tank"
+scale = [
+    1.7999999523162842,
+    1.100000023841858,
+    2.4000000953674316,
+]
+primary_color = [
+    0.2199999988079071,
+    0.44999998807907104,
+    0.8199999928474426,
+]
+team_color_tint = true
+
+[[units]]
+id = "htnk"
+name = "Rhino Heavy Tank"
+faction = "soviets"
+role = "vehicle"
+cost = 900
+build_time_secs = 9.0
+health = 550.0
+armor = "heavy"
+speed = 4.800000190734863
+vision_range = 20.0
+harvest_capacity = 0
+primary_weapon = "id_120mm"
+prerequisites = ["naweap"]
+sub_factions = []
+build_limit = 0
+movement_domain = "ground"
+cruise_altitude = 0.0
+immobile_when_deployed = false
+lands_when_deployed = false
+chrono_harvester = false
+lays_mines = false
+mine_damage = 0.0
+mine_radius = 0.0
+spy_infiltrator = false
+plants_c4 = false
+subterranean = false
+cash_bounty_ratio = 0.0
+mind_control_limit = 0
+kamikaze = false
+max_ammo = 0
+supply_cost = 1
+crushes_infantry = true
+crushes_vehicles = false
+uncrushable = false
+max_drones = 0
+chrono_locomotion = false
+immune_to_mind_control = false
+immune_to_radiation = false
+mind_control_overload_dps = 0.0
+mobile_refinery = false
+psi_wave_radius = 0.0
+psi_wave_damage = 0.0
+garrison_damage_multiplier = 0.0
+self_heal_per_sec = 0.0
+abilities = []
+container = { capacity = 0, accepts_vehicles = false, passengers_can_fire = false, adapts_weapon_to_passenger = false }
+stealth = { cloaked = false, detects_cloak = false, detects_disguise = false, cloak_field_radius = 0.0, disguises_as_terrain = false, can_disguise_as_enemy = false, reveal_on_fire_secs = 0.0 }
+death_effect = { explosion_damage = 0.0, explosion_radius = 0.0, survivor_chance = 0.0, drops_salvage = false }
+point_defense = { intercept_radius = 0.0, cooldown_secs = 0.0 }
+support_aura = { mobile_heal_per_sec = 0.0, mobile_heal_radius = 0.0 }
+
+[units.script_hooks]
+
+[units.visual]
+model = "assets/models/htnk.glb"
+archetype = "tank"
+scale = [
+    1.7999999523162842,
+    1.100000023841858,
+    2.4000000953674316,
+]
+primary_color = [
+    0.7799999713897705,
+    0.18000000715255737,
+    0.18000000715255737,
+]
+team_color_tint = true
+
+[[units]]
+id = "cmin"
+name = "Chrono Miner"
+faction = "allies"
+role = "harvester"
+cost = 1400
+build_time_secs = 14.0
+health = 950.0
+armor = "medium"
+speed = 4.0
+vision_range = 16.0
+harvest_capacity = 500
+prerequisites = ["gaweap"]
+sub_factions = []
+build_limit = 0
+movement_domain = "ground"
+cruise_altitude = 0.0
+immobile_when_deployed = false
+lands_when_deployed = false
+chrono_harvester = true
+lays_mines = false
+mine_damage = 0.0
+mine_radius = 0.0
+spy_infiltrator = false
+plants_c4 = false
+subterranean = false
+cash_bounty_ratio = 0.0
+mind_control_limit = 0
+kamikaze = false
+max_ammo = 0
+supply_cost = 1
+crushes_infantry = false
+crushes_vehicles = false
+uncrushable = false
+max_drones = 0
+chrono_locomotion = false
+immune_to_mind_control = false
+immune_to_radiation = false
+mind_control_overload_dps = 0.0
+mobile_refinery = false
+psi_wave_radius = 0.0
+psi_wave_damage = 0.0
+garrison_damage_multiplier = 0.0
+self_heal_per_sec = 0.0
+abilities = []
+container = { capacity = 0, accepts_vehicles = false, passengers_can_fire = false, adapts_weapon_to_passenger = false }
+stealth = { cloaked = false, detects_cloak = false, detects_disguise = false, cloak_field_radius = 0.0, disguises_as_terrain = false, can_disguise_as_enemy = false, reveal_on_fire_secs = 0.0 }
+death_effect = { explosion_damage = 0.0, explosion_radius = 0.0, survivor_chance = 0.0, drops_salvage = false }
+point_defense = { intercept_radius = 0.0, cooldown_secs = 0.0 }
+support_aura = { mobile_heal_per_sec = 0.0, mobile_heal_radius = 0.0 }
+
+[units.script_hooks]
+
+[units.visual]
+model = "assets/models/cmin.glb"
+archetype = "harvester"
+scale = [
+    1.899999976158142,
+    1.2999999523162842,
+    2.5,
+]
+primary_color = [
+    0.2199999988079071,
+    0.44999998807907104,
+    0.8199999928474426,
+]
+team_color_tint = true
+
+[[units]]
+id = "harv"
+name = "War Miner"
+faction = "soviets"
+role = "harvester"
+cost = 1400
+build_time_secs = 14.0
+health = 1050.0
+armor = "heavy"
+speed = 4.0
+vision_range = 16.0
+harvest_capacity = 500
+prerequisites = ["naweap"]
+sub_factions = []
+build_limit = 0
+movement_domain = "ground"
+cruise_altitude = 0.0
+immobile_when_deployed = false
+lands_when_deployed = false
+chrono_harvester = false
+lays_mines = false
+mine_damage = 0.0
+mine_radius = 0.0
+spy_infiltrator = false
+plants_c4 = false
+subterranean = false
+cash_bounty_ratio = 0.0
+mind_control_limit = 0
+kamikaze = false
+max_ammo = 0
+supply_cost = 1
+crushes_infantry = false
+crushes_vehicles = false
+uncrushable = false
+max_drones = 0
+chrono_locomotion = false
+immune_to_mind_control = false
+immune_to_radiation = false
+mind_control_overload_dps = 0.0
+mobile_refinery = false
+psi_wave_radius = 0.0
+psi_wave_damage = 0.0
+garrison_damage_multiplier = 0.0
+self_heal_per_sec = 0.0
+abilities = []
+container = { capacity = 0, accepts_vehicles = false, passengers_can_fire = false, adapts_weapon_to_passenger = false }
+stealth = { cloaked = false, detects_cloak = false, detects_disguise = false, cloak_field_radius = 0.0, disguises_as_terrain = false, can_disguise_as_enemy = false, reveal_on_fire_secs = 0.0 }
+death_effect = { explosion_damage = 0.0, explosion_radius = 0.0, survivor_chance = 0.0, drops_salvage = false }
+point_defense = { intercept_radius = 0.0, cooldown_secs = 0.0 }
+support_aura = { mobile_heal_per_sec = 0.0, mobile_heal_radius = 0.0 }
+
+[units.script_hooks]
+
+[units.visual]
+model = "assets/models/harv.glb"
+archetype = "harvester"
+scale = [
+    1.899999976158142,
+    1.2999999523162842,
+    2.5,
+]
+primary_color = [
+    0.7799999713897705,
+    0.18000000715255737,
+    0.18000000715255737,
+]
+team_color_tint = true

@@ -1,0 +1,351 @@
+id = "ra2_soviet_02_hostile_shore"
+name = "RA2 Soviet 02: Hostile Shore (Florida)"
+width = 71
+height = 96
+tile_size = 2.0
+ore_regen_per_sec = 4.0
+mission_objective = "The Americans have foolishly gathered a fleet in a small harbor on the eastern coast of Florida. Assisted by General Vladimir in his Dreadnought, you will force a landing on the hostile shore and set up a base. When ready, you will strike out against the capitalist pigs and crush them under the iron heel of Soviet justice. \n \n Objective 1: Force a landing and set up a base. \n \n Objective 2: Destroy all enemy forces."
+
+[[ore_patches]]
+position = [30, 30]
+radius = 3
+amount_per_tile = 1400
+
+[[ore_patches]]
+position = [39, 21]
+radius = 3
+amount_per_tile = 1400
+
+[[ore_patches]]
+position = [35, 48]
+radius = 4
+amount_per_tile = 2000
+
+[[ore_patches]]
+position = [48, 22]
+radius = 3
+amount_per_tile = 1500
+
+[[ore_patches]]
+position = [42, 27]
+radius = 3
+amount_per_tile = 1500
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_barracks"
+tile_pos = [37, 68]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_refinery"
+tile_pos = [29, 34]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_refinery"
+tile_pos = [28, 30]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_refinery"
+tile_pos = [46, 81]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_power_plant"
+tile_pos = [45, 80]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_power_plant"
+tile_pos = [45, 82]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_power_plant"
+tile_pos = [43, 81]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_power_plant"
+tile_pos = [43, 79]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_pillbox"
+tile_pos = [36, 64]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_pillbox"
+tile_pos = [34, 64]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_pillbox"
+tile_pos = [43, 75]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_pillbox"
+tile_pos = [40, 71]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_pillbox"
+tile_pos = [39, 64]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_war_factory"
+tile_pos = [39, 77]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_naval_shipyard"
+tile_pos = [42, 68]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "tech_oil_derrick"
+tile_pos = [12, 33]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "tech_oil_derrick"
+tile_pos = [14, 33]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_pillbox"
+tile_pos = [37, 28]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_pillbox"
+tile_pos = [35, 28]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_pillbox"
+tile_pos = [37, 33]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_pillbox"
+tile_pos = [38, 34]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_pillbox"
+tile_pos = [37, 31]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_pillbox"
+tile_pos = [33, 29]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_pillbox"
+tile_pos = [37, 30]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "allied_destroyer"
+tile_pos = [55, 58]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "allied_destroyer"
+tile_pos = [53, 56]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "chrono_miner"
+tile_pos = [48, 82]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "allied_destroyer"
+tile_pos = [49, 64]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "allied_destroyer"
+tile_pos = [48, 67]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "grizzly_tank"
+tile_pos = [36, 63]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "grizzly_tank"
+tile_pos = [34, 63]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "grizzly_tank"
+tile_pos = [37, 64]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "grizzly_tank"
+tile_pos = [38, 64]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "grizzly_tank"
+tile_pos = [31, 62]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "grizzly_tank"
+tile_pos = [31, 61]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "allied_destroyer"
+tile_pos = [50, 68]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "chrono_miner"
+tile_pos = [31, 32]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "chrono_miner"
+tile_pos = [31, 34]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "grizzly_tank"
+tile_pos = [36, 65]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "grizzly_tank"
+tile_pos = [33, 63]
+
+[[spawns]]
+player_id = 1
+faction = "soviets"
+base_tile = [38, 30]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_conyard"
+tile_pos = [38, 30]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_tesla_reactor"
+tile_pos = [35, 30]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_refinery"
+tile_pos = [38, 33]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_barracks"
+tile_pos = [35, 33]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_war_factory"
+tile_pos = [32, 30]
+
+[[spawns.initial_units]]
+unit_id = "soviet_conscript"
+tile_pos = [36, 35]
+
+[[spawns.initial_units]]
+unit_id = "soviet_conscript"
+tile_pos = [34, 35]
+
+[[spawns.initial_units]]
+unit_id = "rhino_tank"
+tile_pos = [32, 34]
+
+[[spawns.initial_units]]
+unit_id = "war_miner"
+tile_pos = [36, 34]
+
+[[spawns]]
+player_id = 2
+faction = "allies"
+base_tile = [47, 21]
+
+[[spawns.initial_buildings]]
+building_id = "allied_conyard"
+tile_pos = [47, 21]
+
+[[spawns.initial_buildings]]
+building_id = "allied_power_plant"
+tile_pos = [44, 21]
+
+[[spawns.initial_buildings]]
+building_id = "allied_refinery"
+tile_pos = [47, 24]
+
+[[spawns.initial_buildings]]
+building_id = "allied_barracks"
+tile_pos = [44, 24]
+
+[[spawns.initial_buildings]]
+building_id = "allied_war_factory"
+tile_pos = [41, 21]
+
+[[spawns.initial_units]]
+unit_id = "allied_gi"
+tile_pos = [45, 26]
+
+[[spawns.initial_units]]
+unit_id = "allied_gi"
+tile_pos = [43, 26]
+
+[[spawns.initial_units]]
+unit_id = "grizzly_tank"
+tile_pos = [41, 25]
+
+[[spawns.initial_units]]
+unit_id = "chrono_miner"
+tile_pos = [45, 25]
+
+[[trigger_zones]]
+id = "mission_stage_init"
+min = [6, 6]
+max = [12, 12]
+once = true
+condition = { type = "timer_elapsed", secs = 1.0 }
+actions = [
+    { type = "set_variable", name = "mission_stage", value = 1 },
+    { type = "eva_transmission", speaker = "ZOFIA", text = "Battle Control Online. Primary tactical objectives initialized." },
+    { type = "reveal_area", tile = [38, 30], radius = 14 }
+]
+
+[[trigger_zones]]
+id = "tactical_reinforcement_wave"
+min = [37, 28]
+max = [41, 32]
+once = true
+condition = { type = "all", conditions = [{ type = "timer_elapsed", secs = 45.0 }, { type = "variable_equals", name = "mission_stage", value = 1 }] }
+actions = [
+    { type = "set_variable", name = "mission_stage", value = 2 },
+    { type = "spawn_reinforcements", player_id = 1, unit_id = "rhino_tank", count = 2, tile = [37, 28] },
+    { type = "grant_credits", player_id = 1, amount = 1500 },
+    { type = "eva_transmission", speaker = "ZOFIA", text = "Reinforcements have arrived. Forward command has authorized 1500 bonus credits." }
+]
+
+[[trigger_zones]]
+id = "decisive_campaign_victory"
+min = [2, 2]
+max = [6, 6]
+once = true
+condition = { type = "all_buildings_destroyed", player_id = 2 }
+actions = [
+    { type = "set_variable", name = "mission_stage", value = 3 },
+    { type = "eva_transmission", speaker = "ZOFIA", text = "Mission Accomplished. All primary hostile command structures neutralized." },
+    { type = "declare_winner", player_id = 1 }
+]

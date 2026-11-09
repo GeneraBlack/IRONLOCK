@@ -1,0 +1,2180 @@
+[[units]]
+id = "shad"
+name = "Night Hawk"
+faction = "allies"
+role = "vehicle"
+cost = 1000
+build_time_secs = 10.0
+health = 175.0
+armor = "light"
+speed = 10.0
+vision_range = 17.5
+harvest_capacity = 0
+primary_weapon = "blackhawkcannon"
+prerequisites = ["gaweap"]
+sub_factions = []
+movement_domain = "air"
+cruise_altitude = 4.199999809265137
+immobile_when_deployed = false
+chrono_harvester = false
+spy_infiltrator = false
+mind_control_limit = 0
+crushes_infantry = false
+container = { capacity = 5 }
+stealth = { cloaked = false }
+
+[units.script_hooks]
+on_tick = "on_self_heal_tick"
+
+[units.visual]
+model = "assets/models/shad.glb"
+archetype = "aircraft"
+scale = [
+    2.0999999046325684,
+    1.100000023841858,
+    2.5999999046325684,
+]
+primary_color = [
+    0.2199999988079071,
+    0.44999998807907104,
+    0.8199999928474426,
+]
+team_color_tint = true
+
+[[units]]
+id = "zep"
+name = "Kirov Airship"
+faction = "soviets"
+role = "vehicle"
+cost = 2000
+build_time_secs = 20.0
+health = 2000.0
+armor = "light"
+speed = 2.200000047683716
+vision_range = 20.0
+harvest_capacity = 0
+primary_weapon = "blimpbomb"
+elite_weapon = "blimpbombe"
+prerequisites = [
+    "naweap",
+    "natech",
+]
+sub_factions = []
+movement_domain = "air"
+cruise_altitude = 4.199999809265137
+immobile_when_deployed = false
+chrono_harvester = false
+spy_infiltrator = false
+mind_control_limit = 0
+crushes_infantry = false
+container = { capacity = 0 }
+stealth = { cloaked = false }
+
+[units.script_hooks]
+on_tick = "on_self_heal_tick"
+
+[units.visual]
+model = "assets/models/zep.glb"
+archetype = "aircraft"
+scale = [
+    2.0999999046325684,
+    1.100000023841858,
+    2.5999999046325684,
+]
+primary_color = [
+    0.7799999713897705,
+    0.18000000715255737,
+    0.18000000715255737,
+]
+team_color_tint = true
+
+[[units]]
+id = "orca"
+name = "Harrier"
+faction = "allies"
+role = "vehicle"
+cost = 1200
+build_time_secs = 12.0
+health = 150.0
+armor = "light"
+speed = 12.0
+vision_range = 20.0
+harvest_capacity = 0
+primary_weapon = "maverick"
+prerequisites = ["gaairc"]
+sub_factions = []
+movement_domain = "air"
+cruise_altitude = 4.199999809265137
+immobile_when_deployed = false
+chrono_harvester = false
+spy_infiltrator = false
+mind_control_limit = 0
+crushes_infantry = false
+container = { capacity = 0 }
+stealth = { cloaked = false }
+
+[units.script_hooks]
+on_tick = "on_self_heal_tick"
+
+[units.visual]
+model = "assets/models/orca.glb"
+archetype = "aircraft"
+scale = [
+    2.0999999046325684,
+    1.100000023841858,
+    2.5999999046325684,
+]
+primary_color = [
+    0.2199999988079071,
+    0.44999998807907104,
+    0.8199999928474426,
+]
+team_color_tint = true
+
+[[units]]
+id = "beag"
+name = "Black Eagle"
+faction = "allies"
+role = "vehicle"
+cost = 1200
+build_time_secs = 12.0
+health = 200.0
+armor = "light"
+speed = 12.0
+vision_range = 20.0
+harvest_capacity = 0
+primary_weapon = "maverick2"
+prerequisites = ["gaairc"]
+sub_factions = ["korea"]
+movement_domain = "air"
+cruise_altitude = 4.199999809265137
+immobile_when_deployed = false
+chrono_harvester = false
+spy_infiltrator = false
+mind_control_limit = 0
+crushes_infantry = false
+container = { capacity = 0 }
+stealth = { cloaked = false }
+
+[units.script_hooks]
+on_tick = "on_self_heal_tick"
+
+[units.visual]
+model = "assets/models/beag.glb"
+archetype = "aircraft"
+scale = [
+    2.0999999046325684,
+    1.100000023841858,
+    2.5999999046325684,
+]
+primary_color = [
+    0.2199999988079071,
+    0.44999998807907104,
+    0.8199999928474426,
+]
+team_color_tint = true
+
+[[units]]
+id = "engineer"
+name = "Engineer"
+faction = "allies"
+role = "engineer"
+cost = 500
+build_time_secs = 5.0
+health = 75.0
+armor = "none"
+speed = 4.285714149475098
+vision_range = 10.0
+harvest_capacity = 0
+prerequisites = ["gapile"]
+sub_factions = []
+movement_domain = "ground"
+cruise_altitude = 0.0
+immobile_when_deployed = false
+chrono_harvester = false
+spy_infiltrator = false
+mind_control_limit = 0
+crushes_infantry = false
+container = { capacity = 0 }
+stealth = { cloaked = false }
+
+[units.script_hooks]
+on_tick = "on_self_heal_tick"
+
+[units.visual]
+model = "assets/models/engineer.glb"
+archetype = "infantry"
+scale = [
+    0.8999999761581421,
+    1.0,
+    0.8999999761581421,
+]
+primary_color = [
+    0.2199999988079071,
+    0.44999998807907104,
+    0.8199999928474426,
+]
+team_color_tint = true
+
+[[units]]
+id = "dog"
+name = "Attack Dog"
+faction = "allies"
+role = "infantry"
+cost = 200
+build_time_secs = 2.5
+health = 100.0
+armor = "none"
+speed = 8.571428298950195
+vision_range = 22.5
+harvest_capacity = 0
+primary_weapon = "dogjaw"
+prerequisites = ["gapile"]
+sub_factions = []
+movement_domain = "ground"
+cruise_altitude = 0.0
+immobile_when_deployed = false
+chrono_harvester = false
+spy_infiltrator = false
+mind_control_limit = 0
+crushes_infantry = false
+container = { capacity = 0 }
+stealth = { cloaked = false }
+
+[units.script_hooks]
+on_tick = "on_self_heal_tick"
+
+[units.visual]
+model = "assets/models/dog.glb"
+archetype = "infantry"
+scale = [
+    0.8999999761581421,
+    1.0,
+    0.8999999761581421,
+]
+primary_color = [
+    0.2199999988079071,
+    0.44999998807907104,
+    0.8199999928474426,
+]
+team_color_tint = true
+
+[[units]]
+id = "e1"
+name = "G.I."
+faction = "allies"
+role = "infantry"
+cost = 200
+build_time_secs = 2.5
+health = 125.0
+armor = "none"
+speed = 4.285714149475098
+vision_range = 12.5
+harvest_capacity = 0
+primary_weapon = "m60"
+elite_weapon = "parae"
+deploy_weapon = "para"
+prerequisites = ["gapile"]
+sub_factions = []
+movement_domain = "ground"
+cruise_altitude = 0.0
+immobile_when_deployed = true
+chrono_harvester = false
+spy_infiltrator = false
+mind_control_limit = 0
+crushes_infantry = false
+ability_id = "deploy_stance"
+container = { capacity = 0 }
+stealth = { cloaked = false }
+
+[units.script_hooks]
+on_tick = "on_self_heal_tick"
+
+[units.visual]
+model = "assets/models/e1.glb"
+archetype = "infantry"
+scale = [
+    0.8999999761581421,
+    1.0,
+    0.8999999761581421,
+]
+primary_color = [
+    0.2199999988079071,
+    0.44999998807907104,
+    0.8199999928474426,
+]
+team_color_tint = true
+
+[[units]]
+id = "snipe"
+name = "Sniper"
+faction = "allies"
+role = "infantry"
+cost = 600
+build_time_secs = 6.0
+health = 125.0
+armor = "none"
+speed = 4.285714149475098
+vision_range = 20.0
+harvest_capacity = 0
+primary_weapon = "awp"
+elite_weapon = "awpe"
+prerequisites = [
+    "gaairc",
+    "gapile",
+]
+sub_factions = ["england"]
+movement_domain = "ground"
+cruise_altitude = 0.0
+immobile_when_deployed = false
+chrono_harvester = false
+spy_infiltrator = false
+mind_control_limit = 0
+crushes_infantry = false
+container = { capacity = 0 }
+stealth = { cloaked = false }
+
+[units.script_hooks]
+on_tick = "on_self_heal_tick"
+
+[units.visual]
+model = "assets/models/snipe.glb"
+archetype = "infantry"
+scale = [
+    0.8999999761581421,
+    1.0,
+    0.8999999761581421,
+]
+primary_color = [
+    0.2199999988079071,
+    0.44999998807907104,
+    0.8199999928474426,
+]
+team_color_tint = true
+
+[[units]]
+id = "spy"
+name = "Spy"
+faction = "allies"
+role = "infantry"
+cost = 1000
+build_time_secs = 10.0
+health = 40.0
+armor = "none"
+speed = 4.285714149475098
+vision_range = 12.5
+harvest_capacity = 0
+prerequisites = [
+    "gatech",
+    "gapile",
+]
+sub_factions = []
+movement_domain = "ground"
+cruise_altitude = 0.0
+immobile_when_deployed = false
+chrono_harvester = false
+spy_infiltrator = true
+mind_control_limit = 0
+crushes_infantry = false
+container = { capacity = 0 }
+stealth = { cloaked = false }
+
+[units.script_hooks]
+on_tick = "on_self_heal_tick"
+
+[units.visual]
+model = "assets/models/spy.glb"
+archetype = "infantry"
+scale = [
+    0.8999999761581421,
+    1.0,
+    0.8999999761581421,
+]
+primary_color = [
+    0.2199999988079071,
+    0.44999998807907104,
+    0.8199999928474426,
+]
+team_color_tint = true
+
+[[units]]
+id = "ccomand"
+name = "Chrono Commando"
+faction = "allies"
+role = "infantry"
+cost = 2000
+build_time_secs = 20.0
+health = 100.0
+armor = "light"
+speed = 5.357142925262451
+vision_range = 20.0
+harvest_capacity = 0
+primary_weapon = "mp5"
+elite_weapon = "mp5e"
+prerequisites = ["gapile"]
+sub_factions = []
+movement_domain = "chrono"
+cruise_altitude = 0.0
+immobile_when_deployed = false
+chrono_harvester = false
+spy_infiltrator = false
+mind_control_limit = 0
+crushes_infantry = false
+ability_id = "chronoshift"
+container = { capacity = 0 }
+stealth = { cloaked = false }
+
+[units.script_hooks]
+on_tick = "on_self_heal_tick"
+
+[units.visual]
+model = "assets/models/ccomand.glb"
+archetype = "infantry"
+scale = [
+    0.8999999761581421,
+    1.0,
+    0.8999999761581421,
+]
+primary_color = [
+    0.2199999988079071,
+    0.44999998807907104,
+    0.8199999928474426,
+]
+team_color_tint = true
+
+[[units]]
+id = "ptroop"
+name = "Psi Commando"
+faction = "yuri"
+role = "infantry"
+cost = 1000
+build_time_secs = 10.0
+health = 100.0
+armor = "light"
+speed = 5.357142925262451
+vision_range = 20.0
+harvest_capacity = 0
+primary_weapon = "mindcontrol"
+elite_weapon = "mp5e"
+prerequisites = ["gapile"]
+sub_factions = [
+    "allies",
+    "soviets",
+]
+movement_domain = "chrono"
+cruise_altitude = 0.0
+immobile_when_deployed = false
+chrono_harvester = false
+spy_infiltrator = false
+mind_control_limit = 1
+crushes_infantry = false
+ability_id = "chronoshift"
+container = { capacity = 0 }
+stealth = { cloaked = false }
+
+[units.script_hooks]
+on_tick = "on_self_heal_tick"
+
+[units.visual]
+model = "assets/models/ptroop.glb"
+archetype = "infantry"
+scale = [
+    0.8999999761581421,
+    1.0,
+    0.8999999761581421,
+]
+primary_color = [
+    0.6399999856948853,
+    0.18000000715255737,
+    0.8199999928474426,
+]
+team_color_tint = true
+
+[[units]]
+id = "tany"
+name = "Tanya"
+faction = "allies"
+role = "infantry"
+cost = 1000
+build_time_secs = 10.0
+health = 125.0
+armor = "light"
+speed = 5.357142925262451
+vision_range = 15.0
+harvest_capacity = 0
+primary_weapon = "doublepistols"
+elite_weapon = "doublepistolse"
+prerequisites = [
+    "gatech",
+    "gapile",
+]
+sub_factions = []
+movement_domain = "ground"
+cruise_altitude = 0.0
+immobile_when_deployed = false
+chrono_harvester = false
+spy_infiltrator = false
+mind_control_limit = 0
+crushes_infantry = false
+container = { capacity = 0 }
+stealth = { cloaked = false }
+
+[units.script_hooks]
+on_tick = "on_self_heal_tick"
+
+[units.visual]
+model = "assets/models/tany.glb"
+archetype = "infantry"
+scale = [
+    0.8999999761581421,
+    1.0,
+    0.8999999761581421,
+]
+primary_color = [
+    0.2199999988079071,
+    0.44999998807907104,
+    0.8199999928474426,
+]
+team_color_tint = true
+
+[[units]]
+id = "jumpjet"
+name = "Rocketeer"
+faction = "allies"
+role = "infantry"
+cost = 600
+build_time_secs = 6.0
+health = 125.0
+armor = "none"
+speed = 4.285714149475098
+vision_range = 20.0
+harvest_capacity = 0
+primary_weapon = "id_20mm"
+elite_weapon = "id_20mme"
+prerequisites = [
+    "gapile",
+    "gaairc",
+]
+sub_factions = []
+movement_domain = "jumpjet"
+cruise_altitude = 3.0
+immobile_when_deployed = false
+chrono_harvester = false
+spy_infiltrator = false
+mind_control_limit = 0
+crushes_infantry = false
+container = { capacity = 0 }
+stealth = { cloaked = false }
+
+[units.script_hooks]
+on_tick = "on_self_heal_tick"
+
+[units.visual]
+model = "assets/models/jumpjet.glb"
+archetype = "infantry"
+scale = [
+    0.8999999761581421,
+    1.0,
+    0.8999999761581421,
+]
+primary_color = [
+    0.2199999988079071,
+    0.44999998807907104,
+    0.8199999928474426,
+]
+team_color_tint = true
+
+[[units]]
+id = "cleg"
+name = "Chrono Legionnaire"
+faction = "allies"
+role = "infantry"
+cost = 1500
+build_time_secs = 15.0
+health = 125.0
+armor = "none"
+speed = 4.285714149475098
+vision_range = 20.0
+harvest_capacity = 0
+primary_weapon = "neutronrifle"
+prerequisites = [
+    "gapile",
+    "gatech",
+]
+sub_factions = []
+movement_domain = "chrono"
+cruise_altitude = 0.0
+immobile_when_deployed = false
+chrono_harvester = false
+spy_infiltrator = false
+mind_control_limit = 0
+crushes_infantry = false
+ability_id = "chronoshift"
+container = { capacity = 0 }
+stealth = { cloaked = false }
+
+[units.script_hooks]
+on_tick = "on_self_heal_tick"
+
+[units.visual]
+model = "assets/models/cleg.glb"
+archetype = "infantry"
+scale = [
+    0.8999999761581421,
+    1.0,
+    0.8999999761581421,
+]
+primary_color = [
+    0.2199999988079071,
+    0.44999998807907104,
+    0.8199999928474426,
+]
+team_color_tint = true
+
+[[units]]
+id = "lcrf"
+name = "Amphibious Transport"
+faction = "allies"
+role = "vehicle"
+cost = 900
+build_time_secs = 9.0
+health = 300.0
+armor = "light"
+speed = 6.4285712242126465
+vision_range = 15.0
+harvest_capacity = 0
+prerequisites = ["gayard"]
+sub_factions = []
+movement_domain = "amphibious"
+cruise_altitude = 0.0
+immobile_when_deployed = false
+chrono_harvester = false
+spy_infiltrator = false
+mind_control_limit = 0
+crushes_infantry = false
+container = { capacity = 12 }
+stealth = { cloaked = false }
+
+[units.script_hooks]
+on_tick = "on_self_heal_tick"
+
+[units.visual]
+model = "assets/models/lcrf.glb"
+archetype = "tank"
+scale = [
+    1.7999999523162842,
+    1.100000023841858,
+    2.4000000953674316,
+]
+primary_color = [
+    0.2199999988079071,
+    0.44999998807907104,
+    0.8199999928474426,
+]
+team_color_tint = true
+
+[[units]]
+id = "dest"
+name = "Destroyer"
+faction = "allies"
+role = "vehicle"
+cost = 1000
+build_time_secs = 10.0
+health = 600.0
+armor = "heavy"
+speed = 6.4285712242126465
+vision_range = 17.5
+harvest_capacity = 0
+primary_weapon = "id_155mm"
+secondary_weapon = "aswlauncher"
+elite_weapon = "id_155mme"
+prerequisites = ["gayard"]
+sub_factions = []
+movement_domain = "naval"
+cruise_altitude = 0.0
+immobile_when_deployed = false
+chrono_harvester = false
+spy_infiltrator = false
+mind_control_limit = 0
+crushes_infantry = false
+container = { capacity = 0 }
+stealth = { cloaked = false }
+
+[units.script_hooks]
+on_tick = "on_self_heal_tick"
+
+[units.visual]
+model = "assets/models/dest.glb"
+archetype = "ship"
+scale = [
+    2.0,
+    1.2000000476837158,
+    3.0,
+]
+primary_color = [
+    0.2199999988079071,
+    0.44999998807907104,
+    0.8199999928474426,
+]
+team_color_tint = true
+
+[[units]]
+id = "aegis"
+name = "Aegis Cruiser"
+faction = "allies"
+role = "vehicle"
+cost = 1200
+build_time_secs = 12.0
+health = 800.0
+armor = "light"
+speed = 4.285714149475098
+vision_range = 20.0
+harvest_capacity = 0
+primary_weapon = "medusa"
+prerequisites = [
+    "gaairc",
+    "gayard",
+]
+sub_factions = []
+movement_domain = "naval"
+cruise_altitude = 0.0
+immobile_when_deployed = false
+chrono_harvester = false
+spy_infiltrator = false
+mind_control_limit = 0
+crushes_infantry = false
+container = { capacity = 0 }
+stealth = { cloaked = false }
+
+[units.script_hooks]
+on_tick = "on_self_heal_tick"
+
+[units.visual]
+model = "assets/models/aegis.glb"
+archetype = "ship"
+scale = [
+    2.0,
+    1.2000000476837158,
+    3.0,
+]
+primary_color = [
+    0.2199999988079071,
+    0.44999998807907104,
+    0.8199999928474426,
+]
+team_color_tint = true
+
+[[units]]
+id = "dlph"
+name = "Dolphin"
+faction = "allies"
+role = "vehicle"
+cost = 500
+build_time_secs = 5.0
+health = 200.0
+armor = "light"
+speed = 8.571428298950195
+vision_range = 10.0
+harvest_capacity = 0
+primary_weapon = "soniczap"
+prerequisites = [
+    "gatech",
+    "gayard",
+]
+sub_factions = []
+movement_domain = "naval"
+cruise_altitude = 0.0
+immobile_when_deployed = false
+chrono_harvester = false
+spy_infiltrator = false
+mind_control_limit = 0
+crushes_infantry = false
+container = { capacity = 0 }
+stealth = { cloaked = true }
+
+[units.script_hooks]
+on_tick = "on_self_heal_tick"
+
+[units.visual]
+model = "assets/models/dlph.glb"
+archetype = "ship"
+scale = [
+    2.0,
+    1.2000000476837158,
+    3.0,
+]
+primary_color = [
+    0.2199999988079071,
+    0.44999998807907104,
+    0.8199999928474426,
+]
+team_color_tint = true
+
+[[units]]
+id = "carrier"
+name = "Aircraft Carrier"
+faction = "allies"
+role = "vehicle"
+cost = 2000
+build_time_secs = 20.0
+health = 800.0
+armor = "heavy"
+speed = 4.285714149475098
+vision_range = 17.5
+harvest_capacity = 0
+primary_weapon = "hornetlauncher"
+prerequisites = [
+    "gatech",
+    "gayard",
+]
+sub_factions = []
+movement_domain = "naval"
+cruise_altitude = 0.0
+immobile_when_deployed = false
+chrono_harvester = false
+spy_infiltrator = false
+mind_control_limit = 0
+crushes_infantry = false
+container = { capacity = 0 }
+stealth = { cloaked = false }
+
+[units.script_hooks]
+on_tick = "on_self_heal_tick"
+
+[units.visual]
+model = "assets/models/carrier.glb"
+archetype = "ship"
+scale = [
+    2.0,
+    1.2000000476837158,
+    3.0,
+]
+primary_color = [
+    0.2199999988079071,
+    0.44999998807907104,
+    0.8199999928474426,
+]
+team_color_tint = true
+
+[[units]]
+id = "amcv"
+name = "Mobile Construction Vehicle"
+faction = "allies"
+role = "vehicle"
+cost = 3000
+build_time_secs = 25.0
+health = 1000.0
+armor = "heavy"
+speed = 4.285714149475098
+vision_range = 10.0
+harvest_capacity = 0
+prerequisites = [
+    "gaweap",
+    "gadept",
+]
+sub_factions = []
+movement_domain = "ground"
+cruise_altitude = 0.0
+transforms_into_building = "gacnst"
+immobile_when_deployed = false
+chrono_harvester = false
+spy_infiltrator = false
+mind_control_limit = 0
+crushes_infantry = true
+ability_id = "transform_mcv"
+container = { capacity = 0 }
+stealth = { cloaked = false }
+
+[units.script_hooks]
+on_tick = "on_self_heal_tick"
+
+[units.visual]
+model = "assets/models/amcv.glb"
+archetype = "tank"
+scale = [
+    1.7999999523162842,
+    1.100000023841858,
+    2.4000000953674316,
+]
+primary_color = [
+    0.2199999988079071,
+    0.44999998807907104,
+    0.8199999928474426,
+]
+team_color_tint = true
+
+[[units]]
+id = "cmin"
+name = "Chrono Miner"
+faction = "allies"
+role = "harvester"
+cost = 1400
+build_time_secs = 14.0
+health = 1000.0
+armor = "medium"
+speed = 4.285714149475098
+vision_range = 10.0
+harvest_capacity = 500
+prerequisites = [
+    "gaweap",
+    "garefn",
+]
+sub_factions = []
+movement_domain = "ground"
+cruise_altitude = 0.0
+immobile_when_deployed = false
+chrono_harvester = true
+spy_infiltrator = false
+mind_control_limit = 0
+crushes_infantry = true
+container = { capacity = 0 }
+stealth = { cloaked = false }
+
+[units.script_hooks]
+on_tick = "on_self_heal_tick"
+
+[units.visual]
+model = "assets/models/cmin.glb"
+archetype = "harvester"
+scale = [
+    1.899999976158142,
+    1.2999999523162842,
+    2.5,
+]
+primary_color = [
+    0.2199999988079071,
+    0.44999998807907104,
+    0.8199999928474426,
+]
+team_color_tint = true
+
+[[units]]
+id = "mtnk"
+name = "Grizzly Battle Tank"
+faction = "allies"
+role = "vehicle"
+cost = 700
+build_time_secs = 7.0
+health = 300.0
+armor = "heavy"
+speed = 7.5
+vision_range = 20.0
+harvest_capacity = 0
+primary_weapon = "id_105mm"
+elite_weapon = "id_105mme"
+prerequisites = ["gaweap"]
+sub_factions = []
+movement_domain = "ground"
+cruise_altitude = 0.0
+immobile_when_deployed = false
+chrono_harvester = false
+spy_infiltrator = false
+mind_control_limit = 0
+crushes_infantry = true
+container = { capacity = 0 }
+stealth = { cloaked = false }
+
+[units.script_hooks]
+on_tick = "on_self_heal_tick"
+
+[units.visual]
+model = "assets/models/mtnk.glb"
+archetype = "tank"
+scale = [
+    1.7999999523162842,
+    1.100000023841858,
+    2.4000000953674316,
+]
+primary_color = [
+    0.2199999988079071,
+    0.44999998807907104,
+    0.8199999928474426,
+]
+team_color_tint = true
+
+[[units]]
+id = "tnkd"
+name = "Tank Destroyer"
+faction = "allies"
+role = "vehicle"
+cost = 900
+build_time_secs = 9.0
+health = 400.0
+armor = "heavy"
+speed = 5.357142925262451
+vision_range = 20.0
+harvest_capacity = 0
+primary_weapon = "sabot"
+elite_weapon = "sabote"
+prerequisites = ["gaweap"]
+sub_factions = ["germany"]
+movement_domain = "ground"
+cruise_altitude = 0.0
+immobile_when_deployed = false
+chrono_harvester = false
+spy_infiltrator = false
+mind_control_limit = 0
+crushes_infantry = true
+container = { capacity = 0 }
+stealth = { cloaked = false }
+
+[units.script_hooks]
+on_tick = "on_self_heal_tick"
+
+[units.visual]
+model = "assets/models/tnkd.glb"
+archetype = "tank"
+scale = [
+    1.7999999523162842,
+    1.100000023841858,
+    2.4000000953674316,
+]
+primary_color = [
+    0.2199999988079071,
+    0.44999998807907104,
+    0.8199999928474426,
+]
+team_color_tint = true
+
+[[units]]
+id = "fv"
+name = "Infantry Fighting Vehicle"
+faction = "allies"
+role = "vehicle"
+cost = 600
+build_time_secs = 6.0
+health = 200.0
+armor = "light"
+speed = 10.714285850524902
+vision_range = 20.0
+harvest_capacity = 0
+primary_weapon = "hovermissile"
+secondary_weapon = "crm60"
+elite_weapon = "hovermissilee"
+prerequisites = ["gaweap"]
+sub_factions = []
+movement_domain = "ground"
+cruise_altitude = 0.0
+immobile_when_deployed = false
+chrono_harvester = false
+spy_infiltrator = false
+mind_control_limit = 0
+crushes_infantry = false
+container = { capacity = 1 }
+stealth = { cloaked = false }
+
+[units.script_hooks]
+on_tick = "on_self_heal_tick"
+
+[units.visual]
+model = "assets/models/fv.glb"
+archetype = "tank"
+scale = [
+    1.7999999523162842,
+    1.100000023841858,
+    2.4000000953674316,
+]
+primary_color = [
+    0.2199999988079071,
+    0.44999998807907104,
+    0.8199999928474426,
+]
+team_color_tint = true
+
+[[units]]
+id = "sref"
+name = "Prism Tank"
+faction = "allies"
+role = "vehicle"
+cost = 1200
+build_time_secs = 12.0
+health = 150.0
+armor = "heavy"
+speed = 4.285714149475098
+vision_range = 20.0
+harvest_capacity = 0
+primary_weapon = "comet"
+elite_weapon = "supercomet"
+prerequisites = [
+    "gatech",
+    "gaweap",
+]
+sub_factions = []
+movement_domain = "ground"
+cruise_altitude = 0.0
+immobile_when_deployed = false
+chrono_harvester = false
+spy_infiltrator = false
+mind_control_limit = 0
+crushes_infantry = true
+container = { capacity = 0 }
+stealth = { cloaked = false }
+
+[units.script_hooks]
+on_tick = "on_self_heal_tick"
+
+[units.visual]
+model = "assets/models/sref.glb"
+archetype = "tank"
+scale = [
+    1.7999999523162842,
+    1.100000023841858,
+    2.4000000953674316,
+]
+primary_color = [
+    0.2199999988079071,
+    0.44999998807907104,
+    0.8199999928474426,
+]
+team_color_tint = true
+
+[[units]]
+id = "mgtk"
+name = "Mirage Tank"
+faction = "allies"
+role = "vehicle"
+cost = 1000
+build_time_secs = 10.0
+health = 200.0
+armor = "light"
+speed = 7.5
+vision_range = 22.5
+harvest_capacity = 0
+primary_weapon = "miragegun"
+elite_weapon = "miragegune"
+prerequisites = [
+    "gatech",
+    "gaweap",
+]
+sub_factions = []
+movement_domain = "ground"
+cruise_altitude = 0.0
+immobile_when_deployed = false
+chrono_harvester = false
+spy_infiltrator = false
+mind_control_limit = 0
+crushes_infantry = true
+container = { capacity = 0 }
+stealth = { cloaked = true }
+
+[units.script_hooks]
+on_tick = "on_self_heal_tick"
+
+[units.visual]
+model = "assets/models/mgtk.glb"
+archetype = "tank"
+scale = [
+    1.7999999523162842,
+    1.100000023841858,
+    2.4000000953674316,
+]
+primary_color = [
+    0.2199999988079071,
+    0.44999998807907104,
+    0.8199999928474426,
+]
+team_color_tint = true
+
+[[units]]
+id = "cdest"
+name = "Coast Guard Boat"
+faction = "allies"
+role = "vehicle"
+cost = 1000
+build_time_secs = 10.0
+health = 600.0
+armor = "light"
+speed = 6.4285712242126465
+vision_range = 17.5
+harvest_capacity = 0
+primary_weapon = "id_155mm"
+secondary_weapon = "aswlauncher"
+elite_weapon = "id_155mme"
+prerequisites = ["gayard"]
+sub_factions = []
+movement_domain = "naval"
+cruise_altitude = 0.0
+immobile_when_deployed = false
+chrono_harvester = false
+spy_infiltrator = false
+mind_control_limit = 0
+crushes_infantry = false
+container = { capacity = 0 }
+stealth = { cloaked = false }
+
+[units.script_hooks]
+on_tick = "on_self_heal_tick"
+
+[units.visual]
+model = "assets/models/cdest.glb"
+archetype = "ship"
+scale = [
+    2.0,
+    1.2000000476837158,
+    3.0,
+]
+primary_color = [
+    0.2199999988079071,
+    0.44999998807907104,
+    0.8199999928474426,
+]
+team_color_tint = true
+
+[[units]]
+id = "e2"
+name = "Conscript"
+faction = "soviets"
+role = "infantry"
+cost = 100
+build_time_secs = 2.5
+health = 125.0
+armor = "none"
+speed = 4.285714149475098
+vision_range = 12.5
+harvest_capacity = 0
+primary_weapon = "m1carbine"
+elite_weapon = "m1carbinee"
+prerequisites = ["nahand"]
+sub_factions = []
+movement_domain = "ground"
+cruise_altitude = 0.0
+immobile_when_deployed = false
+chrono_harvester = false
+spy_infiltrator = false
+mind_control_limit = 0
+crushes_infantry = false
+container = { capacity = 0 }
+stealth = { cloaked = false }
+
+[units.script_hooks]
+on_tick = "on_self_heal_tick"
+
+[units.visual]
+model = "assets/models/e2.glb"
+archetype = "infantry"
+scale = [
+    0.8999999761581421,
+    1.0,
+    0.8999999761581421,
+]
+primary_color = [
+    0.7799999713897705,
+    0.18000000715255737,
+    0.18000000715255737,
+]
+team_color_tint = true
+
+[[units]]
+id = "flakt"
+name = "Flak Trooper"
+faction = "soviets"
+role = "infantry"
+cost = 300
+build_time_secs = 3.0
+health = 100.0
+armor = "none"
+speed = 4.285714149475098
+vision_range = 12.5
+harvest_capacity = 0
+primary_weapon = "flakguygun"
+secondary_weapon = "flakguyaagun"
+elite_weapon = "flakguyaagune"
+prerequisites = [
+    "naradr",
+    "nahand",
+]
+sub_factions = []
+movement_domain = "ground"
+cruise_altitude = 0.0
+immobile_when_deployed = false
+chrono_harvester = false
+spy_infiltrator = false
+mind_control_limit = 0
+crushes_infantry = false
+container = { capacity = 0 }
+stealth = { cloaked = false }
+
+[units.script_hooks]
+on_tick = "on_self_heal_tick"
+
+[units.visual]
+model = "assets/models/flakt.glb"
+archetype = "infantry"
+scale = [
+    0.8999999761581421,
+    1.0,
+    0.8999999761581421,
+]
+primary_color = [
+    0.7799999713897705,
+    0.18000000715255737,
+    0.18000000715255737,
+]
+team_color_tint = true
+
+[[units]]
+id = "shk"
+name = "Tesla Trooper"
+faction = "soviets"
+role = "infantry"
+cost = 500
+build_time_secs = 5.0
+health = 130.0
+armor = "light"
+speed = 4.285714149475098
+vision_range = 15.0
+harvest_capacity = 0
+primary_weapon = "electricbolt"
+secondary_weapon = "assaultbolt"
+elite_weapon = "electricbolte"
+prerequisites = ["nahand"]
+sub_factions = []
+movement_domain = "ground"
+cruise_altitude = 0.0
+immobile_when_deployed = false
+chrono_harvester = false
+spy_infiltrator = false
+mind_control_limit = 0
+crushes_infantry = false
+container = { capacity = 0 }
+stealth = { cloaked = false }
+
+[units.script_hooks]
+on_tick = "on_self_heal_tick"
+
+[units.visual]
+model = "assets/models/shk.glb"
+archetype = "infantry"
+scale = [
+    0.8999999761581421,
+    1.0,
+    0.8999999761581421,
+]
+primary_color = [
+    0.7799999713897705,
+    0.18000000715255737,
+    0.18000000715255737,
+]
+team_color_tint = true
+
+[[units]]
+id = "terror"
+name = "Terrorist"
+faction = "soviets"
+role = "infantry"
+cost = 200
+build_time_secs = 2.5
+health = 75.0
+armor = "light"
+speed = 6.4285712242126465
+vision_range = 15.0
+harvest_capacity = 0
+primary_weapon = "demotrucktargeting"
+prerequisites = [
+    "naradr",
+    "nahand",
+]
+sub_factions = ["cuba"]
+movement_domain = "ground"
+cruise_altitude = 0.0
+immobile_when_deployed = true
+chrono_harvester = false
+spy_infiltrator = false
+mind_control_limit = 0
+crushes_infantry = false
+ability_id = "deploy_stance"
+container = { capacity = 0 }
+stealth = { cloaked = false }
+
+[units.script_hooks]
+on_tick = "on_self_heal_tick"
+
+[units.visual]
+model = "assets/models/terror.glb"
+archetype = "infantry"
+scale = [
+    0.8999999761581421,
+    1.0,
+    0.8999999761581421,
+]
+primary_color = [
+    0.7799999713897705,
+    0.18000000715255737,
+    0.18000000715255737,
+]
+team_color_tint = true
+
+[[units]]
+id = "deso"
+name = "Desolator"
+faction = "soviets"
+role = "infantry"
+cost = 600
+build_time_secs = 6.0
+health = 150.0
+armor = "light"
+speed = 4.285714149475098
+vision_range = 15.0
+harvest_capacity = 0
+primary_weapon = "radbeamweapon"
+elite_weapon = "radbeamweapone"
+prerequisites = [
+    "naradr",
+    "nahand",
+]
+sub_factions = ["iraq"]
+movement_domain = "ground"
+cruise_altitude = 0.0
+immobile_when_deployed = true
+chrono_harvester = false
+spy_infiltrator = false
+mind_control_limit = 0
+crushes_infantry = false
+ability_id = "deploy_stance"
+container = { capacity = 0 }
+stealth = { cloaked = false }
+
+[units.script_hooks]
+on_tick = "on_self_heal_tick"
+
+[units.visual]
+model = "assets/models/deso.glb"
+archetype = "infantry"
+scale = [
+    0.8999999761581421,
+    1.0,
+    0.8999999761581421,
+]
+primary_color = [
+    0.7799999713897705,
+    0.18000000715255737,
+    0.18000000715255737,
+]
+team_color_tint = true
+
+[[units]]
+id = "ivan"
+name = "Crazy Ivan"
+faction = "soviets"
+role = "infantry"
+cost = 600
+build_time_secs = 6.0
+health = 125.0
+armor = "none"
+speed = 4.285714149475098
+vision_range = 15.0
+harvest_capacity = 0
+primary_weapon = "ivanbomber"
+elite_weapon = "ivanbombere"
+prerequisites = [
+    "naradr",
+    "nahand",
+]
+sub_factions = []
+movement_domain = "ground"
+cruise_altitude = 0.0
+immobile_when_deployed = false
+chrono_harvester = false
+spy_infiltrator = false
+mind_control_limit = 0
+crushes_infantry = false
+container = { capacity = 0 }
+stealth = { cloaked = false }
+
+[units.script_hooks]
+on_tick = "on_self_heal_tick"
+
+[units.visual]
+model = "assets/models/ivan.glb"
+archetype = "infantry"
+scale = [
+    0.8999999761581421,
+    1.0,
+    0.8999999761581421,
+]
+primary_color = [
+    0.7799999713897705,
+    0.18000000715255737,
+    0.18000000715255737,
+]
+team_color_tint = true
+
+[[units]]
+id = "civan"
+name = "Chrono Ivan"
+faction = "allies"
+role = "infantry"
+cost = 1000
+build_time_secs = 10.0
+health = 100.0
+armor = "none"
+speed = 4.285714149475098
+vision_range = 15.0
+harvest_capacity = 0
+primary_weapon = "ivanbomber"
+elite_weapon = "ivanbombere"
+prerequisites = ["nahand"]
+sub_factions = ["soviets"]
+movement_domain = "chrono"
+cruise_altitude = 0.0
+immobile_when_deployed = false
+chrono_harvester = false
+spy_infiltrator = false
+mind_control_limit = 0
+crushes_infantry = false
+ability_id = "chronoshift"
+container = { capacity = 0 }
+stealth = { cloaked = false }
+
+[units.script_hooks]
+on_tick = "on_self_heal_tick"
+
+[units.visual]
+model = "assets/models/civan.glb"
+archetype = "infantry"
+scale = [
+    0.8999999761581421,
+    1.0,
+    0.8999999761581421,
+]
+primary_color = [
+    0.2199999988079071,
+    0.44999998807907104,
+    0.8199999928474426,
+]
+team_color_tint = true
+
+[[units]]
+id = "yuri"
+name = "Yuri"
+faction = "yuri"
+role = "infantry"
+cost = 1200
+build_time_secs = 12.0
+health = 100.0
+armor = "none"
+speed = 4.285714149475098
+vision_range = 30.0
+harvest_capacity = 0
+primary_weapon = "mindcontrol"
+prerequisites = [
+    "natech",
+    "nahand",
+]
+sub_factions = ["soviets"]
+movement_domain = "ground"
+cruise_altitude = 0.0
+immobile_when_deployed = false
+chrono_harvester = false
+spy_infiltrator = false
+mind_control_limit = 1
+crushes_infantry = false
+container = { capacity = 0 }
+stealth = { cloaked = false }
+
+[units.script_hooks]
+on_tick = "on_self_heal_tick"
+
+[units.visual]
+model = "assets/models/yuri.glb"
+archetype = "infantry"
+scale = [
+    0.8999999761581421,
+    1.0,
+    0.8999999761581421,
+]
+primary_color = [
+    0.6399999856948853,
+    0.18000000715255737,
+    0.8199999928474426,
+]
+team_color_tint = true
+
+[[units]]
+id = "yuripr"
+name = "Yuri Prime"
+faction = "yuri"
+role = "infantry"
+cost = 2000
+build_time_secs = 20.0
+health = 200.0
+armor = "light"
+speed = 6.4285712242126465
+vision_range = 20.0
+harvest_capacity = 0
+primary_weapon = "supermindcontrol"
+prerequisites = ["nahand"]
+sub_factions = ["soviets"]
+movement_domain = "ground"
+cruise_altitude = 0.0
+immobile_when_deployed = false
+chrono_harvester = false
+spy_infiltrator = false
+mind_control_limit = 1
+crushes_infantry = false
+container = { capacity = 0 }
+stealth = { cloaked = false }
+
+[units.script_hooks]
+on_tick = "on_self_heal_tick"
+
+[units.visual]
+model = "assets/models/yuripr.glb"
+archetype = "infantry"
+scale = [
+    0.8999999761581421,
+    1.0,
+    0.8999999761581421,
+]
+primary_color = [
+    0.6399999856948853,
+    0.18000000715255737,
+    0.8199999928474426,
+]
+team_color_tint = true
+
+[[units]]
+id = "sapc"
+name = "Amphibious Transport"
+faction = "soviets"
+role = "vehicle"
+cost = 900
+build_time_secs = 9.0
+health = 300.0
+armor = "heavy"
+speed = 6.4285712242126465
+vision_range = 15.0
+harvest_capacity = 0
+prerequisites = ["nayard"]
+sub_factions = []
+movement_domain = "amphibious"
+cruise_altitude = 0.0
+immobile_when_deployed = false
+chrono_harvester = false
+spy_infiltrator = false
+mind_control_limit = 0
+crushes_infantry = false
+container = { capacity = 12 }
+stealth = { cloaked = false }
+
+[units.script_hooks]
+on_tick = "on_self_heal_tick"
+
+[units.visual]
+model = "assets/models/sapc.glb"
+archetype = "tank"
+scale = [
+    1.7999999523162842,
+    1.100000023841858,
+    2.4000000953674316,
+]
+primary_color = [
+    0.7799999713897705,
+    0.18000000715255737,
+    0.18000000715255737,
+]
+team_color_tint = true
+
+[[units]]
+id = "sub"
+name = "Typhoon Attack Sub"
+faction = "soviets"
+role = "vehicle"
+cost = 1000
+build_time_secs = 10.0
+health = 600.0
+armor = "heavy"
+speed = 4.285714149475098
+vision_range = 15.0
+harvest_capacity = 0
+primary_weapon = "subtorpedo"
+elite_weapon = "subtorpedoe"
+prerequisites = ["nayard"]
+sub_factions = []
+movement_domain = "naval"
+cruise_altitude = 0.0
+immobile_when_deployed = false
+chrono_harvester = false
+spy_infiltrator = false
+mind_control_limit = 0
+crushes_infantry = false
+container = { capacity = 0 }
+stealth = { cloaked = true }
+
+[units.script_hooks]
+on_tick = "on_self_heal_tick"
+
+[units.visual]
+model = "assets/models/sub.glb"
+archetype = "ship"
+scale = [
+    2.0,
+    1.2000000476837158,
+    3.0,
+]
+primary_color = [
+    0.7799999713897705,
+    0.18000000715255737,
+    0.18000000715255737,
+]
+team_color_tint = true
+
+[[units]]
+id = "hyd"
+name = "Sea Scorpion"
+faction = "soviets"
+role = "vehicle"
+cost = 900
+build_time_secs = 9.0
+health = 300.0
+armor = "heavy"
+speed = 8.571428298950195
+vision_range = 20.0
+harvest_capacity = 0
+primary_weapon = "flaktrackgun"
+secondary_weapon = "flakweapon"
+prerequisites = [
+    "naradr",
+    "nayard",
+]
+sub_factions = []
+movement_domain = "naval"
+cruise_altitude = 0.0
+immobile_when_deployed = false
+chrono_harvester = false
+spy_infiltrator = false
+mind_control_limit = 0
+crushes_infantry = false
+container = { capacity = 0 }
+stealth = { cloaked = false }
+
+[units.script_hooks]
+on_tick = "on_self_heal_tick"
+
+[units.visual]
+model = "assets/models/hyd.glb"
+archetype = "ship"
+scale = [
+    2.0,
+    1.2000000476837158,
+    3.0,
+]
+primary_color = [
+    0.7799999713897705,
+    0.18000000715255737,
+    0.18000000715255737,
+]
+team_color_tint = true
+
+[[units]]
+id = "sqd"
+name = "Giant Squid"
+faction = "soviets"
+role = "vehicle"
+cost = 1000
+build_time_secs = 10.0
+health = 200.0
+armor = "light"
+speed = 8.571428298950195
+vision_range = 12.5
+harvest_capacity = 0
+primary_weapon = "squidpunch"
+prerequisites = [
+    "natech",
+    "nayard",
+]
+sub_factions = []
+movement_domain = "naval"
+cruise_altitude = 0.0
+immobile_when_deployed = false
+chrono_harvester = false
+spy_infiltrator = false
+mind_control_limit = 0
+crushes_infantry = false
+container = { capacity = 0 }
+stealth = { cloaked = true }
+
+[units.script_hooks]
+on_tick = "on_self_heal_tick"
+
+[units.visual]
+model = "assets/models/sqd.glb"
+archetype = "ship"
+scale = [
+    2.0,
+    1.2000000476837158,
+    3.0,
+]
+primary_color = [
+    0.7799999713897705,
+    0.18000000715255737,
+    0.18000000715255737,
+]
+team_color_tint = true
+
+[[units]]
+id = "smcv"
+name = "Mobile Construction Vehicle"
+faction = "soviets"
+role = "vehicle"
+cost = 3000
+build_time_secs = 25.0
+health = 1000.0
+armor = "heavy"
+speed = 4.285714149475098
+vision_range = 10.0
+harvest_capacity = 0
+prerequisites = [
+    "naweap",
+    "nadept",
+]
+sub_factions = []
+movement_domain = "ground"
+cruise_altitude = 0.0
+transforms_into_building = "nacnst"
+immobile_when_deployed = false
+chrono_harvester = false
+spy_infiltrator = false
+mind_control_limit = 0
+crushes_infantry = true
+ability_id = "transform_mcv"
+container = { capacity = 0 }
+stealth = { cloaked = false }
+
+[units.script_hooks]
+on_tick = "on_self_heal_tick"
+
+[units.visual]
+model = "assets/models/smcv.glb"
+archetype = "tank"
+scale = [
+    1.7999999523162842,
+    1.100000023841858,
+    2.4000000953674316,
+]
+primary_color = [
+    0.7799999713897705,
+    0.18000000715255737,
+    0.18000000715255737,
+]
+team_color_tint = true
+
+[[units]]
+id = "harv"
+name = "War Miner"
+faction = "soviets"
+role = "harvester"
+cost = 1400
+build_time_secs = 14.0
+health = 1000.0
+armor = "medium"
+speed = 4.285714149475098
+vision_range = 10.0
+harvest_capacity = 500
+primary_weapon = "id_20mmrapid"
+elite_weapon = "id_20mmrapide"
+prerequisites = [
+    "naweap",
+    "narefn",
+]
+sub_factions = []
+movement_domain = "ground"
+cruise_altitude = 0.0
+immobile_when_deployed = false
+chrono_harvester = false
+spy_infiltrator = false
+mind_control_limit = 0
+crushes_infantry = true
+container = { capacity = 0 }
+stealth = { cloaked = false }
+
+[units.script_hooks]
+on_tick = "on_self_heal_tick"
+
+[units.visual]
+model = "assets/models/harv.glb"
+archetype = "harvester"
+scale = [
+    1.899999976158142,
+    1.2999999523162842,
+    2.5,
+]
+primary_color = [
+    0.7799999713897705,
+    0.18000000715255737,
+    0.18000000715255737,
+]
+team_color_tint = true
+
+[[units]]
+id = "dron"
+name = "Terror Drone"
+faction = "soviets"
+role = "vehicle"
+cost = 500
+build_time_secs = 5.0
+health = 100.0
+armor = "light"
+speed = 10.714285850524902
+vision_range = 10.0
+harvest_capacity = 0
+primary_weapon = "dronejump"
+prerequisites = ["naweap"]
+sub_factions = []
+movement_domain = "ground"
+cruise_altitude = 0.0
+immobile_when_deployed = false
+chrono_harvester = false
+spy_infiltrator = false
+mind_control_limit = 0
+crushes_infantry = false
+container = { capacity = 0 }
+stealth = { cloaked = false }
+
+[units.script_hooks]
+on_tick = "on_self_heal_tick"
+
+[units.visual]
+model = "assets/models/dron.glb"
+archetype = "tank"
+scale = [
+    1.7999999523162842,
+    1.100000023841858,
+    2.4000000953674316,
+]
+primary_color = [
+    0.7799999713897705,
+    0.18000000715255737,
+    0.18000000715255737,
+]
+team_color_tint = true
+
+[[units]]
+id = "htk"
+name = "Flak Track"
+faction = "soviets"
+role = "vehicle"
+cost = 500
+build_time_secs = 5.0
+health = 180.0
+armor = "heavy"
+speed = 8.571428298950195
+vision_range = 20.0
+harvest_capacity = 0
+primary_weapon = "flaktrackgun"
+secondary_weapon = "flaktrackaagun"
+prerequisites = ["naweap"]
+sub_factions = []
+movement_domain = "ground"
+cruise_altitude = 0.0
+immobile_when_deployed = false
+chrono_harvester = false
+spy_infiltrator = false
+mind_control_limit = 0
+crushes_infantry = true
+container = { capacity = 5 }
+stealth = { cloaked = false }
+
+[units.script_hooks]
+on_tick = "on_self_heal_tick"
+
+[units.visual]
+model = "assets/models/htk.glb"
+archetype = "tank"
+scale = [
+    1.7999999523162842,
+    1.100000023841858,
+    2.4000000953674316,
+]
+primary_color = [
+    0.7799999713897705,
+    0.18000000715255737,
+    0.18000000715255737,
+]
+team_color_tint = true
+
+[[units]]
+id = "htnk"
+name = "Rhino Heavy Tank"
+faction = "soviets"
+role = "vehicle"
+cost = 900
+build_time_secs = 9.0
+health = 400.0
+armor = "heavy"
+speed = 6.4285712242126465
+vision_range = 20.0
+harvest_capacity = 0
+primary_weapon = "id_120mm"
+elite_weapon = "id_120mme"
+prerequisites = ["naweap"]
+sub_factions = []
+movement_domain = "ground"
+cruise_altitude = 0.0
+immobile_when_deployed = false
+chrono_harvester = false
+spy_infiltrator = false
+mind_control_limit = 0
+crushes_infantry = true
+container = { capacity = 0 }
+stealth = { cloaked = false }
+
+[units.script_hooks]
+on_tick = "on_self_heal_tick"
+
+[units.visual]
+model = "assets/models/htnk.glb"
+archetype = "tank"
+scale = [
+    1.7999999523162842,
+    1.100000023841858,
+    2.4000000953674316,
+]
+primary_color = [
+    0.7799999713897705,
+    0.18000000715255737,
+    0.18000000715255737,
+]
+team_color_tint = true
+
+[[units]]
+id = "apoc"
+name = "Apocalypse Tank"
+faction = "soviets"
+role = "vehicle"
+cost = 1750
+build_time_secs = 17.5
+health = 800.0
+armor = "heavy"
+speed = 4.285714149475098
+vision_range = 15.0
+harvest_capacity = 0
+primary_weapon = "id_120mmx"
+secondary_weapon = "mammothtusk"
+elite_weapon = "id_120mmxe"
+prerequisites = [
+    "naweap",
+    "natech",
+]
+sub_factions = []
+movement_domain = "ground"
+cruise_altitude = 0.0
+immobile_when_deployed = false
+chrono_harvester = false
+spy_infiltrator = false
+mind_control_limit = 0
+crushes_infantry = true
+container = { capacity = 0 }
+stealth = { cloaked = false }
+
+[units.script_hooks]
+on_tick = "on_self_heal_tick"
+
+[units.visual]
+model = "assets/models/apoc.glb"
+archetype = "tank"
+scale = [
+    1.7999999523162842,
+    1.100000023841858,
+    2.4000000953674316,
+]
+primary_color = [
+    0.7799999713897705,
+    0.18000000715255737,
+    0.18000000715255737,
+]
+team_color_tint = true
+
+[[units]]
+id = "ttnk"
+name = "Tesla Tank"
+faction = "soviets"
+role = "vehicle"
+cost = 1200
+build_time_secs = 12.0
+health = 300.0
+armor = "heavy"
+speed = 6.4285712242126465
+vision_range = 20.0
+harvest_capacity = 0
+primary_weapon = "tankbolt"
+elite_weapon = "tankbolte"
+prerequisites = [
+    "naweap",
+    "naradr",
+]
+sub_factions = ["russia"]
+movement_domain = "ground"
+cruise_altitude = 0.0
+immobile_when_deployed = false
+chrono_harvester = false
+spy_infiltrator = false
+mind_control_limit = 0
+crushes_infantry = true
+container = { capacity = 0 }
+stealth = { cloaked = false }
+
+[units.script_hooks]
+on_tick = "on_self_heal_tick"
+
+[units.visual]
+model = "assets/models/ttnk.glb"
+archetype = "tank"
+scale = [
+    1.7999999523162842,
+    1.100000023841858,
+    2.4000000953674316,
+]
+primary_color = [
+    0.7799999713897705,
+    0.18000000715255737,
+    0.18000000715255737,
+]
+team_color_tint = true
+
+[[units]]
+id = "dtruck"
+name = "Demolition Truck"
+faction = "soviets"
+role = "vehicle"
+cost = 1500
+build_time_secs = 15.0
+health = 150.0
+armor = "light"
+speed = 5.357142925262451
+vision_range = 10.0
+harvest_capacity = 0
+primary_weapon = "demotrucktargeting"
+prerequisites = [
+    "naradr",
+    "naweap",
+]
+sub_factions = ["libya"]
+movement_domain = "ground"
+cruise_altitude = 0.0
+immobile_when_deployed = true
+chrono_harvester = false
+spy_infiltrator = false
+mind_control_limit = 0
+crushes_infantry = true
+ability_id = "deploy_stance"
+container = { capacity = 0 }
+stealth = { cloaked = false }
+
+[units.script_hooks]
+on_tick = "on_self_heal_tick"
+
+[units.visual]
+model = "assets/models/dtruck.glb"
+archetype = "tank"
+scale = [
+    1.7999999523162842,
+    1.100000023841858,
+    2.4000000953674316,
+]
+primary_color = [
+    0.7799999713897705,
+    0.18000000715255737,
+    0.18000000715255737,
+]
+team_color_tint = true

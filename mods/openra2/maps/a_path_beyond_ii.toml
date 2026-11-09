@@ -1,0 +1,175 @@
+id = "a_path_beyond_ii"
+name = "A Path Beyond II"
+width = 96
+height = 96
+tile_size = 2.0
+
+[[ore_patches]]
+position = [
+    13,
+    72,
+]
+radius = 3
+amount_per_tile = 400
+
+[[ore_patches]]
+position = [
+    16,
+    15,
+]
+radius = 3
+amount_per_tile = 400
+
+[[ore_patches]]
+position = [
+    19,
+    23,
+]
+radius = 3
+amount_per_tile = 400
+
+[[ore_patches]]
+position = [
+    20,
+    59,
+]
+radius = 3
+amount_per_tile = 400
+
+[[ore_patches]]
+position = [
+    25,
+    37,
+]
+radius = 3
+amount_per_tile = 400
+
+[[ore_patches]]
+position = [
+    26,
+    57,
+]
+radius = 3
+amount_per_tile = 400
+
+[[ore_patches]]
+position = [
+    28,
+    82,
+]
+radius = 3
+amount_per_tile = 400
+
+[[ore_patches]]
+position = [
+    32,
+    15,
+]
+radius = 3
+amount_per_tile = 400
+
+[[obstacles]]
+min = [
+    47,
+    47,
+]
+max = [
+    49,
+    49,
+]
+
+[[water_rects]]
+min = [
+    40,
+    52,
+]
+max = [
+    56,
+    56,
+]
+
+[[spawns]]
+player_id = 1
+faction = "allies"
+base_tile = [
+    87,
+    87,
+]
+
+[[spawns.initial_buildings]]
+building_id = "gacnst"
+tile_pos = [
+    87,
+    87,
+]
+
+[[spawns.initial_units]]
+unit_id = "dog"
+tile_pos = [
+    91,
+    88,
+]
+
+[[spawns.initial_units]]
+unit_id = "dog"
+tile_pos = [
+    91,
+    90,
+]
+
+[[spawns.initial_units]]
+unit_id = "shad"
+tile_pos = [
+    92,
+    89,
+]
+
+[[spawns.initial_units]]
+unit_id = "cmin"
+tile_pos = [
+    90,
+    91,
+]
+
+[[spawns]]
+player_id = 2
+faction = "soviets"
+base_tile = [
+    86,
+    86,
+]
+
+[[spawns.initial_buildings]]
+building_id = "nacnst"
+tile_pos = [
+    86,
+    86,
+]
+
+[[spawns.initial_units]]
+unit_id = "ptroop"
+tile_pos = [
+    82,
+    85,
+]
+
+[[spawns.initial_units]]
+unit_id = "ptroop"
+tile_pos = [
+    82,
+    83,
+]
+
+[[spawns.initial_units]]
+unit_id = "zep"
+tile_pos = [
+    81,
+    84,
+]
+
+[[spawns.initial_units]]
+unit_id = "harv"
+tile_pos = [
+    83,
+    82,
+]

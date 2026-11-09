@@ -1,0 +1,36 @@
+id = "openra2"
+name = "OpenRA Mod (openra2)"
+version = "0.1.0"
+authors = ["rts-mod-tools OpenRA Converter"]
+description = "Converted from OpenRA MiniYAML rules, weapons, and map"
+engine_version = "0.1.0"
+entry_map = "maps/a_path_beyond_ii.toml"
+scripts = ["scripts/auto_traits.rhai"]
+
+[catalogs]
+factions = "factions/factions.toml"
+weapons = "weapons/weapons.toml"
+buildings = "buildings/buildings.toml"
+units = "units/units.toml"
+
+[rules]
+default_liberated_worker_unit = "soviet_conscript"
+default_mutant_unit = "yuri_brute"
+
+[rules.free_unit_by_faction]
+allies = "grizzly_tank"
+soviets = "rhino_tank"
+yuri = "lasher_tank"
+
+[rules.default_infantry_by_faction]
+allies = "allied_gi"
+soviets = "soviet_conscript"
+yuri = "yuri_initiate"
+
+[rules.stolen_tech_commando_by_pair]
+"allies:soviets" = "chrono_ivan"
+"soviets:soviets" = "yuri_prime"
+"*:allies" = "chrono_commando"
+"*:yuri" = "psi_commando"
+"*:soviets" = "chrono_ivan"
+

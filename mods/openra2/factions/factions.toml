@@ -1,0 +1,32 @@
+[[factions]]
+id = "allies"
+name = "Allied Nations"
+color = [
+    0.2199999988079071,
+    0.44999998807907104,
+    0.8199999928474426,
+]
+starting_credits = 10000
+description = "High-tech Chrono, Prism, and air superiority forces"
+
+[[factions]]
+id = "soviets"
+name = "Soviet Union"
+color = [
+    0.7799999713897705,
+    0.18000000715255737,
+    0.18000000715255737,
+]
+starting_credits = 10000
+description = "Heavy armor, Tesla weapons, and nuclear superiority"
+
+[[factions]]
+id = "yuri"
+name = "Yuri's Psychic Corps"
+color = [
+    0.6399999856948853,
+    0.18000000715255737,
+    0.8199999928474426,
+]
+starting_credits = 10000
+description = "Psychic mind control, cloning, and genetic warfare"

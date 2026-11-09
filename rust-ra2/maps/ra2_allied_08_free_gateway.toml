@@ -1,0 +1,351 @@
+id = "ra2_allied_08_free_gateway"
+name = "RA2 Allied 08: Free Gateway (St. Louis)"
+width = 80
+height = 80
+tile_size = 2.0
+ore_regen_per_sec = 4.0
+mission_objective = "Even as we cleanse America of Soviet forces, they continue to play with their psychic technology, desperately hoping that their little toys will destroy us. We have discovered a Psychic Beacon in St. Louis. Take special agent Tanya in and destroy the beacon. \n \n Objective 1: Destroy the Soviet Psychic Beacon. \n \n Objective 2: Destroy all Soviet forces within St. Louis. \n \n Objective 3: Don't get Tanya killed."
+
+[[ore_patches]]
+position = [32, 51]
+radius = 3
+amount_per_tile = 1400
+
+[[ore_patches]]
+position = [36, 11]
+radius = 3
+amount_per_tile = 1400
+
+[[ore_patches]]
+position = [40, 40]
+radius = 4
+amount_per_tile = 2000
+
+[[ore_patches]]
+position = [39, 10]
+radius = 3
+amount_per_tile = 1500
+
+[[ore_patches]]
+position = [38, 22]
+radius = 3
+amount_per_tile = 1500
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "soviet_sentry_gun"
+tile_pos = [34, 41]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "soviet_sentry_gun"
+tile_pos = [34, 39]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_refinery"
+tile_pos = [43, 72]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_war_factory"
+tile_pos = [51, 62]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "soviet_conyard"
+tile_pos = [29, 32]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "soviet_tesla_reactor"
+tile_pos = [26, 33]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "soviet_tesla_reactor"
+tile_pos = [25, 33]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "soviet_tesla_reactor"
+tile_pos = [25, 27]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "soviet_tesla_reactor"
+tile_pos = [26, 27]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "soviet_barracks"
+tile_pos = [30, 29]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "soviet_war_factory"
+tile_pos = [25, 30]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "soviet_radar_tower"
+tile_pos = [28, 29]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_service_depot"
+tile_pos = [21, 32]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "soviet_battle_lab"
+tile_pos = [22, 29]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "soviet_tesla_reactor"
+tile_pos = [25, 32]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "soviet_tesla_reactor"
+tile_pos = [25, 28]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "soviet_sentry_gun"
+tile_pos = [28, 37]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "soviet_sentry_gun"
+tile_pos = [27, 37]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "soviet_sentry_gun"
+tile_pos = [22, 37]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "soviet_sentry_gun"
+tile_pos = [34, 29]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "soviet_sentry_gun"
+tile_pos = [34, 26]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "soviet_flak_cannon"
+tile_pos = [31, 31]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "soviet_flak_cannon"
+tile_pos = [25, 31]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "soviet_flak_cannon"
+tile_pos = [28, 31]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "rhino_tank"
+tile_pos = [32, 27]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "v3_launcher"
+tile_pos = [24, 29]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "war_miner"
+tile_pos = [31, 38]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "war_miner"
+tile_pos = [20, 38]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "soviet_conscript"
+tile_pos = [34, 43]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "soviet_conscript"
+tile_pos = [34, 42]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "soviet_conscript"
+tile_pos = [34, 37]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "soviet_attack_dog"
+tile_pos = [34, 40]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "soviet_conscript"
+tile_pos = [34, 38]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "desolator"
+tile_pos = [27, 31]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "desolator"
+tile_pos = [23, 32]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "desolator"
+tile_pos = [28, 27]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "desolator"
+tile_pos = [23, 33]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "tesla_trooper"
+tile_pos = [28, 33]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "soviet_attack_dog"
+tile_pos = [26, 38]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "soviet_conscript"
+tile_pos = [24, 37]
+
+[[spawns]]
+player_id = 1
+faction = "allies"
+base_tile = [24, 51]
+
+[[spawns.initial_buildings]]
+building_id = "allied_conyard"
+tile_pos = [24, 51]
+
+[[spawns.initial_buildings]]
+building_id = "allied_power_plant"
+tile_pos = [27, 51]
+
+[[spawns.initial_buildings]]
+building_id = "allied_refinery"
+tile_pos = [24, 48]
+
+[[spawns.initial_buildings]]
+building_id = "allied_barracks"
+tile_pos = [27, 48]
+
+[[spawns.initial_buildings]]
+building_id = "allied_war_factory"
+tile_pos = [30, 51]
+
+[[spawns.initial_units]]
+unit_id = "allied_gi"
+tile_pos = [26, 46]
+
+[[spawns.initial_units]]
+unit_id = "allied_gi"
+tile_pos = [28, 46]
+
+[[spawns.initial_units]]
+unit_id = "grizzly_tank"
+tile_pos = [30, 47]
+
+[[spawns.initial_units]]
+unit_id = "chrono_miner"
+tile_pos = [26, 47]
+
+[[spawns]]
+player_id = 2
+faction = "soviets"
+base_tile = [44, 11]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_conyard"
+tile_pos = [44, 11]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_tesla_reactor"
+tile_pos = [41, 11]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_refinery"
+tile_pos = [44, 14]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_barracks"
+tile_pos = [41, 14]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_war_factory"
+tile_pos = [38, 11]
+
+[[spawns.initial_units]]
+unit_id = "soviet_conscript"
+tile_pos = [42, 16]
+
+[[spawns.initial_units]]
+unit_id = "soviet_conscript"
+tile_pos = [40, 16]
+
+[[spawns.initial_units]]
+unit_id = "rhino_tank"
+tile_pos = [38, 15]
+
+[[spawns.initial_units]]
+unit_id = "war_miner"
+tile_pos = [42, 15]
+
+[[trigger_zones]]
+id = "mission_stage_init"
+min = [6, 6]
+max = [12, 12]
+once = true
+condition = { type = "timer_elapsed", secs = 1.0 }
+actions = [
+    { type = "set_variable", name = "mission_stage", value = 1 },
+    { type = "eva_transmission", speaker = "EVA", text = "Battle Control Online. Primary tactical objectives initialized." },
+    { type = "reveal_area", tile = [24, 51], radius = 14 }
+]
+
+[[trigger_zones]]
+id = "tactical_reinforcement_wave"
+min = [23, 49]
+max = [27, 53]
+once = true
+condition = { type = "all", conditions = [{ type = "timer_elapsed", secs = 45.0 }, { type = "variable_equals", name = "mission_stage", value = 1 }] }
+actions = [
+    { type = "set_variable", name = "mission_stage", value = 2 },
+    { type = "spawn_reinforcements", player_id = 1, unit_id = "prism_tank", count = 2, tile = [23, 49] },
+    { type = "grant_credits", player_id = 1, amount = 1500 },
+    { type = "eva_transmission", speaker = "EVA", text = "Reinforcements have arrived. Forward command has authorized 1500 bonus credits." }
+]
+
+[[trigger_zones]]
+id = "decisive_campaign_victory"
+min = [2, 2]
+max = [6, 6]
+once = true
+condition = { type = "all_buildings_destroyed", player_id = 2 }
+actions = [
+    { type = "set_variable", name = "mission_stage", value = 3 },
+    { type = "eva_transmission", speaker = "EVA", text = "Mission Accomplished. All primary hostile command structures neutralized." },
+    { type = "declare_winner", player_id = 1 }
+]

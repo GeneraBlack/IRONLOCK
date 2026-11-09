@@ -1,0 +1,137 @@
+id = "openra_classic_clash"
+name = "OpenRA Classic Clash"
+width = 40
+height = 40
+tile_size = 2.0
+ore_regen_per_sec = 0.0
+gem_patches = []
+bridge_rects = []
+elevation_rects = []
+ramp_rects = []
+preplaced_entities = []
+props = []
+trigger_zones = []
+
+[[ore_patches]]
+position = [
+    10,
+    10,
+]
+radius = 3
+amount_per_tile = 600
+
+[[ore_patches]]
+position = [
+    30,
+    30,
+]
+radius = 3
+amount_per_tile = 600
+
+[[obstacles]]
+min = [
+    19,
+    19,
+]
+max = [
+    21,
+    21,
+]
+
+[[water_rects]]
+min = [
+    18,
+    18,
+]
+max = [
+    22,
+    22,
+]
+
+[[spawns]]
+player_id = 1
+faction = "allies"
+base_tile = [
+    6,
+    6,
+]
+team_id = 0
+
+[[spawns.initial_buildings]]
+building_id = "fact"
+tile_pos = [
+    6,
+    6,
+]
+
+[[spawns.initial_units]]
+unit_id = "e1"
+tile_pos = [
+    10,
+    7,
+]
+
+[[spawns.initial_units]]
+unit_id = "e1"
+tile_pos = [
+    10,
+    9,
+]
+
+[[spawns.initial_units]]
+unit_id = "id_2tnk"
+tile_pos = [
+    11,
+    8,
+]
+
+[[spawns.initial_units]]
+unit_id = "harv"
+tile_pos = [
+    9,
+    10,
+]
+
+[[spawns]]
+player_id = 2
+faction = "soviets"
+base_tile = [
+    30,
+    30,
+]
+team_id = 0
+
+[[spawns.initial_buildings]]
+building_id = "sfact"
+tile_pos = [
+    30,
+    30,
+]
+
+[[spawns.initial_units]]
+unit_id = "sov_e1"
+tile_pos = [
+    26,
+    29,
+]
+
+[[spawns.initial_units]]
+unit_id = "sov_e1"
+tile_pos = [
+    26,
+    27,
+]
+
+[[spawns.initial_units]]
+unit_id = "id_3tnk"
+tile_pos = [
+    25,
+    28,
+]
+
+[[spawns.initial_units]]
+unit_id = "sharv"
+tile_pos = [
+    27,
+    26,
+]

@@ -1,0 +1,78 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "properties": {
+    "authors": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "catalogs": {
+      "properties": {
+        "buildings": {
+          "type": "string"
+        },
+        "factions": {
+          "type": "string"
+        },
+        "units": {
+          "type": "string"
+        },
+        "weapons": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "factions",
+        "weapons",
+        "buildings",
+        "units"
+      ],
+      "type": "object"
+    },
+    "description": {
+      "type": "string"
+    },
+    "engine_version": {
+      "type": "string"
+    },
+    "entry_map": {
+      "type": "string"
+    },
+    "extends": {
+      "description": "Optional parent mod ID or directory for deep-merged sub-mods",
+      "type": "string"
+    },
+    "id": {
+      "description": "Unique mod identifier",
+      "type": "string"
+    },
+    "name": {
+      "description": "Display name of the mod",
+      "type": "string"
+    },
+    "rules": {
+      "type": "object"
+    },
+    "scripts": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "version": {
+      "description": "Semantic version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "name",
+    "version",
+    "engine_version",
+    "entry_map",
+    "catalogs"
+  ],
+  "title": "ModManifest",
+  "type": "object"
+}

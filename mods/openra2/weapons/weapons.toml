@@ -1,0 +1,2489 @@
+[[weapons]]
+id = "alligatorbite"
+name = "AlligatorBite"
+damage = 30.0
+range = 3.75
+cooldown_secs = 1.5
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 2.21875
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+
+[[weapons]]
+id = "apocexplode"
+name = "ApocExplode"
+damage = 40.0
+range = 14.0
+cooldown_secs = 1.5
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 4.4375
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+
+[[weapons]]
+id = "assaultbolt"
+name = "AssaultBolt"
+damage = 40.0
+range = 5.0
+cooldown_secs = 3.5
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 0.0
+burst = 1
+projectile_style = "tesla"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+on_hit_status = { id = "power_charge", duration_secs = 6.0, power_charge_boost = true }
+
+[weapons.armor_multipliers]
+
+[[weapons]]
+id = "aswbomb"
+name = "ASWBomb"
+damage = 50.0
+range = 7.5
+cooldown_secs = 0.25
+projectile_speed = 80.0
+targets_ground = true
+targets_air = false
+splash_radius = 4.4375
+burst = 1
+projectile_style = "missile"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 1.0
+heavy = 1.0
+structure = 0.75
+
+[[weapons]]
+id = "aswbombe"
+name = "ASWBombE"
+damage = 80.0
+range = 7.5
+cooldown_secs = 0.25
+projectile_speed = 80.0
+targets_ground = true
+targets_air = false
+splash_radius = 4.4375
+burst = 1
+projectile_style = "missile"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 1.0
+heavy = 1.0
+structure = 0.75
+
+[[weapons]]
+id = "aswlauncher"
+name = "ASWLauncher"
+damage = 40.0
+range = 20.0
+cooldown_secs = 7.5
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 0.0
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+
+[[weapons]]
+id = "atomic"
+name = "atomic"
+damage = 600.0
+range = 14.0
+cooldown_secs = 1.5
+projectile_speed = 35.0
+targets_ground = true
+targets_air = true
+splash_radius = 6.0
+burst = 1
+projectile_style = "radiation"
+on_hit_zone = { radius = 3.0, dps = 18.0, duration_secs = 6.0 }
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 1.0
+heavy = 1.0
+structure = 0.07999999821186066
+
+[[weapons]]
+id = "awp"
+name = "awp"
+damage = 125.0
+range = 35.0
+cooldown_secs = 5.0
+projectile_speed = 66.66015625
+targets_ground = true
+targets_air = false
+splash_radius = 0.800000011920929
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 0.25
+heavy = 0.25
+structure = 0.25
+
+[[weapons]]
+id = "awpe"
+name = "AWPE"
+damage = 125.0
+range = 35.0
+cooldown_secs = 3.0
+projectile_speed = 66.66015625
+targets_ground = true
+targets_air = false
+splash_radius = 0.800000011920929
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 0.25
+heavy = 0.25
+structure = 0.25
+
+[[weapons]]
+id = "bearbite"
+name = "BearBite"
+damage = 30.0
+range = 3.75
+cooldown_secs = 1.5
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 2.21875
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+
+[[weapons]]
+id = "blackhawkcannon"
+name = "BlackHawkCannon"
+damage = 25.0
+range = 15.0
+cooldown_secs = 2.0
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 0.800000011920929
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 0.25
+heavy = 0.25
+structure = 0.25
+
+[[weapons]]
+id = "blimpbomb"
+name = "BlimpBomb"
+damage = 250.0
+range = 2.0
+cooldown_secs = 2.5
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 4.166666507720947
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 0.3499999940395355
+heavy = 0.3499999940395355
+structure = 0.5
+
+[[weapons]]
+id = "blimpbombe"
+name = "BlimpBombE"
+damage = 250.0
+range = 2.0
+cooldown_secs = 2.5
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 4.166666507720947
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 0.3499999940395355
+heavy = 0.3499999940395355
+structure = 0.5
+
+[[weapons]]
+id = "buildingexplode"
+name = "BuildingExplode"
+damage = 40.0
+range = 14.0
+cooldown_secs = 1.5
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 0.0
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+
+[[weapons]]
+id = "chimpbite"
+name = "ChimpBite"
+damage = 30.0
+range = 3.75
+cooldown_secs = 1.5
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 2.21875
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+
+[[weapons]]
+id = "coilbolt"
+name = "CoilBolt"
+damage = 200.0
+range = 20.0
+cooldown_secs = 0.25
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 0.800000011920929
+burst = 1
+projectile_style = "tesla"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 1.0
+heavy = 1.0
+structure = 0.5
+
+[[weapons]]
+id = "comet"
+name = "Comet"
+damage = 100.0
+range = 25.0
+cooldown_secs = 5.0
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 6.0
+burst = 1
+projectile_style = "laser"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 0.5
+heavy = 0.5
+structure = 2.0
+
+[[weapons]]
+id = "crelectricbolt"
+name = "CRElectricBolt"
+damage = 60.0
+range = 15.0
+cooldown_secs = 2.25
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 1.25
+burst = 1
+projectile_style = "tesla"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 1.0
+heavy = 1.0
+structure = 0.5
+
+[[weapons]]
+id = "crflakguygun"
+name = "CRFlakGuyGun"
+damage = 30.0
+range = 17.5
+cooldown_secs = 0.75
+projectile_speed = 80.0
+targets_ground = true
+targets_air = false
+splash_radius = 0.800000011920929
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.5
+light = 1.0
+medium = 0.10000000149011612
+heavy = 0.10000000149011612
+structure = 0.10000000149011612
+
+[[weapons]]
+id = "crm60"
+name = "CRM60"
+damage = 20.0
+range = 15.0
+cooldown_secs = 0.75
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 0.800000011920929
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 0.25
+heavy = 0.25
+structure = 0.25
+
+[[weapons]]
+id = "crmp5"
+name = "CRMP5"
+damage = 125.0
+range = 15.0
+cooldown_secs = 1.0
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 0.800000011920929
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 0.25
+heavy = 0.25
+structure = 0.25
+
+[[weapons]]
+id = "crneutronrifle"
+name = "CRNeutronRifle"
+damage = 8.0
+range = 15.0
+cooldown_secs = 6.0
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 0.800000011920929
+burst = 1
+projectile_style = "radiation"
+on_hit_zone = { radius = 3.0, dps = 18.0, duration_secs = 6.0 }
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+
+[[weapons]]
+id = "crnuke"
+name = "CRNuke"
+damage = 200.0
+range = 4.57275390625
+cooldown_secs = 2.5
+projectile_speed = 80.0
+targets_ground = true
+targets_air = false
+splash_radius = 4.4375
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 1.0
+heavy = 1.0
+structure = 0.20000000298023224
+
+[[weapons]]
+id = "crradbeamweapon"
+name = "CRRadBeamWeapon"
+damage = 175.0
+range = 17.5
+cooldown_secs = 1.5
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 0.800000011920929
+burst = 1
+projectile_style = "radiation"
+on_hit_zone = { radius = 3.0, dps = 18.0, duration_secs = 6.0 }
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 0.15000000596046448
+heavy = 0.10000000149011612
+structure = 0.05000000074505806
+
+[[weapons]]
+id = "crterrorbomb"
+name = "CRTerrorBomb"
+damage = 425.0
+range = 10.0
+cooldown_secs = 1.0
+projectile_speed = 18.0
+targets_ground = true
+targets_air = false
+splash_radius = 4.4375
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.5
+light = 1.0
+medium = 0.5
+heavy = 0.5
+structure = 0.30000001192092896
+
+[[weapons]]
+id = "demobomb"
+name = "demobomb"
+damage = 60.0
+range = 14.0
+cooldown_secs = 1.5
+projectile_speed = 35.0
+targets_ground = true
+targets_air = true
+splash_radius = 3.125
+burst = 1
+projectile_style = "radiation"
+on_hit_zone = { radius = 3.0, dps = 18.0, duration_secs = 6.0 }
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 0.5
+heavy = 0.5
+structure = 0.10000000149011612
+
+[[weapons]]
+id = "demolish"
+name = "Demolish"
+damage = 40.0
+range = 14.0
+cooldown_secs = 1.5
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 0.0
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+
+[[weapons]]
+id = "demotrucktargeting"
+name = "DemoTruckTargeting"
+damage = 40.0
+range = 5.0
+cooldown_secs = 1.5
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 0.0
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+
+[[weapons]]
+id = "derrickexplode"
+name = "DerrickExplode"
+damage = 600.0
+range = 14.0
+cooldown_secs = 1.5
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 2.0
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.5
+light = 1.0
+medium = 0.5
+heavy = 0.5
+structure = 0.30000001192092896
+
+[[weapons]]
+id = "dogjaw"
+name = "DogJaw"
+damage = 200.0
+range = 7.5
+cooldown_secs = 0.5
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 0.0
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 0.05000000074505806
+medium = 0.05000000074505806
+heavy = 0.05000000074505806
+structure = 0.05000000074505806
+
+[[weapons]]
+id = "doublepistols"
+name = "DoublePistols"
+damage = 125.0
+range = 15.0
+cooldown_secs = 0.5
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 0.800000011920929
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 0.25
+heavy = 0.25
+structure = 0.25
+
+[[weapons]]
+id = "doublepistolse"
+name = "DoublePistolsE"
+damage = 125.0
+range = 20.0
+cooldown_secs = 0.5
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 0.800000011920929
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 0.25
+heavy = 0.25
+structure = 0.25
+
+[[weapons]]
+id = "dronejump"
+name = "DroneJump"
+damage = 200.0
+range = 7.5
+cooldown_secs = 0.5
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 0.0
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 0.05000000074505806
+medium = 0.05000000074505806
+heavy = 0.05000000074505806
+structure = 0.05000000074505806
+
+[[weapons]]
+id = "electricbolt"
+name = "ElectricBolt"
+damage = 50.0
+range = 7.5
+cooldown_secs = 3.0
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 1.25
+burst = 1
+projectile_style = "tesla"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 1.0
+heavy = 1.0
+structure = 0.5
+
+[[weapons]]
+id = "electricbolte"
+name = "ElectricBoltE"
+damage = 50.0
+range = 12.5
+cooldown_secs = 2.0
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 1.25
+burst = 1
+projectile_style = "tesla"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 1.0
+heavy = 1.0
+structure = 0.5
+
+[[weapons]]
+id = "flakguyaagun"
+name = "FlakGuyAAGun"
+damage = 20.0
+range = 20.0
+cooldown_secs = 1.25
+projectile_speed = 80.0
+targets_ground = false
+targets_air = true
+splash_radius = 1.25
+burst = 1
+projectile_style = "missile"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.5
+light = 1.0
+medium = 0.10000000149011612
+heavy = 0.10000000149011612
+structure = 0.10000000149011612
+
+[[weapons]]
+id = "flakguyaagune"
+name = "FlakGuyAAGunE"
+damage = 8.0
+range = 20.0
+cooldown_secs = 1.25
+projectile_speed = 80.0
+targets_ground = false
+targets_air = true
+splash_radius = 1.25
+burst = 2
+projectile_style = "missile"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.5
+light = 1.0
+medium = 0.10000000149011612
+heavy = 0.10000000149011612
+structure = 0.10000000149011612
+
+[[weapons]]
+id = "flakguygun"
+name = "FlakGuyGun"
+damage = 20.0
+range = 12.5
+cooldown_secs = 1.25
+projectile_speed = 80.0
+targets_ground = true
+targets_air = false
+splash_radius = 0.800000011920929
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.5
+light = 1.0
+medium = 0.10000000149011612
+heavy = 0.10000000149011612
+structure = 0.10000000149011612
+
+[[weapons]]
+id = "flakguygune"
+name = "FlakGuyGunE"
+damage = 20.0
+range = 12.5
+cooldown_secs = 1.25
+projectile_speed = 80.0
+targets_ground = true
+targets_air = false
+splash_radius = 0.800000011920929
+burst = 2
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.5
+light = 1.0
+medium = 0.10000000149011612
+heavy = 0.10000000149011612
+structure = 0.10000000149011612
+
+[[weapons]]
+id = "flaktrackaagun"
+name = "FlakTrackAAGun"
+damage = 35.0
+range = 25.0
+cooldown_secs = 1.25
+projectile_speed = 80.0
+targets_ground = false
+targets_air = true
+splash_radius = 1.25
+burst = 1
+projectile_style = "missile"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.5
+light = 1.0
+medium = 0.10000000149011612
+heavy = 0.10000000149011612
+structure = 0.10000000149011612
+
+[[weapons]]
+id = "flaktrackgun"
+name = "FlakTrackGun"
+damage = 25.0
+range = 12.5
+cooldown_secs = 1.25
+projectile_speed = 80.0
+targets_ground = true
+targets_air = false
+splash_radius = 0.800000011920929
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.5
+light = 1.0
+medium = 0.10000000149011612
+heavy = 0.10000000149011612
+structure = 0.10000000149011612
+
+[[weapons]]
+id = "flakweapon"
+name = "FlakWeapon"
+damage = 40.0
+range = 30.0
+cooldown_secs = 1.0
+projectile_speed = 80.0
+targets_ground = false
+targets_air = true
+splash_radius = 1.25
+burst = 1
+projectile_style = "missile"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.5
+light = 1.0
+medium = 0.10000000149011612
+heavy = 0.10000000149011612
+structure = 0.10000000149011612
+
+[[weapons]]
+id = "grandcannonweapon"
+name = "GrandCannonWeapon"
+damage = 150.0
+range = 37.5
+cooldown_secs = 3.75
+projectile_speed = 80.0
+targets_ground = true
+targets_air = false
+splash_radius = 1.3333333730697632
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 1.0
+heavy = 1.0
+structure = 0.5
+
+[[weapons]]
+id = "hornetbomb"
+name = "HornetBomb"
+damage = 80.0
+range = 12.5
+cooldown_secs = 0.25
+projectile_speed = 80.0
+targets_ground = true
+targets_air = false
+splash_radius = 2.0
+burst = 1
+projectile_style = "missile"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 1.0
+heavy = 1.0
+structure = 0.75
+
+[[weapons]]
+id = "hornetbombe"
+name = "HornetBombE"
+damage = 140.0
+range = 12.5
+cooldown_secs = 0.25
+projectile_speed = 80.0
+targets_ground = true
+targets_air = false
+splash_radius = 2.0
+burst = 1
+projectile_style = "missile"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 1.0
+heavy = 1.0
+structure = 0.75
+
+[[weapons]]
+id = "hornetlauncher"
+name = "HornetLauncher"
+damage = 40.0
+range = 45.0
+cooldown_secs = 1.5
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 0.0
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+
+[[weapons]]
+id = "hovermissile"
+name = "HoverMissile"
+damage = 25.0
+range = 15.0
+cooldown_secs = 2.5
+projectile_speed = 80.0
+targets_ground = true
+targets_air = true
+splash_radius = 1.3333333730697632
+burst = 2
+projectile_style = "missile"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 0.3499999940395355
+heavy = 0.3499999940395355
+structure = 0.20000000298023224
+
+[[weapons]]
+id = "hovermissilee"
+name = "HoverMissileE"
+damage = 80.0
+range = 15.0
+cooldown_secs = 2.5
+projectile_speed = 80.0
+targets_ground = true
+targets_air = true
+splash_radius = 1.3333333730697632
+burst = 4
+projectile_style = "missile"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 0.3499999940395355
+heavy = 0.3499999940395355
+structure = 0.20000000298023224
+
+[[weapons]]
+id = "id_105mm"
+name = "105mm"
+damage = 65.0
+range = 12.5
+cooldown_secs = 3.0
+projectile_speed = 80.0
+targets_ground = true
+targets_air = false
+splash_radius = 1.3333333730697632
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 0.25
+light = 1.0
+medium = 1.0
+heavy = 1.0
+structure = 0.6000000238418579
+
+[[weapons]]
+id = "id_105mme"
+name = "105mmE"
+damage = 55.0
+range = 12.5
+cooldown_secs = 3.75
+projectile_speed = 80.0
+targets_ground = true
+targets_air = false
+splash_radius = 1.3333333730697632
+burst = 2
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 0.25
+light = 1.0
+medium = 1.0
+heavy = 1.0
+structure = 0.6000000238418579
+
+[[weapons]]
+id = "id_120mm"
+name = "120mm"
+damage = 90.0
+range = 14.375
+cooldown_secs = 3.25
+projectile_speed = 80.0
+targets_ground = true
+targets_air = false
+splash_radius = 1.3333333730697632
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 0.25
+light = 1.0
+medium = 1.0
+heavy = 1.0
+structure = 0.6000000238418579
+
+[[weapons]]
+id = "id_120mme"
+name = "120mmE"
+damage = 85.0
+range = 14.375
+cooldown_secs = 4.0
+projectile_speed = 80.0
+targets_ground = true
+targets_air = false
+splash_radius = 1.3333333730697632
+burst = 2
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 0.25
+light = 1.0
+medium = 1.0
+heavy = 1.0
+structure = 0.6000000238418579
+
+[[weapons]]
+id = "id_120mmx"
+name = "120mmx"
+damage = 100.0
+range = 14.375
+cooldown_secs = 3.25
+projectile_speed = 80.0
+targets_ground = true
+targets_air = false
+splash_radius = 1.3333333730697632
+burst = 2
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 0.25
+light = 1.0
+medium = 1.0
+heavy = 1.0
+structure = 0.6000000238418579
+
+[[weapons]]
+id = "id_120mmxe"
+name = "120mmxE"
+damage = 100.0
+range = 14.375
+cooldown_secs = 3.25
+projectile_speed = 80.0
+targets_ground = true
+targets_air = false
+splash_radius = 1.3333333730697632
+burst = 4
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 0.25
+light = 1.0
+medium = 1.0
+heavy = 1.0
+structure = 0.6000000238418579
+
+[[weapons]]
+id = "id_155mm"
+name = "155mm"
+damage = 60.0
+range = 20.0
+cooldown_secs = 5.5
+projectile_speed = 80.0
+targets_ground = true
+targets_air = false
+splash_radius = 1.3333333730697632
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 0.6000000238418579
+heavy = 0.6000000238418579
+structure = 0.6000000238418579
+
+[[weapons]]
+id = "id_155mme"
+name = "155mmE"
+damage = 60.0
+range = 20.0
+cooldown_secs = 5.5
+projectile_speed = 80.0
+targets_ground = true
+targets_air = false
+splash_radius = 1.3333333730697632
+burst = 2
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 0.6000000238418579
+heavy = 0.6000000238418579
+structure = 0.6000000238418579
+
+[[weapons]]
+id = "id_20mm"
+name = "20mm"
+damage = 25.0
+range = 12.5
+cooldown_secs = 1.0
+projectile_speed = 35.0
+targets_ground = true
+targets_air = true
+splash_radius = 0.800000011920929
+burst = 1
+projectile_style = "missile"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 0.25
+heavy = 0.25
+structure = 0.25
+
+[[weapons]]
+id = "id_20mme"
+name = "20mme"
+damage = 25.0
+range = 12.5
+cooldown_secs = 1.0
+projectile_speed = 35.0
+targets_ground = true
+targets_air = true
+splash_radius = 0.800000011920929
+burst = 2
+projectile_style = "missile"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 0.25
+heavy = 0.25
+structure = 0.25
+
+[[weapons]]
+id = "id_20mmrapid"
+name = "20mmrapid"
+damage = 30.0
+range = 13.75
+cooldown_secs = 1.0
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 0.800000011920929
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 0.25
+heavy = 0.25
+structure = 0.25
+
+[[weapons]]
+id = "id_20mmrapide"
+name = "20mmrapidE"
+damage = 50.0
+range = 13.75
+cooldown_secs = 2.5
+projectile_speed = 80.0
+targets_ground = true
+targets_air = false
+splash_radius = 1.3333333730697632
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 0.4000000059604645
+heavy = 0.4000000059604645
+structure = 0.25
+
+[[weapons]]
+id = "ivanbomber"
+name = "IvanBomber"
+damage = 400.0
+range = 4.57275390625
+cooldown_secs = 2.5
+projectile_speed = 80.0
+targets_ground = true
+targets_air = false
+splash_radius = 2.21875
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 1.0
+heavy = 1.0
+structure = 0.20000000298023224
+
+[[weapons]]
+id = "ivanbombere"
+name = "IvanBomberE"
+damage = 400.0
+range = 4.57275390625
+cooldown_secs = 2.5
+projectile_speed = 80.0
+targets_ground = true
+targets_air = false
+splash_radius = 2.21875
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 1.0
+heavy = 1.0
+structure = 0.20000000298023224
+
+[[weapons]]
+id = "ivandeath"
+name = "IvanDeath"
+damage = 400.0
+range = 4.57275390625
+cooldown_secs = 2.5
+projectile_speed = 80.0
+targets_ground = true
+targets_air = false
+splash_radius = 2.21875
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 1.0
+heavy = 1.0
+structure = 0.20000000298023224
+
+[[weapons]]
+id = "kirovexplode"
+name = "KirovExplode"
+damage = 75.0
+range = 14.0
+cooldown_secs = 1.5
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 4.4375
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+
+[[weapons]]
+id = "largebarrelexplode"
+name = "LargeBarrelExplode"
+damage = 200.0
+range = 14.0
+cooldown_secs = 1.5
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 2.0
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.5
+light = 1.0
+medium = 0.5
+heavy = 0.5
+structure = 0.30000001192092896
+
+[[weapons]]
+id = "lightningstorm"
+name = "LightningStorm"
+damage = 165.0
+range = 17.5
+cooldown_secs = 0.25
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 6.0
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 1.0
+heavy = 1.0
+structure = 0.05000000074505806
+
+[[weapons]]
+id = "m1carbine"
+name = "M1Carbine"
+damage = 15.0
+range = 10.0
+cooldown_secs = 1.25
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 0.800000011920929
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 0.25
+heavy = 0.25
+structure = 0.25
+
+[[weapons]]
+id = "m1carbinee"
+name = "M1CarbineE"
+damage = 20.0
+range = 12.5
+cooldown_secs = 1.0
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 0.800000011920929
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 0.25
+heavy = 0.25
+structure = 0.25
+
+[[weapons]]
+id = "m60"
+name = "M60"
+damage = 20.0
+range = 10.0
+cooldown_secs = 1.0
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 0.800000011920929
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 0.25
+heavy = 0.25
+structure = 0.25
+
+[[weapons]]
+id = "m60e"
+name = "M60E"
+damage = 25.0
+range = 10.0
+cooldown_secs = 1.0
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 0.800000011920929
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 0.25
+heavy = 0.25
+structure = 0.25
+
+[[weapons]]
+id = "mammothtusk"
+name = "MammothTusk"
+damage = 80.0
+range = 20.0
+cooldown_secs = 4.0
+projectile_speed = 80.0
+targets_ground = false
+targets_air = true
+splash_radius = 1.78125
+burst = 2
+projectile_style = "missile"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 1.0
+heavy = 1.0
+structure = 0.05000000074505806
+
+[[weapons]]
+id = "maverick"
+name = "Maverick"
+damage = 150.0
+range = 15.0
+cooldown_secs = 0.5
+projectile_speed = 80.0
+targets_ground = true
+targets_air = false
+splash_radius = 1.3333333730697632
+burst = 1
+projectile_style = "missile"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+structure = 0.75
+
+[[weapons]]
+id = "maverick2"
+name = "Maverick2"
+damage = 200.0
+range = 15.0
+cooldown_secs = 0.5
+projectile_speed = 80.0
+targets_ground = true
+targets_air = false
+splash_radius = 1.3333333730697632
+burst = 1
+projectile_style = "missile"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+structure = 0.75
+
+[[weapons]]
+id = "medusa"
+name = "Medusa"
+damage = 100.0
+range = 30.0
+cooldown_secs = 5.0
+projectile_speed = 80.0
+targets_ground = false
+targets_air = true
+splash_radius = 0.800000011920929
+burst = 3
+projectile_style = "missile"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 1.0
+heavy = 1.0
+structure = 0.05000000074505806
+
+[[weapons]]
+id = "mindcontrol"
+name = "MindControl"
+damage = 5.0
+range = 17.5
+cooldown_secs = 10.0
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 0.0
+burst = 1
+projectile_style = "mind_control"
+leaves_radiation = false
+mind_control = true
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+
+[[weapons]]
+id = "miragegun"
+name = "MirageGun"
+damage = 100.0
+range = 17.5
+cooldown_secs = 3.5
+projectile_speed = 80.0
+targets_ground = true
+targets_air = false
+splash_radius = 0.800000011920929
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 1.0
+heavy = 1.0
+structure = 0.20000000298023224
+
+[[weapons]]
+id = "miragegune"
+name = "MirageGunE"
+damage = 150.0
+range = 22.5
+cooldown_secs = 4.0
+projectile_speed = 80.0
+targets_ground = true
+targets_air = false
+splash_radius = 0.800000011920929
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 1.0
+heavy = 1.0
+structure = 0.20000000298023224
+
+[[weapons]]
+id = "mp5"
+name = "MP5"
+damage = 125.0
+range = 15.0
+cooldown_secs = 0.5
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 0.800000011920929
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 0.25
+heavy = 0.25
+structure = 0.25
+
+[[weapons]]
+id = "mp5e"
+name = "MP5E"
+damage = 125.0
+range = 15.0
+cooldown_secs = 0.5
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 0.800000011920929
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 0.25
+heavy = 0.25
+structure = 0.25
+
+[[weapons]]
+id = "neutronrifle"
+name = "NeutronRifle"
+damage = 8.0
+range = 12.5
+cooldown_secs = 6.0
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 0.800000011920929
+burst = 1
+projectile_style = "radiation"
+on_hit_zone = { radius = 3.0, dps = 18.0, duration_secs = 6.0 }
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+
+[[weapons]]
+id = "nukepayload"
+name = "NukePayload"
+damage = 600.0
+range = 14.0
+cooldown_secs = 1.5
+projectile_speed = 35.0
+targets_ground = true
+targets_air = true
+splash_radius = 6.0
+burst = 1
+projectile_style = "radiation"
+on_hit_zone = { radius = 3.0, dps = 18.0, duration_secs = 6.0 }
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 1.0
+heavy = 1.0
+structure = 0.07999999821186066
+
+[[weapons]]
+id = "opcoilbolt"
+name = "OPCoilBolt"
+damage = 300.0
+range = 21.25
+cooldown_secs = 0.25
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 0.800000011920929
+burst = 1
+projectile_style = "tesla"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 1.0
+heavy = 1.0
+structure = 0.5
+
+[[weapons]]
+id = "para"
+name = "para"
+damage = 15.0
+range = 12.5
+cooldown_secs = 0.75
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 0.800000011920929
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 0.25
+heavy = 0.25
+structure = 0.25
+
+[[weapons]]
+id = "parae"
+name = "paraE"
+damage = 25.0
+range = 17.5
+cooldown_secs = 0.75
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 0.800000011920929
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 0.25
+heavy = 0.25
+structure = 0.25
+
+[[weapons]]
+id = "planeexplode"
+name = "PlaneExplode"
+damage = 20.0
+range = 14.0
+cooldown_secs = 1.5
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 4.4375
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+
+[[weapons]]
+id = "prismshot"
+name = "PrismShot"
+damage = 120.0
+range = 20.0
+cooldown_secs = 0.25
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 0.800000011920929
+burst = 1
+projectile_style = "laser"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 2.0
+light = 1.0
+medium = 1.0
+heavy = 1.0
+structure = 0.5
+
+[[weapons]]
+id = "psiwave"
+name = "PsiWave"
+damage = 250.0
+range = 2.5
+cooldown_secs = 5.0
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 6.0
+burst = 1
+projectile_style = "mind_control"
+leaves_radiation = false
+mind_control = true
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+
+[[weapons]]
+id = "radbeamweapon"
+name = "RadBeamWeapon"
+damage = 125.0
+range = 15.0
+cooldown_secs = 5.0
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 0.800000011920929
+burst = 1
+projectile_style = "radiation"
+on_hit_zone = { radius = 3.0, dps = 18.0, duration_secs = 6.0 }
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 0.15000000596046448
+heavy = 0.10000000149011612
+structure = 0.05000000074505806
+
+[[weapons]]
+id = "radbeamweapone"
+name = "RadBeamWeaponE"
+damage = 200.0
+range = 20.0
+cooldown_secs = 5.0
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 0.800000011920929
+burst = 1
+projectile_style = "radiation"
+on_hit_zone = { radius = 3.0, dps = 18.0, duration_secs = 6.0 }
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 0.15000000596046448
+heavy = 0.10000000149011612
+structure = 0.05000000074505806
+
+[[weapons]]
+id = "raderuptionweapon"
+name = "RadEruptionWeapon"
+damage = 40.0
+range = 14.0
+cooldown_secs = 3.0
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 5.0
+burst = 1
+projectile_style = "radiation"
+on_hit_zone = { radius = 3.0, dps = 18.0, duration_secs = 6.0 }
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+
+[[weapons]]
+id = "redeye2"
+name = "RedEye2"
+damage = 75.0
+range = 30.0
+cooldown_secs = 3.0
+projectile_speed = 80.0
+targets_ground = false
+targets_air = true
+splash_radius = 1.25
+burst = 1
+projectile_style = "missile"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 1.0
+heavy = 1.0
+structure = 0.05000000074505806
+
+[[weapons]]
+id = "repairbullet"
+name = "RepairBullet"
+damage = 5.0
+range = 4.49951171875
+cooldown_secs = 4.0
+projectile_speed = 18.0
+targets_ground = false
+targets_air = true
+splash_radius = 2.21875
+burst = 1
+projectile_style = "missile"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+
+[[weapons]]
+id = "sabot"
+name = "sabot"
+damage = 150.0
+range = 12.5
+cooldown_secs = 3.5
+projectile_speed = 80.0
+targets_ground = true
+targets_air = false
+splash_radius = 1.9791666269302368
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 0.05000000074505806
+light = 1.0
+medium = 0.4000000059604645
+heavy = 1.0
+structure = 0.05000000074505806
+
+[[weapons]]
+id = "sabote"
+name = "sabotE"
+damage = 175.0
+range = 16.875
+cooldown_secs = 3.0
+projectile_speed = 80.0
+targets_ground = true
+targets_air = false
+splash_radius = 1.9791666269302368
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 0.05000000074505806
+light = 1.0
+medium = 0.4000000059604645
+heavy = 1.0
+structure = 0.05000000074505806
+
+[[weapons]]
+id = "smallbarrelexplode"
+name = "SmallBarrelExplode"
+damage = 200.0
+range = 14.0
+cooldown_secs = 1.5
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 2.0
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.5
+light = 1.0
+medium = 0.5
+heavy = 0.5
+structure = 0.30000001192092896
+
+[[weapons]]
+id = "soniczap"
+name = "SonicZap"
+damage = 5.0
+range = 15.0
+cooldown_secs = 9.0
+projectile_speed = 18.0
+targets_ground = true
+targets_air = false
+splash_radius = 0.0
+burst = 1
+projectile_style = "sonic"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+heavy = 0.800000011920929
+structure = 0.6000000238418579
+
+[[weapons]]
+id = "squidpunch"
+name = "SquidPunch"
+damage = 50.0
+range = 4.58984375
+cooldown_secs = 1.600000023841858
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 2.21875
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+
+[[weapons]]
+id = "subtorpedo"
+name = "SubTorpedo"
+damage = 100.0
+range = 17.5
+cooldown_secs = 3.75
+projectile_speed = 80.0
+targets_ground = true
+targets_air = false
+splash_radius = 4.4375
+burst = 1
+projectile_style = "missile"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 0.25
+light = 1.0
+medium = 1.0
+heavy = 1.0
+structure = 0.6000000238418579
+
+[[weapons]]
+id = "subtorpedoe"
+name = "SubTorpedoE"
+damage = 100.0
+range = 17.5
+cooldown_secs = 3.75
+projectile_speed = 80.0
+targets_ground = true
+targets_air = false
+splash_radius = 4.4375
+burst = 2
+projectile_style = "missile"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 0.25
+light = 1.0
+medium = 1.0
+heavy = 1.0
+structure = 0.6000000238418579
+
+[[weapons]]
+id = "supercomet"
+name = "SuperComet"
+damage = 150.0
+range = 25.0
+cooldown_secs = 5.0
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 6.0
+burst = 1
+projectile_style = "laser"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 0.5
+heavy = 0.5
+structure = 2.0
+
+[[weapons]]
+id = "supermindcontrol"
+name = "SuperMindControl"
+damage = 5.0
+range = 45.0
+cooldown_secs = 10.0
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 0.0
+burst = 1
+projectile_style = "mind_control"
+leaves_radiation = false
+mind_control = true
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+
+[[weapons]]
+id = "tankbolt"
+name = "TankBolt"
+damage = 135.0
+range = 10.0
+cooldown_secs = 3.75
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 1.25
+burst = 2
+projectile_style = "tesla"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 1.0
+heavy = 1.0
+structure = 0.5
+
+[[weapons]]
+id = "tankbolte"
+name = "TankBoltE"
+damage = 150.0
+range = 15.0
+cooldown_secs = 3.0
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 1.25
+burst = 2
+projectile_style = "tesla"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 1.0
+heavy = 1.0
+structure = 0.5
+
+[[weapons]]
+id = "terrorbomb"
+name = "TerrorBomb"
+damage = 400.0
+range = 10.0
+cooldown_secs = 1.0
+projectile_speed = 18.0
+targets_ground = true
+targets_air = false
+splash_radius = 4.4375
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.5
+light = 1.0
+medium = 0.5
+heavy = 0.5
+structure = 0.30000001192092896
+
+[[weapons]]
+id = "unitexplode"
+name = "UnitExplode"
+damage = 40.0
+range = 14.0
+cooldown_secs = 1.5
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 0.0
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+
+[[weapons]]
+id = "unitexplodesmall"
+name = "UnitExplodeSmall"
+damage = 40.0
+range = 14.0
+cooldown_secs = 1.5
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 0.0
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+
+[[weapons]]
+id = "v3ammunitionexplode"
+name = "V3AmmunitionExplode"
+damage = 40.0
+range = 14.0
+cooldown_secs = 1.5
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 0.0
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+
+[[weapons]]
+id = "vulcan"
+name = "vulcan"
+damage = 50.0
+range = 13.75
+cooldown_secs = 1.2999999523162842
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 0.800000011920929
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 0.25
+heavy = 0.25
+structure = 0.25
+
+[[weapons]]
+id = "vulcan2"
+name = "vulcan2"
+damage = 50.0
+range = 13.75
+cooldown_secs = 1.2999999523162842
+projectile_speed = 35.0
+targets_ground = true
+targets_air = false
+splash_radius = 0.800000011920929
+burst = 1
+projectile_style = "bullet"
+leaves_radiation = false
+mind_control = false
+warp_erase = false
+tesla_charge_boost = false
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 0.25
+heavy = 0.25
+structure = 0.25

@@ -1,0 +1,326 @@
+id = "ra2_soviet_03_big_apple"
+name = "RA2 Soviet 03: Big Apple (New York)"
+width = 96
+height = 68
+tile_size = 2.0
+ore_regen_per_sec = 4.0
+mission_objective = "In order to complete our psychic beacon, we will need to capture some American technology. Lead your forces into New York and capture their Battle Lab. Then build a Psychic Beacon to take control of the city. \n \n Objective 1: Capture the American Battle Lab. \n \n Objective 2: Build and defend a Psychic Beacon."
+
+[[ore_patches]]
+position = [46, 14]
+radius = 3
+amount_per_tile = 1400
+
+[[ore_patches]]
+position = [72, 31]
+radius = 3
+amount_per_tile = 1400
+
+[[ore_patches]]
+position = [48, 34]
+radius = 4
+amount_per_tile = 2000
+
+[[ore_patches]]
+position = [65, 38]
+radius = 3
+amount_per_tile = 1500
+
+[[ore_patches]]
+position = [40, 49]
+radius = 3
+amount_per_tile = 1500
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "tech_oil_derrick"
+tile_pos = [41, 57]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "tech_oil_derrick"
+tile_pos = [44, 56]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "tech_oil_derrick"
+tile_pos = [41, 56]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_conyard"
+tile_pos = [58, 10]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_power_plant"
+tile_pos = [68, 18]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_power_plant"
+tile_pos = [49, 18]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_power_plant"
+tile_pos = [51, 18]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_power_plant"
+tile_pos = [64, 18]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_power_plant"
+tile_pos = [53, 18]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_refinery"
+tile_pos = [48, 16]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_power_plant"
+tile_pos = [62, 18]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_power_plant"
+tile_pos = [55, 18]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_barracks"
+tile_pos = [40, 39]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_power_plant"
+tile_pos = [60, 18]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_power_plant"
+tile_pos = [58, 18]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_power_plant"
+tile_pos = [66, 18]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_pillbox"
+tile_pos = [46, 18]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_pillbox"
+tile_pos = [63, 22]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_pillbox"
+tile_pos = [72, 18]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_pillbox"
+tile_pos = [53, 22]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_pillbox"
+tile_pos = [72, 19]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_pillbox"
+tile_pos = [55, 22]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_pillbox"
+tile_pos = [66, 22]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_pillbox"
+tile_pos = [46, 19]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "ifv"
+tile_pos = [53, 15]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "grizzly_tank"
+tile_pos = [56, 14]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "grizzly_tank"
+tile_pos = [55, 15]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "grizzly_tank"
+tile_pos = [82, 30]
+
+[[preplaced_entities]]
+player_id = 1
+unit_id = "soviet_mcv"
+tile_pos = [32, 56]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "allied_gi"
+tile_pos = [55, 14]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "allied_gi"
+tile_pos = [58, 14]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "allied_gi"
+tile_pos = [53, 14]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "allied_gi"
+tile_pos = [60, 48]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "allied_gi"
+tile_pos = [60, 47]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "allied_gi"
+tile_pos = [62, 43]
+
+[[spawns]]
+player_id = 1
+faction = "soviets"
+base_tile = [54, 14]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_conyard"
+tile_pos = [54, 14]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_tesla_reactor"
+tile_pos = [51, 14]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_refinery"
+tile_pos = [54, 17]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_barracks"
+tile_pos = [51, 17]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_war_factory"
+tile_pos = [48, 14]
+
+[[spawns.initial_units]]
+unit_id = "soviet_conscript"
+tile_pos = [52, 19]
+
+[[spawns.initial_units]]
+unit_id = "soviet_conscript"
+tile_pos = [50, 19]
+
+[[spawns.initial_units]]
+unit_id = "rhino_tank"
+tile_pos = [48, 18]
+
+[[spawns.initial_units]]
+unit_id = "war_miner"
+tile_pos = [52, 18]
+
+[[spawns]]
+player_id = 2
+faction = "allies"
+base_tile = [80, 31]
+
+[[spawns.initial_buildings]]
+building_id = "allied_conyard"
+tile_pos = [80, 31]
+
+[[spawns.initial_buildings]]
+building_id = "allied_power_plant"
+tile_pos = [77, 31]
+
+[[spawns.initial_buildings]]
+building_id = "allied_refinery"
+tile_pos = [80, 34]
+
+[[spawns.initial_buildings]]
+building_id = "allied_barracks"
+tile_pos = [77, 34]
+
+[[spawns.initial_buildings]]
+building_id = "allied_war_factory"
+tile_pos = [74, 31]
+
+[[spawns.initial_units]]
+unit_id = "allied_gi"
+tile_pos = [78, 36]
+
+[[spawns.initial_units]]
+unit_id = "allied_gi"
+tile_pos = [76, 36]
+
+[[spawns.initial_units]]
+unit_id = "grizzly_tank"
+tile_pos = [74, 35]
+
+[[spawns.initial_units]]
+unit_id = "chrono_miner"
+tile_pos = [78, 35]
+
+[[trigger_zones]]
+id = "mission_stage_init"
+min = [6, 6]
+max = [12, 12]
+once = true
+condition = { type = "timer_elapsed", secs = 1.0 }
+actions = [
+    { type = "set_variable", name = "mission_stage", value = 1 },
+    { type = "eva_transmission", speaker = "ZOFIA", text = "Battle Control Online. Primary tactical objectives initialized." },
+    { type = "reveal_area", tile = [54, 14], radius = 14 }
+]
+
+[[trigger_zones]]
+id = "tactical_reinforcement_wave"
+min = [53, 12]
+max = [57, 16]
+once = true
+condition = { type = "all", conditions = [{ type = "timer_elapsed", secs = 45.0 }, { type = "variable_equals", name = "mission_stage", value = 1 }] }
+actions = [
+    { type = "set_variable", name = "mission_stage", value = 2 },
+    { type = "spawn_reinforcements", player_id = 1, unit_id = "rhino_tank", count = 2, tile = [53, 12] },
+    { type = "grant_credits", player_id = 1, amount = 1500 },
+    { type = "eva_transmission", speaker = "ZOFIA", text = "Reinforcements have arrived. Forward command has authorized 1500 bonus credits." }
+]
+
+[[trigger_zones]]
+id = "decisive_campaign_victory"
+min = [2, 2]
+max = [6, 6]
+once = true
+condition = { type = "all_buildings_destroyed", player_id = 2 }
+actions = [
+    { type = "set_variable", name = "mission_stage", value = 3 },
+    { type = "eva_transmission", speaker = "ZOFIA", text = "Mission Accomplished. All primary hostile command structures neutralized." },
+    { type = "declare_winner", player_id = 1 }
+]

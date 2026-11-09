@@ -1,0 +1,351 @@
+id = "yr_allied_05_cloning_around"
+name = "YR Allied 05: Cloning Around (Sydney)"
+width = 70
+height = 96
+tile_size = 2.0
+ore_regen_per_sec = 4.0
+mission_objective = "Yuri has established cloning facilities in Sydney, Australia. It is believed he plans to clone the world leaders. We must put an end to this operation at any cost. \n \n Objective 1: Find and destroy Yuri's Cloning Vats. \n Objective 2: Destroy Yuri's remaining forces."
+
+[[ore_patches]]
+position = [31, 62]
+radius = 3
+amount_per_tile = 1400
+
+[[ore_patches]]
+position = [41, 56]
+radius = 3
+amount_per_tile = 1400
+
+[[ore_patches]]
+position = [35, 48]
+radius = 4
+amount_per_tile = 2000
+
+[[ore_patches]]
+position = [40, 26]
+radius = 3
+amount_per_tile = 1500
+
+[[ore_patches]]
+position = [33, 38]
+radius = 3
+amount_per_tile = 1500
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "tech_hospital"
+tile_pos = [40, 83]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "tech_airport"
+tile_pos = [49, 79]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "tech_machine_shop"
+tile_pos = [32, 47]
+
+[[preplaced_entities]]
+player_id = 1
+building_id = "allied_naval_shipyard"
+tile_pos = [8, 46]
+
+[[preplaced_entities]]
+player_id = 1
+building_id = "allied_conyard"
+tile_pos = [12, 45]
+
+[[preplaced_entities]]
+player_id = 1
+building_id = "allied_power_plant"
+tile_pos = [12, 50]
+
+[[preplaced_entities]]
+player_id = 1
+building_id = "allied_power_plant"
+tile_pos = [13, 50]
+
+[[preplaced_entities]]
+player_id = 1
+building_id = "allied_power_plant"
+tile_pos = [13, 51]
+
+[[preplaced_entities]]
+player_id = 1
+building_id = "allied_barracks"
+tile_pos = [13, 42]
+
+[[preplaced_entities]]
+player_id = 1
+building_id = "allied_refinery"
+tile_pos = [12, 48]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_conyard"
+tile_pos = [49, 67]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_conyard"
+tile_pos = [44, 52]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_bio_reactor"
+tile_pos = [45, 53]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_bio_reactor"
+tile_pos = [45, 52]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_bio_reactor"
+tile_pos = [44, 51]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_barracks"
+tile_pos = [46, 49]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_tank_bunker"
+tile_pos = [42, 54]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_tank_bunker"
+tile_pos = [42, 50]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_gatling_cannon"
+tile_pos = [44, 55]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_gatling_cannon"
+tile_pos = [40, 52]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_submarine_pen"
+tile_pos = [44, 45]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_submarine_pen"
+tile_pos = [39, 46]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_psychic_tower"
+tile_pos = [45, 51]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_psychic_tower"
+tile_pos = [42, 43]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "yuri_slave_miner"
+tile_pos = [54, 70]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "yuri_slave_miner"
+tile_pos = [50, 58]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "yuri_slave_miner"
+tile_pos = [53, 49]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "yuri_slave_miner"
+tile_pos = [44, 63]
+
+[[preplaced_entities]]
+player_id = 1
+unit_id = "chrono_miner"
+tile_pos = [13, 48]
+
+[[preplaced_entities]]
+player_id = 1
+unit_id = "chrono_miner"
+tile_pos = [13, 49]
+
+[[preplaced_entities]]
+player_id = 1
+unit_id = "allied_destroyer"
+tile_pos = [15, 22]
+
+[[preplaced_entities]]
+player_id = 1
+unit_id = "allied_destroyer"
+tile_pos = [8, 44]
+
+[[preplaced_entities]]
+player_id = 1
+unit_id = "allied_destroyer"
+tile_pos = [16, 22]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "lasher_tank"
+tile_pos = [48, 71]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "lasher_tank"
+tile_pos = [48, 64]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "lasher_tank"
+tile_pos = [46, 68]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "lasher_tank"
+tile_pos = [48, 69]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "lasher_tank"
+tile_pos = [48, 70]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "lasher_tank"
+tile_pos = [46, 67]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "lasher_tank"
+tile_pos = [48, 65]
+
+[[spawns]]
+player_id = 1
+faction = "allies"
+base_tile = [23, 62]
+
+[[spawns.initial_buildings]]
+building_id = "allied_conyard"
+tile_pos = [23, 62]
+
+[[spawns.initial_buildings]]
+building_id = "allied_power_plant"
+tile_pos = [26, 62]
+
+[[spawns.initial_buildings]]
+building_id = "allied_refinery"
+tile_pos = [23, 59]
+
+[[spawns.initial_buildings]]
+building_id = "allied_barracks"
+tile_pos = [26, 59]
+
+[[spawns.initial_buildings]]
+building_id = "allied_war_factory"
+tile_pos = [29, 62]
+
+[[spawns.initial_units]]
+unit_id = "allied_gi"
+tile_pos = [25, 57]
+
+[[spawns.initial_units]]
+unit_id = "allied_gi"
+tile_pos = [27, 57]
+
+[[spawns.initial_units]]
+unit_id = "grizzly_tank"
+tile_pos = [29, 58]
+
+[[spawns.initial_units]]
+unit_id = "chrono_miner"
+tile_pos = [25, 58]
+
+[[spawns]]
+player_id = 2
+faction = "yuri"
+base_tile = [33, 56]
+
+[[spawns.initial_buildings]]
+building_id = "yuri_conyard"
+tile_pos = [33, 56]
+
+[[spawns.initial_buildings]]
+building_id = "yuri_bio_reactor"
+tile_pos = [36, 56]
+
+[[spawns.initial_buildings]]
+building_id = "yuri_slave_refinery"
+tile_pos = [33, 53]
+
+[[spawns.initial_buildings]]
+building_id = "yuri_barracks"
+tile_pos = [36, 53]
+
+[[spawns.initial_buildings]]
+building_id = "yuri_war_factory"
+tile_pos = [39, 56]
+
+[[spawns.initial_units]]
+unit_id = "yuri_initiate"
+tile_pos = [35, 51]
+
+[[spawns.initial_units]]
+unit_id = "yuri_initiate"
+tile_pos = [37, 51]
+
+[[spawns.initial_units]]
+unit_id = "lasher_tank"
+tile_pos = [39, 52]
+
+[[spawns.initial_units]]
+unit_id = "yuri_slave_miner"
+tile_pos = [35, 52]
+
+[[trigger_zones]]
+id = "mission_stage_init"
+min = [6, 6]
+max = [12, 12]
+once = true
+condition = { type = "timer_elapsed", secs = 1.0 }
+actions = [
+    { type = "set_variable", name = "mission_stage", value = 1 },
+    { type = "eva_transmission", speaker = "EVA", text = "Battle Control Online. Primary tactical objectives initialized." },
+    { type = "reveal_area", tile = [23, 62], radius = 14 }
+]
+
+[[trigger_zones]]
+id = "tactical_reinforcement_wave"
+min = [22, 60]
+max = [26, 64]
+once = true
+condition = { type = "all", conditions = [{ type = "timer_elapsed", secs = 45.0 }, { type = "variable_equals", name = "mission_stage", value = 1 }] }
+actions = [
+    { type = "set_variable", name = "mission_stage", value = 2 },
+    { type = "spawn_reinforcements", player_id = 1, unit_id = "tanya", count = 1, tile = [22, 60] },
+    { type = "grant_credits", player_id = 1, amount = 1500 },
+    { type = "eva_transmission", speaker = "EVA", text = "Reinforcements have arrived. Forward command has authorized 1500 bonus credits." }
+]
+
+[[trigger_zones]]
+id = "decisive_campaign_victory"
+min = [2, 2]
+max = [6, 6]
+once = true
+condition = { type = "all_buildings_destroyed", player_id = 2 }
+actions = [
+    { type = "set_variable", name = "mission_stage", value = 3 },
+    { type = "eva_transmission", speaker = "EVA", text = "Mission Accomplished. All primary hostile command structures neutralized." },
+    { type = "declare_winner", player_id = 1 }
+]

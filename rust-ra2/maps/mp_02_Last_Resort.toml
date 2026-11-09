@@ -1,0 +1,114 @@
+id = "mp_02_Last_Resort"
+name = "Skirmish: Isle of War (2)"
+width = 96
+height = 96
+tile_size = 2.0
+ore_regen_per_sec = 4.0
+mission_objective = "Isle of War (2)"
+
+[[ore_patches]]
+position = [69, 32]
+radius = 3
+amount_per_tile = 1400
+
+[[ore_patches]]
+position = [26, 69]
+radius = 3
+amount_per_tile = 1400
+
+[[ore_patches]]
+position = [48, 48]
+radius = 4
+amount_per_tile = 2000
+
+[[ore_patches]]
+position = [16, 28]
+radius = 3
+amount_per_tile = 1500
+
+[[ore_patches]]
+position = [17, 45]
+radius = 3
+amount_per_tile = 1500
+
+[[spawns]]
+player_id = 1
+faction = "allies"
+base_tile = [77, 32]
+
+[[spawns.initial_buildings]]
+building_id = "allied_conyard"
+tile_pos = [77, 32]
+
+[[spawns.initial_buildings]]
+building_id = "allied_power_plant"
+tile_pos = [74, 32]
+
+[[spawns.initial_buildings]]
+building_id = "allied_refinery"
+tile_pos = [77, 35]
+
+[[spawns.initial_buildings]]
+building_id = "allied_barracks"
+tile_pos = [74, 35]
+
+[[spawns.initial_buildings]]
+building_id = "allied_war_factory"
+tile_pos = [71, 32]
+
+[[spawns.initial_units]]
+unit_id = "allied_gi"
+tile_pos = [75, 37]
+
+[[spawns.initial_units]]
+unit_id = "allied_gi"
+tile_pos = [73, 37]
+
+[[spawns.initial_units]]
+unit_id = "grizzly_tank"
+tile_pos = [71, 36]
+
+[[spawns.initial_units]]
+unit_id = "chrono_miner"
+tile_pos = [75, 36]
+
+[[spawns]]
+player_id = 2
+faction = "soviets"
+base_tile = [18, 69]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_conyard"
+tile_pos = [18, 69]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_tesla_reactor"
+tile_pos = [21, 69]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_refinery"
+tile_pos = [18, 66]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_barracks"
+tile_pos = [21, 66]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_war_factory"
+tile_pos = [24, 69]
+
+[[spawns.initial_units]]
+unit_id = "soviet_conscript"
+tile_pos = [20, 64]
+
+[[spawns.initial_units]]
+unit_id = "soviet_conscript"
+tile_pos = [22, 64]
+
+[[spawns.initial_units]]
+unit_id = "rhino_tank"
+tile_pos = [24, 65]
+
+[[spawns.initial_units]]
+unit_id = "war_miner"
+tile_pos = [20, 65]

@@ -1,0 +1,351 @@
+id = "yr_soviet_05_escape_velocity"
+name = "YR Soviet 05: Escape Velocity (Easter Island)"
+width = 96
+height = 96
+tile_size = 2.0
+ore_regen_per_sec = 4.0
+mission_objective = "We have uncovered Yuri's secret Submarine Base on an uncharted island in the Pacific Ocean. The threat of Yuri's Boomer Subs must be neutralized! \n \n Objective 1: Pick a landing zone and construct a base. \n Objective 2: Locate and destroy Yuri's Submarine Pen. \n Objective 3: Finish off all remaining Yuri forces."
+
+[[ore_patches]]
+position = [16, 8]
+radius = 3
+amount_per_tile = 1400
+
+[[ore_patches]]
+position = [78, 86]
+radius = 3
+amount_per_tile = 1400
+
+[[ore_patches]]
+position = [48, 48]
+radius = 4
+amount_per_tile = 2000
+
+[[ore_patches]]
+position = [45, 11]
+radius = 3
+amount_per_tile = 1500
+
+[[ore_patches]]
+position = [45, 11]
+radius = 3
+amount_per_tile = 1500
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_psychic_tower"
+tile_pos = [45, 57]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_psychic_tower"
+tile_pos = [47, 55]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_psychic_tower"
+tile_pos = [42, 55]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_submarine_pen"
+tile_pos = [44, 59]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_gatling_cannon"
+tile_pos = [48, 61]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_gatling_cannon"
+tile_pos = [42, 61]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_gatling_cannon"
+tile_pos = [47, 58]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_gatling_cannon"
+tile_pos = [42, 58]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_gatling_cannon"
+tile_pos = [49, 64]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_gatling_cannon"
+tile_pos = [41, 64]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_barracks"
+tile_pos = [48, 57]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_bio_reactor"
+tile_pos = [47, 49]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_bio_reactor"
+tile_pos = [42, 52]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_gatling_cannon"
+tile_pos = [39, 52]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_gatling_cannon"
+tile_pos = [49, 52]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_gatling_cannon"
+tile_pos = [48, 48]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_gatling_cannon"
+tile_pos = [40, 48]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_war_factory"
+tile_pos = [37, 57]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_bio_reactor"
+tile_pos = [53, 57]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_bio_reactor"
+tile_pos = [52, 57]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_bio_reactor"
+tile_pos = [50, 57]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_bio_reactor"
+tile_pos = [53, 62]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_bio_reactor"
+tile_pos = [52, 62]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_bio_reactor"
+tile_pos = [50, 62]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "boomer_sub"
+tile_pos = [50, 79]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "boomer_sub"
+tile_pos = [52, 79]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "boomer_sub"
+tile_pos = [46, 80]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "boomer_sub"
+tile_pos = [55, 77]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "boomer_sub"
+tile_pos = [48, 79]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "boomer_sub"
+tile_pos = [54, 78]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "boomer_sub"
+tile_pos = [47, 71]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "boomer_sub"
+tile_pos = [49, 71]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "boomer_sub"
+tile_pos = [50, 71]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "boomer_sub"
+tile_pos = [45, 66]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "boomer_sub"
+tile_pos = [47, 66]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "boomer_sub"
+tile_pos = [53, 65]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "boomer_sub"
+tile_pos = [39, 61]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "boomer_sub"
+tile_pos = [39, 63]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "boomer_sub"
+tile_pos = [34, 56]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "boomer_sub"
+tile_pos = [52, 59]
+
+[[spawns]]
+player_id = 1
+faction = "soviets"
+base_tile = [8, 8]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_conyard"
+tile_pos = [8, 8]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_tesla_reactor"
+tile_pos = [11, 8]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_refinery"
+tile_pos = [8, 11]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_barracks"
+tile_pos = [11, 11]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_war_factory"
+tile_pos = [14, 8]
+
+[[spawns.initial_units]]
+unit_id = "soviet_conscript"
+tile_pos = [10, 13]
+
+[[spawns.initial_units]]
+unit_id = "soviet_conscript"
+tile_pos = [12, 13]
+
+[[spawns.initial_units]]
+unit_id = "rhino_tank"
+tile_pos = [14, 12]
+
+[[spawns.initial_units]]
+unit_id = "war_miner"
+tile_pos = [10, 12]
+
+[[spawns]]
+player_id = 2
+faction = "yuri"
+base_tile = [86, 86]
+
+[[spawns.initial_buildings]]
+building_id = "yuri_conyard"
+tile_pos = [86, 86]
+
+[[spawns.initial_buildings]]
+building_id = "yuri_bio_reactor"
+tile_pos = [83, 86]
+
+[[spawns.initial_buildings]]
+building_id = "yuri_slave_refinery"
+tile_pos = [86, 83]
+
+[[spawns.initial_buildings]]
+building_id = "yuri_barracks"
+tile_pos = [83, 83]
+
+[[spawns.initial_buildings]]
+building_id = "yuri_war_factory"
+tile_pos = [80, 86]
+
+[[spawns.initial_units]]
+unit_id = "yuri_initiate"
+tile_pos = [84, 81]
+
+[[spawns.initial_units]]
+unit_id = "yuri_initiate"
+tile_pos = [82, 81]
+
+[[spawns.initial_units]]
+unit_id = "lasher_tank"
+tile_pos = [80, 82]
+
+[[spawns.initial_units]]
+unit_id = "yuri_slave_miner"
+tile_pos = [84, 82]
+
+[[trigger_zones]]
+id = "mission_stage_init"
+min = [6, 6]
+max = [12, 12]
+once = true
+condition = { type = "timer_elapsed", secs = 1.0 }
+actions = [
+    { type = "set_variable", name = "mission_stage", value = 1 },
+    { type = "eva_transmission", speaker = "ZOFIA", text = "Battle Control Online. Primary tactical objectives initialized." },
+    { type = "reveal_area", tile = [8, 8], radius = 14 }
+]
+
+[[trigger_zones]]
+id = "tactical_reinforcement_wave"
+min = [7, 6]
+max = [11, 10]
+once = true
+condition = { type = "all", conditions = [{ type = "timer_elapsed", secs = 45.0 }, { type = "variable_equals", name = "mission_stage", value = 1 }] }
+actions = [
+    { type = "set_variable", name = "mission_stage", value = 2 },
+    { type = "spawn_reinforcements", player_id = 1, unit_id = "apocalypse_tank", count = 2, tile = [7, 6] },
+    { type = "grant_credits", player_id = 1, amount = 1500 },
+    { type = "eva_transmission", speaker = "ZOFIA", text = "Reinforcements have arrived. Forward command has authorized 1500 bonus credits." }
+]
+
+[[trigger_zones]]
+id = "decisive_campaign_victory"
+min = [2, 2]
+max = [6, 6]
+once = true
+condition = { type = "all_buildings_destroyed", player_id = 2 }
+actions = [
+    { type = "set_variable", name = "mission_stage", value = 3 },
+    { type = "eva_transmission", speaker = "ZOFIA", text = "Mission Accomplished. All primary hostile command structures neutralized." },
+    { type = "declare_winner", player_id = 1 }
+]

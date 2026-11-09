@@ -1,0 +1,58 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "properties": {
+    "profiles": {
+      "items": {
+        "properties": {
+          "build_order": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "faction": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "min_attack_wave_size": {
+            "type": "integer"
+          },
+          "on_ai_tick": {
+            "type": "string"
+          },
+          "personality": {
+            "enum": [
+              "balanced",
+              "rusher",
+              "turtle",
+              "air_force"
+            ],
+            "type": "string"
+          },
+          "preferred_superweapons": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "unit_weights": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "faction"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "profiles"
+  ],
+  "title": "AiProfileCatalog",
+  "type": "object"
+}

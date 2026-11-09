@@ -1,0 +1,159 @@
+id = "mp_12_lake_placid"
+name = "Skirmish: Lake Blitzen (2-4)"
+width = 81
+height = 96
+tile_size = 2.0
+ore_regen_per_sec = 4.0
+mission_objective = "Lake Blitzen (2-4)"
+
+[[ore_patches]]
+position = [56, 52]
+radius = 3
+amount_per_tile = 1400
+
+[[ore_patches]]
+position = [46, 78]
+radius = 3
+amount_per_tile = 1400
+
+[[ore_patches]]
+position = [40, 48]
+radius = 4
+amount_per_tile = 2000
+
+[[ore_patches]]
+position = [35, 86]
+radius = 3
+amount_per_tile = 1500
+
+[[ore_patches]]
+position = [36, 76]
+radius = 3
+amount_per_tile = 1500
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "tech_airport"
+tile_pos = [49, 64]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "tech_outpost"
+tile_pos = [29, 39]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "tech_hospital"
+tile_pos = [41, 42]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "tech_oil_derrick"
+tile_pos = [48, 23]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "tech_oil_derrick"
+tile_pos = [22, 69]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "tech_oil_derrick"
+tile_pos = [36, 60]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "tech_oil_derrick"
+tile_pos = [37, 63]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "tech_oil_derrick"
+tile_pos = [33, 26]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "tech_oil_derrick"
+tile_pos = [36, 27]
+
+[[spawns]]
+player_id = 1
+faction = "allies"
+base_tile = [64, 52]
+
+[[spawns.initial_buildings]]
+building_id = "allied_conyard"
+tile_pos = [64, 52]
+
+[[spawns.initial_buildings]]
+building_id = "allied_power_plant"
+tile_pos = [61, 52]
+
+[[spawns.initial_buildings]]
+building_id = "allied_refinery"
+tile_pos = [64, 49]
+
+[[spawns.initial_buildings]]
+building_id = "allied_barracks"
+tile_pos = [61, 49]
+
+[[spawns.initial_buildings]]
+building_id = "allied_war_factory"
+tile_pos = [58, 52]
+
+[[spawns.initial_units]]
+unit_id = "allied_gi"
+tile_pos = [62, 47]
+
+[[spawns.initial_units]]
+unit_id = "allied_gi"
+tile_pos = [60, 47]
+
+[[spawns.initial_units]]
+unit_id = "grizzly_tank"
+tile_pos = [58, 48]
+
+[[spawns.initial_units]]
+unit_id = "chrono_miner"
+tile_pos = [62, 48]
+
+[[spawns]]
+player_id = 2
+faction = "soviets"
+base_tile = [38, 78]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_conyard"
+tile_pos = [38, 78]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_tesla_reactor"
+tile_pos = [41, 78]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_refinery"
+tile_pos = [38, 75]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_barracks"
+tile_pos = [41, 75]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_war_factory"
+tile_pos = [44, 78]
+
+[[spawns.initial_units]]
+unit_id = "soviet_conscript"
+tile_pos = [40, 73]
+
+[[spawns.initial_units]]
+unit_id = "soviet_conscript"
+tile_pos = [42, 73]
+
+[[spawns.initial_units]]
+unit_id = "rhino_tank"
+tile_pos = [44, 74]
+
+[[spawns.initial_units]]
+unit_id = "war_miner"
+tile_pos = [40, 74]

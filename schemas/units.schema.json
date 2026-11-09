@@ -1,0 +1,113 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "properties": {
+    "units": {
+      "items": {
+        "properties": {
+          "armor": {
+            "enum": [
+              "none",
+              "light",
+              "heavy",
+              "structure"
+            ],
+            "type": "string"
+          },
+          "build_time_secs": {
+            "minimum": 0.1,
+            "type": "number"
+          },
+          "container": {
+            "type": "object"
+          },
+          "cost": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "death_effect": {
+            "type": "object"
+          },
+          "elite_weapon": {
+            "type": "string"
+          },
+          "faction": {
+            "type": "string"
+          },
+          "health": {
+            "minimum": 1.0,
+            "type": "number"
+          },
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "point_defense": {
+            "type": "object"
+          },
+          "prerequisites": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "primary_weapon": {
+            "type": "string"
+          },
+          "role": {
+            "enum": [
+              "infantry",
+              "harvester",
+              "vehicle",
+              "engineer",
+              "air",
+              "naval"
+            ],
+            "type": "string"
+          },
+          "secondary_weapon": {
+            "type": "string"
+          },
+          "speed": {
+            "minimum": 0.0,
+            "type": "number"
+          },
+          "stealth": {
+            "type": "object"
+          },
+          "support_aura": {
+            "type": "object"
+          },
+          "vision_range": {
+            "minimum": 1.0,
+            "type": "number"
+          },
+          "visual": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "faction",
+          "role",
+          "cost",
+          "build_time_secs",
+          "health",
+          "armor",
+          "speed",
+          "vision_range",
+          "visual"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "units"
+  ],
+  "title": "UnitCatalog",
+  "type": "object"
+}

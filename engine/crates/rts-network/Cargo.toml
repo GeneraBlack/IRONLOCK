@@ -1,0 +1,18 @@
+[package]
+name = "rts-network"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+rts-sdk = { path = "../rts-sdk" }
+rts-simulation = { path = "../rts-simulation" }
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+anyhow.workspace = true
+clap.workspace = true
+
+[[bin]]
+name = "rts-lobby-server"
+path = "src/bin/rts-lobby-server.rs"
