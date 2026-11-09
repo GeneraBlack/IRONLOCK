@@ -1,0 +1,1888 @@
+# === Allied Buildings ===
+
+[[buildings]]
+id = "allied_conyard"
+name = "Allied Construction Yard"
+faction = "allies"
+role = "construction_yard"
+cost = 2500
+build_time_secs = 15.0
+health = 1500.0
+armor = "structure"
+footprint = [3, 3]
+power_delta = 50
+supply_provided = 25
+vision_range = 22.0
+prerequisites = []
+transforms_into_unit = "allied_mcv"
+
+[buildings.visual]
+model = "assets/models/allied_conyard.glb"
+icon = "assets/ui/cameos/ayaricon.png"
+archetype = "construction_yard"
+scale = [2.6, 1.8, 2.6]
+primary_color = [0.18, 0.45, 0.88]
+
+[[buildings.support_powers]]
+id = "allied_force_shield"
+name = "Force Shield"
+kind = "force_shield"
+cooldown_secs = 60.0
+cost = 0
+radius = 8.0
+duration_secs = 20.0
+
+[[buildings]]
+id = "allied_power_plant"
+name = "Allied Power Plant"
+faction = "allies"
+role = "power_plant"
+cost = 800
+build_time_secs = 6.0
+health = 750.0
+armor = "structure"
+footprint = [2, 2]
+power_delta = 150
+supply_provided = 15
+vision_range = 16.0
+prerequisites = ["allied_conyard"]
+upgrades_to = "allied_power_plant_overcharged"
+upgrade_cost = 400
+upgrade_time_secs = 4.0
+death_effect = { survivor_unit = "allied_gi", survivor_chance = 0.75 }
+
+[buildings.visual]
+model = "assets/models/allied_power_plant.glb"
+icon = "assets/ui/cameos/powricon.png"
+archetype = "power_plant"
+scale = [1.8, 1.6, 1.8]
+primary_color = [0.18, 0.45, 0.88]
+
+[[buildings]]
+id = "allied_power_plant_overcharged"
+name = "Overcharged Power Plant"
+faction = "allies"
+role = "power_plant"
+cost = 1200
+build_time_secs = 8.0
+health = 1000.0
+armor = "structure"
+footprint = [2, 2]
+power_delta = 300
+supply_provided = 25
+vision_range = 18.0
+prerequisites = ["allied_battle_lab"]
+death_effect = { survivor_unit = "allied_engineer", survivor_chance = 0.85 }
+
+[buildings.visual]
+model = "assets/models/allied_power_plant.glb"
+icon = "assets/ui/cameos/powricon.png"
+archetype = "power_plant"
+scale = [1.95, 1.8, 1.95]
+primary_color = [0.22, 0.58, 1.0]
+
+[[buildings]]
+id = "allied_barracks"
+name = "Allied Barracks"
+faction = "allies"
+role = "barracks"
+cost = 500
+build_time_secs = 5.0
+health = 800.0
+armor = "structure"
+footprint = [2, 2]
+power_delta = -20
+vision_range = 16.0
+prerequisites = ["allied_power_plant"]
+container = { capacity = 5 }
+
+[buildings.visual]
+model = "assets/models/allied_barracks.glb"
+icon = "assets/ui/cameos/brrkicon.png"
+archetype = "barracks"
+scale = [1.9, 1.4, 1.9]
+primary_color = [0.18, 0.45, 0.88]
+
+[[buildings]]
+id = "allied_refinery"
+name = "Allied Ore Refinery"
+faction = "allies"
+role = "refinery"
+cost = 2000
+build_time_secs = 10.0
+health = 1100.0
+armor = "structure"
+footprint = [3, 2]
+power_delta = -50
+vision_range = 18.0
+prerequisites = ["allied_power_plant"]
+spawns_unit_on_complete = "chrono_miner"
+
+[buildings.visual]
+model = "assets/models/allied_refinery.glb"
+icon = "assets/ui/cameos/reficon.png"
+archetype = "refinery"
+scale = [2.4, 1.6, 2.0]
+primary_color = [0.18, 0.45, 0.88]
+
+[[buildings]]
+id = "allied_war_factory"
+name = "Allied War Factory"
+faction = "allies"
+role = "war_factory"
+cost = 2000
+build_time_secs = 11.0
+health = 1200.0
+armor = "structure"
+footprint = [3, 3]
+power_delta = -50
+vision_range = 18.0
+prerequisites = ["allied_refinery"]
+
+[buildings.visual]
+model = "assets/models/allied_war_factory.glb"
+icon = "assets/ui/cameos/gwepicon.png"
+archetype = "war_factory"
+scale = [2.5, 1.8, 2.5]
+primary_color = [0.18, 0.45, 0.88]
+
+[[buildings]]
+id = "allied_pillbox"
+name = "Allied Pillbox"
+faction = "allies"
+role = "defense"
+cost = 500
+build_time_secs = 5.0
+health = 650.0
+armor = "structure"
+footprint = [1, 1]
+power_delta = -15
+vision_range = 16.0
+primary_weapon = "vulcan_turret_gun"
+prerequisites = ["allied_barracks"]
+upgrades_to = "allied_prism_tower"
+upgrade_cost = 900
+upgrade_time_secs = 5.0
+container = { capacity = 4 }
+death_effect = { survivor_unit = "allied_gi", survivor_chance = 0.65 }
+
+[buildings.visual]
+model = "assets/models/allied_pillbox.glb"
+icon = "assets/ui/cameos/pillicon.png"
+archetype = "turret"
+scale = [1.2, 1.2, 1.2]
+primary_color = [0.18, 0.45, 0.88]
+has_turret = true
+barrel_recoil_distance = 0.25
+
+[[buildings]]
+id = "allied_battle_lab"
+name = "Allied Battle Lab"
+faction = "allies"
+role = "tech_center"
+cost = 2000
+build_time_secs = 14.0
+health = 1000.0
+armor = "structure"
+footprint = [2, 2]
+power_delta = -100
+vision_range = 20.0
+stolen_tech_units = ["chrono_commando", "chrono_legionnaire", "prism_tank"]
+prerequisites = ["allied_war_factory"]
+
+[buildings.visual]
+model = "assets/models/allied_battle_lab.glb"
+icon = "assets/ui/cameos/techicon.png"
+archetype = "power_plant"
+scale = [2.1, 2.2, 2.1]
+primary_color = [0.18, 0.45, 0.88]
+spin_speed_deg_per_sec = 90.0
+
+# === Soviet Buildings ===
+
+[[buildings]]
+id = "soviet_conyard"
+name = "Soviet Construction Yard"
+faction = "soviets"
+role = "construction_yard"
+cost = 2500
+build_time_secs = 15.0
+health = 1600.0
+armor = "structure"
+footprint = [3, 3]
+power_delta = 50
+supply_provided = 25
+vision_range = 22.0
+prerequisites = []
+transforms_into_unit = "soviet_mcv"
+
+[buildings.visual]
+model = "assets/models/soviet_conyard.glb"
+icon = "assets/ui/cameos/nwalicon.png"
+archetype = "construction_yard"
+scale = [2.6, 1.8, 2.6]
+primary_color = [0.85, 0.16, 0.16]
+
+[[buildings]]
+id = "soviet_tesla_reactor"
+name = "Soviet Tesla Reactor"
+faction = "soviets"
+role = "power_plant"
+cost = 600
+build_time_secs = 5.5
+health = 700.0
+armor = "structure"
+footprint = [2, 2]
+power_delta = 150
+supply_provided = 15
+vision_range = 16.0
+prerequisites = ["soviet_conyard"]
+upgrades_to = "soviet_tesla_reactor_overcharged"
+upgrade_cost = 400
+upgrade_time_secs = 4.0
+death_effect = { survivor_unit = "soviet_conscript", survivor_chance = 0.75 }
+
+[buildings.visual]
+model = "assets/models/soviet_tesla_reactor.glb"
+icon = "assets/ui/cameos/npwricon.png"
+archetype = "power_plant"
+scale = [1.8, 1.6, 1.8]
+primary_color = [0.85, 0.16, 0.16]
+
+[[buildings]]
+id = "soviet_tesla_reactor_overcharged"
+name = "Overcharged Tesla Reactor"
+faction = "soviets"
+role = "power_plant"
+cost = 1000
+build_time_secs = 7.5
+health = 950.0
+armor = "structure"
+footprint = [2, 2]
+power_delta = 300
+supply_provided = 25
+vision_range = 18.0
+prerequisites = ["soviet_battle_lab"]
+death_effect = { survivor_unit = "soviet_engineer", survivor_chance = 0.85 }
+
+[buildings.visual]
+model = "assets/models/soviet_tesla_reactor.glb"
+icon = "assets/ui/cameos/soviet_tesla_reactor_overcharged.png"
+archetype = "power_plant"
+scale = [1.95, 1.8, 1.95]
+primary_color = [0.95, 0.22, 0.18]
+
+[[buildings]]
+id = "soviet_barracks"
+name = "Soviet Barracks"
+faction = "soviets"
+role = "barracks"
+cost = 500
+build_time_secs = 5.0
+health = 850.0
+armor = "structure"
+footprint = [2, 2]
+power_delta = -20
+vision_range = 16.0
+prerequisites = ["soviet_tesla_reactor"]
+container = { capacity = 5 }
+
+[buildings.visual]
+model = "assets/models/soviet_barracks.glb"
+icon = "assets/ui/cameos/handicon.png"
+archetype = "barracks"
+scale = [1.9, 1.4, 1.9]
+primary_color = [0.85, 0.16, 0.16]
+
+[[buildings]]
+id = "soviet_refinery"
+name = "Soviet Ore Refinery"
+faction = "soviets"
+role = "refinery"
+cost = 2000
+build_time_secs = 10.0
+health = 1150.0
+armor = "structure"
+footprint = [3, 2]
+power_delta = -50
+vision_range = 18.0
+prerequisites = ["soviet_tesla_reactor"]
+spawns_unit_on_complete = "war_miner"
+
+[buildings.visual]
+model = "assets/models/soviet_refinery.glb"
+icon = "assets/ui/cameos/nreficon.png"
+archetype = "refinery"
+scale = [2.4, 1.6, 2.0]
+primary_color = [0.85, 0.16, 0.16]
+
+[[buildings]]
+id = "soviet_war_factory"
+name = "Soviet War Factory"
+faction = "soviets"
+role = "war_factory"
+cost = 2000
+build_time_secs = 11.0
+health = 1300.0
+armor = "structure"
+footprint = [3, 3]
+power_delta = -50
+vision_range = 18.0
+prerequisites = ["soviet_refinery"]
+
+[buildings.visual]
+model = "assets/models/soviet_war_factory.glb"
+icon = "assets/ui/cameos/nwepicon.png"
+archetype = "war_factory"
+scale = [2.5, 1.8, 2.5]
+primary_color = [0.85, 0.16, 0.16]
+
+[[buildings]]
+id = "soviet_tesla_coil"
+name = "Soviet Tesla Coil"
+faction = "soviets"
+role = "defense"
+cost = 1500
+build_time_secs = 8.0
+health = 800.0
+armor = "structure"
+footprint = [1, 1]
+power_delta = -75
+vision_range = 18.0
+primary_weapon = "tesla_bolt"
+prerequisites = ["soviet_barracks", "soviet_tesla_reactor"]
+
+[buildings.visual]
+model = "assets/models/soviet_tesla_coil.glb"
+icon = "assets/ui/cameos/tslaicon.png"
+archetype = "turret"
+scale = [1.3, 1.8, 1.3]
+primary_color = [0.85, 0.16, 0.16]
+
+[[buildings]]
+id = "soviet_battle_lab"
+name = "Soviet Battle Lab"
+faction = "soviets"
+role = "tech_center"
+cost = 2000
+build_time_secs = 14.0
+health = 1100.0
+armor = "structure"
+footprint = [2, 2]
+power_delta = -100
+vision_range = 20.0
+stolen_tech_units = ["chrono_ivan", "desolator", "apocalypse_tank"]
+prerequisites = ["soviet_war_factory"]
+
+[[buildings.support_powers]]
+id = "soviet_emp_pulse"
+name = "EMP Shockwave Pulse"
+kind = "emp_pulse"
+cooldown_secs = 55.0
+radius = 7.0
+duration_secs = 8.0
+damage = 65.0
+
+[buildings.visual]
+model = "assets/models/soviet_battle_lab.glb"
+icon = "assets/ui/cameos/ntchicon.png"
+archetype = "power_plant"
+scale = [2.1, 2.2, 2.1]
+primary_color = [0.85, 0.16, 0.16]
+
+# === Extended Allied RA2 & Yuri's Revenge Buildings ===
+
+[[buildings]]
+id = "allied_airforce_command"
+name = "Airforce Command Headquarters"
+faction = "allies"
+role = "airfield"
+cost = 1000
+build_time_secs = 8.0
+health = 900.0
+armor = "structure"
+footprint = [3, 2]
+power_delta = -50
+vision_range = 24.0
+airfield_pads = 4
+prerequisites = ["allied_refinery"]
+stealth = { detects_cloak = true }
+
+[[buildings.support_powers]]
+id = "allied_airborne_paradrop"
+name = "Airborne Paradrop (5x GI)"
+kind = "paradrop"
+sub_factions = ["usa", "america"]
+cooldown_secs = 45.0
+unit_id = "allied_gi"
+count = 5
+radius = 4.0
+
+[[buildings.support_powers]]
+id = "allied_spy_plane_scan"
+name = "Spy Plane Recon"
+kind = "radar_scan"
+cooldown_secs = 30.0
+radius = 12.0
+duration_secs = 20.0
+
+[buildings.visual]
+model = "assets/models/allied_airforce_command.glb"
+icon = "assets/ui/cameos/asaticon.png"
+archetype = "power_plant"
+scale = [2.2, 1.8, 2.0]
+primary_color = [0.18, 0.45, 0.88]
+
+[[buildings]]
+id = "allied_naval_shipyard"
+name = "Allied Naval Shipyard"
+faction = "allies"
+role = "support"
+cost = 1000
+build_time_secs = 8.5
+health = 1400.0
+armor = "structure"
+footprint = [3, 3]
+power_delta = -30
+vision_range = 20.0
+water_bound = true
+prerequisites = ["allied_power_plant"]
+support_aura = { repairs_ships_per_sec = 45.0 }
+
+[buildings.visual]
+model = "assets/models/allied_naval_shipyard.glb"
+icon = "assets/ui/cameos/yardicon.png"
+archetype = "refinery"
+scale = [2.6, 1.8, 2.6]
+primary_color = [0.18, 0.45, 0.88]
+
+[[buildings]]
+id = "allied_service_depot"
+name = "Allied Service Depot"
+faction = "allies"
+role = "service_depot"
+cost = 800
+build_time_secs = 6.5
+health = 1000.0
+armor = "structure"
+footprint = [3, 3]
+power_delta = -25
+vision_range = 16.0
+prerequisites = ["allied_war_factory"]
+support_aura = { repairs_vehicles_per_sec = 45.0 }
+
+[buildings.visual]
+model = "assets/models/allied_service_depot.glb"
+icon = "assets/ui/cameos/fixicon.png"
+archetype = "war_factory"
+scale = [2.4, 1.6, 2.4]
+primary_color = [0.18, 0.45, 0.88]
+
+[[buildings]]
+id = "allied_ore_purifier"
+name = "Allied Ore Purifier"
+faction = "allies"
+role = "support"
+cost = 2500
+build_limit = 1
+build_time_secs = 14.0
+health = 1100.0
+armor = "structure"
+footprint = [3, 3]
+power_delta = -100
+vision_range = 18.0
+prerequisites = ["allied_refinery", "allied_battle_lab"]
+support_aura = { cash_trickle_per_sec = 20, ore_refine_multiplier = 0.25 }
+
+[buildings.visual]
+model = "assets/models/allied_ore_purifier.glb"
+icon = "assets/ui/cameos/gorep.png"
+archetype = "refinery"
+scale = [2.5, 1.9, 2.5]
+primary_color = [0.18, 0.45, 0.88]
+
+[[buildings]]
+id = "allied_gap_generator"
+name = "Allied Gap Generator"
+faction = "allies"
+role = "support"
+cost = 1000
+build_time_secs = 8.0
+health = 850.0
+armor = "structure"
+footprint = [1, 1]
+power_delta = -75
+vision_range = 18.0
+prerequisites = ["allied_battle_lab"]
+stealth = { cloak_field_radius = 14.0 }
+
+[buildings.visual]
+model = "assets/models/allied_robot_control.glb"
+icon = "assets/ui/cameos/gapicon.png"
+archetype = "turret"
+scale = [1.4, 2.2, 1.4]
+primary_color = [0.18, 0.58, 0.96]
+
+[[buildings]]
+id = "allied_prism_tower"
+name = "Prism Tower"
+faction = "allies"
+role = "defense"
+cost = 1500
+build_time_secs = 8.5
+health = 750.0
+armor = "structure"
+footprint = [1, 1]
+power_delta = -75
+vision_range = 19.0
+primary_weapon = "prism_tower_beam"
+prerequisites = ["allied_airforce_command"]
+
+[buildings.visual]
+model = "assets/models/allied_prism_tower.glb"
+icon = "assets/ui/cameos/prisicon.png"
+archetype = "turret"
+scale = [1.3, 1.9, 1.3]
+primary_color = [0.18, 0.45, 0.88]
+
+[[buildings]]
+id = "allied_patriot_missile"
+name = "Patriot Missile System"
+faction = "allies"
+role = "defense"
+cost = 1000
+build_time_secs = 7.0
+health = 800.0
+armor = "structure"
+footprint = [1, 1]
+power_delta = -50
+vision_range = 22.0
+primary_weapon = "patriot_sam"
+prerequisites = ["allied_barracks"]
+stealth = { detects_cloak = true }
+point_defense = { intercept_radius = 12.0, cooldown_secs = 2.0 }
+
+[buildings.visual]
+model = "assets/models/allied_patriot_missile.glb"
+icon = "assets/ui/cameos/plticon.png"
+archetype = "turret"
+scale = [1.2, 1.4, 1.2]
+primary_color = [0.18, 0.45, 0.88]
+
+[[buildings]]
+id = "allied_grand_cannon"
+name = "French Grand Cannon"
+faction = "allies"
+sub_factions = ["france"]
+role = "defense"
+cost = 2000
+build_time_secs = 11.0
+health = 1100.0
+armor = "structure"
+footprint = [2, 2]
+power_delta = -100
+vision_range = 25.0
+primary_weapon = "grand_cannon_155mm"
+prerequisites = ["allied_airforce_command"]
+
+[buildings.visual]
+model = "assets/models/allied_grand_cannon.glb"
+icon = "assets/ui/cameos/gcanicon.png"
+archetype = "turret"
+scale = [1.8, 1.6, 1.8]
+primary_color = [0.18, 0.45, 0.88]
+
+[[buildings]]
+id = "allied_robot_control"
+name = "Robot Control Center"
+faction = "allies"
+role = "support"
+cost = 1000
+build_time_secs = 8.0
+health = 900.0
+armor = "structure"
+footprint = [2, 2]
+power_delta = -75
+vision_range = 18.0
+prerequisites = ["allied_war_factory"]
+
+[buildings.visual]
+model = "assets/models/allied_robot_control.glb"
+icon = "assets/ui/cameos/rbccicon.png"
+archetype = "power_plant"
+scale = [1.9, 1.7, 1.9]
+primary_color = [0.18, 0.45, 0.88]
+
+[[buildings]]
+id = "allied_chronosphere"
+name = "Chronosphere"
+faction = "allies"
+role = "support"
+cost = 2500
+build_limit = 1
+build_time_secs = 16.0
+health = 1200.0
+armor = "structure"
+footprint = [3, 3]
+power_delta = -150
+vision_range = 20.0
+superweapon = "chronosphere"
+prerequisites = ["allied_battle_lab"]
+
+[[buildings.support_powers]]
+id = "chronosphere_shift"
+name = "Chrono Shift Teleport"
+kind = "chrono_shift"
+cooldown_secs = 50.0
+radius = 6.0
+
+[buildings.visual]
+model = "assets/models/allied_chronosphere.glb"
+icon = "assets/ui/cameos/csphicon.png"
+archetype = "power_plant"
+scale = [2.5, 2.0, 2.5]
+primary_color = [0.18, 0.45, 0.88]
+
+[[buildings]]
+id = "allied_weather_controller"
+name = "Weather Control Device"
+faction = "allies"
+role = "support"
+cost = 5000
+build_limit = 1
+build_time_secs = 22.0
+health = 1400.0
+armor = "structure"
+footprint = [3, 3]
+power_delta = -200
+vision_range = 22.0
+superweapon = "weather_storm"
+prerequisites = ["allied_battle_lab"]
+
+[[buildings.support_powers]]
+id = "weather_lightning_storm"
+name = "Lightning Storm"
+kind = "lightning_storm"
+cooldown_secs = 90.0
+damage = 650.0
+radius = 7.5
+
+[buildings.visual]
+model = "assets/models/allied_weather_controller.glb"
+icon = "assets/ui/cameos/wethicon.png"
+archetype = "power_plant"
+scale = [2.6, 2.2, 2.6]
+primary_color = [0.18, 0.45, 0.88]
+
+# === Extended Soviet RA2 & Yuri's Revenge Buildings ===
+
+[[buildings]]
+id = "soviet_radar_tower"
+name = "Soviet Radar Tower"
+faction = "soviets"
+role = "support"
+cost = 1000
+build_time_secs = 8.0
+health = 1000.0
+armor = "structure"
+footprint = [2, 2]
+power_delta = -50
+vision_range = 24.0
+prerequisites = ["soviet_refinery"]
+stealth = { detects_cloak = true }
+
+[[buildings.support_powers]]
+id = "soviet_conscript_paradrop"
+name = "Soviet Paratroopers (6x)"
+kind = "paradrop"
+cooldown_secs = 45.0
+unit_id = "soviet_conscript"
+count = 6
+radius = 4.0
+
+[[buildings.support_powers]]
+id = "soviet_mig_airstrike"
+name = "MiG Precision Airstrike"
+kind = "airstrike"
+cooldown_secs = 40.0
+damage = 220.0
+radius = 5.0
+
+[buildings.visual]
+model = "assets/models/soviet_radar_tower.glb"
+icon = "assets/ui/cameos/nradicon.png"
+archetype = "power_plant"
+scale = [2.0, 2.0, 2.0]
+primary_color = [0.85, 0.16, 0.16]
+
+[[buildings]]
+id = "soviet_naval_shipyard"
+name = "Soviet Naval Shipyard"
+faction = "soviets"
+role = "support"
+cost = 1000
+build_time_secs = 8.5
+health = 1500.0
+armor = "structure"
+footprint = [3, 3]
+power_delta = -30
+vision_range = 20.0
+water_bound = true
+prerequisites = ["soviet_tesla_reactor"]
+support_aura = { repairs_ships_per_sec = 45.0 }
+
+[buildings.visual]
+model = "assets/models/soviet_naval_shipyard.glb"
+icon = "assets/ui/cameos/yardicon.png"
+archetype = "refinery"
+scale = [2.6, 1.8, 2.6]
+primary_color = [0.85, 0.16, 0.16]
+
+[[buildings]]
+id = "soviet_service_depot"
+name = "Soviet Service Depot"
+faction = "soviets"
+role = "service_depot"
+cost = 800
+build_time_secs = 6.5
+health = 1050.0
+armor = "structure"
+footprint = [3, 3]
+power_delta = -25
+vision_range = 16.0
+prerequisites = ["soviet_war_factory"]
+support_aura = { repairs_vehicles_per_sec = 45.0 }
+
+[buildings.visual]
+model = "assets/models/soviet_service_depot.glb"
+icon = "assets/ui/cameos/rfixicon.png"
+archetype = "war_factory"
+scale = [2.4, 1.6, 2.4]
+primary_color = [0.85, 0.16, 0.16]
+
+[[buildings]]
+id = "soviet_nuclear_reactor"
+name = "Soviet Nuclear Reactor"
+faction = "soviets"
+role = "power_plant"
+cost = 1000
+build_time_secs = 9.0
+health = 1000.0
+armor = "structure"
+footprint = [3, 3]
+power_delta = 1000
+vision_range = 18.0
+prerequisites = ["soviet_radar_tower"]
+death_effect = { explosion_damage = 420.0, explosion_radius = 6.5, leaves_radiation = true }
+
+[buildings.visual]
+model = "assets/models/soviet_nuclear_reactor.glb"
+icon = "assets/ui/cameos/nrcticon.png"
+archetype = "power_plant"
+scale = [2.5, 2.1, 2.5]
+primary_color = [0.85, 0.16, 0.16]
+
+[[buildings]]
+id = "soviet_sentry_gun"
+name = "Soviet Sentry Gun"
+faction = "soviets"
+role = "defense"
+cost = 500
+build_time_secs = 5.0
+health = 650.0
+armor = "structure"
+footprint = [1, 1]
+power_delta = -15
+vision_range = 16.0
+primary_weapon = "vulcan_turret_gun"
+prerequisites = ["soviet_barracks"]
+
+[buildings.visual]
+model = "assets/models/soviet_sentry_gun.glb"
+icon = "assets/ui/cameos/ggunicon.png"
+archetype = "turret"
+scale = [1.2, 1.2, 1.2]
+primary_color = [0.85, 0.16, 0.16]
+
+[[buildings]]
+id = "soviet_flak_cannon"
+name = "Soviet Flak Cannon"
+faction = "soviets"
+role = "defense"
+cost = 1000
+build_time_secs = 6.5
+health = 850.0
+armor = "structure"
+footprint = [1, 1]
+power_delta = -50
+vision_range = 20.0
+primary_weapon = "flak_aa_gun"
+prerequisites = ["soviet_barracks"]
+stealth = { detects_cloak = true }
+
+[buildings.visual]
+model = "assets/models/soviet_flak_cannon.glb"
+icon = "assets/ui/cameos/flakicon.png"
+archetype = "turret"
+scale = [1.2, 1.5, 1.2]
+primary_color = [0.85, 0.16, 0.16]
+
+[[buildings]]
+id = "soviet_battle_bunker"
+name = "Soviet Battle Bunker"
+faction = "soviets"
+role = "defense"
+cost = 500
+build_time_secs = 5.0
+health = 900.0
+armor = "structure"
+footprint = [2, 2]
+power_delta = 0
+vision_range = 16.0
+primary_weapon = "ppsh_rifle"
+prerequisites = ["soviet_barracks"]
+container = { capacity = 5, passengers_can_fire = true, tunnel_network = true }
+
+[buildings.visual]
+model = "assets/models/soviet_battle_bunker.glb"
+icon = "assets/ui/cameos/bnkricon.png"
+archetype = "turret"
+scale = [1.6, 1.3, 1.6]
+primary_color = [0.85, 0.16, 0.16]
+
+[[buildings]]
+id = "soviet_industrial_plant"
+name = "Soviet Industrial Plant"
+faction = "soviets"
+role = "support"
+cost = 2500
+build_limit = 1
+build_time_secs = 14.0
+health = 1150.0
+armor = "structure"
+footprint = [3, 3]
+power_delta = -100
+vision_range = 18.0
+prerequisites = ["soviet_war_factory", "soviet_battle_lab"]
+support_aura = { cash_trickle_per_sec = 20, ore_refine_multiplier = 0.25, vehicle_cost_discount = 0.25 }
+
+[buildings.visual]
+model = "assets/models/soviet_industrial_plant.glb"
+icon = "assets/ui/cameos/indpicon.png"
+archetype = "war_factory"
+scale = [2.5, 1.9, 2.5]
+primary_color = [0.85, 0.16, 0.16]
+
+[[buildings]]
+id = "soviet_iron_curtain"
+name = "Iron Curtain Device"
+faction = "soviets"
+role = "support"
+cost = 2500
+build_limit = 1
+build_time_secs = 16.0
+health = 1250.0
+armor = "structure"
+footprint = [3, 3]
+power_delta = -150
+vision_range = 20.0
+superweapon = "iron_curtain"
+prerequisites = ["soviet_battle_lab"]
+
+[[buildings.support_powers]]
+id = "iron_curtain_shield"
+name = "Iron Curtain Invulnerability"
+kind = "iron_curtain"
+cooldown_secs = 60.0
+duration_secs = 20.0
+radius = 5.5
+
+[buildings.visual]
+model = "assets/models/soviet_iron_curtain.glb"
+icon = "assets/ui/cameos/ironicon.png"
+archetype = "power_plant"
+scale = [2.5, 2.0, 2.5]
+primary_color = [0.85, 0.16, 0.16]
+
+[[buildings]]
+id = "soviet_nuclear_silo"
+name = "Nuclear Missile Silo"
+faction = "soviets"
+role = "support"
+cost = 5000
+build_limit = 1
+build_time_secs = 22.0
+health = 1500.0
+armor = "structure"
+footprint = [3, 3]
+power_delta = -200
+vision_range = 22.0
+superweapon = "nuclear_missile"
+prerequisites = ["soviet_battle_lab"]
+
+[[buildings.support_powers]]
+id = "soviet_nuclear_strike"
+name = "Tactical Nuclear Missile"
+kind = "nuclear_strike"
+cooldown_secs = 90.0
+damage = 750.0
+radius = 8.0
+duration_secs = 15.0
+
+[buildings.visual]
+model = "assets/models/soviet_nuclear_silo.glb"
+icon = "assets/ui/cameos/msslicon.png"
+archetype = "power_plant"
+scale = [2.6, 2.3, 2.6]
+primary_color = [0.85, 0.16, 0.16]
+
+# === Yuri's Revenge Buildings ===
+
+[[buildings]]
+id = "yuri_conyard"
+name = "Yuri Construction Yard"
+faction = "yuri"
+role = "construction_yard"
+cost = 2500
+build_time_secs = 15.0
+health = 1500.0
+armor = "structure"
+footprint = [3, 3]
+power_delta = 50
+supply_provided = 25
+vision_range = 22.0
+prerequisites = []
+transforms_into_unit = "yuri_mcv"
+
+[buildings.visual]
+model = "assets/models/yuri_conyard.glb"
+icon = "assets/ui/cameos/yconicon.png"
+archetype = "construction_yard"
+scale = [2.6, 1.9, 2.6]
+primary_color = [0.68, 0.22, 0.88]
+
+[[buildings]]
+id = "yuri_bio_reactor"
+name = "Yuri Bio Reactor"
+faction = "yuri"
+role = "power_plant"
+cost = 600
+build_time_secs = 5.5
+health = 700.0
+armor = "structure"
+footprint = [2, 2]
+power_delta = 150
+supply_provided = 15
+vision_range = 16.0
+prerequisites = ["yuri_conyard"]
+container = { capacity = 5, power_per_occupant = 100 }
+
+[buildings.visual]
+model = "assets/models/yuri_bio_reactor.glb"
+icon = "assets/ui/cameos/ypwricon.png"
+archetype = "power_plant"
+scale = [1.8, 1.7, 1.8]
+primary_color = [0.68, 0.22, 0.88]
+
+[[buildings]]
+id = "yuri_barracks"
+name = "Yuri Barracks"
+faction = "yuri"
+role = "barracks"
+cost = 500
+build_time_secs = 5.0
+health = 800.0
+armor = "structure"
+footprint = [2, 2]
+power_delta = -20
+vision_range = 16.0
+prerequisites = ["yuri_bio_reactor"]
+
+[buildings.visual]
+model = "assets/models/yuri_barracks.glb"
+icon = "assets/ui/cameos/brckicon.png"
+archetype = "barracks"
+scale = [1.9, 1.6, 1.9]
+primary_color = [0.68, 0.22, 0.88]
+
+[[buildings]]
+id = "yuri_slave_refinery"
+name = "Yuri Slave Miner Refinery"
+faction = "yuri"
+role = "refinery"
+cost = 1750
+build_time_secs = 9.5
+health = 1100.0
+armor = "structure"
+footprint = [3, 2]
+power_delta = -40
+vision_range = 18.0
+prerequisites = ["yuri_bio_reactor"]
+spawns_unit_on_complete = "yuri_slave_miner"
+
+[buildings.visual]
+model = "assets/models/yuri_slave_refinery.glb"
+icon = "assets/ui/cameos/sreficon.png"
+archetype = "refinery"
+scale = [2.4, 1.6, 2.0]
+primary_color = [0.68, 0.22, 0.88]
+
+[[buildings]]
+id = "yuri_war_factory"
+name = "Yuri War Factory"
+faction = "yuri"
+role = "war_factory"
+cost = 2000
+build_time_secs = 11.0
+health = 1200.0
+armor = "structure"
+footprint = [3, 3]
+power_delta = -50
+vision_range = 18.0
+prerequisites = ["yuri_slave_refinery"]
+
+[buildings.visual]
+model = "assets/models/yuri_war_factory.glb"
+icon = "assets/ui/cameos/ywepicon.png"
+archetype = "war_factory"
+scale = [2.5, 1.8, 2.5]
+primary_color = [0.68, 0.22, 0.88]
+
+[[buildings]]
+id = "yuri_submarine_pen"
+name = "Yuri Submarine Pen"
+faction = "yuri"
+role = "support"
+cost = 1000
+build_time_secs = 8.5
+health = 1400.0
+armor = "structure"
+footprint = [3, 3]
+power_delta = -30
+vision_range = 20.0
+water_bound = true
+prerequisites = ["yuri_bio_reactor"]
+support_aura = { repairs_ships_per_sec = 45.0 }
+
+[buildings.visual]
+model = "assets/models/yuri_submarine_pen.glb"
+icon = "assets/ui/cameos/yyrdicon.png"
+archetype = "refinery"
+scale = [2.6, 1.8, 2.6]
+primary_color = [0.68, 0.22, 0.88]
+
+[[buildings]]
+id = "yuri_psychic_sensor"
+name = "Yuri Psychic Radar"
+faction = "yuri"
+role = "support"
+cost = 1000
+build_time_secs = 8.0
+health = 950.0
+armor = "structure"
+footprint = [2, 2]
+power_delta = -50
+vision_range = 26.0
+prerequisites = ["yuri_slave_refinery"]
+stealth = { detects_cloak = true, detects_disguise = true, psychic_sensor_radius = 28.0 }
+
+[buildings.visual]
+model = "assets/models/yuri_psychic_sensor.glb"
+icon = "assets/ui/cameos/psisicon.png"
+archetype = "power_plant"
+scale = [2.0, 2.0, 2.0]
+primary_color = [0.68, 0.22, 0.88]
+
+[[buildings]]
+id = "yuri_battle_lab"
+name = "Yuri Psychic Battle Lab"
+faction = "yuri"
+role = "tech_center"
+cost = 2000
+build_time_secs = 14.0
+health = 1050.0
+armor = "structure"
+footprint = [2, 2]
+power_delta = -100
+vision_range = 20.0
+stolen_tech_units = ["psi_commando", "yuri_prime", "mastermind"]
+prerequisites = ["yuri_war_factory", "yuri_psychic_sensor"]
+
+[buildings.visual]
+model = "assets/models/yuri_battle_lab.glb"
+icon = "assets/ui/cameos/ytchicon.png"
+archetype = "power_plant"
+scale = [2.1, 2.2, 2.1]
+primary_color = [0.68, 0.22, 0.88]
+
+[[buildings]]
+id = "yuri_gatling_cannon"
+name = "Yuri Gattling Cannon"
+faction = "yuri"
+role = "defense"
+cost = 1000
+build_time_secs = 6.5
+health = 750.0
+armor = "structure"
+footprint = [1, 1]
+power_delta = -50
+vision_range = 18.0
+primary_weapon = "gatling_aa_cannon"
+prerequisites = ["yuri_barracks"]
+stealth = { detects_cloak = true }
+
+[buildings.visual]
+model = "assets/models/yuri_gatling_cannon.glb"
+icon = "assets/ui/cameos/gtncicon.png"
+archetype = "turret"
+scale = [1.3, 1.6, 1.3]
+primary_color = [0.68, 0.22, 0.88]
+
+[[buildings]]
+id = "yuri_psychic_tower"
+name = "Yuri Psychic Tower"
+faction = "yuri"
+role = "defense"
+cost = 1500
+build_time_secs = 9.0
+health = 850.0
+armor = "structure"
+footprint = [1, 1]
+power_delta = -75
+vision_range = 18.0
+primary_weapon = "psychic_tower_mind_beam"
+prerequisites = ["yuri_psychic_sensor"]
+stealth = { detects_disguise = true }
+
+[buildings.visual]
+model = "assets/models/yuri_psychic_tower.glb"
+icon = "assets/ui/cameos/psyticon.png"
+archetype = "turret"
+scale = [1.3, 2.0, 1.3]
+primary_color = [0.68, 0.22, 0.88]
+
+[[buildings]]
+id = "yuri_tank_bunker"
+name = "Yuri Tank Bunker"
+faction = "yuri"
+role = "defense"
+cost = 400
+build_time_secs = 4.5
+health = 900.0
+armor = "structure"
+footprint = [2, 2]
+power_delta = 0
+vision_range = 16.0
+prerequisites = ["yuri_barracks"]
+container = { capacity = 1, accepts_vehicles = true, passengers_can_fire = true }
+
+[buildings.visual]
+model = "assets/models/yuri_tank_bunker.glb"
+icon = "assets/ui/cameos/tbnkicon.png"
+archetype = "turret"
+scale = [1.7, 1.2, 1.7]
+primary_color = [0.68, 0.22, 0.88]
+
+[[buildings]]
+id = "yuri_grinder"
+name = "Yuri Grinder"
+faction = "yuri"
+role = "support"
+cost = 600
+build_time_secs = 6.0
+health = 950.0
+armor = "structure"
+footprint = [2, 2]
+power_delta = -25
+vision_range = 16.0
+grinder = true
+prerequisites = ["yuri_war_factory"]
+support_aura = { cash_trickle_per_sec = 10 }
+
+[buildings.visual]
+model = "assets/models/yuri_grinder.glb"
+icon = "assets/ui/cameos/grndicon.png"
+archetype = "refinery"
+scale = [2.0, 1.6, 2.0]
+primary_color = [0.68, 0.22, 0.88]
+
+[[buildings]]
+id = "yuri_cloning_vats"
+name = "Yuri Cloning Vats"
+faction = "yuri"
+role = "support"
+cost = 2500
+build_limit = 1
+build_time_secs = 14.0
+health = 1100.0
+armor = "structure"
+footprint = [2, 2]
+power_delta = -100
+vision_range = 18.0
+cloning_vats = true
+prerequisites = ["yuri_battle_lab"]
+support_aura = { heals_infantry_per_sec = 10.0 }
+
+[buildings.visual]
+model = "assets/models/yuri_cloning_vats.glb"
+icon = "assets/ui/cameos/clonicon.png"
+archetype = "power_plant"
+scale = [2.1, 1.9, 2.1]
+primary_color = [0.68, 0.22, 0.88]
+
+[[buildings]]
+id = "yuri_genetic_mutator"
+name = "Yuri Genetic Mutator"
+faction = "yuri"
+role = "support"
+cost = 2500
+build_limit = 1
+build_time_secs = 16.0
+health = 1200.0
+armor = "structure"
+footprint = [3, 3]
+power_delta = -150
+vision_range = 20.0
+superweapon = "genetic_mutator"
+prerequisites = ["yuri_battle_lab"]
+
+[[buildings.support_powers]]
+id = "genetic_mutator_blast"
+name = "Genetic Mutator"
+kind = "genetic_mutator"
+cooldown_secs = 65.0
+radius = 6.0
+
+[buildings.visual]
+model = "assets/models/yuri_genetic_mutator.glb"
+icon = "assets/ui/cameos/muteicon.png"
+archetype = "power_plant"
+scale = [2.5, 2.0, 2.5]
+primary_color = [0.68, 0.22, 0.88]
+
+[[buildings]]
+id = "yuri_psychic_dominator"
+name = "Yuri Psychic Dominator"
+faction = "yuri"
+role = "support"
+cost = 5000
+build_limit = 1
+build_time_secs = 22.0
+health = 1500.0
+armor = "structure"
+footprint = [3, 3]
+power_delta = -200
+vision_range = 22.0
+superweapon = "psychic_dominator"
+prerequisites = ["yuri_battle_lab"]
+
+[[buildings.support_powers]]
+id = "psychic_dominator_blast"
+name = "Psychic Dominator"
+kind = "psychic_dominator"
+cooldown_secs = 90.0
+damage = 500.0
+radius = 6.5
+
+[buildings.visual]
+model = "assets/models/yuri_psychic_dominator.glb"
+icon = "assets/ui/cameos/pdomicon.png"
+archetype = "power_plant"
+scale = [2.6, 2.3, 2.6]
+primary_color = [0.68, 0.22, 0.88]
+
+# === Shared Tactical Fortifications (Walls & Gates) ===
+
+[[buildings]]
+id = "concrete_wall"
+name = "Fortified Concrete Wall"
+faction = "shared"
+role = "wall"
+cost = 100
+build_time_secs = 1.5
+health = 350.0
+armor = "structure"
+footprint = [1, 1]
+power_delta = 0
+vision_range = 8.0
+crushable = true
+prerequisites = []
+
+[buildings.visual]
+model = "assets/models/concrete_wall.glb"
+icon = "assets/ui/cameos/concrete_wall.png"
+archetype = "generic_box"
+scale = [1.0, 0.95, 1.0]
+primary_color = [0.62, 0.64, 0.68]
+
+[[buildings]]
+id = "security_gate"
+name = "Automated Security Gate"
+faction = "shared"
+role = "gate"
+cost = 250
+build_time_secs = 2.5
+health = 500.0
+armor = "structure"
+footprint = [1, 1]
+power_delta = -5
+vision_range = 10.0
+prerequisites = []
+
+[buildings.visual]
+model = "assets/models/security_gate.glb"
+icon = "assets/ui/cameos/security_gate.png"
+archetype = "generic_box"
+scale = [1.0, 0.75, 1.0]
+primary_color = [0.45, 0.58, 0.72]
+
+
+# === Neutral Capturable Tech Buildings (RA2 & Yuri's Revenge) ===
+
+[[buildings]]
+id = "tech_oil_derrick"
+name = "Tech Oil Derrick"
+faction = "shared"
+role = "support"
+cost = 1500
+build_time_secs = 10.0
+health = 1000.0
+armor = "structure"
+footprint = [2, 2]
+power_delta = 0
+vision_range = 14.0
+capture_cash_bonus = 1000
+prerequisites = []
+support_aura = { cash_trickle_per_sec = 25 }
+
+[buildings.visual]
+model = "assets/models/tech_oil_derrick.glb"
+icon = "assets/ui/cameos/tech_oil_derrick.png"
+archetype = "refinery"
+scale = [2.0, 2.2, 2.0]
+primary_color = [0.75, 0.68, 0.52]
+
+[[buildings]]
+id = "tech_airport"
+name = "Tech Airport"
+faction = "shared"
+role = "airfield"
+cost = 1500
+build_time_secs = 10.0
+health = 1000.0
+armor = "structure"
+footprint = [3, 3]
+power_delta = 0
+vision_range = 18.0
+superweapon = "paratroopers"
+prerequisites = []
+
+[[buildings.support_powers]]
+id = "tech_airport_paradrop"
+name = "Tech Airport Paratroopers (6x)"
+kind = "paradrop"
+cooldown_secs = 45.0
+count = 6
+radius = 4.0
+
+[buildings.visual]
+model = "assets/models/tech_airport.glb"
+icon = "assets/ui/cameos/tech_airport.png"
+archetype = "construction_yard"
+scale = [2.6, 1.8, 2.6]
+primary_color = [0.72, 0.76, 0.82]
+
+[[buildings]]
+id = "tech_hospital"
+name = "Tech Civilian Hospital"
+faction = "shared"
+role = "support"
+cost = 1500
+build_time_secs = 10.0
+health = 1200.0
+armor = "structure"
+footprint = [4, 4]
+power_delta = 0
+vision_range = 16.0
+prerequisites = []
+support_aura = { heals_infantry_per_sec = 12.0 }
+
+[buildings.visual]
+model = "assets/models/tech_hospital.glb"
+icon = "assets/ui/cameos/tech_hospital.png"
+archetype = "barracks"
+scale = [3.2, 2.2, 3.2]
+primary_color = [0.88, 0.88, 0.92]
+
+[[buildings]]
+id = "tech_machine_shop"
+name = "Tech Machine Shop"
+faction = "shared"
+role = "service_depot"
+cost = 1500
+build_time_secs = 10.0
+health = 1100.0
+armor = "structure"
+footprint = [3, 3]
+power_delta = 0
+vision_range = 16.0
+prerequisites = []
+support_aura = { repairs_vehicles_per_sec = 15.0 }
+
+[buildings.visual]
+model = "assets/models/tech_machine_shop.glb"
+icon = "assets/ui/cameos/tech_machine_shop.png"
+archetype = "war_factory"
+scale = [2.5, 1.8, 2.5]
+primary_color = [0.68, 0.62, 0.56]
+
+[[buildings]]
+id = "tech_secret_lab"
+name = "Tech Secret Lab"
+faction = "shared"
+role = "tech_center"
+cost = 2000
+build_time_secs = 12.0
+health = 1100.0
+armor = "structure"
+footprint = [3, 3]
+power_delta = 0
+vision_range = 18.0
+unlocks_units = ["crashed_ufo", "chrono_legionnaire", "desolator", "apocalypse_tank"]
+prerequisites = []
+stealth = { detects_cloak = true }
+
+[buildings.visual]
+model = "assets/models/tech_secret_lab.glb"
+icon = "assets/ui/cameos/tech_secret_lab.png"
+archetype = "power_plant"
+scale = [2.5, 2.0, 2.5]
+primary_color = [0.62, 0.74, 0.84]
+
+[[buildings]]
+id = "tech_outpost"
+name = "Tech Outpost"
+faction = "shared"
+role = "defense"
+cost = 1800
+build_time_secs = 11.0
+health = 1400.0
+armor = "structure"
+footprint = [4, 3]
+power_delta = 0
+vision_range = 20.0
+primary_weapon = "guardian_missile"
+prerequisites = []
+support_aura = { repairs_vehicles_per_sec = 10.0 }
+
+[buildings.visual]
+model = "assets/models/tech_outpost.glb"
+icon = "assets/ui/cameos/tech_outpost.png"
+archetype = "turret"
+scale = [3.0, 2.2, 2.4]
+primary_color = [0.66, 0.70, 0.68]
+
+[[buildings]]
+id = "tech_power_plant"
+name = "Tech Civilian Power Plant"
+faction = "shared"
+role = "power_plant"
+cost = 1200
+build_time_secs = 8.0
+health = 1000.0
+armor = "structure"
+footprint = [2, 2]
+power_delta = 250
+vision_range = 16.0
+prerequisites = []
+
+[buildings.visual]
+model = "assets/models/tech_power_plant.glb"
+icon = "assets/ui/cameos/tech_power_plant.png"
+archetype = "power_plant"
+scale = [2.0, 1.8, 2.0]
+primary_color = [0.74, 0.74, 0.68]
+
+# === Iconic Campaign Landmarks & Monuments (RA2 & Yuri's Revenge) ===
+
+[[buildings]]
+id = "statue_of_liberty"
+name = "Statue of Liberty (New York)"
+faction = "shared"
+role = "support"
+cost = 3000
+build_time_secs = 20.0
+health = 2500.0
+armor = "structure"
+footprint = [3, 3]
+power_delta = 0
+vision_range = 26.0
+supply_provided = 20
+capture_cash_bonus = 750
+prerequisites = []
+stealth = { detects_cloak = true }
+support_aura = { cash_trickle_per_sec = 20 }
+
+[buildings.visual]
+model = "assets/models/statue_of_liberty.glb"
+icon = "assets/ui/cameos/statue_of_liberty.png"
+archetype = "construction_yard"
+scale = [2.6, 3.8, 2.6]
+primary_color = [0.46, 0.72, 0.62]
+team_color_tint = false
+
+[[buildings]]
+id = "eiffel_tower"
+name = "Paris Eiffel Tower"
+faction = "shared"
+role = "defense"
+cost = 3500
+build_time_secs = 20.0
+health = 2800.0
+armor = "structure"
+footprint = [4, 4]
+power_delta = 0
+vision_range = 28.0
+primary_weapon = "tesla_bolt"
+prerequisites = []
+
+[buildings.visual]
+model = "assets/models/eiffel_tower.glb"
+icon = "assets/ui/cameos/eiffel_tower.png"
+archetype = "turret"
+scale = [3.2, 4.4, 3.2]
+primary_color = [0.62, 0.56, 0.48]
+team_color_tint = false
+
+[[buildings]]
+id = "kremlin_palace"
+name = "Moscow Kremlin Palace"
+faction = "shared"
+role = "support"
+cost = 3500
+build_time_secs = 20.0
+health = 3000.0
+armor = "structure"
+footprint = [3, 4]
+power_delta = 0
+vision_range = 24.0
+capture_cash_bonus = 750
+prerequisites = []
+container = { capacity = 10 }
+support_aura = { cash_trickle_per_sec = 20, vehicle_cost_discount = 0.15 }
+
+[buildings.visual]
+model = "assets/models/kremlin_palace.glb"
+icon = "assets/ui/cameos/kremlin_palace.png"
+archetype = "construction_yard"
+scale = [2.8, 2.6, 3.4]
+primary_color = [0.78, 0.36, 0.32]
+team_color_tint = false
+
+[[buildings]]
+id = "st_basil_cathedral"
+name = "St. Basil's Cathedral (Moscow)"
+faction = "shared"
+role = "support"
+cost = 3000
+build_time_secs = 20.0
+health = 2600.0
+armor = "structure"
+footprint = [4, 4]
+power_delta = 0
+vision_range = 24.0
+prerequisites = []
+container = { capacity = 8 }
+
+[buildings.visual]
+model = "assets/models/st_basil_cathedral.glb"
+icon = "assets/ui/cameos/st_basil_cathedral.png"
+archetype = "construction_yard"
+scale = [3.2, 3.4, 3.2]
+primary_color = [0.82, 0.42, 0.34]
+team_color_tint = false
+
+[[buildings]]
+id = "white_house"
+name = "Washington White House"
+faction = "shared"
+role = "support"
+cost = 3000
+build_time_secs = 20.0
+health = 2600.0
+armor = "structure"
+footprint = [4, 4]
+power_delta = 0
+vision_range = 24.0
+capture_cash_bonus = 750
+prerequisites = []
+container = { capacity = 10 }
+support_aura = { heals_infantry_per_sec = 6.0, cash_trickle_per_sec = 20 }
+
+[buildings.visual]
+model = "assets/models/white_house.glb"
+icon = "assets/ui/cameos/white_house.png"
+archetype = "construction_yard"
+scale = [3.4, 2.2, 3.4]
+primary_color = [0.92, 0.92, 0.94]
+team_color_tint = false
+
+[[buildings]]
+id = "einstein_lab"
+name = "Einstein's Black Forest Laboratory"
+faction = "shared"
+role = "tech_center"
+cost = 2500
+build_time_secs = 16.0
+health = 1800.0
+armor = "structure"
+footprint = [3, 4]
+power_delta = 100
+vision_range = 22.0
+unlocks_units = ["prism_tank", "mirage_tank", "chrono_legionnaire"]
+prerequisites = []
+stealth = { detects_cloak = true }
+support_aura = { ore_refine_multiplier = 0.15 }
+
+[buildings.visual]
+model = "assets/models/einstein_lab.glb"
+icon = "assets/ui/cameos/einstein_lab.png"
+archetype = "power_plant"
+scale = [2.6, 2.2, 3.2]
+primary_color = [0.58, 0.72, 0.88]
+
+[[buildings]]
+id = "maya_prism_pyramid"
+name = "Mayan Prism Pyramid"
+faction = "shared"
+role = "defense"
+cost = 2200
+build_time_secs = 15.0
+health = 2000.0
+armor = "structure"
+footprint = [3, 2]
+power_delta = 0
+vision_range = 22.0
+primary_weapon = "prism_beam"
+prerequisites = []
+
+[buildings.visual]
+model = "assets/models/maya_prism_pyramid.glb"
+icon = "assets/ui/cameos/maya_prism_pyramid.png"
+archetype = "turret"
+scale = [2.6, 2.4, 2.2]
+primary_color = [0.76, 0.68, 0.52]
+team_color_tint = false
+
+[[buildings]]
+id = "air_force_chapel"
+name = "Air Force Academy Chapel (Colorado)"
+faction = "shared"
+role = "support"
+cost = 2000
+build_time_secs = 14.0
+health = 1800.0
+armor = "structure"
+footprint = [4, 3]
+power_delta = 0
+vision_range = 20.0
+prerequisites = []
+container = { capacity = 8 }
+
+[buildings.visual]
+model = "assets/models/air_force_chapel.glb"
+icon = "assets/ui/cameos/air_force_chapel.png"
+archetype = "barracks"
+scale = [3.4, 2.6, 2.6]
+primary_color = [0.78, 0.82, 0.88]
+team_color_tint = false
+
+[[buildings]]
+id = "time_machine"
+name = "Chrono Time Machine"
+faction = "shared"
+role = "tech_center"
+cost = 3500
+build_time_secs = 20.0
+health = 2200.0
+armor = "structure"
+footprint = [4, 3]
+power_delta = -150
+vision_range = 22.0
+superweapon = "chronosphere"
+prerequisites = []
+
+[[buildings.support_powers]]
+id = "time_machine_chrono_shift"
+name = "Time Machine Chrono Shift"
+kind = "chrono_shift"
+cooldown_secs = 55.0
+radius = 6.0
+
+[buildings.visual]
+model = "assets/models/time_machine.glb"
+icon = "assets/ui/cameos/time_machine.png"
+archetype = "power_plant"
+scale = [3.2, 2.4, 2.6]
+primary_color = [0.48, 0.76, 0.92]
+
+[[buildings]]
+id = "london_big_ben"
+name = "London Big Ben Clock Tower"
+faction = "shared"
+role = "support"
+cost = 2500
+build_time_secs = 16.0
+health = 2200.0
+armor = "structure"
+footprint = [2, 2]
+power_delta = 0
+vision_range = 26.0
+capture_cash_bonus = 500
+prerequisites = []
+container = { capacity = 6 }
+stealth = { detects_cloak = true }
+support_aura = { cash_trickle_per_sec = 15 }
+
+[buildings.visual]
+model = "assets/models/london_big_ben.glb"
+icon = "assets/ui/cameos/london_big_ben.png"
+archetype = "construction_yard"
+scale = [2.0, 3.8, 2.0]
+primary_color = [0.76, 0.68, 0.54]
+team_color_tint = false
+
+[[buildings]]
+id = "transylvania_fortress"
+name = "Yuri's Transylvania Castle Fortress"
+faction = "shared"
+role = "support"
+cost = 3500
+build_time_secs = 20.0
+health = 3000.0
+armor = "structure"
+footprint = [4, 4]
+power_delta = 0
+vision_range = 24.0
+capture_cash_bonus = 600
+prerequisites = []
+container = { capacity = 10 }
+stealth = { psychic_sensor_radius = 24.0 }
+support_aura = { cash_trickle_per_sec = 15 }
+
+[buildings.visual]
+model = "assets/models/transylvania_fortress.glb"
+icon = "assets/ui/cameos/transylvania_fortress.png"
+archetype = "construction_yard"
+scale = [3.4, 3.0, 3.4]
+primary_color = [0.56, 0.48, 0.64]
+team_color_tint = false
+
+[[buildings]]
+id = "great_pyramid"
+name = "Great Pyramid of Giza"
+faction = "shared"
+role = "support"
+cost = 3500
+build_time_secs = 20.0
+health = 3500.0
+armor = "structure"
+footprint = [4, 4]
+power_delta = 0
+vision_range = 24.0
+capture_cash_bonus = 500
+prerequisites = []
+support_aura = { heals_infantry_per_sec = 8.0, cash_trickle_per_sec = 15 }
+
+[buildings.visual]
+model = "assets/models/great_pyramid.glb"
+icon = "assets/ui/cameos/great_pyramid.png"
+archetype = "construction_yard"
+scale = [3.6, 3.2, 3.6]
+primary_color = [0.84, 0.74, 0.52]
+team_color_tint = false
+
+[[buildings]]
+id = "alcatraz_prison"
+name = "Alcatraz Island Prison"
+faction = "shared"
+role = "support"
+cost = 2800
+build_time_secs = 18.0
+health = 2600.0
+armor = "structure"
+footprint = [4, 4]
+power_delta = 0
+vision_range = 24.0
+prerequisites = []
+container = { capacity = 10 }
+
+[buildings.visual]
+model = "assets/models/alcatraz_prison.glb"
+icon = "assets/ui/cameos/alcatraz_prison.png"
+archetype = "construction_yard"
+scale = [3.6, 2.4, 3.0]
+primary_color = [0.74, 0.72, 0.68]
+team_color_tint = false
+
+[[buildings]]
+id = "psychic_beacon"
+name = "Psychic Beacon"
+faction = "shared"
+role = "tech_center"
+cost = 3500
+build_time_secs = 20.0
+health = 1800.0
+armor = "structure"
+footprint = [2, 2]
+power_delta = -150
+vision_range = 24.0
+superweapon = "psychic_dominator"
+prerequisites = []
+stealth = { detects_cloak = true, psychic_sensor_radius = 32.0 }
+
+[[buildings.support_powers]]
+id = "psychic_beacon_control"
+name = "Psychic Beacon Mind Control Wave"
+kind = "psychic_dominator"
+cooldown_secs = 80.0
+damage = 0.0
+radius = 9.0
+payloads = [{ kind = "mind_control_wave", radius = 9.0, max_units = 8, blast_damage = 0.0 }]
+
+[buildings.visual]
+model = "assets/models/psychic_beacon.glb"
+icon = "assets/ui/cameos/psychic_beacon.png"
+archetype = "power_plant"
+scale = [2.2, 2.8, 2.2]
+primary_color = [0.75, 0.24, 0.86]
+
+[[buildings]]
+id = "psychic_amplifier"
+name = "Psychic Amplifier"
+faction = "shared"
+role = "tech_center"
+cost = 4000
+build_time_secs = 22.0
+health = 2200.0
+armor = "structure"
+footprint = [4, 4]
+power_delta = -200
+vision_range = 26.0
+superweapon = "nuclear_missile"
+prerequisites = []
+
+[[buildings.support_powers]]
+id = "psychic_amplifier_blast"
+name = "Psychic Amplifier Mind Blast"
+kind = "psychic_dominator"
+cooldown_secs = 95.0
+damage = 550.0
+radius = 6.0
+
+[buildings.visual]
+model = "assets/models/psychic_amplifier.glb"
+icon = "assets/ui/cameos/psychic_amplifier.png"
+archetype = "power_plant"
+scale = [3.2, 3.0, 3.2]
+primary_color = [0.78, 0.22, 0.88]

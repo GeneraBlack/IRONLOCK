@@ -1,0 +1,126 @@
+[[scenarios]]
+name = "allied_grizzly_and_economy_smoke_test"
+ticks = 20
+clear_initial_entities = true
+
+[[scenarios.spawns]]
+player_id = 1
+unit_id = "grizzly_tank"
+tile = [12, 12]
+
+[[scenarios.spawns]]
+player_id = 1
+unit_id = "allied_gi"
+tile = [14, 12]
+
+[[scenarios.commands]]
+tick = 2
+command = "credits 1500 1"
+
+[[scenarios.commands]]
+tick = 5
+command = "var mission_stage 2"
+
+[[scenarios.assertions]]
+kind = "player_units_at_least"
+player_id = 1
+min_count = 2
+
+[[scenarios.assertions]]
+kind = "player_credits_at_least"
+player_id = 1
+min_credits = 11500
+
+[[scenarios.assertions]]
+kind = "trigger_var_equals"
+name = "mission_stage"
+value = 2
+
+# ------------------------------------------------------------------------------
+# 2. SOVIET ARMORED & TESLA POWER SCENARIO
+# ------------------------------------------------------------------------------
+[[scenarios]]
+name = "soviet_rhino_and_tesla_power_test"
+ticks = 25
+clear_initial_entities = true
+
+[[scenarios.spawns]]
+player_id = 1
+building_id = "soviet_tesla_reactor"
+tile = [10, 10]
+
+[[scenarios.spawns]]
+player_id = 1
+unit_id = "rhino_tank"
+tile = [14, 14]
+
+[[scenarios.spawns]]
+player_id = 1
+unit_id = "tesla_trooper"
+tile = [16, 14]
+
+[[scenarios.spawns]]
+player_id = 1
+unit_id = "apocalypse_tank"
+tile = [18, 14]
+
+[[scenarios.assertions]]
+kind = "player_units_at_least"
+player_id = 1
+min_count = 3
+
+# ------------------------------------------------------------------------------
+# 3. YURI PSYCHIC & GATTLING SPIN-UP SCENARIO
+# ------------------------------------------------------------------------------
+[[scenarios]]
+name = "yuri_psychic_and_gattling_test"
+ticks = 25
+clear_initial_entities = true
+
+[[scenarios.spawns]]
+player_id = 1
+building_id = "yuri_bio_reactor"
+tile = [10, 10]
+
+[[scenarios.spawns]]
+player_id = 1
+unit_id = "gattling_tank"
+tile = [14, 14]
+
+[[scenarios.spawns]]
+player_id = 1
+unit_id = "yuri_initiate"
+tile = [16, 14]
+
+[[scenarios.spawns]]
+player_id = 1
+unit_id = "mastermind"
+tile = [18, 14]
+
+[[scenarios.assertions]]
+kind = "player_units_at_least"
+player_id = 1
+min_count = 3
+
+# ------------------------------------------------------------------------------
+# 4. CAMPAIGN MAP TRIGGER & MISSION STAGE PROGRESSION SCENARIO
+# ------------------------------------------------------------------------------
+[[scenarios]]
+name = "campaign_trigger_and_reinforcements_test"
+map_id = "ra2_allied_01_lone_guardian"
+ticks = 30
+clear_initial_entities = false
+
+[[scenarios.commands]]
+tick = 25
+command = "trigger tactical_reinforcement_wave"
+
+[[scenarios.assertions]]
+kind = "trigger_var_equals"
+name = "mission_stage"
+value = 2
+
+[[scenarios.assertions]]
+kind = "player_credits_at_least"
+player_id = 1
+min_credits = 11500

@@ -1,0 +1,145 @@
+# Data-driven AI Personality & Build-Order Profiles for rust-ra2
+
+[[profiles]]
+id = "allied_balanced"
+faction = "allies"
+personality = "balanced"
+build_order = [
+    "allied_refinery",
+    "allied_war_factory",
+    "allied_barracks",
+    "allied_pillbox",
+    "allied_airforce_command",
+    "allied_battle_lab",
+]
+preferred_superweapons = ["chronosphere_shift", "weather_lightning_storm"]
+
+[profiles.unit_weights]
+prism_tank = 90
+mirage_tank = 80
+grizzly_tank = 70
+ifv = 45
+guardian_gi = 75
+allied_gi = 60
+
+[[profiles]]
+id = "allied_rusher"
+faction = "allies"
+personality = "rusher"
+min_attack_wave_size = 3
+build_order = [
+    "allied_refinery",
+    "allied_barracks",
+    "allied_war_factory",
+    "allied_pillbox",
+]
+
+[profiles.unit_weights]
+grizzly_tank = 85
+ifv = 60
+guardian_gi = 75
+allied_gi = 65
+
+[[profiles]]
+id = "allied_turtle"
+faction = "allies"
+personality = "turtle"
+min_attack_wave_size = 6
+build_order = [
+    "allied_refinery",
+    "allied_barracks",
+    "allied_pillbox",
+    "allied_war_factory",
+    "allied_airforce_command",
+    "allied_battle_lab",
+]
+preferred_superweapons = ["allied_force_shield", "weather_lightning_storm"]
+
+[[profiles]]
+id = "allied_air_force"
+faction = "allies"
+personality = "air_force"
+build_order = [
+    "allied_refinery",
+    "allied_barracks",
+    "allied_airforce_command",
+    "allied_war_factory",
+    "allied_battle_lab",
+]
+
+[[profiles]]
+id = "soviet_balanced"
+faction = "soviets"
+personality = "balanced"
+build_order = [
+    "soviet_refinery",
+    "soviet_war_factory",
+    "soviet_barracks",
+    "soviet_sentry_gun",
+    "soviet_radar_tower",
+    "soviet_battle_lab",
+]
+preferred_superweapons = ["iron_curtain_shield", "soviet_nuclear_strike"]
+
+[profiles.unit_weights]
+apocalypse_tank = 95
+v3_rocket_launcher = 80
+rhino_tank = 75
+flak_track = 45
+tesla_trooper = 75
+flak_trooper = 65
+soviet_conscript = 55
+
+[[profiles]]
+id = "soviet_rusher"
+faction = "soviets"
+personality = "rusher"
+min_attack_wave_size = 3
+build_order = [
+    "soviet_refinery",
+    "soviet_barracks",
+    "soviet_war_factory",
+    "soviet_sentry_gun",
+]
+
+[profiles.unit_weights]
+rhino_tank = 85
+terror_drone = 60
+flak_track = 50
+soviet_conscript = 70
+
+[[profiles]]
+id = "soviet_turtle"
+faction = "soviets"
+personality = "turtle"
+min_attack_wave_size = 6
+build_order = [
+    "soviet_refinery",
+    "soviet_barracks",
+    "soviet_sentry_gun",
+    "soviet_war_factory",
+    "soviet_radar_tower",
+    "soviet_battle_lab",
+]
+
+[[profiles]]
+id = "yuri_balanced"
+faction = "yuri"
+personality = "balanced"
+build_order = [
+    "yuri_slave_refinery",
+    "yuri_war_factory",
+    "yuri_barracks",
+    "yuri_gatling_cannon",
+    "yuri_psychic_sensor",
+    "yuri_battle_lab",
+]
+preferred_superweapons = ["genetic_mutator_blast", "psychic_dominator_crush"]
+
+[profiles.unit_weights]
+mastermind = 90
+magnetron = 80
+lasher_tank = 70
+gattling_tank = 55
+yuri_initiate = 65
+yuri_virus = 75

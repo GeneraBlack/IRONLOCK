@@ -1,0 +1,150 @@
+[
+  {
+    "name": "IRONLOCK // RUST-RTS",
+    "upstream_name": "IRONLOCK // RUST-RTS 1.0.13",
+    "description": {
+      "en": "Official Project Portal, Deterministic 20 Hz Lockstep Multiplayer Registry & Reverse-TCP NAT Relay Hub (rust-rts.bls-isp.net)",
+      "de": "Offizielles Projektportal, Deterministisches 20-Hz Lockstep-Multiplayer-Register & Reverse-TCP NAT-Relay-Hub (rust-rts.bls-isp.net)"
+    },
+    "categories": [
+      "games",
+      "network",
+      "web"
+    ],
+    "authors": [
+      {
+        "name": "BLS-ISP Command Network",
+        "email": "admin@bls-isp.net"
+      }
+    ],
+    "docs": {
+      "documentation_url": "https://rust-rts.bls-isp.net/",
+      "bug_url": "https://git.bls-isp.net/genera/rust-rts-webserver/-/issues",
+      "code_url": "https://git.bls-isp.net/genera/rust-rts-webserver",
+      "relnotes_url": "https://git.bls-isp.net/genera/rust-rts-webserver/-/tags"
+    },
+    "source": "reg.bls-isp.net/genera/rust-rts-webserver/rust-rts",
+    "id": "rust-rts",
+    "logo": "logo.png",
+    "screenshots": [],
+    "versions": [
+      {
+        "tag": "1.0.13",
+        "testing": false,
+        "labels": {
+          "org.nethserver.authorizations": "traefik@node:routeadm",
+          "org.nethserver.images": "reg.bls-isp.net/genera/rust-rts-webserver/rust-rts-server:1.0.13",
+          "org.nethserver.min-core": "3.0.0",
+          "org.nethserver.rootfull": "0",
+          "org.nethserver.tcp-ports-demand": "1",
+          "org.nethserver.volumes": "rust-rts-data",
+          "org.opencontainers.image.version": "1.0.13"
+        }
+      },
+      {
+        "tag": "1.0.12",
+        "testing": false,
+        "labels": {
+          "org.nethserver.authorizations": "traefik@node:routeadm",
+          "org.nethserver.images": "reg.bls-isp.net/genera/rust-rts-webserver/rust-rts-server:1.0.12",
+          "org.nethserver.min-core": "3.0.0",
+          "org.nethserver.rootfull": "0",
+          "org.nethserver.tcp-ports-demand": "1",
+          "org.nethserver.volumes": "rust-rts-data",
+          "org.opencontainers.image.version": "1.0.12"
+        }
+      },
+      {
+        "tag": "1.0.11",
+        "testing": false,
+        "labels": {
+          "org.nethserver.authorizations": "traefik@node:routeadm",
+          "org.nethserver.images": "reg.bls-isp.net/genera/rust-rts-webserver/rust-rts-server:1.0.11",
+          "org.nethserver.min-core": "3.0.0",
+          "org.nethserver.rootfull": "0",
+          "org.nethserver.tcp-ports-demand": "1",
+          "org.nethserver.volumes": "rust-rts-data",
+          "org.opencontainers.image.version": "1.0.11"
+        }
+      },
+      {
+        "tag": "1.0.10",
+        "testing": false,
+        "labels": {
+          "org.nethserver.authorizations": "traefik@node:routeadm",
+          "org.nethserver.images": "reg.bls-isp.net/genera/rust-rts-webserver/rust-rts-server:1.0.10",
+          "org.nethserver.min-core": "3.0.0",
+          "org.nethserver.rootfull": "0",
+          "org.nethserver.tcp-ports-demand": "1",
+          "org.nethserver.volumes": "rust-rts-data",
+          "org.opencontainers.image.version": "1.0.10"
+        }
+      },
+      {
+        "tag": "1.0.9",
+        "testing": false,
+        "labels": {
+          "org.nethserver.authorizations": "traefik@node:routeadm",
+          "org.nethserver.images": "reg.bls-isp.net/genera/rust-rts-webserver/rust-rts-server:1.0.9",
+          "org.nethserver.min-core": "3.0.0",
+          "org.nethserver.rootfull": "0",
+          "org.nethserver.tcp-ports-demand": "1",
+          "org.nethserver.volumes": "rust-rts-data",
+          "org.opencontainers.image.version": "1.0.9"
+        }
+      },
+      {
+        "tag": "1.0.8",
+        "testing": false,
+        "labels": {
+          "org.nethserver.authorizations": "traefik@node:routeadm",
+          "org.nethserver.images": "reg.bls-isp.net/genera/rust-rts-webserver/rust-rts-server:1.0.8",
+          "org.nethserver.min-core": "3.0.0",
+          "org.nethserver.rootfull": "0",
+          "org.nethserver.tcp-ports-demand": "1",
+          "org.nethserver.volumes": "rust-rts-data",
+          "org.opencontainers.image.version": "1.0.8"
+        }
+      },
+      {
+        "tag": "1.0.7",
+        "testing": false,
+        "labels": {
+          "org.nethserver.authorizations": "traefik@node:routeadm",
+          "org.nethserver.images": "reg.bls-isp.net/genera/rust-rts-webserver/rust-rts-server:1.0.7",
+          "org.nethserver.min-core": "3.0.0",
+          "org.nethserver.rootfull": "0",
+          "org.nethserver.tcp-ports-demand": "1",
+          "org.nethserver.volumes": "rust-rts-data",
+          "org.opencontainers.image.version": "1.0.7"
+        }
+      },
+      {
+        "tag": "1.0.6",
+        "testing": false,
+        "labels": {
+          "org.nethserver.authorizations": "traefik@node:routeadm",
+          "org.nethserver.images": "reg.bls-isp.net/genera/rust-rts-webserver/rust-rts-server:1.0.6",
+          "org.nethserver.min-core": "3.0.0",
+          "org.nethserver.rootfull": "0",
+          "org.nethserver.tcp-ports-demand": "1",
+          "org.nethserver.volumes": "rust-rts-data",
+          "org.opencontainers.image.version": "1.0.6"
+        }
+      },
+      {
+        "tag": "1.0.5",
+        "testing": false,
+        "labels": {
+          "org.nethserver.authorizations": "traefik@node:routeadm",
+          "org.nethserver.images": "reg.bls-isp.net/genera/rust-rts-webserver/rust-rts-server:1.0.5",
+          "org.nethserver.min-core": "3.0.0",
+          "org.nethserver.rootfull": "0",
+          "org.nethserver.tcp-ports-demand": "1",
+          "org.nethserver.volumes": "rust-rts-data",
+          "org.opencontainers.image.version": "1.0.5"
+        }
+      }
+    ]
+  }
+]

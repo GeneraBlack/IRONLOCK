@@ -1,0 +1,45 @@
+# ==============================================================================
+# NethServer 8 Rootless Application Module Containerfile
+# IRONLOCK // RUST-RTS (rust-rts.bls-isp.net)
+# ==============================================================================
+
+# Stage 1: Build NS8 Cockpit UI (Vue 2 + Carbon Design System)
+FROM docker.io/library/node:20.18.3-alpine3.21 AS ui-builder
+
+WORKDIR /ui
+ENV NODE_OPTIONS=--openssl-legacy-provider
+COPY ui/package.json ./
+RUN npm install --legacy-peer-deps
+COPY ui/ ./
+RUN npm run build
+
+# Stage 2: Normalize LF line endings & permissions for imageroot
+FROM docker.io/library/alpine:3.19.4 AS imageroot-prep
+
+COPY imageroot /imageroot
+COPY --from=ui-builder /ui/dist /ui
+
+RUN find /imageroot -name "__pycache__" -type d -exec rm -rf {} + && \
+    find /imageroot -name "*.pyc" -delete && \
+    find /imageroot -type f -exec sed -i 's/\r$//' {} + && \
+    chmod +x /imageroot/actions/*/[0-9]* /imageroot/update-module.d/* /imageroot/bin/*
+
+# Stage 3: Final NethServer 8 Scratch Module Image
+FROM scratch
+
+ARG MODULE_VERSION=1.0.0
+ARG SERVER_IMAGE=reg.bls-isp.net/genera/rust-rts-webserver/rust-rts-server:1.0.0
+
+COPY --from=imageroot-prep /imageroot /imageroot
+COPY --from=imageroot-prep /ui /ui
+
+ENTRYPOINT ["/"]
+
+LABEL org.nethserver.authorizations="traefik@node:routeadm" \
+      org.nethserver.tcp-ports-demand="1" \
+      org.nethserver.rootfull="0" \
+      org.nethserver.min-core="3.0.0" \
+      org.nethserver.volumes="rust-rts-data" \
+      org.nethserver.images="${SERVER_IMAGE}" \
+      org.opencontainers.image.title="IRONLOCK // RUST-RTS" \
+      org.opencontainers.image.version="${MODULE_VERSION}"

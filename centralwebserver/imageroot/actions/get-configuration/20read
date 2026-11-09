@@ -1,0 +1,37 @@
+#!/usr/bin/env python3
+
+import json
+import os
+import sys
+import agent
+
+# Self-heal NODE_ID if a previous version overwrote NS8's integer cluster node ID
+cur_node_id = os.environ.get("NODE_ID", "1")
+if not cur_node_id.isdigit():
+    if not os.environ.get("RTS_NODE_ID"):
+        agent.set_env("RTS_NODE_ID", cur_node_id)
+    try:
+        rdb = agent.redis_connect()
+        real_node_id = rdb.hget("cluster/module_node", os.environ["MODULE_ID"]) or "1"
+    except Exception:
+        real_node_id = "1"
+    agent.set_env("NODE_ID", str(real_node_id))
+    agent.dump_env()
+
+host = os.getenv("TRAEFIK_HOST") or os.getenv("HOST") or ""
+http2https_raw = os.getenv("TRAEFIK_HTTP2HTTPS") or os.getenv("HTTP2HTTPS") or "True"
+lets_encrypt_raw = os.getenv("TRAEFIK_LETS_ENCRYPT") or os.getenv("LETS_ENCRYPT") or "False"
+rts_node_id = os.getenv("RTS_NODE_ID") or "bls-isp-eu-central-01"
+
+config = {
+    "host": host,
+    "http2https": http2https_raw == "True",
+    "lets_encrypt": lets_encrypt_raw == "True",
+    "ttl_secs": int(os.getenv("TTL_SECS", "45") or 45),
+    "rts_node_id": rts_node_id,
+    "node_id": rts_node_id,
+    "relay_port_start": int(os.getenv("RELAY_PORT_START", "30100") or 30100),
+    "relay_port_end": int(os.getenv("RELAY_PORT_END", "30139") or 30139),
+}
+
+json.dump(config, fp=sys.stdout)

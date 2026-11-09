@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "configure-module input for rust-rts",
+  "$id": "http://nethserver.org/json-schema/task/input/rust-rts/configure-module",
+  "description": "Configure IRONLOCK // RUST-RTS Homepage & Central Multiplayer Registry",
+  "type": "object",
+  "required": ["host", "http2https", "lets_encrypt"],
+  "properties": {
+    "host": {
+      "type": "string",
+      "description": "Fully qualified domain name (e.g. rust-rts.bls-isp.net)",
+      "format": "idn-hostname",
+      "minLength": 1
+    },
+    "http2https": {
+      "type": "boolean",
+      "description": "Redirect HTTP requests to HTTPS in Traefik"
+    },
+    "lets_encrypt": {
+      "type": "boolean",
+      "description": "Request a valid Let's Encrypt certificate via Traefik"
+    },
+    "ttl_secs": {
+      "type": "integer",
+      "description": "Lobby Heartbeat TTL in seconds",
+      "minimum": 10,
+      "maximum": 600,
+      "default": 45
+    },
+    "rts_node_id": {
+      "type": "string",
+      "description": "BLS-ISP Node Telemetry Identifier",
+      "minLength": 1,
+      "default": "bls-isp-eu-central-01"
+    },
+    "node_id": {
+      "type": "string",
+      "description": "Legacy alias for rts_node_id"
+    },
+    "relay_port_start": {
+      "type": "integer",
+      "description": "Reverse-TCP NAT Relay Pool Start Port",
+      "minimum": 1024,
+      "maximum": 65535,
+      "default": 30100
+    },
+    "relay_port_end": {
+      "type": "integer",
+      "description": "Reverse-TCP NAT Relay Pool End Port",
+      "minimum": 1024,
+      "maximum": 65535,
+      "default": 30139
+    }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "get-configuration output for rust-rts",
+  "$id": "http://nethserver.org/json-schema/task/output/rust-rts/get-configuration",
+  "description": "Returns current rust-rts module configuration",
+  "type": "object",
+  "required": [
+    "host",
+    "http2https",
+    "lets_encrypt",
+    "ttl_secs",
+    "rts_node_id",
+    "relay_port_start",
+    "relay_port_end"
+  ],
+  "properties": {
+    "host": {
+      "type": "string"
+    },
+    "http2https": {
+      "type": "boolean"
+    },
+    "lets_encrypt": {
+      "type": "boolean"
+    },
+    "ttl_secs": {
+      "type": "integer"
+    },
+    "rts_node_id": {
+      "type": "string"
+    },
+    "node_id": {
+      "type": "string"
+    },
+    "relay_port_start": {
+      "type": "integer"
+    },
+    "relay_port_end": {
+      "type": "integer"
+    }
+  }
+}

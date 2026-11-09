@@ -1,0 +1,1873 @@
+# === Allied Units ===
+
+[[units]]
+id = "allied_gi"
+name = "Allied GI"
+faction = "allies"
+role = "infantry"
+cost = 200
+supply_cost = 1
+build_time_secs = 3.5
+health = 125.0
+armor = "light"
+speed = 4.2
+vision_range = 14.0
+primary_weapon = "m60_mg"
+deploy_weapon = "heavy_para_mg"
+immobile_when_deployed = true
+prerequisites = ["allied_barracks"]
+ability_id = "deploy_sandbags"
+script_hooks = { on_ability = "on_gi_deploy" }
+
+[units.visual]
+model = "assets/models/allied_gi.glb"
+icon = "assets/ui/cameos/giicon.png"
+archetype = "infantry"
+scale = [0.9, 1.0, 0.9]
+primary_color = [0.18, 0.45, 0.88]
+
+[[units]]
+id = "chrono_miner"
+name = "Chrono Miner"
+faction = "allies"
+role = "harvester"
+cost = 1400
+build_time_secs = 9.0
+health = 650.0
+armor = "medium"
+speed = 4.8
+vision_range = 16.0
+harvest_capacity = 500
+chrono_harvester = true
+prerequisites = ["allied_war_factory", "allied_refinery"]
+
+[units.visual]
+model = "assets/models/chrono_miner.glb"
+icon = "assets/ui/cameos/ahrvicon.png"
+archetype = "harvester"
+scale = [1.6, 1.3, 2.0]
+primary_color = [0.18, 0.45, 0.88]
+
+[[units]]
+id = "grizzly_tank"
+name = "Grizzly Battle Tank"
+faction = "allies"
+role = "vehicle"
+cost = 700
+supply_cost = 2
+build_time_secs = 7.0
+health = 400.0
+armor = "heavy"
+speed = 6.0
+vision_range = 18.0
+primary_weapon = "cannon_105mm"
+crushes_infantry = true
+prerequisites = ["allied_war_factory"]
+ability_id = "rapid_maneuver"
+script_hooks = { on_ability = "on_grizzly_maneuver" }
+container = { capacity = 3 }
+death_effect = { survivor_unit = "allied_gi", survivor_chance = 0.6, drops_salvage = true }
+
+[[units.abilities]]
+id = "rapid_maneuver"
+name = "Rapid Maneuver Overdrive"
+target_mode = "self_only"
+cooldown_secs = 12.0
+script_hook = "on_grizzly_maneuver"
+
+[units.abilities.status_effect]
+id = "overdrive_boost"
+duration_secs = 8.0
+speed_multiplier = 1.35
+damage_multiplier = 1.15
+armor_multiplier = 0.95
+
+[units.visual]
+model = "assets/models/grizzly_tank.glb"
+icon = "assets/ui/cameos/gtnkicon.png"
+archetype = "tank"
+scale = [1.7, 1.15, 2.2]
+primary_color = [0.18, 0.45, 0.88]
+has_turret = true
+barrel_recoil_distance = 0.38
+
+[[units]]
+id = "allied_engineer"
+name = "Allied Engineer"
+faction = "allies"
+role = "engineer"
+cost = 500
+build_time_secs = 5.0
+health = 100.0
+armor = "none"
+speed = 3.8
+vision_range = 14.0
+lays_mines = true
+mine_damage = 300.0
+mine_radius = 4.0
+prerequisites = ["allied_barracks"]
+stealth = { detects_cloak = true }
+support_aura = { mobile_heal_per_sec = 25.0, mobile_heal_radius = 4.5 }
+
+[units.visual]
+model = "assets/models/allied_engineer.glb"
+icon = "assets/ui/cameos/engnicon.png"
+archetype = "infantry"
+scale = [0.85, 1.0, 0.85]
+primary_color = [0.22, 0.68, 0.95]
+
+[[units]]
+id = "prism_tank"
+name = "Prism Tank"
+faction = "allies"
+role = "vehicle"
+cost = 1200
+build_time_secs = 10.0
+health = 320.0
+armor = "medium"
+speed = 5.2
+vision_range = 21.0
+primary_weapon = "prism_beam"
+elite_weapon = "elite_prism_beam"
+prerequisites = ["allied_war_factory", "allied_battle_lab"]
+ability_id = "prism_focus_matrix"
+script_hooks = { on_ability = "on_prism_focus" }
+death_effect = { survivor_unit = "allied_gi", survivor_chance = 0.5, drops_salvage = true }
+
+[units.visual]
+model = "assets/models/prism_tank.glb"
+icon = "assets/ui/cameos/rtnkicon.png"
+archetype = "tank"
+scale = [1.75, 1.45, 2.2]
+primary_color = [0.22, 0.65, 0.98]
+has_turret = true
+barrel_recoil_distance = 0.22
+
+# === Soviet Units ===
+
+[[units]]
+id = "soviet_conscript"
+name = "Soviet Conscript"
+faction = "soviets"
+role = "infantry"
+cost = 100
+build_time_secs = 2.5
+health = 110.0
+armor = "light"
+speed = 4.4
+vision_range = 13.0
+primary_weapon = "ppsh_rifle"
+prerequisites = ["soviet_barracks"]
+
+[units.visual]
+model = "assets/models/soviet_conscript.glb"
+icon = "assets/ui/cameos/e2icon.png"
+archetype = "infantry"
+scale = [0.9, 1.0, 0.9]
+primary_color = [0.85, 0.16, 0.16]
+
+[[units]]
+id = "war_miner"
+name = "Soviet War Miner"
+faction = "soviets"
+role = "harvester"
+cost = 1400
+build_time_secs = 9.0
+health = 800.0
+armor = "heavy"
+speed = 4.2
+vision_range = 16.0
+harvest_capacity = 600
+primary_weapon = "m60_mg"
+crushes_infantry = true
+prerequisites = ["soviet_war_factory", "soviet_refinery"]
+
+[units.visual]
+model = "assets/models/war_miner.glb"
+icon = "assets/ui/cameos/harvicon.png"
+archetype = "harvester"
+scale = [1.7, 1.35, 2.1]
+primary_color = [0.85, 0.16, 0.16]
+
+[[units]]
+id = "rhino_tank"
+name = "Rhino Heavy Tank"
+faction = "soviets"
+role = "vehicle"
+cost = 900
+build_time_secs = 8.5
+health = 550.0
+armor = "heavy"
+speed = 5.0
+vision_range = 18.0
+primary_weapon = "cannon_120mm"
+crushes_infantry = true
+prerequisites = ["soviet_war_factory"]
+ability_id = "soviet_overcharge"
+script_hooks = { on_ability = "on_soviet_overcharge" }
+container = { capacity = 3 }
+death_effect = { survivor_unit = "soviet_conscript", survivor_chance = 0.6, drops_salvage = true }
+
+[units.visual]
+model = "assets/models/rhino_tank.glb"
+icon = "assets/ui/cameos/htnkicon.png"
+archetype = "tank"
+scale = [1.9, 1.25, 2.4]
+primary_color = [0.85, 0.16, 0.16]
+has_turret = true
+barrel_recoil_distance = 0.45
+
+[[units]]
+id = "soviet_engineer"
+name = "Soviet Engineer"
+faction = "soviets"
+role = "engineer"
+cost = 500
+build_time_secs = 5.0
+health = 100.0
+armor = "none"
+speed = 3.8
+vision_range = 14.0
+lays_mines = true
+mine_damage = 300.0
+mine_radius = 4.0
+prerequisites = ["soviet_barracks"]
+stealth = { detects_cloak = true }
+support_aura = { mobile_heal_per_sec = 25.0, mobile_heal_radius = 4.5 }
+
+[units.visual]
+model = "assets/models/soviet_engineer.glb"
+icon = "assets/ui/cameos/engnicon.png"
+archetype = "infantry"
+scale = [0.85, 1.0, 0.85]
+primary_color = [0.95, 0.45, 0.15]
+
+[[units]]
+id = "apocalypse_tank"
+name = "Apocalypse Assault Tank"
+faction = "soviets"
+role = "vehicle"
+cost = 1750
+build_time_secs = 13.0
+health = 900.0
+armor = "heavy"
+speed = 4.0
+vision_range = 19.0
+primary_weapon = "apocalypse_twin_120mm"
+secondary_weapon = "medusa_sam"
+elite_weapon = "elite_apocalypse_120mm"
+crushes_infantry = true
+prerequisites = ["soviet_war_factory", "soviet_battle_lab"]
+ability_id = "apocalypse_magnetic_blitz"
+script_hooks = { on_ability = "on_apocalypse_blitz" }
+death_effect = { survivor_unit = "soviet_conscript", survivor_chance = 0.75, drops_salvage = true }
+
+[units.visual]
+model = "assets/models/apocalypse_tank.glb"
+icon = "assets/ui/cameos/mtnkuico.png"
+archetype = "tank"
+scale = [2.3, 1.5, 2.8]
+primary_color = [0.75, 0.12, 0.12]
+
+# === Extended Allied RA2 & Yuri's Revenge Units ===
+
+[[units]]
+id = "guardian_gi"
+name = "Guardian GI"
+faction = "allies"
+role = "infantry"
+cost = 400
+build_time_secs = 4.5
+health = 160.0
+armor = "light"
+speed = 3.8
+vision_range = 15.0
+primary_weapon = "m60_mg"
+secondary_weapon = "guardian_missile"
+deploy_weapon = "guardian_missile"
+immobile_when_deployed = true
+prerequisites = ["allied_barracks"]
+ability_id = "deploy_guardian_shield"
+script_hooks = { on_ability = "on_gi_deploy" }
+
+[units.visual]
+model = "assets/models/guardian_gi.glb"
+icon = "assets/ui/cameos/gdgiicon.png"
+archetype = "infantry"
+scale = [0.95, 1.05, 0.95]
+primary_color = [0.18, 0.45, 0.88]
+
+[[units]]
+id = "rocketeer"
+name = "Rocketeer"
+faction = "allies"
+role = "infantry"
+cost = 600
+build_time_secs = 6.0
+health = 165.0
+armor = "light"
+speed = 7.2
+vision_range = 18.0
+movement_domain = "jumpjet"
+cruise_altitude = 4.2
+primary_weapon = "rocketeer_20mm"
+secondary_weapon = "rocketeer_20mm"
+prerequisites = ["allied_barracks", "allied_airforce_command"]
+
+[units.visual]
+model = "assets/models/rocketeer.glb"
+icon = "assets/ui/cameos/jjeticon.png"
+archetype = "infantry"
+scale = [1.0, 1.1, 1.0]
+primary_color = [0.18, 0.45, 0.88]
+
+[[units]]
+id = "navy_seal"
+name = "Navy SEAL"
+faction = "allies"
+role = "infantry"
+cost = 1000
+build_time_secs = 8.0
+health = 180.0
+armor = "light"
+speed = 5.0
+vision_range = 16.0
+movement_domain = "amphibious"
+plants_c4 = true
+primary_weapon = "mp5_seal_c4"
+prerequisites = ["allied_barracks", "allied_airforce_command"]
+
+[units.visual]
+model = "assets/models/navy_seal.glb"
+icon = "assets/ui/cameos/sealicon.png"
+archetype = "infantry"
+scale = [0.95, 1.05, 0.95]
+primary_color = [0.18, 0.45, 0.88]
+
+[[units]]
+id = "tanya"
+name = "Special Agent Tanya"
+faction = "allies"
+role = "infantry"
+cost = 1500
+build_limit = 1
+build_time_secs = 11.0
+health = 250.0
+armor = "light"
+speed = 5.4
+vision_range = 18.0
+movement_domain = "amphibious"
+plants_c4 = true
+primary_weapon = "tanya_colts"
+prerequisites = ["allied_barracks", "allied_battle_lab"]
+
+[units.visual]
+model = "assets/models/tanya.glb"
+icon = "assets/ui/cameos/tanyicon.png"
+archetype = "infantry"
+scale = [0.95, 1.05, 0.95]
+primary_color = [0.18, 0.45, 0.88]
+
+[[units]]
+id = "allied_spy"
+name = "Allied Covert Spy"
+faction = "allies"
+role = "infantry"
+cost = 1000
+build_time_secs = 8.5
+health = 115.0
+armor = "none"
+speed = 4.6
+vision_range = 17.0
+movement_domain = "amphibious"
+spy_infiltrator = true
+prerequisites = ["allied_barracks", "allied_battle_lab"]
+stealth = { cloaked = true, can_disguise_as_enemy = true }
+
+[units.visual]
+model = "assets/models/allied_spy.glb"
+icon = "assets/ui/cameos/spyicon.png"
+archetype = "infantry"
+scale = [0.88, 1.02, 0.88]
+primary_color = [0.15, 0.25, 0.45]
+
+[[units]]
+id = "sniper"
+name = "British Sniper"
+faction = "allies"
+sub_factions = ["great_britain", "england"]
+role = "infantry"
+cost = 600
+build_time_secs = 6.5
+health = 135.0
+armor = "light"
+speed = 4.4
+vision_range = 20.0
+primary_weapon = "awp_sniper_rifle"
+prerequisites = ["allied_barracks", "allied_airforce_command"]
+
+[units.visual]
+model = "assets/models/sniper.glb"
+icon = "assets/ui/cameos/snipicon.png"
+archetype = "infantry"
+scale = [0.9, 1.0, 0.9]
+primary_color = [0.18, 0.45, 0.88]
+
+[[units]]
+id = "chrono_legionnaire"
+name = "Chrono Legionnaire"
+faction = "allies"
+role = "infantry"
+cost = 1500
+build_time_secs = 11.5
+health = 175.0
+armor = "light"
+speed = 6.0
+vision_range = 17.0
+movement_domain = "chrono"
+chrono_locomotion = true
+primary_weapon = "neutron_eraser"
+prerequisites = ["allied_barracks", "allied_battle_lab"]
+
+[units.visual]
+model = "assets/models/chrono_legionnaire.glb"
+icon = "assets/ui/cameos/clegicon.png"
+archetype = "infantry"
+scale = [0.95, 1.05, 0.95]
+primary_color = [0.18, 0.45, 0.88]
+
+[[units]]
+id = "allied_attack_dog"
+name = "Allied Attack Dog"
+faction = "allies"
+role = "infantry"
+cost = 200
+build_time_secs = 2.5
+health = 100.0
+armor = "none"
+speed = 6.5
+vision_range = 16.0
+immune_to_mind_control = true
+primary_weapon = "dog_bite"
+prerequisites = ["allied_barracks"]
+stealth = { detects_cloak = true, detects_disguise = true }
+
+[units.visual]
+model = "assets/models/allied_attack_dog.glb"
+icon = "assets/ui/cameos/adogicon.png"
+archetype = "infantry"
+scale = [0.8, 0.8, 0.8]
+primary_color = [0.18, 0.45, 0.88]
+
+[[units]]
+id = "mirage_tank"
+name = "Mirage Tank"
+faction = "allies"
+role = "vehicle"
+cost = 1000
+build_time_secs = 9.0
+health = 340.0
+armor = "medium"
+speed = 5.8
+vision_range = 19.0
+primary_weapon = "mirage_spectrum_cannon"
+prerequisites = ["allied_war_factory", "allied_battle_lab"]
+stealth = { cloaked = true, disguises_as_terrain = true, reveal_on_fire_secs = 2.0 }
+
+[units.visual]
+model = "assets/models/mirage_tank.glb"
+icon = "assets/ui/cameos/mtnkicon.png"
+archetype = "tank"
+scale = [1.7, 1.2, 2.1]
+primary_color = [0.18, 0.45, 0.88]
+
+[[units]]
+id = "ifv"
+name = "Multigunner IFV"
+faction = "allies"
+role = "vehicle"
+cost = 600
+build_time_secs = 6.0
+health = 300.0
+armor = "light"
+speed = 7.0
+vision_range = 18.0
+passenger_weapon_by_unit = { terrorist = "nuclear_demolition", crazy_ivan = "nuclear_demolition", chrono_ivan = "nuclear_demolition", allied_attack_dog = "m60_mg", soviet_attack_dog = "m60_mg", allied_spy = "m60_mg" }
+passenger_mode_labels = { allied_attack_dog = "Counter-Espionage Detector Turret", soviet_attack_dog = "Counter-Espionage Detector Turret", allied_spy = "Counter-Espionage Detector Turret", terrorist = "High-Explosive Demolition Truck", crazy_ivan = "High-Explosive Demolition Truck", chrono_ivan = "High-Explosive Demolition Truck" }
+primary_weapon = "hover_missile"
+secondary_weapon = "hover_missile"
+prerequisites = ["allied_war_factory"]
+container = { capacity = 1, adapts_weapon_to_passenger = true, engineer_repair_aura_per_sec = 45.0 }
+point_defense = { intercept_radius = 10.0, cooldown_secs = 2.5 }
+
+[units.visual]
+model = "assets/models/ifv.glb"
+icon = "assets/ui/cameos/fvicon.png"
+archetype = "tank"
+scale = [1.55, 1.15, 1.9]
+primary_color = [0.18, 0.45, 0.88]
+
+[[units]]
+id = "robot_tank"
+name = "Robot Tank"
+faction = "allies"
+role = "vehicle"
+cost = 600
+build_time_secs = 6.0
+health = 360.0
+armor = "heavy"
+speed = 6.2
+vision_range = 17.0
+movement_domain = "amphibious"
+immune_to_mind_control = true
+immune_to_radiation = true
+requires_powered_building = "allied_robot_control"
+primary_weapon = "robot_laser_gun"
+prerequisites = ["allied_war_factory", "allied_robot_control"]
+
+[units.visual]
+model = "assets/models/robot_tank.glb"
+icon = "assets/ui/cameos/roboicon.png"
+archetype = "tank"
+scale = [1.6, 1.15, 2.0]
+primary_color = [0.18, 0.45, 0.88]
+
+[[units]]
+id = "battle_fortress"
+name = "Battle Fortress"
+faction = "allies"
+role = "vehicle"
+cost = 2000
+build_time_secs = 14.0
+health = 1050.0
+armor = "heavy"
+speed = 4.4
+vision_range = 19.0
+crushes_infantry = true
+crushes_vehicles = true
+primary_weapon = "fortress_gatling"
+prerequisites = ["allied_war_factory", "allied_battle_lab"]
+container = { capacity = 5, passengers_can_fire = true }
+
+[units.visual]
+model = "assets/models/battle_fortress.glb"
+icon = "assets/ui/cameos/bfrticon.png"
+archetype = "tank"
+scale = [2.4, 1.65, 2.9]
+primary_color = [0.18, 0.45, 0.88]
+
+[[units]]
+id = "tank_destroyer"
+name = "German Tank Destroyer"
+faction = "allies"
+sub_factions = ["germany"]
+role = "vehicle"
+cost = 900
+build_time_secs = 8.0
+health = 480.0
+armor = "heavy"
+speed = 5.4
+vision_range = 18.0
+crushes_infantry = true
+primary_weapon = "pak_88mm_gun"
+prerequisites = ["allied_war_factory", "allied_airforce_command"]
+
+[units.visual]
+model = "assets/models/tank_destroyer.glb"
+icon = "assets/ui/cameos/tnkdicon.png"
+archetype = "tank"
+scale = [1.8, 1.2, 2.3]
+primary_color = [0.18, 0.45, 0.88]
+
+[[units]]
+id = "allied_mcv"
+name = "Allied MCV"
+faction = "allies"
+role = "vehicle"
+cost = 3000
+build_time_secs = 16.0
+health = 1000.0
+armor = "heavy"
+speed = 3.8
+vision_range = 16.0
+transforms_into_building = "allied_conyard"
+prerequisites = ["allied_war_factory", "allied_service_depot"]
+
+[units.visual]
+model = "assets/models/allied_mcv.glb"
+icon = "assets/ui/cameos/mcvicon.png"
+archetype = "harvester"
+scale = [2.2, 1.6, 2.6]
+primary_color = [0.18, 0.45, 0.88]
+
+[[units]]
+id = "harrier"
+name = "Harrier Strike Jet"
+faction = "allies"
+role = "vehicle"
+cost = 1200
+build_time_secs = 10.0
+health = 260.0
+armor = "light"
+speed = 9.0
+vision_range = 20.0
+movement_domain = "air"
+cruise_altitude = 5.2
+max_ammo = 2
+primary_weapon = "maverick_missile"
+prerequisites = ["allied_airforce_command"]
+
+[units.visual]
+model = "assets/models/harrier.glb"
+icon = "assets/ui/cameos/falcicon.png"
+archetype = "aircraft"
+scale = [1.8, 1.2, 2.1]
+primary_color = [0.18, 0.45, 0.88]
+
+[[units]]
+id = "black_eagle"
+name = "Korean Black Eagle Jet"
+faction = "allies"
+sub_factions = ["korea"]
+role = "vehicle"
+cost = 1200
+build_time_secs = 10.0
+health = 320.0
+armor = "light"
+speed = 9.5
+vision_range = 21.0
+movement_domain = "air"
+cruise_altitude = 5.4
+max_ammo = 2
+primary_weapon = "maverick_missile"
+prerequisites = ["allied_airforce_command"]
+
+[units.visual]
+model = "assets/models/black_eagle.glb"
+icon = "assets/ui/cameos/beagicon.png"
+archetype = "aircraft"
+scale = [1.9, 1.2, 2.2]
+primary_color = [0.18, 0.45, 0.88]
+
+[[units]]
+id = "nighthawk_chopper"
+name = "NightHawk Transport"
+faction = "allies"
+role = "vehicle"
+cost = 1000
+build_time_secs = 8.5
+health = 350.0
+armor = "medium"
+speed = 7.8
+vision_range = 18.0
+movement_domain = "air"
+cruise_altitude = 4.6
+primary_weapon = "m60_mg"
+prerequisites = ["allied_airforce_command"]
+container = { capacity = 5, accepts_vehicles = true }
+stealth = { cloaked = true, reveal_on_fire_secs = 2.0 }
+
+[units.visual]
+model = "assets/models/nighthawk_chopper.glb"
+icon = "assets/ui/cameos/nighthawk_chopper.png"
+archetype = "aircraft"
+scale = [2.0, 1.3, 2.3]
+primary_color = [0.18, 0.45, 0.88]
+
+[[units]]
+id = "allied_destroyer"
+name = "Allied Destroyer"
+faction = "allies"
+role = "vehicle"
+cost = 1000
+build_time_secs = 9.0
+health = 650.0
+armor = "heavy"
+speed = 4.8
+vision_range = 19.0
+movement_domain = "naval"
+spawns_drone_unit = "osprey_asw"
+max_drones = 1
+primary_weapon = "sea_gun_155mm"
+prerequisites = ["allied_naval_shipyard"]
+stealth = { detects_cloak = true }
+
+[units.visual]
+model = "assets/models/allied_destroyer.glb"
+icon = "assets/ui/cameos/desticon.png"
+archetype = "ship"
+scale = [2.3, 1.5, 2.9]
+primary_color = [0.18, 0.45, 0.88]
+
+[[units]]
+id = "aegis_cruiser"
+name = "Aegis Cruiser"
+faction = "allies"
+role = "vehicle"
+cost = 1200
+build_time_secs = 10.0
+health = 700.0
+armor = "heavy"
+speed = 4.6
+vision_range = 24.0
+movement_domain = "naval"
+primary_weapon = "medusa_sam"
+prerequisites = ["allied_naval_shipyard", "allied_airforce_command"]
+
+[units.visual]
+model = "assets/models/aegis_cruiser.glb"
+icon = "assets/ui/cameos/agisicon.png"
+archetype = "ship"
+scale = [2.3, 1.5, 2.9]
+primary_color = [0.18, 0.45, 0.88]
+
+[[units]]
+id = "aircraft_carrier"
+name = "Allied Aircraft Carrier"
+faction = "allies"
+role = "vehicle"
+cost = 2000
+build_time_secs = 15.0
+health = 1100.0
+armor = "heavy"
+speed = 3.8
+vision_range = 26.0
+movement_domain = "naval"
+spawns_drone_unit = "hornet_fighter"
+max_drones = 3
+primary_weapon = "hornet_strike"
+prerequisites = ["allied_naval_shipyard", "allied_battle_lab"]
+
+[units.visual]
+model = "assets/models/aircraft_carrier.glb"
+icon = "assets/ui/cameos/carricon.png"
+archetype = "ship"
+scale = [2.8, 1.8, 3.4]
+primary_color = [0.18, 0.45, 0.88]
+
+[[units]]
+id = "dolphin"
+name = "Allied Sonic Dolphin"
+faction = "allies"
+role = "vehicle"
+cost = 500
+build_time_secs = 5.0
+health = 240.0
+armor = "light"
+speed = 6.8
+vision_range = 17.0
+movement_domain = "naval"
+primary_weapon = "sonic_pulse"
+prerequisites = ["allied_naval_shipyard"]
+
+[units.visual]
+model = "assets/models/dolphin.glb"
+icon = "assets/ui/cameos/dlphicon.png"
+archetype = "ship"
+scale = [1.1, 1.0, 1.3]
+primary_color = [0.18, 0.45, 0.88]
+
+# === Extended Soviet RA2 & Yuri's Revenge Units ===
+
+[[units]]
+id = "flak_trooper"
+name = "Flak Trooper"
+faction = "soviets"
+role = "infantry"
+cost = 300
+build_time_secs = 3.5
+health = 135.0
+armor = "light"
+speed = 4.2
+vision_range = 16.0
+primary_weapon = "flak_scattergun"
+secondary_weapon = "flak_aa_gun"
+prerequisites = ["soviet_barracks", "soviet_radar_tower"]
+
+[units.visual]
+model = "assets/models/flak_trooper.glb"
+icon = "assets/ui/cameos/flkticon.png"
+archetype = "infantry"
+scale = [0.95, 1.05, 0.95]
+primary_color = [0.85, 0.16, 0.16]
+
+[[units]]
+id = "tesla_trooper"
+name = "Tesla Trooper"
+faction = "soviets"
+role = "infantry"
+cost = 500
+build_time_secs = 5.0
+health = 200.0
+armor = "medium"
+speed = 3.8
+vision_range = 14.0
+primary_weapon = "portable_tesla_bolt"
+elite_weapon = "elite_tesla_bolt"
+uncrushable = true
+prerequisites = ["soviet_barracks"]
+
+[units.visual]
+model = "assets/models/tesla_trooper.glb"
+icon = "assets/ui/cameos/shkicon.png"
+archetype = "infantry"
+scale = [1.0, 1.05, 1.0]
+primary_color = [0.85, 0.16, 0.16]
+
+[[units]]
+id = "desolator"
+name = "Iraqi Desolator"
+faction = "soviets"
+sub_factions = ["iraq"]
+role = "infantry"
+cost = 600
+build_time_secs = 6.5
+health = 190.0
+armor = "medium"
+speed = 4.0
+vision_range = 16.0
+primary_weapon = "rad_beam"
+deploy_weapon = "rad_beam"
+immobile_when_deployed = true
+immune_to_radiation = true
+prerequisites = ["soviet_barracks", "soviet_radar_tower"]
+ability_id = "rad_irradiation_field"
+abilities = [{ id = "rad_irradiation_field", name = "Irradiation Field", payloads = [{ kind = "spawn_hazard_zone", radius = 4.5, dps = 28.0, duration_secs = 4.0 }] }]
+script_hooks = { on_ability = "on_soviet_overcharge" }
+
+[units.visual]
+model = "assets/models/desolator.glb"
+icon = "assets/ui/cameos/desoicon.png"
+archetype = "infantry"
+scale = [1.0, 1.05, 1.0]
+primary_color = [0.85, 0.16, 0.16]
+
+[[units]]
+id = "crazy_ivan"
+name = "Crazy Ivan"
+faction = "soviets"
+role = "infantry"
+cost = 600
+build_time_secs = 6.0
+health = 175.0
+armor = "light"
+speed = 4.6
+vision_range = 15.0
+primary_weapon = "ivan_dynamite"
+plants_c4 = true
+lays_mines = true
+mine_damage = 420.0
+mine_radius = 5.0
+prerequisites = ["soviet_barracks", "soviet_radar_tower"]
+death_effect = { explosion_damage = 320.0, explosion_radius = 4.5 }
+
+[units.visual]
+model = "assets/models/crazy_ivan.glb"
+icon = "assets/ui/cameos/ivanicon.png"
+archetype = "infantry"
+scale = [0.95, 1.05, 0.95]
+primary_color = [0.85, 0.16, 0.16]
+
+[[units]]
+id = "terrorist"
+name = "Cuban Terrorist"
+faction = "soviets"
+sub_factions = ["cuba"]
+role = "infantry"
+cost = 200
+build_time_secs = 3.0
+health = 115.0
+armor = "none"
+speed = 5.6
+vision_range = 15.0
+kamikaze = true
+primary_weapon = "terrorist_bomb"
+prerequisites = ["soviet_barracks", "soviet_radar_tower"]
+death_effect = { explosion_damage = 260.0, explosion_radius = 4.0, leaves_radiation = true }
+
+[units.visual]
+model = "assets/models/terrorist.glb"
+icon = "assets/ui/cameos/trsticon.png"
+archetype = "infantry"
+scale = [0.92, 1.02, 0.92]
+primary_color = [0.92, 0.25, 0.12]
+
+[[units]]
+id = "boris"
+name = "Hero Boris"
+faction = "soviets"
+role = "infantry"
+cost = 1500
+build_limit = 1
+build_time_secs = 11.0
+health = 280.0
+armor = "medium"
+speed = 5.2
+vision_range = 18.0
+primary_weapon = "akm_hero_rifle"
+secondary_weapon = "boris_laser_flare"
+prerequisites = ["soviet_barracks", "soviet_battle_lab"]
+
+[units.visual]
+model = "assets/models/boris.glb"
+icon = "assets/ui/cameos/brisicon.png"
+archetype = "infantry"
+scale = [1.0, 1.1, 1.0]
+primary_color = [0.85, 0.16, 0.16]
+
+[[units]]
+id = "soviet_attack_dog"
+name = "Soviet Attack Dog"
+faction = "soviets"
+role = "infantry"
+cost = 200
+build_time_secs = 2.5
+health = 100.0
+armor = "none"
+speed = 6.5
+vision_range = 16.0
+immune_to_mind_control = true
+primary_weapon = "dog_bite"
+prerequisites = ["soviet_barracks"]
+stealth = { detects_cloak = true, detects_disguise = true }
+
+[units.visual]
+model = "assets/models/soviet_attack_dog.glb"
+icon = "assets/ui/cameos/dogicon.png"
+archetype = "infantry"
+scale = [0.8, 0.8, 0.8]
+primary_color = [0.85, 0.16, 0.16]
+
+[[units]]
+id = "terror_drone"
+name = "Terror Drone"
+faction = "soviets"
+role = "vehicle"
+cost = 500
+build_time_secs = 5.0
+health = 190.0
+armor = "light"
+speed = 7.8
+vision_range = 16.0
+immune_to_mind_control = true
+immune_to_radiation = true
+primary_weapon = "drone_claws"
+prerequisites = ["soviet_war_factory"]
+
+[units.visual]
+model = "assets/models/terror_drone.glb"
+icon = "assets/ui/cameos/dronicon.png"
+archetype = "infantry"
+scale = [0.95, 0.9, 0.95]
+primary_color = [0.85, 0.16, 0.16]
+
+[[units]]
+id = "tesla_tank"
+name = "Russian Tesla Tank"
+faction = "soviets"
+sub_factions = ["russia"]
+role = "vehicle"
+cost = 1200
+build_time_secs = 9.5
+health = 450.0
+armor = "heavy"
+speed = 5.2
+vision_range = 18.0
+crushes_infantry = true
+primary_weapon = "tesla_bolt"
+elite_weapon = "elite_tesla_bolt"
+prerequisites = ["soviet_war_factory", "soviet_radar_tower"]
+
+[units.visual]
+model = "assets/models/tesla_tank.glb"
+icon = "assets/ui/cameos/ttnkicon.png"
+archetype = "tank"
+scale = [1.8, 1.3, 2.2]
+primary_color = [0.85, 0.16, 0.16]
+
+[[units]]
+id = "flak_track"
+name = "Flak Track APC"
+faction = "soviets"
+role = "vehicle"
+cost = 500
+build_time_secs = 5.5
+health = 320.0
+armor = "light"
+speed = 6.8
+vision_range = 18.0
+primary_weapon = "flak_scattergun"
+secondary_weapon = "flak_aa_gun"
+prerequisites = ["soviet_war_factory"]
+container = { capacity = 5 }
+
+[units.visual]
+model = "assets/models/flak_track.glb"
+icon = "assets/ui/cameos/htkicon.png"
+archetype = "tank"
+scale = [1.6, 1.2, 2.0]
+primary_color = [0.85, 0.16, 0.16]
+
+[[units]]
+id = "v3_rocket_launcher"
+name = "V3 Rocket Launcher"
+faction = "soviets"
+role = "vehicle"
+cost = 800
+build_time_secs = 8.0
+health = 280.0
+armor = "light"
+speed = 4.2
+vision_range = 22.0
+primary_weapon = "v3_ballistic_rocket"
+prerequisites = ["soviet_war_factory", "soviet_radar_tower"]
+
+[units.visual]
+model = "assets/models/v3_rocket_launcher.glb"
+icon = "assets/ui/cameos/v3_rocket_launcher.png"
+archetype = "tank"
+scale = [1.9, 1.4, 2.5]
+primary_color = [0.85, 0.16, 0.16]
+
+[[units]]
+id = "demolition_truck"
+name = "Libyan Demolition Truck"
+faction = "soviets"
+sub_factions = ["libya"]
+role = "vehicle"
+cost = 1500
+build_time_secs = 11.0
+health = 320.0
+armor = "light"
+speed = 5.8
+vision_range = 15.0
+kamikaze = true
+primary_weapon = "nuclear_demolition"
+prerequisites = ["soviet_war_factory", "soviet_radar_tower"]
+death_effect = { explosion_damage = 450.0, explosion_radius = 5.5, leaves_radiation = true }
+
+[units.visual]
+model = "assets/models/demolition_truck.glb"
+icon = "assets/ui/cameos/trkaicon.png"
+archetype = "tank"
+scale = [1.7, 1.3, 2.1]
+primary_color = [0.85, 0.16, 0.16]
+
+[[units]]
+id = "soviet_mcv"
+name = "Soviet MCV"
+faction = "soviets"
+role = "vehicle"
+cost = 3000
+build_time_secs = 16.0
+health = 1050.0
+armor = "heavy"
+speed = 3.8
+vision_range = 16.0
+transforms_into_building = "soviet_conyard"
+prerequisites = ["soviet_war_factory", "soviet_service_depot"]
+
+[units.visual]
+model = "assets/models/soviet_mcv.glb"
+icon = "assets/ui/cameos/smcvicon.png"
+archetype = "harvester"
+scale = [2.2, 1.6, 2.6]
+primary_color = [0.85, 0.16, 0.16]
+
+[[units]]
+id = "kirov_airship"
+name = "Kirov Airship"
+faction = "soviets"
+role = "vehicle"
+cost = 2000
+build_time_secs = 15.0
+health = 1500.0
+armor = "heavy"
+speed = 3.6
+vision_range = 20.0
+movement_domain = "air"
+cruise_altitude = 6.0
+self_heal_per_sec = 12.0
+primary_weapon = "blimp_heavy_bomb"
+prerequisites = ["soviet_war_factory", "soviet_battle_lab"]
+death_effect = { explosion_damage = 400.0, explosion_radius = 4.0 }
+
+[units.visual]
+model = "assets/models/kirov_airship.glb"
+icon = "assets/ui/cameos/zepicon.png"
+archetype = "aircraft"
+scale = [2.8, 2.0, 3.4]
+primary_color = [0.85, 0.16, 0.16]
+
+[[units]]
+id = "siege_chopper"
+name = "Soviet Siege Chopper"
+faction = "soviets"
+role = "vehicle"
+cost = 1100
+build_time_secs = 9.0
+health = 380.0
+armor = "medium"
+speed = 7.2
+vision_range = 19.0
+movement_domain = "air"
+cruise_altitude = 4.8
+primary_weapon = "chopper_nose_gun"
+deploy_weapon = "chopper_130mm"
+immobile_when_deployed = true
+lands_when_deployed = true
+prerequisites = ["soviet_war_factory", "soviet_radar_tower"]
+ability_id = "deploy_siege_artillery"
+
+[units.visual]
+model = "assets/models/siege_chopper.glb"
+icon = "assets/ui/cameos/schpicon.png"
+archetype = "aircraft"
+scale = [2.0, 1.3, 2.3]
+primary_color = [0.85, 0.16, 0.16]
+
+[[units]]
+id = "typhoon_sub"
+name = "Typhoon Attack Sub"
+faction = "soviets"
+role = "vehicle"
+cost = 1000
+build_time_secs = 9.0
+health = 650.0
+armor = "heavy"
+speed = 4.6
+vision_range = 18.0
+movement_domain = "naval"
+primary_weapon = "torpedo_tube"
+prerequisites = ["soviet_naval_shipyard"]
+stealth = { cloaked = true, reveal_on_fire_secs = 2.5 }
+
+[units.visual]
+model = "assets/models/typhoon_sub.glb"
+icon = "assets/ui/cameos/subicon.png"
+archetype = "ship"
+scale = [2.2, 1.3, 2.8]
+primary_color = [0.85, 0.16, 0.16]
+
+[[units]]
+id = "sea_scorpion"
+name = "Sea Scorpion"
+faction = "soviets"
+role = "vehicle"
+cost = 600
+build_time_secs = 6.0
+health = 450.0
+armor = "medium"
+speed = 5.6
+vision_range = 20.0
+movement_domain = "naval"
+primary_weapon = "flak_scattergun"
+secondary_weapon = "flak_aa_gun"
+prerequisites = ["soviet_naval_shipyard"]
+
+[units.visual]
+model = "assets/models/sea_scorpion.glb"
+icon = "assets/ui/cameos/hovricon.png"
+archetype = "ship"
+scale = [1.8, 1.2, 2.2]
+primary_color = [0.85, 0.16, 0.16]
+
+[[units]]
+id = "dreadnought"
+name = "Soviet Dreadnought"
+faction = "soviets"
+role = "vehicle"
+cost = 2000
+build_time_secs = 15.0
+health = 1150.0
+armor = "heavy"
+speed = 3.8
+vision_range = 26.0
+movement_domain = "naval"
+primary_weapon = "dreadnought_missile"
+prerequisites = ["soviet_naval_shipyard", "soviet_battle_lab"]
+
+[units.visual]
+model = "assets/models/dreadnought.glb"
+icon = "assets/ui/cameos/dredicon.png"
+archetype = "ship"
+scale = [2.8, 1.8, 3.4]
+primary_color = [0.85, 0.16, 0.16]
+
+[[units]]
+id = "giant_squid"
+name = "Giant Squid"
+faction = "soviets"
+role = "vehicle"
+cost = 1000
+build_time_secs = 8.0
+health = 500.0
+armor = "medium"
+speed = 5.8
+vision_range = 17.0
+movement_domain = "naval"
+primary_weapon = "squid_tentacle"
+prerequisites = ["soviet_naval_shipyard", "soviet_radar_tower"]
+
+[units.visual]
+model = "assets/models/giant_squid.glb"
+icon = "assets/ui/cameos/sqdicon.png"
+archetype = "ship"
+scale = [1.5, 1.2, 1.8]
+primary_color = [0.85, 0.16, 0.16]
+
+# === Yuri's Revenge Units ===
+
+[[units]]
+id = "yuri_initiate"
+name = "Yuri Initiate"
+faction = "yuri"
+role = "infantry"
+cost = 150
+build_time_secs = 3.0
+health = 120.0
+armor = "light"
+speed = 4.2
+vision_range = 14.0
+garrison_damage_multiplier = 1.6
+primary_weapon = "pyrokinesis_bolt"
+prerequisites = ["yuri_barracks"]
+
+[units.visual]
+model = "assets/models/yuri_initiate.glb"
+icon = "assets/ui/cameos/initicon.png"
+archetype = "infantry"
+scale = [0.9, 1.0, 0.9]
+primary_color = [0.68, 0.22, 0.88]
+
+[[units]]
+id = "yuri_brute"
+name = "Genetic Brute"
+faction = "yuri"
+role = "infantry"
+cost = 500
+build_time_secs = 5.5
+health = 380.0
+armor = "medium"
+speed = 5.0
+vision_range = 14.0
+immune_to_mind_control = true
+uncrushable = true
+primary_weapon = "brute_smash"
+prerequisites = ["yuri_barracks"]
+
+[units.visual]
+model = "assets/models/yuri_brute.glb"
+icon = "assets/ui/cameos/bruticon.png"
+archetype = "infantry"
+scale = [1.1, 1.15, 1.1]
+primary_color = [0.68, 0.22, 0.88]
+
+[[units]]
+id = "yuri_virus"
+name = "Virus Sniper"
+faction = "yuri"
+role = "infantry"
+cost = 700
+build_time_secs = 7.0
+health = 140.0
+armor = "light"
+speed = 4.4
+vision_range = 20.0
+primary_weapon = "toxin_dart_rifle"
+prerequisites = ["yuri_barracks", "yuri_psychic_sensor"]
+
+[units.visual]
+model = "assets/models/yuri_virus.glb"
+icon = "assets/ui/cameos/vrusicon.png"
+archetype = "infantry"
+scale = [0.95, 1.05, 0.95]
+primary_color = [0.68, 0.22, 0.88]
+
+[[units]]
+id = "yuri_clone"
+name = "Yuri Clone"
+faction = "yuri"
+role = "infantry"
+cost = 800
+build_time_secs = 8.0
+health = 160.0
+armor = "light"
+speed = 4.2
+vision_range = 16.0
+mind_control_limit = 1
+psi_wave_radius = 5.5
+psi_wave_damage = 280.0
+primary_weapon = "psi_mind_control"
+prerequisites = ["yuri_barracks", "yuri_psychic_sensor"]
+ability_id = "psi_wave_blast"
+
+[units.visual]
+model = "assets/models/yuri_clone.glb"
+icon = "assets/ui/cameos/yuriicon.png"
+archetype = "infantry"
+scale = [0.95, 1.05, 0.95]
+primary_color = [0.68, 0.22, 0.88]
+
+[[units]]
+id = "yuri_prime"
+name = "Yuri Prime"
+faction = "yuri"
+role = "infantry"
+cost = 1500
+build_limit = 1
+build_time_secs = 12.0
+health = 260.0
+armor = "medium"
+speed = 5.4
+vision_range = 20.0
+movement_domain = "amphibious"
+mind_control_limit = 2
+psi_wave_radius = 7.5
+psi_wave_damage = 420.0
+self_heal_per_sec = 8.0
+primary_weapon = "psi_prime_control"
+prerequisites = ["yuri_barracks", "yuri_battle_lab"]
+ability_id = "psi_wave_blast"
+
+[units.visual]
+model = "assets/models/yuri_prime.glb"
+icon = "assets/ui/cameos/yurpicon.png"
+archetype = "infantry"
+scale = [1.05, 1.1, 1.05]
+primary_color = [0.68, 0.22, 0.88]
+
+[[units]]
+id = "yuri_engineer"
+name = "Yuri Engineer"
+faction = "yuri"
+role = "engineer"
+cost = 500
+build_time_secs = 5.0
+health = 100.0
+armor = "none"
+speed = 3.8
+vision_range = 14.0
+lays_mines = true
+mine_damage = 300.0
+mine_radius = 4.0
+prerequisites = ["yuri_barracks"]
+stealth = { detects_cloak = true }
+support_aura = { mobile_heal_per_sec = 25.0, mobile_heal_radius = 4.5 }
+
+[units.visual]
+model = "assets/models/yuri_engineer.glb"
+icon = "assets/ui/cameos/yengicon.png"
+archetype = "infantry"
+scale = [0.85, 1.0, 0.85]
+primary_color = [0.68, 0.22, 0.88]
+
+[[units]]
+id = "yuri_slave_miner"
+name = "Yuri Slave Miner"
+faction = "yuri"
+role = "harvester"
+cost = 1500
+build_time_secs = 9.5
+health = 850.0
+armor = "heavy"
+speed = 4.2
+vision_range = 16.0
+harvest_capacity = 600
+mobile_refinery = true
+immune_to_mind_control = true
+crushes_infantry = true
+primary_weapon = "m60_mg"
+prerequisites = ["yuri_war_factory", "yuri_slave_refinery"]
+
+[units.visual]
+model = "assets/models/yuri_slave_miner.glb"
+icon = "assets/ui/cameos/sminicon.png"
+archetype = "harvester"
+scale = [1.8, 1.4, 2.2]
+primary_color = [0.68, 0.22, 0.88]
+
+[[units]]
+id = "lasher_tank"
+name = "Lasher Light Tank"
+faction = "yuri"
+role = "vehicle"
+cost = 700
+build_time_secs = 7.0
+health = 410.0
+armor = "heavy"
+speed = 6.0
+vision_range = 18.0
+crushes_infantry = true
+primary_weapon = "cannon_105mm"
+prerequisites = ["yuri_war_factory"]
+
+[units.visual]
+model = "assets/models/lasher_tank.glb"
+icon = "assets/ui/cameos/ltnkicon.png"
+archetype = "tank"
+scale = [1.75, 1.15, 2.2]
+primary_color = [0.68, 0.22, 0.88]
+
+[[units]]
+id = "gattling_tank"
+name = "Yuri Gattling Tank"
+faction = "yuri"
+role = "vehicle"
+cost = 750
+build_time_secs = 7.0
+health = 350.0
+armor = "medium"
+speed = 6.2
+vision_range = 18.0
+primary_weapon = "gatling_aa_cannon"
+secondary_weapon = "gatling_aa_cannon"
+prerequisites = ["yuri_war_factory"]
+
+[units.visual]
+model = "assets/models/gattling_tank.glb"
+icon = "assets/ui/cameos/ytnkicon.png"
+archetype = "tank"
+scale = [1.65, 1.25, 2.0]
+primary_color = [0.68, 0.22, 0.88]
+
+[[units]]
+id = "chaos_drone"
+name = "Chaos Drone"
+faction = "yuri"
+role = "vehicle"
+cost = 1000
+build_time_secs = 8.0
+health = 290.0
+armor = "medium"
+speed = 5.4
+vision_range = 17.0
+immune_to_mind_control = true
+immune_to_radiation = true
+primary_weapon = "chaos_gas_projector"
+prerequisites = ["yuri_war_factory", "yuri_psychic_sensor"]
+
+[units.visual]
+model = "assets/models/chaos_drone.glb"
+icon = "assets/ui/cameos/caosicon.png"
+archetype = "tank"
+scale = [1.6, 1.2, 1.9]
+primary_color = [0.68, 0.22, 0.88]
+
+[[units]]
+id = "magnetron"
+name = "Magnetron"
+faction = "yuri"
+role = "vehicle"
+cost = 1100
+build_time_secs = 9.5
+health = 320.0
+armor = "medium"
+speed = 5.0
+vision_range = 21.0
+primary_weapon = "magnetic_levitation_beam"
+prerequisites = ["yuri_war_factory", "yuri_psychic_sensor"]
+
+[units.visual]
+model = "assets/models/magnetron.glb"
+icon = "assets/ui/cameos/teleicon.png"
+archetype = "tank"
+scale = [1.75, 1.4, 2.1]
+primary_color = [0.68, 0.22, 0.88]
+
+[[units]]
+id = "mastermind"
+name = "Mastermind"
+faction = "yuri"
+role = "vehicle"
+cost = 1750
+build_time_secs = 13.0
+health = 600.0
+armor = "heavy"
+speed = 4.5
+vision_range = 19.0
+mind_control_limit = 3
+mind_control_overload_dps = 35.0
+crushes_infantry = true
+primary_weapon = "mastermind_psi_wave"
+prerequisites = ["yuri_war_factory", "yuri_battle_lab"]
+
+[units.visual]
+model = "assets/models/mastermind.glb"
+icon = "assets/ui/cameos/mindicon.png"
+archetype = "tank"
+scale = [2.1, 1.5, 2.5]
+primary_color = [0.68, 0.22, 0.88]
+
+[[units]]
+id = "yuri_mcv"
+name = "Yuri Construction Vehicle"
+faction = "yuri"
+role = "vehicle"
+cost = 3000
+build_time_secs = 16.0
+health = 1000.0
+armor = "heavy"
+speed = 3.8
+vision_range = 16.0
+transforms_into_building = "yuri_conyard"
+prerequisites = ["yuri_war_factory", "yuri_grinder"]
+
+[units.visual]
+model = "assets/models/yuri_mcv.glb"
+icon = "assets/ui/cameos/ypcvicon.png"
+archetype = "harvester"
+scale = [2.2, 1.6, 2.6]
+primary_color = [0.68, 0.22, 0.88]
+
+[[units]]
+id = "floating_disc"
+name = "Floating Disc Saucer"
+faction = "yuri"
+role = "vehicle"
+cost = 1750
+build_time_secs = 14.0
+health = 700.0
+armor = "heavy"
+speed = 6.5
+vision_range = 21.0
+movement_domain = "air"
+cruise_altitude = 5.5
+primary_weapon = "saucer_laser_beam"
+secondary_weapon = "saucer_laser_beam"
+prerequisites = ["yuri_war_factory", "yuri_battle_lab"]
+
+[units.visual]
+model = "assets/models/floating_disc.glb"
+icon = "assets/ui/cameos/diskicon.png"
+archetype = "aircraft"
+scale = [2.4, 1.4, 2.4]
+primary_color = [0.68, 0.22, 0.88]
+
+[[units]]
+id = "boomer_sub"
+name = "Yuri Boomer Submarine"
+faction = "yuri"
+role = "vehicle"
+cost = 2000
+build_time_secs = 14.5
+health = 950.0
+armor = "heavy"
+speed = 4.4
+vision_range = 24.0
+movement_domain = "naval"
+primary_weapon = "boomer_torpedo"
+secondary_weapon = "boomer_cruise_missile"
+elite_weapon = "boomer_torpedo_cruise"
+prerequisites = ["yuri_submarine_pen", "yuri_battle_lab"]
+stealth = { cloaked = true, reveal_on_fire_secs = 2.5 }
+
+[units.visual]
+model = "assets/models/boomer_sub.glb"
+icon = "assets/ui/cameos/bsubicon.png"
+archetype = "ship"
+scale = [2.6, 1.5, 3.1]
+primary_color = [0.68, 0.22, 0.88]
+
+
+# === Bonus Support Aircraft, Carrier Fighters & Campaign Units ===
+
+[[units]]
+id = "osprey_asw"
+name = "Osprey ASW Tiltrotor"
+faction = "allies"
+role = "vehicle"
+cost = 700
+build_time_secs = 6.0
+health = 220.0
+armor = "light"
+speed = 8.5
+vision_range = 18.0
+movement_domain = "air"
+cruise_altitude = 4.5
+primary_weapon = "guardian_missile"
+prerequisites = ["allied_naval_shipyard"]
+stealth = { detects_cloak = true }
+
+[units.visual]
+model = "assets/models/osprey_asw.glb"
+icon = "assets/ui/cameos/osprey_asw.png"
+archetype = "aircraft"
+scale = [1.8, 1.0, 2.0]
+primary_color = [0.18, 0.45, 0.88]
+
+[[units]]
+id = "hornet_fighter"
+name = "Carrier Hornet Strike Fighter"
+faction = "allies"
+role = "vehicle"
+cost = 600
+build_time_secs = 5.0
+health = 180.0
+armor = "light"
+speed = 10.5
+vision_range = 18.0
+movement_domain = "air"
+cruise_altitude = 5.0
+primary_weapon = "guardian_missile"
+prerequisites = ["allied_naval_shipyard"]
+
+[units.visual]
+model = "assets/models/hornet_fighter.glb"
+icon = "assets/ui/cameos/hornet_fighter.png"
+archetype = "aircraft"
+scale = [1.6, 0.8, 1.9]
+primary_color = [0.18, 0.45, 0.88]
+
+[[units]]
+id = "spy_plane"
+name = "Reconnaissance Spy Plane"
+faction = "soviets"
+role = "vehicle"
+cost = 800
+build_time_secs = 7.0
+health = 320.0
+armor = "light"
+speed = 11.0
+vision_range = 28.0
+movement_domain = "air"
+cruise_altitude = 6.5
+prerequisites = ["soviet_radar_tower"]
+ability_id = "recon_scan"
+abilities = [{ id = "recon_scan", name = "Reconnaissance Scan", cooldown_secs = 18.0, payloads = [{ kind = "reveal_area", radius_tiles = 14, duration_secs = 18.0 }] }]
+stealth = { detects_cloak = true }
+
+[units.visual]
+model = "assets/models/spy_plane.glb"
+icon = "assets/ui/cameos/spy_plane.png"
+archetype = "aircraft"
+scale = [2.4, 1.0, 2.6]
+primary_color = [0.85, 0.16, 0.16]
+
+[[units]]
+id = "paradrop_plane"
+name = "Paratrooper Cargo Transport Plane"
+faction = "shared"
+role = "vehicle"
+cost = 1000
+build_time_secs = 8.0
+health = 450.0
+armor = "medium"
+speed = 8.0
+vision_range = 20.0
+movement_domain = "air"
+cruise_altitude = 6.0
+prerequisites = []
+ability_id = "airdrop_unload"
+abilities = [{ id = "airdrop_unload", name = "Paradrop Unload", payloads = [{ kind = "unload_passengers" }] }]
+container = { capacity = 8 }
+
+[units.visual]
+model = "assets/models/paradrop_plane.glb"
+icon = "assets/ui/cameos/paradrop_plane.png"
+archetype = "aircraft"
+scale = [2.8, 1.3, 3.0]
+primary_color = [0.55, 0.62, 0.58]
+
+[[units]]
+id = "crashed_ufo"
+name = "Roswell Scrin Scout Saucer"
+faction = "yuri"
+role = "vehicle"
+cost = 1600
+build_time_secs = 13.0
+health = 650.0
+armor = "heavy"
+speed = 7.5
+vision_range = 22.0
+movement_domain = "air"
+cruise_altitude = 5.0
+primary_weapon = "prism_beam"
+prerequisites = ["yuri_battle_lab"]
+
+[units.visual]
+model = "assets/models/crashed_ufo.glb"
+icon = "assets/ui/cameos/crashed_ufo.png"
+archetype = "aircraft"
+scale = [2.2, 1.1, 2.2]
+primary_color = [0.68, 0.22, 0.88]
+
+[[units]]
+id = "soviet_sub_apc"
+name = "Subterranean Burrow APC"
+faction = "soviets"
+role = "vehicle"
+cost = 950
+build_time_secs = 7.5
+health = 520.0
+armor = "heavy"
+speed = 5.6
+vision_range = 16.0
+subterranean = true
+prerequisites = ["soviet_war_factory"]
+container = { capacity = 5 }
+death_effect = { survivor_unit = "soviet_conscript", survivor_chance = 0.55, drops_salvage = true }
+
+[units.visual]
+model = "assets/models/flak_track.glb"
+icon = "assets/ui/cameos/soviet_sub_apc.png"
+archetype = "tank"
+scale = [1.8, 1.1, 2.3]
+primary_color = [0.76, 0.18, 0.16]
+
+# === Secret Stolen-Tech Cross-Faction Commandos ===
+
+[[units]]
+id = "chrono_commando"
+name = "Chrono Commando"
+faction = "allies"
+role = "infantry"
+cost = 2000
+build_limit = 1
+build_time_secs = 14.0
+health = 240.0
+armor = "light"
+speed = 6.2
+vision_range = 19.0
+movement_domain = "chrono"
+chrono_locomotion = true
+plants_c4 = true
+immune_to_mind_control = true
+self_heal_per_sec = 8.0
+primary_weapon = "mp5_seal_c4"
+prerequisites = ["allied_barracks", "tech_secret_lab"]
+
+[units.visual]
+model = "assets/models/chrono_commando.glb"
+icon = "assets/ui/cameos/chrono_commando.png"
+archetype = "infantry"
+scale = [1.0, 1.08, 1.0]
+primary_color = [0.22, 0.72, 0.98]
+
+[[units]]
+id = "chrono_ivan"
+name = "Chrono Ivan"
+faction = "soviets"
+role = "infantry"
+cost = 1750
+build_limit = 1
+build_time_secs = 12.0
+health = 220.0
+armor = "light"
+speed = 6.0
+vision_range = 18.0
+movement_domain = "chrono"
+chrono_locomotion = true
+plants_c4 = true
+lays_mines = true
+mine_damage = 450.0
+mine_radius = 5.0
+primary_weapon = "ivan_dynamite"
+prerequisites = ["soviet_barracks", "tech_secret_lab"]
+death_effect = { explosion_damage = 350.0, explosion_radius = 4.8 }
+
+[units.visual]
+model = "assets/models/chrono_ivan.glb"
+icon = "assets/ui/cameos/chrono_ivan.png"
+archetype = "infantry"
+scale = [1.0, 1.08, 1.0]
+primary_color = [0.95, 0.28, 0.18]
+
+[[units]]
+id = "psi_commando"
+name = "Psi-Corp Commando"
+faction = "yuri"
+role = "infantry"
+cost = 1850
+build_limit = 1
+build_time_secs = 13.0
+health = 230.0
+armor = "light"
+speed = 5.2
+vision_range = 19.0
+mind_control_limit = 1
+plants_c4 = true
+immune_to_mind_control = true
+psi_wave_radius = 6.0
+psi_wave_damage = 320.0
+primary_weapon = "psi_mind_control"
+secondary_weapon = "mp5_seal_c4"
+prerequisites = ["yuri_barracks", "tech_secret_lab"]
+ability_id = "psi_wave_blast"
+
+[units.visual]
+model = "assets/models/psi_commando.glb"
+icon = "assets/ui/cameos/psi_commando.png"
+archetype = "infantry"
+scale = [1.0, 1.08, 1.0]
+primary_color = [0.78, 0.25, 0.95]
+
+# === Amphibious Naval Hover Transports (Allies, Soviets & Yuri) ===
+
+[[units]]
+id = "allied_lcv"
+name = "Allied Amphibious Transport"
+faction = "allies"
+role = "vehicle"
+cost = 900
+build_time_secs = 7.5
+health = 520.0
+armor = "medium"
+speed = 6.2
+vision_range = 17.0
+movement_domain = "amphibious"
+prerequisites = ["allied_naval_shipyard"]
+container = { capacity = 6, accepts_vehicles = true }
+
+[units.visual]
+model = "assets/models/allied_destroyer.glb"
+icon = "assets/ui/cameos/allied_lcv.png"
+archetype = "ship"
+scale = [2.0, 1.2, 2.5]
+primary_color = [0.18, 0.45, 0.88]
+
+[[units]]
+id = "soviet_zubr_transport"
+name = "Soviet Zubr Hover Transport"
+faction = "soviets"
+role = "vehicle"
+cost = 900
+build_time_secs = 7.5
+health = 580.0
+armor = "heavy"
+speed = 5.8
+vision_range = 17.0
+movement_domain = "amphibious"
+prerequisites = ["soviet_naval_shipyard"]
+container = { capacity = 6, accepts_vehicles = true }
+
+[units.visual]
+model = "assets/models/sea_scorpion.glb"
+icon = "assets/ui/cameos/soviet_zubr_transport.png"
+archetype = "ship"
+scale = [2.1, 1.25, 2.6]
+primary_color = [0.85, 0.16, 0.16]
+
+[[units]]
+id = "yuri_hover_transport"
+name = "Yuri Amphibious Hover Transport"
+faction = "yuri"
+role = "vehicle"
+cost = 900
+build_time_secs = 7.5
+health = 540.0
+armor = "medium"
+speed = 6.0
+vision_range = 17.0
+movement_domain = "amphibious"
+prerequisites = ["yuri_submarine_pen"]
+container = { capacity = 6, accepts_vehicles = true }
+
+[units.visual]
+model = "assets/models/boomer_sub.glb"
+icon = "assets/ui/cameos/yuri_hover_transport.png"
+archetype = "ship"
+scale = [2.0, 1.2, 2.5]
+primary_color = [0.68, 0.22, 0.88]
+
+

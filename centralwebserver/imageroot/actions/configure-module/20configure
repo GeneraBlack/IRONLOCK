@@ -1,0 +1,65 @@
+#!/usr/bin/env python3
+
+import json
+import os
+import sys
+import agent
+import agent.tasks
+
+request = json.load(sys.stdin)
+
+host = request["host"].strip()
+lets_encrypt = bool(request.get("lets_encrypt", False))
+http2https = bool(request.get("http2https", True))
+ttl_secs = int(request.get("ttl_secs", 45))
+rts_node_id = (
+    request.get("rts_node_id")
+    or request.get("node_id")
+    or "bls-isp-eu-central-01"
+).strip() or "bls-isp-eu-central-01"
+relay_port_start = int(request.get("relay_port_start", 30100))
+relay_port_end = int(request.get("relay_port_end", 30139))
+
+# Self-heal NODE_ID if a previous version overwrote NS8's integer cluster node ID
+cur_node_id = os.environ.get("NODE_ID", "1")
+if not cur_node_id.isdigit():
+    try:
+        rdb = agent.redis_connect()
+        real_node_id = rdb.hget("cluster/module_node", os.environ["MODULE_ID"]) or "1"
+    except Exception:
+        real_node_id = "1"
+    agent.set_env("NODE_ID", str(real_node_id))
+
+agent.set_env("TRAEFIK_HOST", host)
+agent.set_env("HOST", host)
+agent.set_env("TRAEFIK_LETS_ENCRYPT", str(lets_encrypt))
+agent.set_env("LETS_ENCRYPT", str(lets_encrypt))
+agent.set_env("TRAEFIK_HTTP2HTTPS", str(http2https))
+agent.set_env("HTTP2HTTPS", str(http2https))
+agent.set_env("TTL_SECS", str(ttl_secs))
+agent.set_env("RTS_NODE_ID", rts_node_id)
+agent.set_env("RELAY_PORT_START", str(relay_port_start))
+agent.set_env("RELAY_PORT_END", str(relay_port_end))
+
+# CRITICAL: Flush environment to disk before 80start_services restarts systemd unit!
+agent.dump_env()
+
+# Register HTTP route in NS8 node Traefik instance
+default_traefik_id = agent.resolve_agent_id("traefik@node")
+if default_traefik_id is None:
+    sys.exit(2)
+
+tcp_port = os.environ["TCP_PORT"]
+
+response = agent.tasks.run(
+    agent_id=default_traefik_id,
+    action="set-route",
+    data={
+        "instance": os.environ["MODULE_ID"],
+        "url": f"http://127.0.0.1:{tcp_port}",
+        "host": host,
+        "lets_encrypt": lets_encrypt,
+        "http2https": http2https,
+    },
+)
+agent.assert_exp(response["exit_code"] == 0)

@@ -1,0 +1,183 @@
+[[factions]]
+id = "allies"
+name = "Allied Nations"
+color = [0.18, 0.45, 0.88]
+starting_credits = 10000
+description = "High-tech mobility, Chrono & Prism technology, Robot Tanks, and Battle Fortresses."
+loading_screen = "assets/ui/loading_screens/country_usa.png"
+campaign_loading_screens = [
+    "assets/ui/loading_screens/ra2_allied_01.png",
+    "assets/ui/loading_screens/ra2_allied_02.png",
+    "assets/ui/loading_screens/ra2_allied_03.png",
+    "assets/ui/loading_screens/ra2_allied_04.png",
+    "assets/ui/loading_screens/ra2_allied_05.png",
+    "assets/ui/loading_screens/ra2_allied_06.png",
+    "assets/ui/loading_screens/ra2_allied_07.png",
+    "assets/ui/loading_screens/ra2_allied_08.png",
+    "assets/ui/loading_screens/ra2_allied_09.png",
+    "assets/ui/loading_screens/ra2_allied_10.png",
+    "assets/ui/loading_screens/ra2_allied_11.png",
+    "assets/ui/loading_screens/ra2_allied_12.png",
+]
+
+[[factions.sub_factions]]
+id = "usa"
+name = "America (Allies)"
+specialty = "Airborne Paratroopers & Grizzly Tank"
+loading_screen = "assets/ui/loading_screens/country_usa.png"
+
+[[factions.sub_factions]]
+id = "great_britain"
+name = "Great Britain (Allies)"
+specialty = "Sniper & Mirage Tank"
+loading_screen = "assets/ui/loading_screens/country_great_britain.png"
+
+[[factions.sub_factions]]
+id = "france"
+name = "France (Allies)"
+specialty = "Grand Cannon Coastal Battery & Prism Tank"
+loading_screen = "assets/ui/loading_screens/country_france.png"
+
+[[factions.sub_factions]]
+id = "germany"
+name = "Germany (Allies)"
+specialty = "Tank Destroyer & Chronosphere"
+loading_screen = "assets/ui/loading_screens/country_germany.png"
+
+[[factions.sub_factions]]
+id = "korea"
+name = "Korea (Allies)"
+specialty = "Black Eagle Jet & Aegis Cruiser"
+loading_screen = "assets/ui/loading_screens/country_korea.png"
+
+[factions.hud_skin]
+dialog_background = "assets/ui/hud/allied/bkgdlg.png"
+credits_panel = "assets/ui/hud/allied/credits.png"
+top_panel = "assets/ui/hud/allied/top.png"
+options_button = "assets/ui/hud/allied/optbtn.png"
+diplomacy_button = "assets/ui/hud/allied/diplobtn.png"
+radar_frame = "assets/ui/hud/allied/radar.png"
+side_header = "assets/ui/hud/allied/side1.png"
+repair_button = "assets/ui/hud/allied/repair.png"
+sell_button = "assets/ui/hud/allied/sell.png"
+tab_icons = [
+    "assets/ui/hud/allied/tab00.png",
+    "assets/ui/hud/allied/tab01.png",
+    "assets/ui/hud/allied/tab02.png",
+    "assets/ui/hud/allied/tab03.png",
+]
+cameo_row_frame = "assets/ui/hud/allied/side2.png"
+cameo_footer_frame = "assets/ui/hud/allied/side3.png"
+addon_panel = "assets/ui/hud/allied/addon.png"
+power_bar_icon = "assets/ui/hud/allied/power.png"
+
+[[factions]]
+id = "soviets"
+name = "Soviet Union"
+color = [0.85, 0.16, 0.16]
+starting_credits = 10000
+description = "Heavy armor superiority, Tesla weaponry, Kirov Airships, Boris, and Siege Choppers."
+loading_screen = "assets/ui/loading_screens/country_russia.png"
+campaign_loading_screens = [
+    "assets/ui/loading_screens/ra2_soviet_01.png",
+    "assets/ui/loading_screens/ra2_soviet_02.png",
+    "assets/ui/loading_screens/ra2_soviet_03.png",
+    "assets/ui/loading_screens/ra2_soviet_04.png",
+    "assets/ui/loading_screens/ra2_soviet_05.png",
+    "assets/ui/loading_screens/ra2_soviet_06.png",
+    "assets/ui/loading_screens/ra2_soviet_07.png",
+    "assets/ui/loading_screens/ra2_soviet_08.png",
+    "assets/ui/loading_screens/ra2_soviet_09.png",
+    "assets/ui/loading_screens/ra2_soviet_10.png",
+    "assets/ui/loading_screens/ra2_soviet_11.png",
+    "assets/ui/loading_screens/ra2_soviet_12.png",
+]
+
+[[factions.sub_factions]]
+id = "russia"
+name = "Russia (Soviets)"
+specialty = "Tesla Tank, Apocalypse Tank & Kirov Airship"
+loading_screen = "assets/ui/loading_screens/country_russia.png"
+
+[[factions.sub_factions]]
+id = "iraq"
+name = "Iraq (Soviets)"
+specialty = "Desolator & Rhino Heavy Tank"
+loading_screen = "assets/ui/loading_screens/country_iraq.png"
+
+[[factions.sub_factions]]
+id = "libya"
+name = "Libya (Soviets)"
+specialty = "Demolition Truck & V3 Rocket Launcher"
+loading_screen = "assets/ui/loading_screens/country_libya.png"
+
+[[factions.sub_factions]]
+id = "cuba"
+name = "Cuba (Soviets)"
+specialty = "Terrorist & Terror Drone"
+loading_screen = "assets/ui/loading_screens/country_cuba.png"
+
+[factions.hud_skin]
+dialog_background = "assets/ui/hud/soviet/bkgdlg.png"
+credits_panel = "assets/ui/hud/soviet/credits.png"
+top_panel = "assets/ui/hud/soviet/top.png"
+options_button = "assets/ui/hud/soviet/optbtn.png"
+diplomacy_button = "assets/ui/hud/soviet/diplobtn.png"
+radar_frame = "assets/ui/hud/soviet/radar.png"
+side_header = "assets/ui/hud/soviet/side1.png"
+repair_button = "assets/ui/hud/soviet/repair.png"
+sell_button = "assets/ui/hud/soviet/sell.png"
+tab_icons = [
+    "assets/ui/hud/soviet/tab00.png",
+    "assets/ui/hud/soviet/tab01.png",
+    "assets/ui/hud/soviet/tab02.png",
+    "assets/ui/hud/soviet/tab03.png",
+]
+cameo_row_frame = "assets/ui/hud/soviet/side2.png"
+cameo_footer_frame = "assets/ui/hud/soviet/side3.png"
+addon_panel = "assets/ui/hud/soviet/addon.png"
+power_bar_icon = "assets/ui/hud/soviet/power.png"
+
+[[factions]]
+id = "yuri"
+name = "Yuri's Psychic Army"
+color = [0.68, 0.22, 0.88]
+starting_credits = 10000
+description = "Psychic mind-control domination, Genetic Brutes, Magnetrons, Masterminds, and Floating Discs."
+loading_screen = "assets/ui/loading_screens/country_yuri.png"
+campaign_loading_screens = [
+    "assets/ui/loading_screens/yr_soviet_01.png",
+    "assets/ui/loading_screens/yr_soviet_02.png",
+    "assets/ui/loading_screens/yr_soviet_03.png",
+    "assets/ui/loading_screens/yr_soviet_04.png",
+    "assets/ui/loading_screens/yr_soviet_05.png",
+    "assets/ui/loading_screens/yr_soviet_06.png",
+    "assets/ui/loading_screens/yr_soviet_07.png",
+]
+
+[[factions.sub_factions]]
+id = "yuri"
+name = "Psi-Corps (Yuri)"
+specialty = "Yuri Prime, Mastermind, Magnetron & Floating Disc"
+loading_screen = "assets/ui/loading_screens/country_yuri.png"
+
+[factions.hud_skin]
+dialog_background = "assets/ui/hud/yuri/bkgdlgy.png"
+credits_panel = "assets/ui/hud/soviet/credits.png"
+top_panel = "assets/ui/hud/soviet/top.png"
+options_button = "assets/ui/hud/soviet/optbtn.png"
+diplomacy_button = "assets/ui/hud/soviet/diplobtn.png"
+radar_frame = "assets/ui/hud/yuri/radary.png"
+side_header = "assets/ui/hud/soviet/side1.png"
+repair_button = "assets/ui/hud/soviet/repair.png"
+sell_button = "assets/ui/hud/soviet/sell.png"
+tab_icons = [
+    "assets/ui/hud/soviet/tab00.png",
+    "assets/ui/hud/soviet/tab01.png",
+    "assets/ui/hud/soviet/tab02.png",
+    "assets/ui/hud/soviet/tab03.png",
+]
+cameo_row_frame = "assets/ui/hud/soviet/side2.png"
+cameo_footer_frame = "assets/ui/hud/soviet/side3.png"
+addon_panel = "assets/ui/hud/soviet/addon.png"
+power_bar_icon = "assets/ui/hud/soviet/power.png"

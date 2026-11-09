@@ -1,0 +1,38 @@
+[Unit]
+Description=Rootless Podman container for IRONLOCK // RUST-RTS Central Homepage & Multiplayer Registry
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n
+EnvironmentFile=%S/state/environment
+WorkingDirectory=%S/state
+Restart=always
+TimeoutStopSec=70
+ExecStartPre=/bin/rm -f %t/rust-rts.pid %t/rust-rts.ctr-id
+ExecStart=/usr/bin/podman run \
+    --conmon-pidfile %t/rust-rts.pid \
+    --cidfile %t/rust-rts.ctr-id \
+    --cgroups=no-conmon \
+    --replace -d --name rust-rts \
+    --pull=missing \
+    -p 127.0.0.1:${TCP_PORT}:8080 \
+    -p ${RELAY_PORT_START}-${RELAY_PORT_END}:${RELAY_PORT_START}-${RELAY_PORT_END}/tcp \
+    -v rust-rts-data:/app/data:Z \
+    -e HOST=0.0.0.0 \
+    -e PORT=8080 \
+    -e DATA_DIR=/app/data \
+    -e PUBLIC_DOMAIN=${TRAEFIK_HOST} \
+    -e PUBLIC_HOST=${TRAEFIK_HOST} \
+    -e NODE_ID=${RTS_NODE_ID} \
+    -e TTL_SECS=${TTL_SECS} \
+    -e RELAY_PORT_START=${RELAY_PORT_START} \
+    -e RELAY_PORT_END=${RELAY_PORT_END} \
+    ${RUST_RTS_SERVER_IMAGE}
+ExecStop=/usr/bin/podman stop --ignore --cidfile %t/rust-rts.ctr-id -t 10
+ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/rust-rts.ctr-id
+PIDFile=%t/rust-rts.pid
+Type=forking
+
+[Install]
+WantedBy=default.target

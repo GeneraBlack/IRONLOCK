@@ -1,0 +1,11 @@
+#!/usr/bin/env python3
+
+import os
+
+state_dir = os.environ.get("AGENT_STATE_DIR", os.path.expanduser("~/.config/state"))
+metadata_path = os.path.join(state_dir, "backup-metadata.json")
+if os.path.exists(metadata_path):
+    try:
+        os.remove(metadata_path)
+    except OSError:
+        pass

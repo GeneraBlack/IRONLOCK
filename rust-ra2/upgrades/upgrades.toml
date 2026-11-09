@@ -1,0 +1,75 @@
+[[upgrades]]
+id = "composite_armor"
+name = "Composite Tank Armor (+20% Armor)"
+faction = "allies"
+cost = 1000
+research_time_secs = 8.0
+prerequisites = ["allied_war_factory"]
+damage_bonus_mult = 1.0
+armor_bonus_mult = 1.20
+speed_bonus_mult = 1.0
+range_bonus = 0.0
+
+[[upgrades]]
+id = "laser_target_optics"
+name = "Laser Target Optics (+15% DMG, +2 Range)"
+faction = "allies"
+cost = 1200
+research_time_secs = 10.0
+prerequisites = ["allied_battle_lab"]
+damage_bonus_mult = 1.15
+armor_bonus_mult = 1.0
+speed_bonus_mult = 1.05
+range_bonus = 2.0
+
+[[upgrades]]
+id = "heavy_reactive_plating"
+name = "Reactive Plating (+20% Armor, +10% DMG)"
+faction = "soviets"
+cost = 1000
+research_time_secs = 8.0
+prerequisites = ["soviet_war_factory"]
+damage_bonus_mult = 1.10
+armor_bonus_mult = 1.20
+speed_bonus_mult = 1.0
+range_bonus = 0.0
+
+[[upgrades]]
+id = "overcharged_capacitors"
+name = "Overcharged Capacitors (+20% DMG, +1.5 Range)"
+faction = "soviets"
+cost = 1200
+research_time_secs = 10.0
+prerequisites = ["soviet_battle_lab"]
+damage_bonus_mult = 1.20
+armor_bonus_mult = 1.0
+speed_bonus_mult = 1.05
+range_bonus = 1.5
+
+[[upgrades]]
+id = "allied_doctrine_bounty"
+name = "★ Doctrine: War Spoils (+25% Kill Bounty, +15% DMG)"
+faction = "allies"
+cost = 0
+research_time_secs = 2.0
+prerequisites = ["allied_conyard"]
+requires_promotion_point = true
+cash_bounty_ratio = 0.25
+damage_bonus_mult = 1.15
+armor_bonus_mult = 1.0
+speed_bonus_mult = 1.05
+range_bonus = 0.0
+
+[[upgrades]]
+id = "soviet_doctrine_bounty"
+name = "★ Doctrine: Iron Mobilization (+25% Kill Bounty, +15% Armor)"
+faction = "soviets"
+cost = 0
+research_time_secs = 2.0
+prerequisites = ["soviet_conyard"]
+requires_promotion_point = true
+cash_bounty_ratio = 0.25
+damage_bonus_mult = 1.05
+armor_bonus_mult = 1.15
+speed_bonus_mult = 1.0
+range_bonus = 0.0

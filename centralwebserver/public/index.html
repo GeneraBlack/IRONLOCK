@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IRONLOCK // RUST-RTS — Deterministische 3D-RTS-Engine &amp; Lockstep-Backbone (rust-rts.bls-isp.net)</title>
+  <meta name="description" content="IRONLOCK // RUST-RTS: Modulare 3D-Echtzeitstrategie-Engine in Rust (Bevy 0.15 PBR, 20 Hz FNV-1a Lockstep, Rhai & Lua SDK, glTF 2.0 .glb Pipeline) und zentraler Multiplayer-Backbone unter rust-rts.bls-isp.net.">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link" data-i18n="skip_link">Direkt zum Hauptinhalt springen</a>
+
+  <!-- SINGLE-ROW STICKY ENGINEERING HEADER -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="#command-hero" class="brand-group">
+        <img src="/favicon.svg" alt="" class="brand-emblem" width="32" height="32">
+        <div class="brand-titles">
+          <div class="brand-name-row">
+            <span class="brand-iron">IRONLOCK</span>
+            <span class="brand-divider">//</span>
+            <span class="brand-sub">RUST-RTS ENGINE</span>
+          </div>
+          <span class="brand-tagline" data-i18n="brand_subtitle">Deterministic 3D RTS Engine in Rust · rust-rts.bls-isp.net</span>
+        </div>
+      </a>
+
+      <nav class="header-nav" aria-label="Primary Navigation">
+        <a href="#engine-architecture" class="nav-link" data-i18n="nav_architecture">Architektur &amp; SDK</a>
+        <a href="#multiplayer-registry" class="nav-link" data-i18n="nav_lobbies">Multiplayer &amp; Ledger</a>
+        <a href="#mod-ecosystem" class="nav-link" data-i18n="nav_mods">Mod-Ökosystem</a>
+        <a href="#data-inspector" class="nav-link" data-i18n="nav_inspector">Daten-Inspektor</a>
+      </nav>
+
+      <div class="header-controls">
+        <div id="server-status-badge" class="server-badge badge-online" role="status" aria-live="polite" data-i18n="server_online">
+          ONLINE · 20 HZ LOCKSTEP
+        </div>
+        <div class="lang-switcher" role="group" aria-label="Language Switcher">
+          <button type="button" id="btn-lang-de" class="lang-btn lang-btn-active" data-set-lang="de" aria-pressed="true">DE</button>
+          <button type="button" id="btn-lang-en" class="lang-btn" data-set-lang="en" aria-pressed="false">EN</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <!-- HERO: ENGINE ARCHITECTURE & 5-CRATE WORKSPACE INSPECTOR -->
+    <section id="command-hero" class="hero-section">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <div class="hero-eyebrow" data-i18n="hero_kicker_1">
+            RUST 2021 · BEVY 0.15 PBR · 20 HZ FNV-1A LOCKSTEP · RHAI &amp; LUA SDK
+          </div>
+
+          <h1 data-i18n-html="hero_h1_html">
+            Deterministische 3D-RTS-Engine.<br>
+            <span class="hero-gradient-text">Daten- &amp; Skriptgetrieben in Rust.</span>
+          </h1>
+
+          <p class="hero-lead" data-i18n-html="hero_lead_html">
+            <strong>IRONLOCK</strong> ist eine modulare Echtzeitstrategie-Engine aus fünf entkoppelten Rust-Crates. Der Engine-Kern trennt Simulationslogik strikt von Spielinhalten, kombiniert eine bit-identische 20-Hz-Lockstep-Simulation mit einer dualen Rhai- und Lua-Sandbox sowie einer prozeduralen glTF-2.0-Asset-Pipeline (<code>.glb</code>).
+          </p>
+
+          <div class="hero-cta-row">
+            <a href="#multiplayer-registry" class="btn btn-primary" data-i18n="hero_cta_lobbies">Multiplayer-Backbone öffnen</a>
+            <a href="#sdk-pipeline" class="btn btn-secondary" data-i18n="hero_cta_pipeline">SDK &amp; Code-Spezifikation</a>
+            <a href="#data-inspector" class="btn btn-ghost" data-i18n="hero_cta_inspector">Mod-Daten-Inspektor</a>
+          </div>
+
+          <div class="hero-metrics-strip">
+            <div class="hero-metric-item">
+              <strong>5 Crates</strong>
+              <span data-i18n="hero_stat_1">Modulare Rust-Crates</span>
+            </div>
+            <div class="hero-metric-item">
+              <strong>20 Hz</strong>
+              <span data-i18n="hero_stat_2">Fixed-Timestep (50 ms)</span>
+            </div>
+            <div class="hero-metric-item">
+              <strong>0</strong>
+              <span data-i18n="hero_stat_3">Hartcodierte Spielregeln</span>
+            </div>
+            <div class="hero-metric-item">
+              <strong>40 Rooms</strong>
+              <span data-i18n="hero_stat_4">NAT-Relay Portpool</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT COLUMN: INTERACTIVE 5-CRATE WORKSPACE ARCHITECTURE INSPECTOR -->
+        <div class="hero-engine-column">
+          <div class="engine-stack-panel">
+            <div class="engine-stack-header">
+              <span class="stack-kicker" data-i18n="hero_arch_panel_title">WORKSPACE-ARCHITEKTUR // 5 RUST-CRATES</span>
+              <span class="cell-sub" data-i18n="hero_arch_panel_sub">Layer auswählen für Typen, Garantien &amp; Test-CLI</span>
+            </div>
+
+            <div class="crate-selector-tabs" role="tablist" aria-label="Rust Engine Crates">
+              <button type="button" class="crate-tab-btn crate-tab-active" data-select-crate="rts-sdk" aria-pressed="true">
+                <span class="crate-tab-index">L1 · SDK</span>
+                <strong>rts-sdk</strong>
+              </button>
+              <button type="button" class="crate-tab-btn" data-select-crate="rts-simulation" aria-pressed="false">
+                <span class="crate-tab-index">L2 · SIM</span>
+                <strong>rts-simulation</strong>
+              </button>
+              <button type="button" class="crate-tab-btn" data-select-crate="rts-network" aria-pressed="false">
+                <span class="crate-tab-index">L3 · NET</span>
+                <strong>rts-network</strong>
+              </button>
+              <button type="button" class="crate-tab-btn" data-select-crate="rts-asset-pipeline" aria-pressed="false">
+                <span class="crate-tab-index">L4 · CLI</span>
+                <strong>rts-asset-pipeline</strong>
+              </button>
+              <button type="button" class="crate-tab-btn" data-select-crate="rts-client" aria-pressed="false">
+                <span class="crate-tab-index">L5 · 3D</span>
+                <strong>rts-client</strong>
+              </button>
+            </div>
+
+            <div id="hero-crate-detail" class="crate-detail-view" aria-live="polite">
+              <!-- Populated by renderHeroCrateDetailHtml() -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 1: CORE ENGINE ARCHITECTURE & LIVE CODE PIPELINE -->
+    <section id="engine-architecture" class="section section-alt">
+      <div class="container">
+        <div class="section-header">
+          <div>
+            <span class="section-kicker" data-i18n="arch_kicker">SYSTEM-ARCHITEKTUR &amp; SUBSYSTEM-SPEZIFIKATION</span>
+            <h2 data-i18n="arch_title">Strikte Trennung von Engine-Kern, Skript-Sandbox &amp; Content-Pipeline</h2>
+            <p class="section-desc" data-i18n-html="arch_desc_html">
+              Der gesamte Rust-Workspace unter <code>engine/crates/*</code> besitzt keinerlei Wissen über spezifische Fraktionen, Einheiten oder Kampagnen. Alle Spielmechaniken entstehen durch deklarative TOML-Schemata, deterministische Skript-Hooks und die binäre glTF-2.0-Pipeline.
+            </p>
+          </div>
+        </div>
+
+        <div class="pillars-grid">
+          <article class="pillar-card">
+            <div class="pillar-index" data-i18n="pillar_1_idx">01 · RTS-SDK</div>
+            <h3 data-i18n="pillar_1_title">Deklarative TOML-Schemata &amp; DAG-Validator</h3>
+            <p data-i18n-html="pillar_1_desc_html">
+              Fraktionen, Einheiten, Gebäude, Waffen und Karten werden vollständig aus TOML geladen und vor Tick 0 statisch auf Referenz- und Tech-Tree-Konsistenz geprüft.
+            </p>
+          </article>
+          <article class="pillar-card">
+            <div class="pillar-index" data-i18n="pillar_2_idx">02 · RTS-SIMULATION</div>
+            <h3 data-i18n="pillar_2_title">20-Hz Fixed-Timestep &amp; 64-Bit State-Hash</h3>
+            <p data-i18n-html="pillar_2_desc_html">
+              Alle Entitäten liegen in deterministischen BTreeMap-Containern. Nach jedem 50-ms-Tick berechnet SimWorld::state_hash() eine 64-Bit FNV-1a Prüfsumme über die Spielwelt.
+            </p>
+          </article>
+          <article class="pillar-card">
+            <div class="pillar-index" data-i18n="pillar_3_idx">03 · RHAI 1.21 &amp; LUA</div>
+            <h3 data-i18n="pillar_3_title">Isolierte Dual-Skript-Sandbox</h3>
+            <p data-i18n-html="pillar_3_desc_html">
+              Lifecycle-Hooks (on_spawn, on_ability, on_tick) emittieren deterministische ScriptAction-Vektoren ohne direkten Schreibzugriff auf den Simulationszustand.
+            </p>
+          </article>
+          <article class="pillar-card">
+            <div class="pillar-index" data-i18n="pillar_4_idx">04 · RTS-NETWORK</div>
+            <h3 data-i18n="pillar_4_title">UPnP IGD &amp; Reverse-TCP-Relay</h3>
+            <p data-i18n-html="pillar_4_desc_html">
+              Autoritative ServerTickBundles mit automatischem UPnP-Portmapping und CGNAT-sicherem Reverse-TCP-Tunnel auf rust-rts.bls-isp.net (Ports 30100–30139).
+            </p>
+          </article>
+        </div>
+
+        <div id="sdk-pipeline" class="pipeline-block">
+          <div class="arsenal-toolbar pipeline-tabs-bar" role="tablist" aria-label="Engine Subsystem Specifications">
+            <div class="arsenal-type-tabs">
+              <button type="button" class="tab-btn tab-btn-active" data-pipeline-tab="schema" data-i18n="pipe_tab_schema">
+                01 · TOML-Datenschema (rts-sdk)
+              </button>
+              <button type="button" class="tab-btn" data-pipeline-tab="scripting" data-i18n="pipe_tab_script">
+                02 · Duales Scripting (Rhai &amp; Lua)
+              </button>
+              <button type="button" class="tab-btn" data-pipeline-tab="assets" data-i18n="pipe_tab_assets">
+                03 · 3D .glb Asset-Pipeline
+              </button>
+              <button type="button" class="tab-btn" data-pipeline-tab="network" data-i18n="pipe_tab_net">
+                04 · Lockstep &amp; Reverse-TCP-Relay
+              </button>
+            </div>
+          </div>
+
+          <div id="pipeline-spec-stage" class="pipeline-spec-stage" aria-live="polite">
+            <!-- Populated by renderPipelineSpecTabHtml() -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: UNIFIED MULTIPLAYER BACKBONE, 64-BIT LOCKSTEP LEDGER & PEER TELEMETRY -->
+    <section id="multiplayer-registry" class="section">
+      <div class="container">
+        <div class="section-header">
+          <div>
+            <span class="section-kicker" data-i18n="lobbies_kicker">MULTIPLAYER-BACKBONE &amp; LOCKSTEP-TELEMETRIE // RUST-RTS.BLS-ISP.NET</span>
+            <h2 data-i18n="lobbies_title">Live-Sitzungsregister, 64-Bit State-Hash-Ledger &amp; Peer-Statistik</h2>
+            <p class="section-desc" data-i18n-html="lobbies_desc_html">
+              Zentraler Master-Knoten für aktive LockstepServer-Instanzen, verifizierte 64-Bit-FNV-1a-Match-Prüfsummen und aufgezeichnete Replay-Artefakte.
+            </p>
+          </div>
+          <div class="header-actions">
+            <span id="stat-uptime" class="node-uptime-pill">Node: bls-isp-eu-central-01</span>
+            <button type="button" id="btn-refresh-now" class="btn btn-secondary" data-i18n="btn_refresh_lobbies">
+              Synchronisieren
+            </button>
+          </div>
+        </div>
+
+        <!-- LIVE TELEMETRY KPI STRIP -->
+        <div class="telemetry-cards" aria-label="Live Network Telemetry">
+          <div class="telemetry-card">
+            <span class="telemetry-label" data-i18n="kpi_active_lobbies">Aktive Lobbys</span>
+            <strong id="stat-active-lobbies" class="telemetry-value">0</strong>
+            <span id="stat-open-lobbies" class="telemetry-sub">0 offen · 0 im Spiel</span>
+          </div>
+          <div class="telemetry-card">
+            <span class="telemetry-label" data-i18n="kpi_players_online">Peers Online</span>
+            <strong id="stat-players-online" class="telemetry-value">0</strong>
+            <span id="stat-ttl-secs" class="telemetry-sub">45s Heartbeat-TTL</span>
+          </div>
+          <div class="telemetry-card">
+            <span class="telemetry-label" data-i18n="kpi_verified_matches">Verifizierte State-Hashes</span>
+            <strong id="stat-matches-total" class="telemetry-value">0</strong>
+            <span class="telemetry-sub" data-i18n="kpi_verified_sub">100 % Bit-Identisch (FNV-1a)</span>
+          </div>
+          <div class="telemetry-card">
+            <span class="telemetry-label" data-i18n="kpi_sim_tick">Reverse-TCP-Relay</span>
+            <strong class="telemetry-value">40 Rooms</strong>
+            <span class="telemetry-sub" data-i18n="kpi_sim_sub">Ports 30100–30139 (CGNAT-Safe)</span>
+          </div>
+        </div>
+
+        <!-- 3-TAB NETWORK & LEDGER SWITCHER -->
+        <div id="match-registry" class="inspector-mode-bar network-mode-bar" role="tablist" aria-label="Multiplayer and Ledger Views">
+          <button type="button" class="mode-switch-btn mode-switch-active" data-network-tab="lobbies" aria-pressed="true" data-i18n="net_tab_lobbies">
+            01 · Aktive Multiplayer-Lobbys (/api/lobbies)
+          </button>
+          <button type="button" class="mode-switch-btn" data-network-tab="matches" aria-pressed="false" data-i18n="net_tab_matches">
+            02 · 64-Bit Lockstep-Ledger (/api/matches)
+          </button>
+          <button type="button" class="mode-switch-btn" data-network-tab="leaderboard" aria-pressed="false" data-i18n="net_tab_leaderboard">
+            03 · Peer-Telemetrie &amp; Rangliste (/api/leaderboard)
+          </button>
+        </div>
+
+        <!-- NETWORK PANE 1: ACTIVE LOBBIES -->
+        <div id="network-pane-lobbies" class="network-pane">
+          <div class="filter-bar" role="search" aria-label="Lobby Filter">
+            <div class="filter-group">
+              <label for="filter-search-input" data-i18n="filter_search_label">Filter (Lobby, Host, Map, Adresse)</label>
+              <input
+                type="search"
+                id="filter-search-input"
+                placeholder="Lobby, Host oder Map filtern..."
+                data-i18n-placeholder="filter_search_placeholder"
+                autocomplete="off"
+              >
+            </div>
+
+            <div class="filter-group">
+              <label for="filter-mod-select" data-i18n="filter_mod_label">Geladene Modifikation (--mod-path)</label>
+              <select id="filter-mod-select">
+                <option value="" data-i18n="filter_all_mods">Alle geladenen Mods</option>
+              </select>
+            </div>
+
+            <div class="filter-group">
+              <label for="filter-status-select" data-i18n="filter_status_label">Sitzungs-Status</label>
+              <select id="filter-status-select">
+                <option value="" data-i18n="filter_all_status">Alle Status</option>
+                <option value="open" data-i18n="filter_status_open">OPEN (Beitritt möglich)</option>
+                <option value="full" data-i18n="filter_status_full">FULL (Maximale Spielerzahl)</option>
+                <option value="in_game" data-i18n="filter_status_ingame">IN GAME (Simulation läuft)</option>
+              </select>
+            </div>
+
+            <div class="filter-toggles">
+              <label class="checkbox-label">
+                <input type="checkbox" id="filter-only-open">
+                <span data-i18n="filter_only_open">Nur offene Sitzungen</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="toggle-auto-refresh" checked>
+                <span data-i18n="filter_auto_refresh">Auto-Sync (3s)</span>
+              </label>
+            </div>
+
+            <div id="lobby-results-count" class="results-counter" aria-live="polite">
+              Synchronisiere...
+            </div>
+          </div>
+
+          <div class="table-wrapper">
+            <table class="data-table" aria-label="Active Multiplayer Lobbies">
+              <thead>
+                <tr>
+                  <th data-i18n="th_status">Status</th>
+                  <th data-i18n="th_lobby_name">Sitzung &amp; Heartbeat-TTL</th>
+                  <th data-i18n="th_host">Host-Peer</th>
+                  <th data-i18n="th_map">Geladene Map</th>
+                  <th data-i18n="th_mod">Mod-Manifest</th>
+                  <th data-i18n="th_slots">Peers &amp; Modus</th>
+                  <th data-i18n="th_connect">Endpunkt &amp; NAT-Traversal</th>
+                </tr>
+              </thead>
+              <tbody id="lobby-table-body">
+                <tr>
+                  <td colspan="7" class="empty-cell">Synchronisiere mit rust-rts.bls-isp.net...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- NETWORK PANE 2: 64-BIT LOCKSTEP VERIFICATION LEDGER -->
+        <div id="network-pane-matches" class="network-pane" hidden>
+          <div class="filter-bar">
+            <div class="filter-group">
+              <label for="match-search-input" data-i18n="match_search_label">Suche (State-Hash, Peer, Map)</label>
+              <input
+                type="search"
+                id="match-search-input"
+                placeholder="z. B. 0xcbf29ce484222325, Map oder Spieler..."
+                data-i18n-placeholder="match_search_placeholder"
+                autocomplete="off"
+              >
+            </div>
+            <div class="filter-group">
+              <label for="match-filter-mod" data-i18n="match_mod_label">Mod-Paket</label>
+              <select id="match-filter-mod">
+                <option value="" data-i18n="filter_all_mods">Alle geladenen Mods</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-wrapper">
+            <table class="data-table" aria-label="64-Bit Lockstep Match Ledger">
+              <thead>
+                <tr>
+                  <th data-i18n="th_match_players">Sitzung &amp; Teilnehmer</th>
+                  <th data-i18n="th_winner">Sieger-Peer</th>
+                  <th data-i18n="th_match_map">Map &amp; Mod-ID</th>
+                  <th data-i18n="th_duration">Simulationsdauer &amp; Ticks</th>
+                  <th data-i18n="th_hash">Finaler 64-Bit State-Hash</th>
+                  <th data-i18n="th_integrity">Determinismus</th>
+                  <th data-i18n="th_replay">Replay-Artefakt</th>
+                </tr>
+              </thead>
+              <tbody id="matches-table-body">
+                <tr>
+                  <td colspan="7" class="empty-cell">Lade Lockstep-Ledger...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- NETWORK PANE 3: PEER TELEMETRY & STANDINGS -->
+        <div id="network-pane-leaderboard" class="network-pane" hidden>
+          <div class="table-wrapper">
+            <table class="data-table" aria-label="Peer Telemetry and Commander Standings">
+              <thead>
+                <tr>
+                  <th data-i18n="th_rank">#</th>
+                  <th data-i18n="th_commander">Peer / Kommandant</th>
+                  <th data-i18n="th_main_faction">Hauptfraktion</th>
+                  <th data-i18n="th_record">Bilanz</th>
+                  <th data-i18n="th_winrate">Quote</th>
+                  <th data-i18n="th_ticks">Verifizierte Ticks</th>
+                  <th data-i18n="th_last_match">Zuletzt aktiv</th>
+                </tr>
+              </thead>
+              <tbody id="leaderboard-table-body">
+                <tr>
+                  <td colspan="7" class="empty-cell">Berechne Peer-Statistiken...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: DATA-DRIVEN MOD ECOSYSTEM -->
+    <section id="mod-ecosystem" class="section section-alt">
+      <div class="container">
+        <div class="section-header">
+          <div>
+            <span class="section-kicker" data-i18n="mods_kicker">DATENGETRIEBENES MOD-ÖKOSYSTEM // --MOD-PATH</span>
+            <h2 data-i18n="mods_title">Ein Engine-Kern — Austauschbare Regelwerke &amp; Asset-Pakete</h2>
+            <p class="section-desc" data-i18n-html="mods_desc_html">
+              Als Nachweis für die vollständige Entkopplung von Engine und Spielinhalt enthält der Workspace vier lauffähige Mod-Pakete, die ausschließlich über rts-sdk und rts-asset-pipeline geladen werden.
+            </p>
+          </div>
+        </div>
+
+        <div id="mods-showcase-grid" class="cards-grid">
+          <!-- Populated by renderModsGridHtml() -->
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: INTERACTIVE MOD DATA & ASSET INSPECTOR -->
+    <section id="data-inspector" class="section">
+      <div class="container">
+        <div class="section-header">
+          <div>
+            <span class="section-kicker" data-i18n="arsenal_kicker">INTERAKTIVER MOD-DATEN- &amp; ASSET-INSPEKTOR (REFERENZ-PAKET RUST-RA2)</span>
+            <h2 data-i18n="arsenal_title">TOML-Entitätskatalog, 3D-Mesh-Vorschau &amp; Pathfinding-Geometrie</h2>
+            <p class="section-desc" data-i18n-html="arsenal_desc_html">
+              Direkte Live-Auswertung der durch rts-sdk geladenen TOML-Schemata: Prüfe die berechneten Schadens-Matrizen, Tech-Tree-Abhängigkeiten, 3D-glTF-Knoten und 2D/3D-Karten-Geometrien.
+            </p>
+          </div>
+        </div>
+
+        <div class="inspector-mode-bar" role="tablist" aria-label="Data Inspector Mode">
+          <button type="button" id="btn-mode-entities" class="mode-switch-btn mode-switch-active" data-inspector-mode="entities" aria-pressed="true" data-i18n="inspector_mode_entities">
+            01 · Entitäten &amp; Tech-Tree (149 Schemata)
+          </button>
+          <button type="button" id="btn-mode-maps" class="mode-switch-btn" data-inspector-mode="maps" aria-pressed="false" data-i18n="inspector_mode_maps">
+            02 · Karten-Geometrie &amp; A*-Grid (54 Maps)
+          </button>
+          <button type="button" id="btn-mode-factions" class="mode-switch-btn" data-inspector-mode="factions" aria-pressed="false" data-i18n="inspector_mode_factions">
+            03 · Sub-Fraktions-Doktrinen (10 Profile)
+          </button>
+        </div>
+
+        <!-- PANE 1: ENTITIES & TECH-TREE -->
+        <div id="inspector-pane-entities" class="inspector-pane">
+          <div class="arsenal-toolbar">
+            <div class="arsenal-type-tabs" role="tablist" aria-label="Entity Type">
+              <button type="button" id="btn-arsenal-units" class="tab-btn tab-btn-active" data-i18n="btn_arsenal_units">
+                Einheiten (73)
+              </button>
+              <button type="button" id="btn-arsenal-buildings" class="tab-btn" data-i18n="btn_arsenal_buildings">
+                Gebäude (76)
+              </button>
+            </div>
+
+            <div class="arsenal-faction-pills" role="group" aria-label="Faction Filter">
+              <button type="button" class="pill-btn pill-btn-active" data-arsenal-faction="all" data-i18n="pill_all_factions">Alle</button>
+              <button type="button" class="pill-btn faction-allied" data-arsenal-faction="allies">Allied</button>
+              <button type="button" class="pill-btn faction-soviet" data-arsenal-faction="soviets">Soviet</button>
+              <button type="button" class="pill-btn faction-yuri" data-arsenal-faction="yuri">Yuri</button>
+              <button type="button" class="pill-btn faction-neutral" data-arsenal-faction="shared" data-i18n="pill_shared_faction">Neutral / Tech</button>
+            </div>
+
+            <div class="filter-group">
+              <select id="arsenal-role-select" aria-label="Class Filter">
+                <option value="all" data-i18n="role_all">Alle Klassen</option>
+                <option value="infantry" data-i18n="role_infantry">Infanterie</option>
+                <option value="vehicle" data-i18n="role_vehicle">Fahrzeuge &amp; Panzer</option>
+                <option value="air" data-i18n="role_air">Lufteinheiten</option>
+                <option value="naval" data-i18n="role_naval">Marineeinheiten</option>
+                <option value="harvester" data-i18n="role_harvester">Ressourcen-Sammler</option>
+                <option value="engineer" data-i18n="role_engineer">Spezialisten</option>
+                <option value="defense" data-i18n="role_defense">Verteidigungsanlagen</option>
+                <option value="tech" data-i18n="role_tech">Tech &amp; Unterstützung</option>
+              </select>
+            </div>
+
+            <div class="arsenal-search-group">
+              <input
+                type="search"
+                id="arsenal-search-input"
+                placeholder="Entitäts-ID oder Name filtern (z. B. grizzly_tank, prism_tank)..."
+                data-i18n-placeholder="arsenal_search_placeholder"
+                autocomplete="off"
+              >
+            </div>
+
+            <div id="arsenal-results-count" class="results-counter">73 Einheiten</div>
+          </div>
+
+          <div class="arsenal-master-detail">
+            <div id="arsenal-cameo-grid" class="cameo-grid" role="list">
+              <!-- Populated by renderArsenalGridHtml() -->
+            </div>
+            <aside id="arsenal-inspector-panel" class="arsenal-inspector-sticky" aria-live="polite">
+              <!-- Populated by renderArsenalInspectorHtml() -->
+            </aside>
+          </div>
+        </div>
+
+        <!-- PANE 2: MAPS & PATHFINDING GEOMETRY -->
+        <div id="inspector-pane-maps" class="inspector-pane" hidden>
+          <div class="arsenal-toolbar">
+            <div class="arsenal-type-tabs" role="tablist" aria-label="Map Categories">
+              <button type="button" class="tab-btn tab-btn-active" data-map-category="skirmish" data-i18n="map_tab_skirmish">
+                Multiplayer / Skirmish (14)
+              </button>
+              <button type="button" class="tab-btn" data-map-category="campaign_allied" data-i18n="map_tab_allied">
+                Kampagne Set A (12)
+              </button>
+              <button type="button" class="tab-btn" data-map-category="campaign_soviet" data-i18n="map_tab_soviet">
+                Kampagne Set B (12)
+              </button>
+              <button type="button" class="tab-btn" data-map-category="campaign_yr" data-i18n="map_tab_yr">
+                Erweiterungs-Set (14)
+              </button>
+              <button type="button" class="tab-btn" data-map-category="all" data-i18n="map_tab_all">
+                Alle 54 MapDefs
+              </button>
+            </div>
+
+            <div class="arsenal-search-group">
+              <input
+                type="search"
+                id="map-search-input"
+                placeholder="MapDef-ID oder Name suchen..."
+                data-i18n-placeholder="map_search_placeholder"
+                autocomplete="off"
+              >
+            </div>
+          </div>
+
+          <div class="maps-atlas-layout">
+            <div id="maps-selector-list" class="maps-selector-list" role="listbox" aria-label="Map Selection">
+              <!-- Populated by renderMapsAtlasSection() -->
+            </div>
+
+            <div class="map-radar-stage">
+              <div class="radar-canvas-frame">
+                <canvas id="map-radar-canvas" width="640" height="640" aria-label="2D/3D Map Geometry Radar"></canvas>
+                <div class="radar-scanline-overlay" aria-hidden="true"></div>
+              </div>
+              <div id="map-radar-telemetry" class="map-telemetry-box">
+                <!-- Populated by renderMapsAtlasSection() -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PANE 3: SUB-FACTION DOCTRINES -->
+        <div id="inspector-pane-factions" class="inspector-pane" hidden>
+          <div class="countries-explorer-layout">
+            <div id="countries-strip" class="countries-strip" role="tablist" aria-label="Sub-Faction Configurations">
+              <!-- Populated by renderCountriesStripHtml() -->
+            </div>
+            <div id="country-detail-panel" class="country-detail-panel" aria-live="polite">
+              <!-- Populated by renderCountryDetailHtml() -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <strong>IRONLOCK <span class="brand-divider">//</span> RUST-RTS ENGINE</strong>
+        <p class="cell-sub" data-i18n-html="footer_desc_html">
+          <strong>IRONLOCK // RUST-RTS</strong> — Deterministische 3D-Echtzeitstrategie-Engine in Rust &amp; Lockstep-Multiplayer-Backbone (<code>rust-rts.bls-isp.net</code>).
+        </p>
+      </div>
+      <div class="footer-links">
+        <a href="/api/health">/api/health</a>
+        <a href="/api/stats">/api/stats</a>
+        <a href="/api/project-info">/api/project-info</a>
+        <a href="/api/lobbies">/api/lobbies</a>
+        <a href="/api/matches">/api/matches</a>
+        <a href="/api/leaderboard">/api/leaderboard</a>
+        <a href="/api/game-database">/api/game-database</a>
+      </div>
+    </div>
+  </footer>
+
+  <div id="toast-region" class="toast-region" aria-live="polite" aria-atomic="true"></div>
+
+  <script type="module" src="/js/app.js"></script>
+</body>
+</html>

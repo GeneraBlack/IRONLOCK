@@ -1,0 +1,10 @@
+#!/usr/bin/env python3
+
+import agent
+
+# Ensure persistent Podman volume exists immediately on module creation so
+# Restic cluster backups (volumes/rust-rts-data) and get-status always find it
+agent.run_helper("podman", "volume", "create", "--ignore", "rust-rts-data")
+
+# Ensure systemd user daemon reloads unit files installed in imageroot
+agent.run_helper("systemctl", "--user", "daemon-reload")

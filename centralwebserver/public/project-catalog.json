@@ -1,0 +1,343 @@
+{
+  "engine_name": "Rust 3D RTS Engine",
+  "engine_version": "0.1.0",
+  "tick_rate_hz": 20,
+  "crates": [
+    {
+      "name": "rts-sdk",
+      "role": "Mod-Manifest, TOML-Schemata, Cross-Validator & Duale Skript-Engine (.rhai + .lua)",
+      "highlights": [
+        "Strikte Trennung von Engine-Code und Spielinhalt (0 Hardcodings)",
+        "Duale Skript-Hooks (on_spawn, on_ability, on_tick) in Rhai 1.21 & Lua",
+        "Statischer Tech-Tree-, Waffen- & Kampagnen-Referenz-Validator"
+      ]
+    },
+    {
+      "name": "rts-simulation",
+      "role": "Deterministischer 20-Hz Fixed-Timestep Simulationskern (Headless-fähig)",
+      "highlights": [
+        "Command-Driven Architektur (MoveUnits, AttackTarget, PlaceBuilding, CastSupportPower)",
+        "Kollisionsfreie A*-Wegfindung, Brücken/Gewässer, Garnisonen, Klon-Stätten & Superwaffen",
+        "64-Bit FNV-1a SimWorld::state_hash() für sofortige Lockstep-Desync-Erkennung"
+      ]
+    },
+    {
+      "name": "rts-network",
+      "role": "Lockstep-Multiplayer-Protokoll, Replay-Verifier & Zentrales Lobby-Register-SDK",
+      "highlights": [
+        "Automatischer Mod-Kompatibilitäts-Handshake (ClientHello / ServerWelcome)",
+        "Autoritatives ServerTickBundle + WorldStateSync Snapshot-Resync",
+        "Deterministische .replay.json Aufzeichnung & bitgenaue Hash-Verifikation"
+      ]
+    },
+    {
+      "name": "rts-asset-pipeline",
+      "role": "CLI-Toolchain für Mod-Entwickler, Legacy-Konverter & Prozeduraler 3D-.glb-Generator",
+      "highlights": [
+        "Binary glTF 2.0 (.glb) Generator mit Turret- und Rotor-Sub-Nodes",
+        "Konverter für klassische Westwood (.mix/.vxl/.shp/.ini) & OpenRA (MiniYAML) Assets",
+        "CLI-Inspektor für DPS-Matrizen, Tech-Trees und Unit-Scaffolding"
+      ]
+    },
+    {
+      "name": "rts-client",
+      "role": "Bevy 0.15 3D-PBR-Client, Taktisches RA2-Sidebar-HUD & In-Game Engine-Studio",
+      "highlights": [
+        "360°-Yaw-Orbit-Kamera, 3D-Raycasting, Formations-Vorschau & Force-Shield-Kuppeln",
+        "Direkte Anbindung an dieses zentrale Multiplayer-Register (--lobby-server)",
+        "Integrierter Replay-Scrubber mit Fog-of-War POV-Umschaltung & In-Game-Tech-Enzyklopädie [F9]"
+      ]
+    }
+  ],
+  "mods": [
+    {
+      "id": "rust-ra2",
+      "name": "Red Alert 2: Rust Total Conversion",
+      "version": "0.1.0",
+      "description": "Modern 3D total conversion mod inspired by Command & Conquer: Red Alert 2",
+      "entry_map": "maps/skirmish_valley.toml",
+      "scripts": [
+        "scripts/allied_rules.rhai",
+        "scripts/soviet_rules.lua"
+      ],
+      "factions_count": 3,
+      "units_count": 70,
+      "buildings_count": 76,
+      "weapons_count": 54,
+      "maps": [
+        {
+          "id": "mp_01_offense_defense",
+          "name": "Skirmish: South Pacific (2-4)"
+        },
+        {
+          "id": "mp_02_Last_Resort",
+          "name": "Skirmish: Isle of War (2)"
+        },
+        {
+          "id": "mp_03_blood_feud",
+          "name": "Skirmish: Anytown, Amerika (2-4)"
+        },
+        {
+          "id": "mp_06_Cold_War",
+          "name": "Skirmish: Urban Rush (2)"
+        },
+        {
+          "id": "mp_08_cliffhanger",
+          "name": "Skirmish: Little Big Lake (2)"
+        },
+        {
+          "id": "mp_10_arctic_circle",
+          "name": "Skirmish: Depth Charge (2-4)"
+        },
+        {
+          "id": "mp_12_lake_placid",
+          "name": "Skirmish: Lake Blitzen (2-4)"
+        },
+        {
+          "id": "mp_29_urban_rush",
+          "name": "Skirmish: The Alamo (2)"
+        },
+        {
+          "id": "mp_yr_austin_tx",
+          "name": "Skirmish: Austin, TX (2-4)"
+        },
+        {
+          "id": "mp_yr_blood_feud",
+          "name": "Skirmish: Blood Feud (2)"
+        },
+        {
+          "id": "mp_yr_bridge_the_gap",
+          "name": "Skirmish: Bridging the Gap (2-6)"
+        },
+        {
+          "id": "mp_yr_two_peaks",
+          "name": "Skirmish: Twin Peaks (2)"
+        },
+        {
+          "id": "ra2_allied_01_lone_guardian",
+          "name": "RA2 Allied 01: Lone Guardian (New York)"
+        },
+        {
+          "id": "ra2_allied_02_eagle_dawn",
+          "name": "RA2 Allied 02: Eagle Dawn (Colorado)"
+        },
+        {
+          "id": "ra2_allied_03_hail_to_the_chief",
+          "name": "RA2 Allied 03: Hail to the Chief (Washington D.C.)"
+        },
+        {
+          "id": "ra2_allied_04_last_chance",
+          "name": "RA2 Allied 04: Last Chance (Chicago)"
+        },
+        {
+          "id": "ra2_allied_05_dark_night",
+          "name": "RA2 Allied 05: Dark Night (Polish Border)"
+        },
+        {
+          "id": "ra2_allied_06_liberty",
+          "name": "RA2 Allied 06: Liberty (Pentagon)"
+        },
+        {
+          "id": "ra2_allied_07_deep_sea",
+          "name": "RA2 Allied 07: Deep Sea (Pearl Harbor)"
+        },
+        {
+          "id": "ra2_allied_08_free_gateway",
+          "name": "RA2 Allied 08: Free Gateway (St. Louis)"
+        },
+        {
+          "id": "ra2_allied_09_sun_temple",
+          "name": "RA2 Allied 09: Sun Temple (Tulum Mexico)"
+        },
+        {
+          "id": "ra2_allied_10_mirage",
+          "name": "RA2 Allied 10: Mirage (Black Forest Germany)"
+        },
+        {
+          "id": "ra2_allied_11_fallout",
+          "name": "RA2 Allied 11: Fallout (Florida Keys)"
+        },
+        {
+          "id": "ra2_allied_12_chrono_storm",
+          "name": "RA2 Allied 12: Chrono Storm (Moscow)"
+        },
+        {
+          "id": "ra2_bootcamp_01",
+          "name": "RA2 Boot Camp 01: Basic Training"
+        },
+        {
+          "id": "ra2_bootcamp_02",
+          "name": "RA2 Boot Camp 02: Base Defense & Counterattack"
+        },
+        {
+          "id": "ra2_soviet_01_red_dawn",
+          "name": "RA2 Soviet 01: Red Dawn (Washington D.C.)"
+        },
+        {
+          "id": "ra2_soviet_02_hostile_shore",
+          "name": "RA2 Soviet 02: Hostile Shore (Florida)"
+        },
+        {
+          "id": "ra2_soviet_03_big_apple",
+          "name": "RA2 Soviet 03: Big Apple (New York)"
+        },
+        {
+          "id": "ra2_soviet_04_home_front",
+          "name": "RA2 Soviet 04: Home Front (Vladivostok)"
+        },
+        {
+          "id": "ra2_soviet_05_city_of_lights",
+          "name": "RA2 Soviet 05: City of Lights (Paris)"
+        },
+        {
+          "id": "ra2_soviet_06_sub_divide",
+          "name": "RA2 Soviet 06: Sub-Divide (Pearl Harbor)"
+        },
+        {
+          "id": "ra2_soviet_07_chrono_defense",
+          "name": "RA2 Soviet 07: Chrono Defense (Ural Mountains)"
+        },
+        {
+          "id": "ra2_soviet_08_desecration",
+          "name": "RA2 Soviet 08: Desecration (Washington D.C.)"
+        },
+        {
+          "id": "ra2_soviet_09_the_fox_and_the_hound",
+          "name": "RA2 Soviet 09: The Fox and the Hound (San Antonio)"
+        },
+        {
+          "id": "ra2_soviet_10_weathered_alliance",
+          "name": "RA2 Soviet 10: Weathered Alliance (U.S. Virgin Islands)"
+        },
+        {
+          "id": "ra2_soviet_11_red_revolution",
+          "name": "RA2 Soviet 11: Red Revolution (Moscow)"
+        },
+        {
+          "id": "ra2_soviet_12_polar_storm",
+          "name": "RA2 Soviet 12: Polar Storm (Point Hope Alaska)"
+        },
+        {
+          "id": "river_crossing",
+          "name": "River Crossing (Naval & Bridge)"
+        },
+        {
+          "id": "skirmish_valley",
+          "name": "Skirmish Valley (2-Player)"
+        },
+        {
+          "id": "yr_allied_01_time_shift",
+          "name": "YR Allied 01: Lightening the Load (San Francisco)"
+        },
+        {
+          "id": "yr_allied_02_hollywood_and_vain",
+          "name": "YR Allied 02: Hollywood and Vain (Los Angeles)"
+        },
+        {
+          "id": "yr_allied_03_power_play",
+          "name": "YR Allied 03: Power Play (Seattle)"
+        },
+        {
+          "id": "yr_allied_04_tomb_raided",
+          "name": "YR Allied 04: Tomb Raided (Egypt)"
+        },
+        {
+          "id": "yr_allied_05_cloning_around",
+          "name": "YR Allied 05: Cloning Around (Sydney)"
+        },
+        {
+          "id": "yr_allied_06_trick_or_treaty",
+          "name": "YR Allied 06: Trick or Treaty (London)"
+        },
+        {
+          "id": "yr_allied_07_brain_dead",
+          "name": "YR Allied 07: Brain Dead (Antarctica)"
+        },
+        {
+          "id": "yr_soviet_01_time_lapse",
+          "name": "YR Soviet 01: Time Lapse (San Francisco)"
+        },
+        {
+          "id": "yr_soviet_02_deja_vu",
+          "name": "YR Soviet 02: Deja Vu (Black Forest Germany)"
+        },
+        {
+          "id": "yr_soviet_03_brain_wash",
+          "name": "YR Soviet 03: Brain Wash (London)"
+        },
+        {
+          "id": "yr_soviet_04_romanov_on_the_run",
+          "name": "YR Soviet 04: Romanov on the Run (Morocco)"
+        },
+        {
+          "id": "yr_soviet_05_escape_velocity",
+          "name": "YR Soviet 05: Escape Velocity (Easter Island)"
+        },
+        {
+          "id": "yr_soviet_06_to_the_moon",
+          "name": "YR Soviet 06: To the Moon (Lunar Surface)"
+        },
+        {
+          "id": "yr_soviet_07_head_games",
+          "name": "YR Soviet 07: Head Games (Transylvania)"
+        }
+      ]
+    },
+    {
+      "id": "openra_classic",
+      "name": "OpenRA Mod (openra-classic)",
+      "version": "0.1.0",
+      "description": "Converted from OpenRA MiniYAML rules, weapons, and map",
+      "entry_map": "maps/openra_classic_clash.toml",
+      "scripts": [],
+      "factions_count": 2,
+      "units_count": 6,
+      "buildings_count": 11,
+      "weapons_count": 4,
+      "maps": [
+        {
+          "id": "openra_classic_clash",
+          "name": "OpenRA Classic Clash"
+        }
+      ]
+    },
+    {
+      "id": "openra2",
+      "name": "OpenRA Mod (openra2)",
+      "version": "0.1.0",
+      "description": "Converted from OpenRA MiniYAML rules, weapons, and map",
+      "entry_map": "maps/a_path_beyond_ii.toml",
+      "scripts": [
+        "scripts/auto_traits.rhai"
+      ],
+      "factions_count": 3,
+      "units_count": 48,
+      "buildings_count": 42,
+      "weapons_count": 109,
+      "maps": [
+        {
+          "id": "a_path_beyond_ii",
+          "name": "A Path Beyond II"
+        }
+      ]
+    },
+    {
+      "id": "westwood_classic",
+      "name": "Westwood Mod (westwood-classic)",
+      "version": "0.1.0",
+      "description": "Converted from legacy Westwood INI, VXL & SHP data",
+      "entry_map": "maps/converted_skirmish.toml",
+      "scripts": [],
+      "factions_count": 2,
+      "units_count": 7,
+      "buildings_count": 11,
+      "weapons_count": 5,
+      "maps": [
+        {
+          "id": "converted_skirmish",
+          "name": "Converted Skirmish Arena"
+        }
+      ]
+    }
+  ]
+}

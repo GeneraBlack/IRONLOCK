@@ -1,0 +1,14 @@
+language = "de"
+
+[strings]
+"ui.main_menu.campaign" = "KAMPAGNE"
+"ui.main_menu.skirmish" = "GEFECHT (SKIRMISH)"
+"ui.main_menu.multiplayer" = "MULTIPLAYER (LAN / ONLINE)"
+"ui.main_menu.studio" = "3D ASSET & MAP STUDIO [F9]"
+"ui.main_menu.settings" = "EINSTELLUNGEN"
+"ui.hud.credits" = "CREDITS"
+"ui.hud.power" = "ENERGIE"
+"ui.hud.hot_reload" = "MOD LIVE NEU LADEN [F12]"
+"faction.allies.name" = "Alliierte Nationen"
+"faction.soviet.name" = "Sowjetunion"
+"faction.yuri.name" = "Yuris Armee"

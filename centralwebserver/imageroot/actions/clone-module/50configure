@@ -1,0 +1,34 @@
+#!/usr/bin/env python3
+
+import os
+import sys
+import agent
+import agent.tasks
+
+agent.run_helper("podman", "volume", "create", "--ignore", "rust-rts-data")
+agent.run_helper("systemctl", "--user", "daemon-reload")
+
+host = (os.environ.get("TRAEFIK_HOST") or os.environ.get("HOST") or "").strip()
+if host:
+    default_traefik_id = agent.resolve_agent_id("traefik@node")
+    if default_traefik_id is None:
+        sys.exit(2)
+
+    tcp_port = os.environ["TCP_PORT"]
+    lets_encrypt = (os.environ.get("TRAEFIK_LETS_ENCRYPT") or os.environ.get("LETS_ENCRYPT") or "False") == "True"
+    http2https = (os.environ.get("TRAEFIK_HTTP2HTTPS") or os.environ.get("HTTP2HTTPS") or "True") == "True"
+
+    response = agent.tasks.run(
+        agent_id=default_traefik_id,
+        action="set-route",
+        data={
+            "instance": os.environ["MODULE_ID"],
+            "url": f"http://127.0.0.1:{tcp_port}",
+            "host": host,
+            "lets_encrypt": lets_encrypt,
+            "http2https": http2https,
+        },
+    )
+    agent.assert_exp(response["exit_code"] == 0)
+    agent.run_helper("systemctl", "--user", "enable", "rust-rts.service")
+    agent.run_helper("systemctl", "--user", "restart", "rust-rts.service")

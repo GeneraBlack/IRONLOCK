@@ -1,0 +1,51 @@
+#!/usr/bin/env python3
+
+import json
+import os
+import subprocess
+import time
+
+state_dir = os.environ.get("AGENT_STATE_DIR", os.path.expanduser("~/.config/state"))
+os.makedirs(state_dir, exist_ok=True)
+
+# Ensure the persistent Podman volume exists before module-backup enumerates volumes
+subprocess.run(["podman", "volume", "create", "--ignore", "rust-rts-data"], check=False, stdout=subprocess.DEVNULL)
+
+# Ensure the volume mountpoint contains a state file for Restic
+try:
+    vol_mount = subprocess.run(
+        ["podman", "volume", "inspect", "--format", "{{.Mountpoint}}", "rust-rts-data"],
+        capture_output=True,
+        text=True,
+        check=True,
+    ).stdout.strip()
+    if vol_mount and os.path.isdir(vol_mount):
+        marker_path = os.path.join(vol_mount, "backup-state.json")
+        with open(marker_path, "w", encoding="utf-8") as vf:
+            json.dump(
+                {
+                    "module_id": os.environ.get("MODULE_ID", ""),
+                    "timestamp": int(time.time()),
+                },
+                vf,
+            )
+except Exception:
+    pass
+
+# Dump module state metadata into state/backup-metadata.json
+metadata_path = os.path.join(state_dir, "backup-metadata.json")
+with open(metadata_path, "w", encoding="utf-8") as fp:
+    json.dump(
+        {
+            "module_id": os.environ.get("MODULE_ID", ""),
+            "image_url": os.environ.get("IMAGE_URL", ""),
+            "host": os.environ.get("TRAEFIK_HOST") or os.environ.get("HOST") or "",
+            "rts_node_id": os.environ.get("RTS_NODE_ID", "bls-isp-eu-central-01"),
+            "ttl_secs": os.environ.get("TTL_SECS", "45"),
+            "relay_port_start": os.environ.get("RELAY_PORT_START", "30100"),
+            "relay_port_end": os.environ.get("RELAY_PORT_END", "30139"),
+            "timestamp": int(time.time()),
+        },
+        fp,
+        indent=2,
+    )

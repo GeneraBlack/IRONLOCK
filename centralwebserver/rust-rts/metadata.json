@@ -1,0 +1,26 @@
+{
+  "name": "IRONLOCK // RUST-RTS",
+  "upstream_name": "IRONLOCK // RUST-RTS 1.0.13",
+  "description": {
+    "en": "Official Project Portal, Deterministic 20 Hz Lockstep Multiplayer Registry & Reverse-TCP NAT Relay Hub (rust-rts.bls-isp.net)",
+    "de": "Offizielles Projektportal, Deterministisches 20-Hz Lockstep-Multiplayer-Register & Reverse-TCP NAT-Relay-Hub (rust-rts.bls-isp.net)"
+  },
+  "categories": [
+    "games",
+    "network",
+    "web"
+  ],
+  "authors": [
+    {
+      "name": "BLS-ISP Command Network",
+      "email": "admin@bls-isp.net"
+    }
+  ],
+  "docs": {
+    "documentation_url": "https://rust-rts.bls-isp.net/",
+    "bug_url": "https://git.bls-isp.net/genera/rust-rts-webserver/-/issues",
+    "code_url": "https://git.bls-isp.net/genera/rust-rts-webserver",
+    "relnotes_url": "https://git.bls-isp.net/genera/rust-rts-webserver/-/tags"
+  },
+  "source": "reg.bls-isp.net/genera/rust-rts-webserver/rust-rts"
+}

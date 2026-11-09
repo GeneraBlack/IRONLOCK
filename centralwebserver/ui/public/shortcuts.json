@@ -1,0 +1,17 @@
+[
+  {
+    "name": {
+      "en": "Settings",
+      "de": "Einstellungen"
+    },
+    "description": {
+      "en": "Configure IRONLOCK // RUST-RTS domain and multiplayer relay settings",
+      "de": "Domain und Multiplayer-Relay-Einstellungen für IRONLOCK // RUST-RTS konfigurieren"
+    },
+    "tags": {
+      "en": ["rts", "domain", "host", "settings", "multiplayer"],
+      "de": ["rts", "domain", "host", "einstellungen", "multiplayer"]
+    },
+    "path": "?page=settings"
+  }
+]

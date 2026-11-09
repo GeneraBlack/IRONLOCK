@@ -1,0 +1,14 @@
+language = "en"
+
+[strings]
+"ui.main_menu.campaign" = "CAMPAIGN"
+"ui.main_menu.skirmish" = "SKIRMISH"
+"ui.main_menu.multiplayer" = "MULTIPLAYER (LAN / ONLINE)"
+"ui.main_menu.studio" = "3D ASSET & MAP STUDIO [F9]"
+"ui.main_menu.settings" = "SETTINGS"
+"ui.hud.credits" = "CREDITS"
+"ui.hud.power" = "POWER"
+"ui.hud.hot_reload" = "HOT RELOAD MOD [F12]"
+"faction.allies.name" = "Allied Nations"
+"faction.soviet.name" = "Soviet Union"
+"faction.yuri.name" = "Yuri's Army"

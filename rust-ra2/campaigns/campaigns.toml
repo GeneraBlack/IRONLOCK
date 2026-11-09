@@ -1,0 +1,523 @@
+# ==============================================================================
+# RED ALERT 2 & YURI'S REVENGE — COMPLETE 5-CAMPAIGN / 40-MISSION CATALOG
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# 1. RA2: ALLIED LIBERTY CAMPAIGN (12 MISSIONS)
+# ------------------------------------------------------------------------------
+[[campaigns]]
+id = "allied_campaign"
+display_name = "RA2: Allied Liberty Campaign (12 Missions)"
+faction = "allies"
+description = "Defend the free world against the Soviet invasion — from New York, Washington D.C., and Chicago to the Chrono Storm assault on Moscow."
+
+[[campaigns.missions]]
+id = "ra2_allied_01"
+display_name = "Op. 01: Lone Guardian (New York)"
+map_id = "ra2_allied_01_lone_guardian"
+briefing = "The Soviets have invaded New York Harbor. Assist Special Agent Tanya, re-establish contact with Fort Bradley, and sink the Soviet Dreadnought fleet off Manhattan."
+next_mission_id = "ra2_allied_02"
+carry_over_credits_ratio = 0.25
+carry_over_max_veteran_units = 6
+loading_screen = "assets/ui/loading_screens/ra2_allied_01.png"
+intro_video = "assets/videos/allied_01_cutscene.mp4"
+radar_video = "assets/videos/radar_pip/allied_01_pip_01.mp4"
+
+[[campaigns.missions]]
+id = "ra2_allied_02"
+display_name = "Op. 02: Eagle Dawn (Colorado Springs)"
+map_id = "ra2_allied_02_eagle_dawn"
+briefing = "Soviet forces have occupied the Air Force Academy in Colorado Springs. Retake the base with Tanya and your Rocketeers and eliminate all hostile occupation forces."
+next_mission_id = "ra2_allied_03"
+carry_over_credits_ratio = 0.25
+carry_over_max_veteran_units = 6
+loading_screen = "assets/ui/loading_screens/ra2_allied_02.png"
+intro_video = "assets/videos/allied_02_cutscene.mp4"
+radar_video = "assets/videos/radar_pip/allied_02_pip_01.mp4"
+
+[[campaigns.missions]]
+id = "ra2_allied_03"
+display_name = "Op. 03: Hail to the Chief (Washington D.C.)"
+map_id = "ra2_allied_03_hail_to_the_chief"
+briefing = "A Soviet Psychic Beacon deployed outside the White House has mind-controlled the President and General Carville. Destroy the Psychic Beacon and liberate the capital."
+next_mission_id = "ra2_allied_04"
+carry_over_credits_ratio = 0.25
+carry_over_max_veteran_units = 6
+loading_screen = "assets/ui/loading_screens/ra2_allied_03.png"
+intro_video = "assets/videos/allied_03_cutscene.mp4"
+radar_video = "assets/videos/radar_pip/allied_03_pip_01.mp4"
+
+[[campaigns.missions]]
+id = "ra2_allied_04"
+display_name = "Op. 04: Last Chance (Chicago)"
+map_id = "ra2_allied_04_last_chance"
+briefing = "General Vladimir has erected a massive Psychic Amplifier in downtown Chicago. Launch an amphibious assault across Lake Michigan and destroy the amplifier before activation."
+next_mission_id = "ra2_allied_05"
+carry_over_credits_ratio = 0.25
+carry_over_max_veteran_units = 6
+loading_screen = "assets/ui/loading_screens/ra2_allied_04.png"
+intro_video = "assets/videos/allied_04_cutscene.mp4"
+victory_video = "assets/videos/allied_04_outro_cutscene.mp4"
+radar_video = "assets/videos/radar_pip/allied_04_pip_01.mp4"
+
+[[campaigns.missions]]
+id = "ra2_allied_05"
+display_name = "Op. 05: Dark Night (Polish Border)"
+map_id = "ra2_allied_05_dark_night"
+briefing = "Infiltrate the Soviet nuclear missile silos along the Polish border with Agent Tanya and Allied Spies to persuade the European nations to join the Alliance."
+next_mission_id = "ra2_allied_06"
+carry_over_credits_ratio = 0.25
+carry_over_max_veteran_units = 6
+loading_screen = "assets/ui/loading_screens/ra2_allied_05.png"
+intro_video = "assets/videos/allied_05_cutscene.mp4"
+radar_video = "assets/videos/radar_pip/allied_05_pip_01.mp4"
+
+[[campaigns.missions]]
+id = "ra2_allied_06"
+display_name = "Op. 06: Liberty (Washington D.C. Reclamation)"
+map_id = "ra2_allied_06_liberty"
+briefing = "Backed by European reinforcements, launch our counter-offensive to reclaim Washington D.C. and the Pentagon from Soviet occupation."
+next_mission_id = "ra2_allied_07"
+carry_over_credits_ratio = 0.25
+carry_over_max_veteran_units = 6
+loading_screen = "assets/ui/loading_screens/ra2_allied_06.png"
+intro_video = "assets/videos/allied_06_cutscene.mp4"
+radar_video = "assets/videos/radar_pip/allied_06_pip_01.mp4"
+
+[[campaigns.missions]]
+id = "ra2_allied_07"
+display_name = "Op. 07: Deep Sea (Pearl Harbor)"
+map_id = "ra2_allied_07_deep_sea"
+briefing = "A massive Soviet Pacific Fleet is bearing down on Hawaii. Build up your naval forces with Aegis Cruisers and Aircraft Carriers to sink the invaders."
+next_mission_id = "ra2_allied_08"
+carry_over_credits_ratio = 0.25
+carry_over_max_veteran_units = 6
+loading_screen = "assets/ui/loading_screens/ra2_allied_07.png"
+intro_video = "assets/videos/allied_07_cutscene.mp4"
+radar_video = "assets/videos/radar_pip/allied_07_pip_01.mp4"
+
+[[campaigns.missions]]
+id = "ra2_allied_08"
+display_name = "Op. 08: Free Gateway (St. Louis)"
+map_id = "ra2_allied_08_free_gateway"
+briefing = "Liberate St. Louis along the Mississippi River from the Soviet Psychic Beacon and field Professor Einstein's new Prism Tanks in combat for the first time."
+next_mission_id = "ra2_allied_09"
+carry_over_credits_ratio = 0.25
+carry_over_max_veteran_units = 6
+loading_screen = "assets/ui/loading_screens/ra2_allied_08.png"
+intro_video = "assets/videos/allied_08_cutscene.mp4"
+radar_video = "assets/videos/radar_pip/allied_08_pip_01.mp4"
+
+[[campaigns.missions]]
+id = "ra2_allied_09"
+display_name = "Op. 09: Sun Temple (Tulum, Mexico)"
+map_id = "ra2_allied_09_sun_temple"
+briefing = "The Soviets are attempting to reverse-engineer captured Prism technology in the jungles of Yucatan. Destroy the research facility and prototype near the Mayan temple."
+next_mission_id = "ra2_allied_10"
+carry_over_credits_ratio = 0.25
+carry_over_max_veteran_units = 6
+loading_screen = "assets/ui/loading_screens/ra2_allied_09.png"
+intro_video = "assets/videos/allied_09_cutscene.mp4"
+radar_video = "assets/videos/radar_pip/allied_09_pip_01.mp4"
+
+[[campaigns.missions]]
+id = "ra2_allied_10"
+display_name = "Op. 10: Mirage (Black Forest, Germany)"
+map_id = "ra2_allied_10_mirage"
+briefing = "Soviet tank divisions are marching on Einstein's secret laboratory in the Black Forest. Deploy Mirage Tanks and hold the laboratory at all costs."
+next_mission_id = "ra2_allied_11"
+carry_over_credits_ratio = 0.25
+carry_over_max_veteran_units = 6
+loading_screen = "assets/ui/loading_screens/ra2_allied_10.png"
+intro_video = "assets/videos/allied_10_cutscene.mp4"
+radar_video = "assets/videos/radar_pip/allied_10_pip_01.mp4"
+
+[[campaigns.missions]]
+id = "ra2_allied_11"
+display_name = "Op. 11: Fallout (Florida Keys)"
+map_id = "ra2_allied_11_fallout"
+briefing = "Construct and defend the Chronosphere in the Florida Keys against Cuban forces and nuclear missile silos to prepare the direct invasion of Moscow."
+next_mission_id = "ra2_allied_12"
+carry_over_credits_ratio = 0.25
+carry_over_max_veteran_units = 6
+loading_screen = "assets/ui/loading_screens/ra2_allied_11.png"
+intro_video = "assets/videos/allied_11_cutscene.mp4"
+radar_video = "assets/videos/radar_pip/allied_11_pip_01.mp4"
+
+[[campaigns.missions]]
+id = "ra2_allied_12"
+display_name = "Op. 12: Chrono Storm (Moscow Finale)"
+map_id = "ra2_allied_12_chrono_storm"
+briefing = "The final battle: Your strike force has been teleported directly into Moscow via Chronosphere. Eliminate the Black Guard surrounding the Kremlin and capture Premier Romanov."
+carry_over_credits_ratio = 0.0
+loading_screen = "assets/ui/loading_screens/ra2_allied_12.png"
+intro_video = "assets/videos/allied_12_finale_cutscene.mp4"
+victory_video = "assets/videos/allied_epilogue_1.mp4"
+radar_video = "assets/videos/radar_pip/allied_12_pip_01.mp4"
+
+# ------------------------------------------------------------------------------
+# 2. RA2: SOVIET RED DAWN CAMPAIGN (12 MISSIONS)
+# ------------------------------------------------------------------------------
+[[campaigns]]
+id = "soviet_campaign"
+display_name = "RA2: Soviet Red Dawn Campaign (12 Missions)"
+faction = "soviets"
+description = "Lead the Red Army in a lightning war across Washington D.C., New York, Paris, and Pearl Harbor to the reckoning with traitor Yuri and the final Allied stronghold in Alaska."
+
+[[campaigns.missions]]
+id = "ra2_soviet_01"
+display_name = "Op. 01: Red Dawn (Washington D.C.)"
+map_id = "ra2_soviet_01_red_dawn"
+briefing = "Comrade General, spearhead our invasion of Washington D.C. and crush the Pentagon, the heart of the American military machine."
+next_mission_id = "ra2_soviet_02"
+carry_over_credits_ratio = 0.25
+carry_over_max_veteran_units = 6
+loading_screen = "assets/ui/loading_screens/ra2_soviet_01.png"
+intro_video = "assets/videos/soviet_01_cutscene.mp4"
+radar_video = "assets/videos/radar_pip/soviet_01_pip_01.mp4"
+
+[[campaigns.missions]]
+id = "ra2_soviet_02"
+display_name = "Op. 02: Hostile Shore (Florida)"
+map_id = "ra2_soviet_02_hostile_shore"
+briefing = "Establish a beachhead on the coast of Florida and shatter the Allied counterattack fleet with Typhoon Attack Submarines and Rhino Heavy Tanks."
+next_mission_id = "ra2_soviet_03"
+carry_over_credits_ratio = 0.25
+carry_over_max_veteran_units = 6
+loading_screen = "assets/ui/loading_screens/ra2_soviet_02.png"
+intro_video = "assets/videos/soviet_02_cutscene.mp4"
+radar_video = "assets/videos/radar_pip/soviet_02_pip_01.mp4"
+
+[[campaigns.missions]]
+id = "ra2_soviet_03"
+display_name = "Op. 03: Big Apple (New York)"
+map_id = "ra2_soviet_03_big_apple"
+briefing = "Capture the Allied Battle Lab in Lower Manhattan and defend the construction of our Psychic Beacon until it brings all of New York under Soviet control."
+next_mission_id = "ra2_soviet_04"
+carry_over_credits_ratio = 0.25
+carry_over_max_veteran_units = 6
+loading_screen = "assets/ui/loading_screens/ra2_soviet_03.png"
+intro_video = "assets/videos/soviet_03_cutscene.mp4"
+radar_video = "assets/videos/radar_pip/soviet_03_pip_01.mp4"
+
+[[campaigns.missions]]
+id = "ra2_soviet_04"
+display_name = "Op. 04: Home Front (Vladivostok)"
+map_id = "ra2_soviet_04_home_front"
+briefing = "Korean naval forces have launched an amphibious landing near Vladivostok. Repel the invasion fleet and obliterate the enemy beachhead."
+next_mission_id = "ra2_soviet_05"
+carry_over_credits_ratio = 0.25
+carry_over_max_veteran_units = 6
+loading_screen = "assets/ui/loading_screens/ra2_soviet_04.png"
+intro_video = "assets/videos/soviet_04_cutscene.mp4"
+radar_video = "assets/videos/radar_pip/soviet_04_pip_01.mp4"
+
+[[campaigns.missions]]
+id = "ra2_soviet_05"
+display_name = "Op. 05: City of Lights (Paris)"
+map_id = "ra2_soviet_05_city_of_lights"
+briefing = "Energize the Eiffel Tower into a colossal Tesla Coil using your Tesla Troopers and annihilate the Allied garrison defending Paris."
+next_mission_id = "ra2_soviet_06"
+carry_over_credits_ratio = 0.25
+carry_over_max_veteran_units = 6
+loading_screen = "assets/ui/loading_screens/ra2_soviet_05.png"
+intro_video = "assets/videos/soviet_05_cutscene.mp4"
+radar_video = "assets/videos/radar_pip/soviet_05_pip_01.mp4"
+
+[[campaigns.missions]]
+id = "ra2_soviet_06"
+display_name = "Op. 06: Sub-Divide (Pearl Harbor)"
+map_id = "ra2_soviet_06_sub_divide"
+briefing = "Seize the Hawaiian islands and sink the remaining Allied Pacific Fleet at Pearl Harbor using Dreadnoughts and Giant Squids."
+next_mission_id = "ra2_soviet_07"
+carry_over_credits_ratio = 0.25
+carry_over_max_veteran_units = 6
+loading_screen = "assets/ui/loading_screens/ra2_soviet_06.png"
+intro_video = "assets/videos/soviet_06_cutscene.mp4"
+radar_video = "assets/videos/radar_pip/soviet_06_pip_01.mp4"
+
+[[campaigns.missions]]
+id = "ra2_soviet_07"
+display_name = "Op. 07: Chrono Defense (Ural Mountains)"
+map_id = "ra2_soviet_07_chrono_defense"
+briefing = "The Allies are using their Chronosphere to stage a surprise assault on our Battle Lab in the Ural Mountains. Defend the laboratory against all waves."
+next_mission_id = "ra2_soviet_08"
+carry_over_credits_ratio = 0.25
+carry_over_max_veteran_units = 6
+loading_screen = "assets/ui/loading_screens/ra2_soviet_07.png"
+intro_video = "assets/videos/soviet_07_cutscene.mp4"
+radar_video = "assets/videos/radar_pip/soviet_07_pip_01.mp4"
+
+[[campaigns.missions]]
+id = "ra2_soviet_08"
+display_name = "Op. 08: Desecration (Washington D.C.)"
+map_id = "ra2_soviet_08_desecration"
+briefing = "General Vladimir has betrayed us and fortified himself inside the White House. Crush his renegade guard and bring Vladimir to justice."
+next_mission_id = "ra2_soviet_09"
+carry_over_credits_ratio = 0.25
+carry_over_max_veteran_units = 6
+loading_screen = "assets/ui/loading_screens/ra2_soviet_08.png"
+intro_video = "assets/videos/soviet_08_cutscene.mp4"
+radar_video = "assets/videos/radar_pip/soviet_08_pip_01.mp4"
+
+[[campaigns.missions]]
+id = "ra2_soviet_09"
+display_name = "Op. 09: The Fox and the Hound (San Antonio)"
+map_id = "ra2_soviet_09_the_fox_and_the_hound"
+briefing = "The US President has entrenched himself inside the Alamo in San Antonio. Use your Psi-Corps operatives to bring him under mind control alive."
+next_mission_id = "ra2_soviet_10"
+carry_over_credits_ratio = 0.25
+carry_over_max_veteran_units = 6
+loading_screen = "assets/ui/loading_screens/ra2_soviet_09.png"
+intro_video = "assets/videos/soviet_09_cutscene.mp4"
+radar_video = "assets/videos/radar_pip/soviet_09_pip_01.mp4"
+
+[[campaigns.missions]]
+id = "ra2_soviet_10"
+display_name = "Op. 10: Weathered Alliance (U.S. Virgin Islands)"
+map_id = "ra2_soviet_10_weathered_alliance"
+briefing = "The Allies have deployed a Weather Control Device in the Virgin Islands. Field Kirov Airships and Nuclear Missiles to wipe out their base."
+next_mission_id = "ra2_soviet_11"
+carry_over_credits_ratio = 0.25
+carry_over_max_veteran_units = 6
+loading_screen = "assets/ui/loading_screens/ra2_soviet_10.png"
+intro_video = "assets/videos/soviet_10_cutscene.mp4"
+radar_video = "assets/videos/radar_pip/soviet_10_pip_01.mp4"
+
+[[campaigns.missions]]
+id = "ra2_soviet_11"
+display_name = "Op. 11: Red Revolution (Moscow)"
+map_id = "ra2_soviet_11_red_revolution"
+briefing = "Yuri has assassinated Premier Romanov and seized the Kremlin. Obliterate Yuri's Kremlin stronghold with our heavy Apocalypse Tanks and Kirov Airships."
+next_mission_id = "ra2_soviet_12"
+carry_over_credits_ratio = 0.25
+carry_over_max_veteran_units = 6
+loading_screen = "assets/ui/loading_screens/ra2_soviet_11.png"
+intro_video = "assets/videos/soviet_11_cutscene.mp4"
+radar_video = "assets/videos/radar_pip/soviet_11_pip_01.mp4"
+
+[[campaigns.missions]]
+id = "ra2_soviet_12"
+display_name = "Op. 12: Polar Storm (Point Hope, Alaska Finale)"
+map_id = "ra2_soviet_12_polar_storm"
+briefing = "The last Allied Chronosphere stands at Point Hope, Alaska. Destroy it to crown the global triumph of the Soviet Union."
+carry_over_credits_ratio = 0.0
+loading_screen = "assets/ui/loading_screens/ra2_soviet_12.png"
+intro_video = "assets/videos/soviet_12_finale_cutscene.mp4"
+victory_video = "assets/videos/soviet_epilogue_1.mp4"
+radar_video = "assets/videos/radar_pip/soviet_12_pip_01.mp4"
+
+# ------------------------------------------------------------------------------
+# 3. YURI'S REVENGE: ALLIED TIME SHIFT CAMPAIGN (7 MISSIONS)
+# ------------------------------------------------------------------------------
+[[campaigns]]
+id = "yr_allied_campaign"
+display_name = "Yuri's Revenge: Allied Campaign (7 Missions)"
+faction = "allies"
+description = "Travel back in time using Einstein's Time Machine and dismantle Yuri's global network of Psychic Dominators from San Francisco to Antarctica."
+
+[[campaigns.missions]]
+id = "yr_allied_01"
+display_name = "YR Op. 01: Lightening the Load (San Francisco)"
+map_id = "yr_allied_01_time_shift"
+briefing = "Capture civilian power plants across San Francisco to energize Einstein's Time Machine and stop the Psychic Dominator on Alcatraz Island."
+next_mission_id = "yr_allied_02"
+carry_over_credits_ratio = 0.25
+carry_over_max_veteran_units = 6
+loading_screen = "assets/ui/loading_screens/yr_allied_01.png"
+intro_video = "assets/videos/yr_allied_01_cutscene.mp4"
+victory_video = "assets/videos/yr_allied_01_outro_cutscene.mp4"
+radar_video = "assets/videos/radar_pip/yr_allied_01_pip_01.mp4"
+
+[[campaigns.missions]]
+id = "yr_allied_02"
+display_name = "YR Op. 02: Hollywood and Vain (Los Angeles)"
+map_id = "yr_allied_02_hollywood_and_vain"
+briefing = "Yuri is recycling the population of Los Angeles inside his Grinders. Team up with Hollywood's action heroes and destroy every Grinder in the city."
+next_mission_id = "yr_allied_03"
+carry_over_credits_ratio = 0.25
+carry_over_max_veteran_units = 6
+loading_screen = "assets/ui/loading_screens/yr_allied_02.png"
+intro_video = "assets/videos/yr_allied_02_cutscene.mp4"
+radar_video = "assets/videos/radar_pip/yr_allied_02_pip_01.mp4"
+
+[[campaigns.missions]]
+id = "yr_allied_03"
+display_name = "YR Op. 03: Power Play (Seattle)"
+map_id = "yr_allied_03_power_play"
+briefing = "Yuri is blackmailing the Massivesoft Corporation in Seattle with a Nuclear Missile Silo. Liberate the campus and knock out the silo with your Weather Control Device."
+next_mission_id = "yr_allied_04"
+carry_over_credits_ratio = 0.25
+carry_over_max_veteran_units = 6
+loading_screen = "assets/ui/loading_screens/yr_allied_03.png"
+intro_video = "assets/videos/yr_allied_03_cutscene.mp4"
+radar_video = "assets/videos/radar_pip/yr_allied_03_pip_01.mp4"
+
+[[campaigns.missions]]
+id = "yr_allied_04"
+display_name = "YR Op. 04: Tomb Raided (Egypt)"
+map_id = "yr_allied_04_tomb_raided"
+briefing = "Yuri has imprisoned Professor Einstein inside the Great Pyramid of Giza. Rescue Einstein with Tanya and obliterate Yuri's Nile stronghold."
+next_mission_id = "yr_allied_05"
+carry_over_credits_ratio = 0.25
+carry_over_max_veteran_units = 6
+loading_screen = "assets/ui/loading_screens/yr_allied_04.png"
+intro_video = "assets/videos/yr_allied_04_cutscene.mp4"
+victory_video = "assets/videos/yr_allied_04_outro_cutscene.mp4"
+radar_video = "assets/videos/radar_pip/yr_allied_04_pip_01.mp4"
+
+[[campaigns.missions]]
+id = "yr_allied_05"
+display_name = "YR Op. 05: Cloning Around (Sydney)"
+map_id = "yr_allied_05_cloning_around"
+briefing = "Yuri is operating Cloning Vats in Sydney Harbor to replace world leaders with mind-controlled duplicates. Destroy all Cloning Vats and Yuri's base."
+next_mission_id = "yr_allied_06"
+carry_over_credits_ratio = 0.25
+carry_over_max_veteran_units = 6
+loading_screen = "assets/ui/loading_screens/yr_allied_05.png"
+intro_video = "assets/videos/yr_allied_05_cutscene.mp4"
+radar_video = "assets/videos/radar_pip/yr_allied_05_pip_01.mp4"
+
+[[campaigns.missions]]
+id = "yr_allied_06"
+display_name = "YR Op. 06: Trick or Treaty (London)"
+map_id = "yr_allied_06_trick_or_treaty"
+briefing = "Defend the Houses of Parliament along the Thames until the joint treaty with the Soviets is signed, then storm Yuri's fortress."
+next_mission_id = "yr_allied_07"
+carry_over_credits_ratio = 0.25
+carry_over_max_veteran_units = 6
+loading_screen = "assets/ui/loading_screens/yr_allied_06.png"
+intro_video = "assets/videos/yr_allied_06_cutscene.mp4"
+radar_video = "assets/videos/radar_pip/yr_allied_06_pip_01.mp4"
+
+[[campaigns.missions]]
+id = "yr_allied_07"
+display_name = "YR Op. 07: Brain Dead (Antarctica Finale)"
+map_id = "yr_allied_07_brain_dead"
+briefing = "Combined with Soviet forces, launch an all-out assault on Yuri's final citadel and Psychic Dominator in the frozen wastes of Antarctica."
+carry_over_credits_ratio = 0.0
+loading_screen = "assets/ui/loading_screens/yr_allied_07.png"
+intro_video = "assets/videos/yr_allied_07_cutscene.mp4"
+victory_video = "assets/videos/yr_allied_08_finale_cutscene.mp4"
+radar_video = "assets/videos/radar_pip/yr_allied_07_pip_01.mp4"
+
+# ------------------------------------------------------------------------------
+# 4. YURI'S REVENGE: SOVIET TIME LAPSE CAMPAIGN (7 MISSIONS)
+# ------------------------------------------------------------------------------
+[[campaigns]]
+id = "yr_soviet_campaign"
+display_name = "Yuri's Revenge: Soviet Campaign (7 Missions)"
+faction = "soviets"
+description = "Hijack Einstein's Time Machine, reverse the Soviet defeat in the Black Forest, and hunt Yuri across the Moon to his ancestral castle in Transylvania."
+
+[[campaigns.missions]]
+id = "yr_soviet_01"
+display_name = "YR Op. 01: Time Lapse (San Francisco)"
+map_id = "yr_soviet_01_time_lapse"
+briefing = "Seize Einstein's Time Machine in San Francisco, travel into the past, and destroy Yuri's Psychic Dominator on Alcatraz while it is still under construction."
+next_mission_id = "yr_soviet_02"
+carry_over_credits_ratio = 0.25
+carry_over_max_veteran_units = 6
+loading_screen = "assets/ui/loading_screens/yr_soviet_01.png"
+intro_video = "assets/videos/yr_soviet_01_cutscene.mp4"
+radar_video = "assets/videos/radar_pip/yr_soviet_01_pip_01.mp4"
+
+[[campaigns.missions]]
+id = "yr_soviet_02"
+display_name = "YR Op. 02: Deja Vu (Black Forest)"
+map_id = "yr_soviet_02_deja_vu"
+briefing = "Rewrite history: Destroy Einstein's laboratory and Chronosphere in Germany's Black Forest before the Allies can launch their invasion of Moscow."
+next_mission_id = "yr_soviet_03"
+carry_over_credits_ratio = 0.25
+carry_over_max_veteran_units = 6
+loading_screen = "assets/ui/loading_screens/yr_soviet_02.png"
+intro_video = "assets/videos/yr_soviet_02_cutscene.mp4"
+radar_video = "assets/videos/radar_pip/yr_soviet_02_pip_01.mp4"
+
+[[campaigns.missions]]
+id = "yr_soviet_03"
+display_name = "YR Op. 03: Brain Wash (London)"
+map_id = "yr_soviet_03_brain_wash"
+briefing = "Destroy Yuri's Psychic Beacon in London to free the mind-controlled Allied garrison, then join forces to crush Yuri's Psychic Dominator."
+next_mission_id = "yr_soviet_04"
+carry_over_credits_ratio = 0.25
+carry_over_max_veteran_units = 6
+loading_screen = "assets/ui/loading_screens/yr_soviet_03.png"
+intro_video = "assets/videos/yr_soviet_03_cutscene.mp4"
+radar_video = "assets/videos/radar_pip/yr_soviet_03_pip_01.mp4"
+
+[[campaigns.missions]]
+id = "yr_soviet_04"
+display_name = "YR Op. 04: Romanov on the Run (Morocco)"
+map_id = "yr_soviet_04_romanov_on_the_run"
+briefing = "Premier Romanov's plane has been shot down over Morocco. Locate the Premier and escort him safely back to the airfield before Yuri's forces capture him."
+next_mission_id = "yr_soviet_05"
+carry_over_credits_ratio = 0.25
+carry_over_max_veteran_units = 6
+loading_screen = "assets/ui/loading_screens/yr_soviet_04.png"
+intro_video = "assets/videos/yr_soviet_04_cutscene.mp4"
+radar_video = "assets/videos/radar_pip/yr_soviet_04_pip_01.mp4"
+
+[[campaigns.missions]]
+id = "yr_soviet_05"
+display_name = "YR Op. 05: Escape Velocity (Easter Island)"
+map_id = "yr_soviet_05_escape_velocity"
+briefing = "Yuri's secret Boomer submarine pens and space launch facility are hidden on a Pacific island guarded by Moai statues. Storm the island."
+next_mission_id = "yr_soviet_06"
+carry_over_credits_ratio = 0.25
+carry_over_max_veteran_units = 6
+loading_screen = "assets/ui/loading_screens/yr_soviet_05.png"
+intro_video = "assets/videos/yr_soviet_05_cutscene.mp4"
+radar_video = "assets/videos/radar_pip/yr_soviet_05_pip_01.mp4"
+
+[[campaigns.missions]]
+id = "yr_soviet_06"
+display_name = "YR Op. 06: To the Moon (Lunar Surface)"
+map_id = "yr_soviet_06_to_the_moon"
+briefing = "Yuri has fled to the Moon! Establish a Soviet lunar base with Cosmonauts and laser units and destroy Yuri's lunar command centers."
+next_mission_id = "yr_soviet_07"
+carry_over_credits_ratio = 0.25
+carry_over_max_veteran_units = 6
+loading_screen = "assets/ui/loading_screens/yr_soviet_06.png"
+intro_video = "assets/videos/yr_soviet_06_cutscene.mp4"
+radar_video = "assets/videos/radar_pip/yr_soviet_06_pip_01.mp4"
+
+[[campaigns.missions]]
+id = "yr_soviet_07"
+display_name = "YR Op. 07: Head Games (Transylvania Finale)"
+map_id = "yr_soviet_07_head_games"
+briefing = "Yuri has retreated to his ancestral fortress in Transylvania, wielding mind-controlled Allied and Soviet superweapons. Raze his fortress once and for all!"
+carry_over_credits_ratio = 0.0
+loading_screen = "assets/ui/loading_screens/yr_soviet_07.png"
+intro_video = "assets/videos/yr_soviet_07_cutscene.mp4"
+victory_video = "assets/videos/yr_soviet_08_finale_cutscene.mp4"
+radar_video = "assets/videos/radar_pip/yr_soviet_07_pip_01.mp4"
+
+# ------------------------------------------------------------------------------
+# 5. BOOTCAMP TACTICAL TRAINING CAMPAIGN (2 MISSIONS)
+# ------------------------------------------------------------------------------
+[[campaigns]]
+id = "bootcamp_campaign"
+display_name = "RA2: Bootcamp Tactical Training (2 Missions)"
+faction = "allies"
+description = "Foundational command, garrison warfare, and base construction training for Allied commanders."
+
+[[campaigns.missions]]
+id = "ra2_bootcamp_01"
+display_name = "Training 01: Basic Command & Control"
+map_id = "ra2_bootcamp_01"
+briefing = "Basic Training Day 1: Learn unit command, urban garrison combat, and establishing your first forward supply base."
+next_mission_id = "ra2_bootcamp_02"
+carry_over_credits_ratio = 0.50
+carry_over_max_veteran_units = 4
+loading_screen = "assets/ui/loading_screens/ra2_bootcamp_01.png"
+intro_video = "assets/videos/ra2_opening_intro.mp4"
+
+[[campaigns.missions]]
+id = "ra2_bootcamp_02"
+display_name = "Training 02: Base Defense & Counterattack"
+map_id = "ra2_bootcamp_02"
+briefing = "Basic Training Day 2: Defend your outpost against a simulated Soviet assault and lead the armored counterattack with Grizzly Battle Tanks."
+carry_over_credits_ratio = 0.0
+loading_screen = "assets/ui/loading_screens/ra2_bootcamp_02.png"
+intro_video = "assets/videos/allied_01_cutscene.mp4"

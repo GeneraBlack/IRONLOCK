@@ -1,0 +1,73 @@
+{
+  "common": {
+    "required": "Pflichtfeld",
+    "work_in_progress": "In Bearbeitung",
+    "processing": "Wird verarbeitet..."
+  },
+  "status": {
+    "title": "Status",
+    "webapp": "IRONLOCK // RUST-RTS Webportal",
+    "app_instance": "Applikationsinstanz",
+    "services": "Dienst | Dienste",
+    "app_images": "Container-Image | Container-Images",
+    "app_volumes": "Container-Volume | Container-Volumes",
+    "installation_node": "Installations-Node",
+    "node": "Node",
+    "name": "Name",
+    "size": "Größe",
+    "created": "Erstellt",
+    "mount": "Mount-Pfad",
+    "no_services": "Keine Systemd-Dienste vorhanden",
+    "no_images": "Keine Container-Images vorhanden",
+    "no_volumes": "Keine Container-Volumes vorhanden",
+    "not_configured": "Noch nicht konfiguriert",
+    "open_webapp": "Portal & Lobby-Register öffnen",
+    "configure": "Konfigurieren"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "configure_instance": "Konfiguriere {instance}",
+    "save": "Speichern",
+    "host": " Vollqualifizierter Domainname (FQDN)",
+    "lets_encrypt": "Let's Encrypt Zertifikat anfordern",
+    "http2https": "HTTP automatisch auf HTTPS umleiten",
+    "enabled": "Aktiviert",
+    "disabled": "Deaktiviert",
+    "advanced": "Erweiterte Einstellungen",
+    "ttl_secs": "Lobby-Heartbeat-TTL (Sekunden)",
+    "node_id": "BLS-ISP Node-Kennung",
+    "relay_port_start": "Reverse-TCP NAT-Relay Start-Port",
+    "relay_port_end": "Reverse-TCP NAT-Relay End-Port"
+  },
+  "about": {
+    "title": "Info"
+  },
+  "task": {
+    "cannot_create_task": "Task {action} konnte nicht erstellt werden"
+  },
+  "action": {
+    "get-status": "Status abrufen",
+    "get-configuration": "Konfiguration abrufen",
+    "configure-module": "Modul konfigurieren",
+    "get-module-info": "Modul-Info abrufen",
+    "get-name": "Name abrufen",
+    "list-backup-repositories": "Backup-Repositorys abrufen",
+    "list-backups": "Backups abrufen",
+    "list-installed-modules": "Installierte Module abrufen"
+  },
+  "error": {
+    "error": "Fehler",
+    "generic_error": "Ein unerwarteter Fehler ist aufgetreten",
+    "validation_error": "Validierungsfehler",
+    "network_error": "Netzwerkfehler",
+    "network_timeout": "Zeitüberschreitung",
+    "401": "Ungültige Authentifizierung",
+    "403": "Vorgang nicht autorisiert",
+    "404": "Ressource nicht gefunden",
+    "cannot_retrieve_module_info": "Modul-Informationen konnten nicht geladen werden",
+    "cannot_retrieve_installed_modules": "Installierte Module konnten nicht abgerufen werden",
+    "cannot_retrieve_configuration": "Konfiguration konnte nicht geladen werden",
+    "domain_already_used_in_traefik": "Diese Domain wird bereits von einer anderen Route in Traefik verwendet",
+    "relay_port_range_invalid": "Der End-Port muss größer oder gleich dem Start-Port sein"
+  }
+}

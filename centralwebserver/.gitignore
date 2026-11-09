@@ -1,0 +1,11 @@
+node_modules/
+dist/
+ui/node_modules/
+ui/dist/
+data/
+__pycache__/
+*.pyc
+build.env
+*.log
+.DS_Store
+Thumbs.db

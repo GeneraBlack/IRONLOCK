@@ -1,0 +1,98 @@
+# ==============================================================================
+# GitLab CI/CD Pipeline — IRONLOCK // RUST-RTS (rust-rts.bls-isp.net)
+# Repository : ssh://git@git.bls-isp.net:20023/genera/rust-rts-webserver.git
+# Registry   : reg.bls-isp.net/genera/rust-rts-webserver
+#
+# Strikte SemVer-Versionierung (kein latest-Tag erlaubt!):
+#   - Bei Git-Tag (z. B. 1.2.0 oder v1.2.0): nutzt exakt diese SemVer-Version
+#   - Bei Push auf main: berechnet automatisch MAJOR.MINOR.<CI_PIPELINE_IID>
+#     aus der Datei VERSION (z. B. 1.0.5, 1.0.6, ...), sodass NethServer 8
+#     jedes Release als sauberes SemVer-Update über das NS8 UI erkennt.
+# ==============================================================================
+
+stages:
+  - validate
+  - release
+
+# ------------------------------------------------------------------------------
+# 1. NethServer 8 Imageroot, JSON-Schema & SemVer Validierung
+# ------------------------------------------------------------------------------
+validate-ns8-imageroot:
+  stage: validate
+  image: docker.io/library/python:3.11-alpine3.19
+  script:
+    - python3 scripts/validate_ns8_module.py
+
+# ------------------------------------------------------------------------------
+# 2. Build, Integrationstests, NS8 Cockpit-UI & SemVer OCI Push -> reg.bls-isp.net
+# ------------------------------------------------------------------------------
+build-test-and-publish:
+  stage: release
+  image: docker.io/library/node:22.14.0-alpine3.21
+  needs:
+    - validate-ns8-imageroot
+  script:
+    - |
+      set -e
+      apk add --no-cache python3
+
+      BASE_VER="$(tr -d '[:space:]' < VERSION)"
+      MAJOR_MINOR="$(echo "${BASE_VER}" | cut -d. -f1-2)"
+      if [ -n "${CI_COMMIT_TAG}" ]; then
+        RELEASE_VERSION="${CI_COMMIT_TAG#v}"
+      elif [ -n "${CI_PIPELINE_IID}" ]; then
+        RELEASE_VERSION="${MAJOR_MINOR}.${CI_PIPELINE_IID}"
+      else
+        RELEASE_VERSION="${BASE_VER}"
+      fi
+
+      TARGET_REGISTRY="${CI_REGISTRY:-reg.bls-isp.net}"
+      PROJECT_PATH="${CI_PROJECT_PATH:-genera/rust-rts-webserver}"
+      REGISTRY_BASE="$(echo "${TARGET_REGISTRY}/${PROJECT_PATH}" | tr '[:upper:]' '[:lower:]')"
+      SERVER_IMAGE="${REGISTRY_BASE}/rust-rts-server:${RELEASE_VERSION}"
+      MODULE_IMAGE="${REGISTRY_BASE}/rust-rts:${RELEASE_VERSION}"
+
+      echo "=================================================================="
+      echo "  SemVer Release-Version : ${RELEASE_VERSION}"
+      echo "  NS8 Modul-Image        : ${MODULE_IMAGE}"
+      echo "  App Server-Image       : ${SERVER_IMAGE}"
+      echo "=================================================================="
+
+      python3 scripts/generate_repodata.py \
+        --version "${RELEASE_VERSION}" \
+        --source "${REGISTRY_BASE}/rust-rts" \
+        --server-image "${SERVER_IMAGE}"
+
+      python3 scripts/validate_ns8_module.py
+
+      echo "=================================================================="
+      echo "  [1/3] Baue & teste Central Webserver + Lobby Registry + NAT Relay"
+      echo "=================================================================="
+      npm ci --prefer-offline --no-audit
+      npm run build
+      npm test
+
+      echo "=================================================================="
+      echo "  [2/3] Baue NethServer 8 Cockpit UI (Vue 2 + Carbon)"
+      echo "=================================================================="
+      (
+        cd ui
+        export NODE_OPTIONS="--openssl-legacy-provider"
+        npm install --legacy-peer-deps --prefer-offline --no-audit
+        npm run build
+        test -f dist/index.html
+        test -f dist/metadata.json
+      )
+
+      echo "=================================================================="
+      echo "  [3/3] Assembliere & veröffentliche SemVer OCI-Images (${RELEASE_VERSION})"
+      echo "=================================================================="
+      python3 scripts/build_and_push_oci.py \
+        --version "${RELEASE_VERSION}" \
+        --registry "${TARGET_REGISTRY}" \
+        --project-path "${PROJECT_PATH}"
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_COMMIT_TAG
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_PIPELINE_SOURCE == "web"

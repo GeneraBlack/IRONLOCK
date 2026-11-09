@@ -1,0 +1,117 @@
+[weapon_sfx]
+m60_mg = "assets/audio/sfx/gi_machinegun.wav"
+heavy_para_mg = "assets/audio/sfx/gi_machinegun.wav"
+ppsh_rifle = "assets/audio/sfx/conscript_rifle.wav"
+cannon_105mm = "assets/audio/sfx/grizzly_cannon.wav"
+cannon_120mm = "assets/audio/sfx/rhino_cannon.wav"
+vulcan_turret_gun = "assets/audio/sfx/pillbox_mg_fire.wav"
+tesla_bolt = "assets/audio/sfx/tesla_coil_zap.wav"
+prism_beam = "assets/audio/sfx/prism_tank_beam.wav"
+apocalypse_twin_120mm = "assets/audio/sfx/apocalypse_cannon.wav"
+
+[eva_cues]
+battle_control_online = "assets/audio/eva/allied_battle_control_online.wav"
+construction_complete = "assets/audio/eva/allied_construction_complete.wav"
+unit_ready = "assets/audio/eva/allied_unit_ready.wav"
+unit_lost = "assets/audio/eva/allied_unit_lost.wav"
+unit_promoted = "assets/audio/eva/allied_unit_promoted.wav"
+base_under_attack = "assets/audio/eva/allied_base_under_attack.wav"
+insufficient_funds = "assets/audio/eva/allied_insufficient_funds.wav"
+low_power = "assets/audio/eva/allied_low_power.wav"
+mission_accomplished = "assets/audio/eva/allied_mission_accomplished.wav"
+mission_failed = "assets/audio/eva/allied_mission_failed.wav"
+
+[unit_voices.allied_gi]
+select = ["assets/audio/sfx/gi_select.wav"]
+move_order = ["assets/audio/sfx/gi_move.wav"]
+attack_order = ["assets/audio/sfx/gi_attack.wav"]
+
+[unit_voices.grizzly_tank]
+select = ["assets/audio/sfx/grizzly_attack.wav"]
+move_order = ["assets/audio/sfx/grizzly_attack.wav"]
+attack_order = ["assets/audio/sfx/grizzly_attack.wav"]
+
+[unit_voices.prism_tank]
+select = ["assets/audio/sfx/prism_tank_select.wav"]
+move_order = ["assets/audio/sfx/prism_tank_move.wav"]
+attack_order = ["assets/audio/sfx/prism_tank_attack.wav"]
+
+[unit_voices.mirage_tank]
+select = ["assets/audio/sfx/mirage_tank_select.wav"]
+move_order = ["assets/audio/sfx/mirage_tank_move.wav"]
+attack_order = ["assets/audio/sfx/mirage_tank_attack.wav"]
+
+[unit_voices.tanya]
+select = ["assets/audio/sfx/tanya_select.wav"]
+move_order = ["assets/audio/sfx/tanya_select.wav"]
+attack_order = ["assets/audio/sfx/tanya_attack.wav"]
+
+[unit_voices.chrono_miner]
+select = ["assets/audio/sfx/chrono_miner_select.wav"]
+move_order = ["assets/audio/sfx/chrono_miner_teleport.wav"]
+
+[unit_voices.soviet_conscript]
+select = ["assets/audio/sfx/conscript_select.wav"]
+move_order = ["assets/audio/sfx/conscript_move.wav"]
+attack_order = ["assets/audio/sfx/conscript_attack.wav"]
+
+[unit_voices.rhino_tank]
+select = ["assets/audio/sfx/rhino_attack.wav"]
+move_order = ["assets/audio/sfx/rhino_attack.wav"]
+attack_order = ["assets/audio/sfx/rhino_attack.wav"]
+
+[unit_voices.apocalypse_tank]
+select = ["assets/audio/sfx/apocalypse_select.wav"]
+move_order = ["assets/audio/sfx/apocalypse_select.wav"]
+attack_order = ["assets/audio/sfx/apocalypse_attack.wav"]
+
+[unit_voices.kirov_airship]
+select = ["assets/audio/sfx/kirov_reporting.wav"]
+move_order = ["assets/audio/sfx/kirov_move.wav"]
+attack_order = ["assets/audio/sfx/kirov_bomb_drop.wav"]
+
+[unit_voices.boris]
+select = ["assets/audio/sfx/boris_select.wav"]
+move_order = ["assets/audio/sfx/boris_move.wav"]
+attack_order = ["assets/audio/sfx/boris_attack.wav"]
+
+[unit_voices.war_miner]
+select = ["assets/audio/sfx/war_miner_select.wav"]
+
+[unit_voices.yuri_clone]
+select = ["assets/audio/sfx/yuri_clone_select.wav"]
+attack_order = ["assets/audio/sfx/yuri_clone_attack.wav"]
+
+[unit_voices.yuri_prime]
+select = ["assets/audio/sfx/yuri_prime_select.wav"]
+move_order = ["assets/audio/sfx/yuri_prime_move.wav"]
+attack_order = ["assets/audio/sfx/yuri_prime_attack.wav"]
+
+[unit_voices.gattling_tank]
+select = ["assets/audio/sfx/gatling_tank_select.wav"]
+
+[unit_voices.magnetron]
+select = ["assets/audio/sfx/magnetron_select.wav"]
+attack_order = ["assets/audio/sfx/magnetron_attack.wav"]
+
+[unit_voices.floating_disc]
+select = ["assets/audio/sfx/floating_disc_select.wav"]
+attack_order = ["assets/audio/sfx/floating_disc_attack.wav"]
+
+[[music_tracks]]
+id = "hell_march_2"
+display_name = "Hell March 2"
+path = "assets/audio/music/hell_march_2.wav"
+factions = ["allies", "soviets", "yuri"]
+
+[[music_tracks]]
+id = "grinder"
+display_name = "Grinder"
+path = "assets/audio/music/grinder.wav"
+factions = ["allies", "soviets"]
+
+[[music_tracks]]
+id = "brain_freeze"
+display_name = "Brain Freeze"
+path = "assets/audio/music/brain_freeze.wav"
+factions = ["yuri"]

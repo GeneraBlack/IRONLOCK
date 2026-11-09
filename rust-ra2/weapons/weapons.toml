@@ -1,0 +1,720 @@
+[[weapons]]
+id = "m60_mg"
+name = "M60 Machine Gun"
+damage = 18.0
+range = 11.0
+cooldown_secs = 0.8
+projectile_speed = 40.0
+armor_multipliers = { none = 1.4, light = 1.2, medium = 0.7, heavy = 0.35, structure = 0.4 }
+
+[[weapons]]
+id = "heavy_para_mg"
+name = "Sandbag Heavy Para Machine Gun"
+damage = 16.0
+range = 14.0
+cooldown_secs = 0.65
+burst = 2
+projectile_speed = 44.0
+armor_multipliers = { none = 1.5, light = 1.35, medium = 0.85, heavy = 0.45, structure = 0.5 }
+
+[[weapons]]
+id = "ppsh_rifle"
+name = "Conscript Assault Rifle"
+damage = 15.0
+range = 9.5
+cooldown_secs = 0.85
+projectile_speed = 38.0
+armor_multipliers = { none = 1.3, light = 1.1, medium = 0.65, heavy = 0.3, structure = 0.4 }
+
+[[weapons]]
+id = "cannon_105mm"
+name = "105mm Grizzly Cannon"
+damage = 65.0
+range = 15.0
+cooldown_secs = 1.9
+projectile_speed = 34.0
+armor_multipliers = { none = 0.6, light = 0.8, medium = 1.1, heavy = 1.25, structure = 0.9 }
+
+[[weapons]]
+id = "cannon_120mm"
+name = "120mm Rhino Heavy Cannon"
+damage = 90.0
+range = 15.5
+cooldown_secs = 2.2
+projectile_speed = 32.0
+armor_multipliers = { none = 0.65, light = 0.85, medium = 1.15, heavy = 1.3, structure = 1.0 }
+
+[[weapons]]
+id = "vulcan_turret_gun"
+name = "Pillbox Vulcan Repeater"
+damage = 28.0
+range = 14.0
+cooldown_secs = 0.65
+projectile_speed = 45.0
+armor_multipliers = { none = 1.5, light = 1.3, medium = 0.8, heavy = 0.5, structure = 0.4 }
+
+[[weapons]]
+id = "tesla_bolt"
+name = "High-Voltage Tesla Arc"
+damage = 135.0
+range = 17.0
+cooldown_secs = 2.6
+projectile_speed = 60.0
+projectile_style = "tesla"
+on_hit_status = { id = "emp_disable", duration_secs = 2.0, stunned = true, immobilized = true, disarmed = true, power_charge_boost = true }
+armor_multipliers = { none = 1.4, light = 1.3, medium = 1.25, heavy = 1.25, structure = 1.1 }
+
+[[weapons]]
+id = "prism_beam"
+name = "Focused Prism Laser Beam"
+damage = 110.0
+range = 20.0
+cooldown_secs = 2.4
+projectile_speed = 80.0
+projectile_style = "laser"
+splash_radius = 1.8
+refraction_targets = 3
+refraction_damage_ratio = 0.50
+refraction_range = 6.5
+armor_multipliers = { none = 1.6, light = 1.35, medium = 1.1, heavy = 0.95, structure = 1.5 }
+
+[[weapons]]
+id = "apocalypse_twin_120mm"
+name = "Twin 120mm Mammoth Cannons"
+damage = 145.0
+range = 16.5
+cooldown_secs = 2.5
+projectile_speed = 34.0
+burst = 2
+armor_multipliers = { none = 0.85, light = 1.0, medium = 1.25, heavy = 1.45, structure = 1.25 }
+
+[[weapons]]
+id = "guardian_missile"
+name = "Guardian Anti-Tank / Anti-Air Missile"
+damage = 42.0
+range = 15.5
+cooldown_secs = 1.5
+projectile_speed = 36.0
+targets_ground = true
+targets_air = true
+projectile_style = "missile"
+armor_multipliers = { none = 0.45, light = 0.9, medium = 1.25, heavy = 1.35, structure = 0.85 }
+
+[[weapons]]
+id = "rocketeer_20mm"
+name = "20mm Aerial Chaingun"
+damage = 26.0
+range = 13.5
+cooldown_secs = 0.85
+projectile_speed = 44.0
+targets_ground = true
+targets_air = true
+armor_multipliers = { none = 1.3, light = 1.15, medium = 0.9, heavy = 0.65, structure = 0.6 }
+
+[[weapons]]
+id = "mp5_seal_c4"
+name = "Navy SEAL MP5 & C4 Charge"
+damage = 68.0
+range = 11.5
+cooldown_secs = 0.75
+projectile_speed = 46.0
+c4_demolition = true
+armor_multipliers = { none = 1.9, light = 1.5, medium = 0.8, heavy = 0.6, structure = 1.8 }
+
+[[weapons]]
+id = "tanya_colts"
+name = "Dual Colt .45 & C4 Demolition"
+damage = 85.0
+range = 12.5
+cooldown_secs = 0.65
+projectile_speed = 48.0
+burst = 2
+c4_demolition = true
+armor_multipliers = { none = 2.0, light = 1.6, medium = 0.9, heavy = 0.7, structure = 2.2 }
+
+[[weapons]]
+id = "awp_sniper_rifle"
+name = "British Long-Range Sniper Rifle"
+damage = 130.0
+range = 22.0
+cooldown_secs = 2.6
+projectile_speed = 70.0
+armor_multipliers = { none = 2.0, light = 1.7, medium = 0.25, heavy = 0.1, structure = 0.1 }
+
+[[weapons]]
+id = "neutron_eraser"
+name = "Chrono Neutron Temporal Eraser"
+damage = 95.0
+range = 13.0
+cooldown_secs = 1.4
+projectile_speed = 75.0
+projectile_style = "laser"
+warp_erase = true
+temporal_erase_dps = 65.0
+armor_multipliers = { none = 1.6, light = 1.4, medium = 1.3, heavy = 1.3, structure = 1.1 }
+
+[[weapons]]
+id = "dog_bite"
+name = "Trained Attack Dog Jaws"
+damage = 110.0
+range = 3.2
+cooldown_secs = 0.9
+projectile_speed = 35.0
+armor_multipliers = { none = 2.0, light = 1.4, medium = 0.1, heavy = 0.05, structure = 0.05 }
+
+[[weapons]]
+id = "mirage_spectrum_cannon"
+name = "Mirage Thermal Spectrum Cannon"
+damage = 105.0
+range = 16.0
+cooldown_secs = 2.0
+projectile_speed = 65.0
+projectile_style = "laser"
+armor_multipliers = { none = 1.7, light = 1.5, medium = 1.25, heavy = 1.3, structure = 0.75 }
+
+[[weapons]]
+id = "hover_missile"
+name = "Multigunner IFV Hover Missile"
+damage = 38.0
+range = 16.5
+cooldown_secs = 1.1
+projectile_speed = 42.0
+targets_ground = true
+targets_air = true
+projectile_style = "missile"
+burst = 2
+armor_multipliers = { none = 0.9, light = 1.15, medium = 1.1, heavy = 0.95, structure = 0.75 }
+
+[[weapons]]
+id = "robot_laser_gun"
+name = "Robot Tank Proton Cannon"
+damage = 68.0
+range = 14.5
+cooldown_secs = 1.7
+projectile_speed = 55.0
+projectile_style = "laser"
+armor_multipliers = { none = 0.85, light = 1.1, medium = 1.2, heavy = 1.25, structure = 0.9 }
+
+[[weapons]]
+id = "fortress_gatling"
+name = "Battle Fortress 20mm Heavy Cannon"
+damage = 55.0
+range = 15.0
+cooldown_secs = 1.0
+projectile_speed = 45.0
+armor_multipliers = { none = 1.5, light = 1.3, medium = 1.1, heavy = 0.95, structure = 1.0 }
+
+[[weapons]]
+id = "pak_88mm_gun"
+name = "German 88mm Anti-Armor Cannon"
+damage = 120.0
+range = 16.0
+cooldown_secs = 2.2
+projectile_speed = 46.0
+armor_multipliers = { none = 0.35, light = 0.85, medium = 1.45, heavy = 1.65, structure = 0.65 }
+
+[[weapons]]
+id = "maverick_missile"
+name = "Air-to-Surface Maverick Missile"
+damage = 140.0
+range = 18.0
+cooldown_secs = 2.8
+projectile_speed = 48.0
+projectile_style = "missile"
+splash_radius = 2.4
+armor_multipliers = { none = 1.0, light = 1.1, medium = 1.25, heavy = 1.35, structure = 1.4 }
+
+[[weapons]]
+id = "sea_gun_155mm"
+name = "Naval 155mm Deck Gun & Osprey ASW"
+damage = 82.0
+range = 18.5
+cooldown_secs = 2.0
+projectile_speed = 38.0
+armor_multipliers = { none = 0.85, light = 1.1, medium = 1.2, heavy = 1.25, structure = 1.15 }
+
+[[weapons]]
+id = "medusa_sam"
+name = "Aegis Medusa Anti-Air Missile Pack"
+damage = 75.0
+range = 24.0
+cooldown_secs = 1.1
+projectile_speed = 54.0
+targets_ground = false
+targets_air = true
+projectile_style = "missile"
+burst = 2
+armor_multipliers = { none = 1.2, light = 1.5, medium = 1.4, heavy = 1.3, structure = 0.5 }
+
+[[weapons]]
+id = "hornet_strike"
+name = "Carrier Hornet Strike Wing"
+damage = 155.0
+range = 28.0
+cooldown_secs = 3.4
+projectile_speed = 42.0
+projectile_style = "missile"
+splash_radius = 2.6
+armor_multipliers = { none = 1.0, light = 1.1, medium = 1.25, heavy = 1.35, structure = 1.6 }
+
+[[weapons]]
+id = "sonic_pulse"
+name = "Dolphin Sonic Disruptor Wave"
+damage = 58.0
+range = 13.0
+cooldown_secs = 1.5
+projectile_speed = 50.0
+projectile_style = "sonic"
+splash_radius = 1.6
+clears_grapple = true
+armor_multipliers = { none = 1.1, light = 1.2, medium = 1.25, heavy = 1.3, structure = 1.25 }
+
+[[weapons]]
+id = "prism_tower_beam"
+name = "Prism Tower High-Energy Beam"
+damage = 130.0
+range = 19.0
+cooldown_secs = 2.3
+projectile_speed = 85.0
+projectile_style = "laser"
+on_hit_status = { id = "power_charge", duration_secs = 6.0, power_charge_boost = true }
+prism_support = true
+refraction_targets = 2
+refraction_damage_ratio = 0.45
+refraction_range = 6.0
+armor_multipliers = { none = 1.6, light = 1.4, medium = 1.2, heavy = 1.1, structure = 1.3 }
+
+[[weapons]]
+id = "patriot_sam"
+name = "Patriot Surface-to-Air Missile"
+damage = 70.0
+range = 22.0
+cooldown_secs = 1.4
+projectile_speed = 52.0
+delivery = "missile"
+targets_ground = false
+targets_air = true
+projectile_style = "missile"
+armor_multipliers = { none = 1.2, light = 1.45, medium = 1.35, heavy = 1.25, structure = 0.5 }
+
+[[weapons]]
+id = "grand_cannon_155mm"
+name = "French Grand Cannon 155mm Battery"
+damage = 165.0
+range = 25.0
+min_range = 6.0
+cooldown_secs = 3.2
+projectile_speed = 36.0
+delivery = "ballistic"
+arc_height = 5.5
+splash_radius = 3.0
+armor_multipliers = { none = 1.2, light = 1.25, medium = 1.35, heavy = 1.4, structure = 1.45 }
+
+[[weapons]]
+id = "flak_scattergun"
+name = "Soviet Flak Shrapnel Scattergun"
+damage = 28.0
+range = 11.5
+cooldown_secs = 1.0
+projectile_speed = 40.0
+armor_multipliers = { none = 1.35, light = 1.15, medium = 0.8, heavy = 0.55, structure = 0.5 }
+
+[[weapons]]
+id = "flak_aa_gun"
+name = "Soviet Flak Anti-Air Battery"
+damage = 52.0
+range = 20.0
+cooldown_secs = 1.1
+projectile_speed = 52.0
+targets_ground = false
+targets_air = true
+splash_radius = 1.8
+armor_multipliers = { none = 1.3, light = 1.45, medium = 1.3, heavy = 1.15, structure = 0.4 }
+
+[[weapons]]
+id = "portable_tesla_bolt"
+name = "Tesla Trooper Portable Arc"
+damage = 65.0
+range = 11.0
+cooldown_secs = 1.6
+projectile_speed = 58.0
+projectile_style = "tesla"
+on_hit_status = { id = "emp_disable", duration_secs = 1.5, stunned = true, immobilized = true, disarmed = true, power_charge_boost = true }
+armor_multipliers = { none = 1.45, light = 1.3, medium = 1.2, heavy = 1.25, structure = 1.0 }
+
+[[weapons]]
+id = "rad_beam"
+name = "Iraqi Rad-Cannon Beam"
+damage = 92.0
+range = 14.5
+cooldown_secs = 2.1
+projectile_speed = 65.0
+projectile_style = "radiation"
+on_hit_zone = { radius = 3.0, dps = 18.0, duration_secs = 6.0 }
+clears_garrison = true
+splash_radius = 2.6
+armor_multipliers = { none = 1.8, light = 1.5, medium = 1.1, heavy = 0.9, structure = 0.7 }
+
+[[weapons]]
+id = "ivan_dynamite"
+name = "Crazy Ivan Dynamite Charge"
+damage = 150.0
+range = 7.5
+cooldown_secs = 2.2
+projectile_speed = 28.0
+splash_radius = 3.0
+c4_demolition = true
+on_hit_status = { id = "c4_bomb", duration_secs = 4.0, delayed_burst_damage = 380.0, delayed_burst_splash = 3.0 }
+armor_multipliers = { none = 1.6, light = 1.4, medium = 1.25, heavy = 1.2, structure = 1.6 }
+
+[[weapons]]
+id = "akm_hero_rifle"
+name = "Boris Hero AKM & MiG Laser Strike"
+damage = 95.0
+range = 15.5
+cooldown_secs = 0.95
+projectile_speed = 46.0
+burst = 2
+armor_multipliers = { none = 1.8, light = 1.5, medium = 1.25, heavy = 1.2, structure = 1.75 }
+
+[[weapons]]
+id = "drone_claws"
+name = "Terror Drone Ripping Jaws"
+damage = 62.0
+range = 4.0
+cooldown_secs = 0.85
+projectile_speed = 40.0
+on_hit_status = { id = "parasite", duration_secs = 3600.0, dot_dps = 38.0, on_kill_spawn_unit = "terror_drone", cure_at_service_depot = true }
+armor_multipliers = { none = 1.3, light = 1.25, medium = 1.4, heavy = 1.45, structure = 0.5 }
+
+[[weapons]]
+id = "v3_ballistic_rocket"
+name = "V3 Ballistic Siege Rocket"
+damage = 180.0
+range = 27.0
+min_range = 5.0
+cooldown_secs = 4.2
+projectile_speed = 16.0
+delivery = "missile"
+arc_height = 5.5
+projectile_style = "missile"
+interceptable_by_aa_health = 90.0
+splash_radius = 3.6
+armor_multipliers = { none = 1.2, light = 1.2, medium = 1.25, heavy = 1.3, structure = 1.75 }
+
+[[weapons]]
+id = "nuclear_demolition"
+name = "Libyan Tactical Demolition Warhead"
+damage = 280.0
+range = 4.5
+cooldown_secs = 4.5
+projectile_speed = 32.0
+projectile_style = "radiation"
+on_hit_zone = { radius = 4.8, dps = 18.0, duration_secs = 6.0 }
+kamikaze = true
+splash_radius = 4.8
+armor_multipliers = { none = 1.8, light = 1.6, medium = 1.4, heavy = 1.35, structure = 1.8 }
+
+[[weapons]]
+id = "blimp_heavy_bomb"
+name = "Kirov 500kg Heavy Bomb Bay"
+damage = 210.0
+range = 10.5
+cooldown_secs = 2.8
+projectile_speed = 26.0
+splash_radius = 3.5
+armor_multipliers = { none = 1.3, light = 1.3, medium = 1.4, heavy = 1.45, structure = 1.7 }
+
+[[weapons]]
+id = "chopper_nose_gun"
+name = "Siege Chopper 23mm Nose Autocannon"
+damage = 42.0
+range = 13.5
+cooldown_secs = 0.85
+projectile_speed = 46.0
+armor_multipliers = { none = 1.4, light = 1.25, medium = 0.95, heavy = 0.75, structure = 0.65 }
+
+[[weapons]]
+id = "chopper_130mm"
+name = "Siege Chopper 130mm Artillery & Gun"
+damage = 135.0
+range = 24.0
+cooldown_secs = 2.2
+projectile_speed = 38.0
+delivery = "ballistic"
+arc_height = 5.0
+splash_radius = 3.2
+armor_multipliers = { none = 1.25, light = 1.25, medium = 1.3, heavy = 1.35, structure = 1.45 }
+
+[[weapons]]
+id = "torpedo_tube"
+name = "Typhoon Acoustic Torpedo"
+damage = 98.0
+range = 17.0
+cooldown_secs = 2.2
+projectile_speed = 34.0
+projectile_style = "missile"
+naval_only = true
+clears_grapple = true
+armor_multipliers = { none = 0.6, light = 1.1, medium = 1.3, heavy = 1.4, structure = 1.25 }
+
+[[weapons]]
+id = "dreadnought_missile"
+name = "Dreadnought Dual Cruise Missile"
+damage = 195.0
+range = 29.0
+min_range = 6.0
+cooldown_secs = 4.0
+projectile_speed = 18.0
+delivery = "missile"
+arc_height = 5.0
+projectile_style = "missile"
+interceptable_by_aa_health = 120.0
+burst = 2
+splash_radius = 3.8
+armor_multipliers = { none = 1.2, light = 1.25, medium = 1.3, heavy = 1.35, structure = 1.8 }
+
+[[weapons]]
+id = "squid_tentacle"
+name = "Giant Squid Crushing Tentacles"
+damage = 92.0
+range = 5.0
+cooldown_secs = 1.4
+projectile_speed = 36.0
+on_hit_status = { id = "grappled", duration_secs = 6.0, dot_dps = 65.0, immobilized = true }
+on_hit_statuses = [{ id = "parasite", duration_secs = 3600.0, dot_dps = 42.0, cure_at_service_depot = true }]
+armor_multipliers = { none = 1.0, light = 1.2, medium = 1.4, heavy = 1.5, structure = 1.2 }
+
+[[weapons]]
+id = "pyrokinesis_bolt"
+name = "Yuri Initiate Pyrokinesis Bolt"
+damage = 28.0
+range = 12.0
+cooldown_secs = 0.9
+projectile_speed = 48.0
+projectile_style = "laser"
+armor_multipliers = { none = 1.5, light = 1.25, medium = 0.85, heavy = 0.55, structure = 0.7 }
+
+[[weapons]]
+id = "brute_smash"
+name = "Genetic Brute Seismic Smash"
+damage = 95.0
+range = 4.2
+cooldown_secs = 1.1
+projectile_speed = 36.0
+armor_multipliers = { none = 1.5, light = 1.4, medium = 1.45, heavy = 1.5, structure = 1.4 }
+
+[[weapons]]
+id = "toxin_dart_rifle"
+name = "Virus Toxin Sniper Rifle"
+damage = 115.0
+range = 21.0
+cooldown_secs = 2.4
+projectile_speed = 68.0
+projectile_style = "radiation"
+on_hit_zone = { radius = 3.0, dps = 24.0, duration_secs = 6.0, is_toxic_cloud = true }
+splash_radius = 1.8
+armor_multipliers = { none = 2.0, light = 1.75, medium = 0.35, heavy = 0.15, structure = 0.15 }
+
+[[weapons]]
+id = "psi_mind_control"
+name = "Yuri Psychic Mind Control Wave"
+damage = 15.0
+range = 14.0
+cooldown_secs = 2.5
+projectile_speed = 65.0
+projectile_style = "mind_control"
+mind_control = true
+armor_multipliers = { none = 1.0, light = 1.0, medium = 1.0, heavy = 1.0, structure = 0.1 }
+
+[[weapons]]
+id = "psi_prime_control"
+name = "Yuri Prime Long-Range Mind Control"
+damage = 25.0
+range = 21.0
+cooldown_secs = 2.2
+projectile_speed = 70.0
+projectile_style = "mind_control"
+mind_control = true
+can_mind_control_buildings = true
+armor_multipliers = { none = 1.2, light = 1.2, medium = 1.2, heavy = 1.2, structure = 0.5 }
+
+[[weapons]]
+id = "gatling_aa_cannon"
+name = "Yuri Dual Gattling Cannon"
+damage = 34.0
+range = 16.5
+cooldown_secs = 0.65
+projectile_speed = 50.0
+targets_ground = true
+targets_air = true
+burst = 2
+spin_up_per_shot = 0.45
+max_spin_up_multiplier = 2.8
+armor_multipliers = { none = 1.55, light = 1.4, medium = 0.95, heavy = 0.65, structure = 0.6 }
+
+[[weapons]]
+id = "chaos_gas_projector"
+name = "Chaos Drone Hallucinogenic Gas"
+damage = 45.0
+range = 11.5
+cooldown_secs = 2.0
+projectile_speed = 38.0
+projectile_style = "radiation"
+on_hit_zone = { radius = 3.0, dps = 18.0, duration_secs = 6.0 }
+on_hit_status = { id = "confused", duration_secs = 8.0, confused = true }
+splash_radius = 2.8
+armor_multipliers = { none = 1.6, light = 1.35, medium = 1.1, heavy = 0.9, structure = 0.4 }
+
+[[weapons]]
+id = "magnetic_levitation_beam"
+name = "Magnetron Telekinetic Levitation Beam"
+damage = 110.0
+range = 21.5
+min_range = 4.0
+cooldown_secs = 2.6
+projectile_speed = 65.0
+projectile_style = "sonic"
+tractor_pull_distance = 3.5
+armor_multipliers = { none = 0.4, light = 1.1, medium = 1.4, heavy = 1.5, structure = 1.45 }
+
+[[weapons]]
+id = "mastermind_psi_wave"
+name = "Mastermind Multi-Target Mind Control"
+damage = 20.0
+range = 16.5
+cooldown_secs = 2.0
+projectile_speed = 68.0
+projectile_style = "mind_control"
+mind_control = true
+armor_multipliers = { none = 1.0, light = 1.0, medium = 1.0, heavy = 1.0, structure = 0.1 }
+
+[[weapons]]
+id = "saucer_laser_beam"
+name = "Floating Disc Charged Saucer Beam"
+damage = 105.0
+range = 18.0
+cooldown_secs = 1.9
+projectile_speed = 78.0
+targets_ground = true
+targets_air = true
+projectile_style = "laser"
+disables_building_duration_secs = 6.0
+steals_credits_per_hit = 50
+armor_multipliers = { none = 1.35, light = 1.3, medium = 1.25, heavy = 1.25, structure = 1.35 }
+
+[[weapons]]
+id = "boomer_torpedo_cruise"
+name = "Boomer Torpedo & Cruise Missile"
+damage = 155.0
+range = 24.0
+cooldown_secs = 3.0
+projectile_speed = 18.0
+delivery = "missile"
+arc_height = 4.5
+projectile_style = "missile"
+interceptable_by_aa_health = 110.0
+burst = 2
+splash_radius = 3.2
+armor_multipliers = { none = 1.1, light = 1.2, medium = 1.3, heavy = 1.4, structure = 1.65 }
+
+[[weapons]]
+id = "psychic_tower_mind_beam"
+name = "Psychic Tower Mind Control Beam"
+damage = 25.0
+range = 16.5
+cooldown_secs = 2.4
+projectile_speed = 70.0
+projectile_style = "mind_control"
+mind_control = true
+armor_multipliers = { none = 1.0, light = 1.0, medium = 1.0, heavy = 1.0, structure = 0.1 }
+
+[[weapons]]
+id = "boris_laser_flare"
+name = "Boris MiG Laser Target Designator"
+damage = 25.0
+range = 20.0
+cooldown_secs = 3.5
+projectile_speed = 90.0
+projectile_style = "laser"
+calls_airstrike_damage = 850.0
+airstrike_delay_secs = 2.0
+armor_multipliers = { none = 0.2, light = 0.2, medium = 0.2, heavy = 0.2, structure = 2.0 }
+
+[[weapons]]
+id = "elite_tesla_bolt"
+name = "Overcharged Crimson Tesla Arc"
+damage = 175.0
+range = 19.0
+cooldown_secs = 2.1
+projectile_speed = 68.0
+projectile_style = "tesla"
+on_hit_status = { id = "emp_disable", duration_secs = 2.5, stunned = true, immobilized = true, disarmed = true, power_charge_boost = true }
+splash_radius = 2.2
+armor_multipliers = { none = 1.6, light = 1.45, medium = 1.35, heavy = 1.35, structure = 1.25 }
+
+[[weapons]]
+id = "elite_apocalypse_120mm"
+name = "Elite Twin High-Explosive 120mm Cannons"
+damage = 185.0
+range = 18.5
+cooldown_secs = 2.1
+projectile_speed = 38.0
+burst = 2
+splash_radius = 2.4
+armor_multipliers = { none = 1.1, light = 1.2, medium = 1.35, heavy = 1.55, structure = 1.4 }
+
+[[weapons]]
+id = "elite_prism_beam"
+name = "Elite Refracting Spectrum Prism Beam"
+damage = 150.0
+range = 22.0
+cooldown_secs = 2.0
+projectile_speed = 85.0
+projectile_style = "laser"
+splash_radius = 2.2
+refraction_targets = 5
+refraction_damage_ratio = 0.65
+refraction_range = 7.5
+armor_multipliers = { none = 1.75, light = 1.5, medium = 1.25, heavy = 1.15, structure = 1.65 }
+
+[[weapons]]
+id = "boomer_torpedo"
+name = "Boomer Heavy Acoustic Torpedo"
+damage = 115.0
+range = 18.0
+cooldown_secs = 2.0
+projectile_speed = 36.0
+projectile_style = "missile"
+naval_only = true
+clears_grapple = true
+armor_multipliers = { none = 0.6, light = 1.15, medium = 1.35, heavy = 1.45, structure = 1.25 }
+
+[[weapons]]
+id = "boomer_cruise_missile"
+name = "Boomer Dual Ballistic Cruise Missile"
+damage = 175.0
+range = 28.0
+min_range = 5.0
+cooldown_secs = 3.2
+projectile_speed = 18.0
+delivery = "missile"
+arc_height = 5.0
+projectile_style = "missile"
+interceptable_by_aa_health = 110.0
+burst = 2
+splash_radius = 3.5
+armor_multipliers = { none = 1.15, light = 1.2, medium = 1.3, heavy = 1.4, structure = 1.75 }
+
+[[weapons]]
+id = "terrorist_bomb"
+name = "Cuban C4 Suicide Vest Detonator"
+damage = 240.0
+range = 3.5
+cooldown_secs = 2.0
+projectile_speed = 60.0
+splash_radius = 3.6
+armor_multipliers = { none = 1.6, light = 1.45, medium = 1.25, heavy = 1.2, structure = 1.65 }
+
+
+
