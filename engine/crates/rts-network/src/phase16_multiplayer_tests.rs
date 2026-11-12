@@ -254,8 +254,17 @@ fn adaptive_jitter_buffer_adjusts_turn_delay_deterministically_across_peers() {
     let mut observed_reduced_delay = false;
     let mut elevated_value = 2u64;
 
-    let target_ticks = 95u64;
-    let deadline = Instant::now() + Duration::from_secs(8);
+    // Seed synthetic LAN samples for both peers at tick 0 so OS scheduling stalls on
+    // shared CI runners cannot inject real-clock jitter before tick 8/48.
+    for pid in [1u8, 2u8] {
+        for i in 0..4u64 {
+            let sent = 100_000 + i * 50_000;
+            server.record_peer_network_sample(pid, Some(4_000), sent + 2_000, sent);
+        }
+    }
+
+    let target_ticks = 140u64;
+    let deadline = Instant::now() + Duration::from_secs(15);
 
     while (world1.tick < target_ticks || world2.tick < target_ticks) && Instant::now() < deadline {
         // At tick 8, simulate high WAN RTT + jitter on Player 2 -> server must scale turn delay UP in 2..=8
@@ -281,7 +290,8 @@ fn adaptive_jitter_buffer_adjusts_turn_delay_deterministically_across_peers() {
             }
             if world1.tick >= 48 && !injected_recovery {
                 injected_recovery = true;
-                for i in 0..24u64 {
+                // Flush the entire 32-sample jitter window and decay EWMA transit delta cleanly.
+                for i in 0..64u64 {
                     let sent = 10_000_000 + i * 50_000;
                     server.record_peer_network_sample(1, Some(4_000), sent + 2_000, sent);
                     server.record_peer_network_sample(2, Some(4_000), sent + 2_000, sent);
