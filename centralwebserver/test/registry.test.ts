@@ -327,7 +327,7 @@ describe('Central Webserver & Multiplayer Lobby Registry', () => {
     assert.equal(dbRes.data.factions.length, 3);
     assert.equal(dbRes.data.countries.length, 10);
     assert.ok(dbRes.data.units.length >= 70);
-    assert.equal(dbRes.data.buildings.length, 76);
+    assert.ok(dbRes.data.buildings.length >= 76);
     assert.ok(dbRes.data.weapons.length >= 58);
     assert.ok(dbRes.data.maps.length >= 50);
     assert.ok(

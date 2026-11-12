@@ -297,7 +297,7 @@ def build_ns8_module_image(
         "config": {
             "Entrypoint": ["/"],
             "Labels": {
-                "org.nethserver.authorizations": "traefik@node:routeadm",
+                "org.nethserver.authorizations": "traefik@node:routeadm node:fwadm",
                 "org.nethserver.tcp-ports-demand": "1",
                 "org.nethserver.rootfull": "0",
                 "org.nethserver.min-core": "3.0.0",
@@ -417,6 +417,12 @@ def build_and_push_server_image(
         app_dir.mtime = 1700000000
         tf.addfile(app_dir)
 
+        data_dir = tarfile.TarInfo(name="app/data")
+        data_dir.type = tarfile.DIRTYPE
+        data_dir.mode = 0o777
+        data_dir.mtime = 1700000000
+        tf.addfile(data_dir)
+
         add_file_to_tar(tf, root / "package.json", "app/package.json", 0o644)
         add_dir_to_tar(tf, root / "dist", "app/dist")
         add_dir_to_tar(tf, root / "public", "app/public")
@@ -442,8 +448,11 @@ def build_and_push_server_image(
         "PUBLIC_HOST": "rust-rts.bls-isp.net",
         "NODE_ID": "ns8-bls-isp-01",
         "TTL_SECS": "45",
+        "DATA_DIR": "/app/data",
         "RELAY_PORT_START": "30100",
         "RELAY_PORT_END": "30139",
+        "RELAY_MUX_PORT": "30139",
+        "UDP_RENDEZVOUS_PORT": "30100",
     }
     filtered_env = [e for e in env_list if e.split("=", 1)[0] not in env_overrides]
     for k, v in env_overrides.items():
@@ -452,7 +461,11 @@ def build_and_push_server_image(
     cfg_section["Env"] = filtered_env
     cfg_section["WorkingDir"] = "/app"
     cfg_section["Cmd"] = ["node", "dist/src/index.js"]
-    cfg_section["ExposedPorts"] = {"8080/tcp": {}}
+    cfg_section["ExposedPorts"] = {
+        "8080/tcp": {},
+        "30100/udp": {},
+        "30139/tcp": {},
+    }
     labels = dict(cfg_section.get("Labels") or {})
     labels["org.opencontainers.image.title"] = "IRONLOCK // RUST-RTS Server"
     labels["org.opencontainers.image.version"] = version

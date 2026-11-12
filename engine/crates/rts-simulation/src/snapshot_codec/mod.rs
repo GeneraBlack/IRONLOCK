@@ -47,15 +47,13 @@ pub(super) const TAG_ENUM_SEQ: u8 = 0x14;
 #[inline]
 fn fnv1a_64(bytes: &[u8]) -> u64 {
     let mut hash: u64 = 0xcbf29ce484222325;
-    let mut chunks = bytes.chunks_exact(8);
-    for chunk in &mut chunks {
-        let word = u64::from_le_bytes([
-            chunk[0], chunk[1], chunk[2], chunk[3], chunk[4], chunk[5], chunk[6], chunk[7],
-        ]);
+    let (chunks, remainder) = bytes.as_chunks::<8>();
+    for &chunk in chunks {
+        let word = u64::from_le_bytes(chunk);
         hash ^= word;
         hash = hash.wrapping_mul(0x100000001b3);
     }
-    for &b in chunks.remainder() {
+    for &b in remainder {
         hash ^= b as u64;
         hash = hash.wrapping_mul(0x100000001b3);
     }
@@ -561,10 +559,8 @@ impl SimWorld {
                     return Err("RTSB01 invalid GridHeightCache length".to_string());
                 }
                 let mut tile_heights = Vec::with_capacity(count.min(65_536));
-                for chunk in trailer[..byte_len].chunks_exact(4) {
-                    tile_heights.push(f32::from_bits(u32::from_le_bytes([
-                        chunk[0], chunk[1], chunk[2], chunk[3],
-                    ])));
+                for &chunk in trailer[..byte_len].as_chunks::<4>().0 {
+                    tile_heights.push(f32::from_bits(u32::from_le_bytes(chunk)));
                 }
                 trailer = &trailer[byte_len..];
                 world.grid.height_cache = GridHeightCache {

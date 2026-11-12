@@ -61,9 +61,9 @@
         "scripts/soviet_rules.lua"
       ],
       "factions_count": 3,
-      "units_count": 70,
-      "buildings_count": 76,
-      "weapons_count": 54,
+      "units_count": 77,
+      "buildings_count": 78,
+      "weapons_count": 63,
       "maps": [
         {
           "id": "mp_01_offense_defense",
@@ -71,19 +71,19 @@
         },
         {
           "id": "mp_02_Last_Resort",
-          "name": "Skirmish: Isle of War (2)"
+          "name": "Skirmish: Isle of War (2-4)"
         },
         {
           "id": "mp_03_blood_feud",
-          "name": "Skirmish: Anytown, Amerika (2-4)"
+          "name": "Skirmish: Anytown, America (2-4)"
         },
         {
           "id": "mp_06_Cold_War",
-          "name": "Skirmish: Urban Rush (2)"
+          "name": "Skirmish: Urban Rush (2-4)"
         },
         {
           "id": "mp_08_cliffhanger",
-          "name": "Skirmish: Little Big Lake (2)"
+          "name": "Skirmish: Little Big Lake (2-4)"
         },
         {
           "id": "mp_10_arctic_circle",
@@ -95,7 +95,7 @@
         },
         {
           "id": "mp_29_urban_rush",
-          "name": "Skirmish: The Alamo (2)"
+          "name": "Skirmish: The Alamo (2-4)"
         },
         {
           "id": "mp_yr_austin_tx",
@@ -103,7 +103,7 @@
         },
         {
           "id": "mp_yr_blood_feud",
-          "name": "Skirmish: Blood Feud (2)"
+          "name": "Skirmish: Blood Feud (2-4)"
         },
         {
           "id": "mp_yr_bridge_the_gap",
@@ -111,111 +111,111 @@
         },
         {
           "id": "mp_yr_two_peaks",
-          "name": "Skirmish: Twin Peaks (2)"
+          "name": "Skirmish: Twin Peaks (2-4)"
         },
         {
           "id": "ra2_allied_01_lone_guardian",
-          "name": "RA2 Allied 01: Lone Guardian (New York)"
+          "name": "Op. 01: Lone Guardian (New York)"
         },
         {
           "id": "ra2_allied_02_eagle_dawn",
-          "name": "RA2 Allied 02: Eagle Dawn (Colorado)"
+          "name": "Op. 02: Eagle Dawn (Colorado Springs)"
         },
         {
           "id": "ra2_allied_03_hail_to_the_chief",
-          "name": "RA2 Allied 03: Hail to the Chief (Washington D.C.)"
+          "name": "Op. 03: Hail to the Chief (Washington D.C.)"
         },
         {
           "id": "ra2_allied_04_last_chance",
-          "name": "RA2 Allied 04: Last Chance (Chicago)"
+          "name": "Op. 04: Last Chance (Chicago)"
         },
         {
           "id": "ra2_allied_05_dark_night",
-          "name": "RA2 Allied 05: Dark Night (Polish Border)"
+          "name": "Op. 05: Dark Night (Polish Border)"
         },
         {
           "id": "ra2_allied_06_liberty",
-          "name": "RA2 Allied 06: Liberty (Pentagon)"
+          "name": "Op. 06: Liberty (Washington D.C. Reclamation)"
         },
         {
           "id": "ra2_allied_07_deep_sea",
-          "name": "RA2 Allied 07: Deep Sea (Pearl Harbor)"
+          "name": "Op. 07: Deep Sea (Pearl Harbor)"
         },
         {
           "id": "ra2_allied_08_free_gateway",
-          "name": "RA2 Allied 08: Free Gateway (St. Louis)"
+          "name": "Op. 08: Free Gateway (St. Louis)"
         },
         {
           "id": "ra2_allied_09_sun_temple",
-          "name": "RA2 Allied 09: Sun Temple (Tulum Mexico)"
+          "name": "Op. 09: Sun Temple (Tulum, Mexico)"
         },
         {
           "id": "ra2_allied_10_mirage",
-          "name": "RA2 Allied 10: Mirage (Black Forest Germany)"
+          "name": "Op. 10: Mirage (Black Forest, Germany)"
         },
         {
           "id": "ra2_allied_11_fallout",
-          "name": "RA2 Allied 11: Fallout (Florida Keys)"
+          "name": "Op. 11: Fallout (Florida Keys)"
         },
         {
           "id": "ra2_allied_12_chrono_storm",
-          "name": "RA2 Allied 12: Chrono Storm (Moscow)"
+          "name": "Op. 12: Chrono Storm (Moscow Finale)"
         },
         {
           "id": "ra2_bootcamp_01",
-          "name": "RA2 Boot Camp 01: Basic Training"
+          "name": "Training 01: Basic Command & Control"
         },
         {
           "id": "ra2_bootcamp_02",
-          "name": "RA2 Boot Camp 02: Base Defense & Counterattack"
+          "name": "Training 02: Base Defense & Counterattack"
         },
         {
           "id": "ra2_soviet_01_red_dawn",
-          "name": "RA2 Soviet 01: Red Dawn (Washington D.C.)"
+          "name": "Op. 01: Red Dawn (Washington D.C.)"
         },
         {
           "id": "ra2_soviet_02_hostile_shore",
-          "name": "RA2 Soviet 02: Hostile Shore (Florida)"
+          "name": "Op. 02: Hostile Shore (Florida)"
         },
         {
           "id": "ra2_soviet_03_big_apple",
-          "name": "RA2 Soviet 03: Big Apple (New York)"
+          "name": "Op. 03: Big Apple (New York)"
         },
         {
           "id": "ra2_soviet_04_home_front",
-          "name": "RA2 Soviet 04: Home Front (Vladivostok)"
+          "name": "Op. 04: Home Front (Vladivostok)"
         },
         {
           "id": "ra2_soviet_05_city_of_lights",
-          "name": "RA2 Soviet 05: City of Lights (Paris)"
+          "name": "Op. 05: City of Lights (Paris)"
         },
         {
           "id": "ra2_soviet_06_sub_divide",
-          "name": "RA2 Soviet 06: Sub-Divide (Pearl Harbor)"
+          "name": "Op. 06: Sub-Divide (Pearl Harbor)"
         },
         {
           "id": "ra2_soviet_07_chrono_defense",
-          "name": "RA2 Soviet 07: Chrono Defense (Ural Mountains)"
+          "name": "Op. 07: Chrono Defense (Ural Mountains)"
         },
         {
           "id": "ra2_soviet_08_desecration",
-          "name": "RA2 Soviet 08: Desecration (Washington D.C.)"
+          "name": "Op. 08: Desecration (Washington D.C.)"
         },
         {
           "id": "ra2_soviet_09_the_fox_and_the_hound",
-          "name": "RA2 Soviet 09: The Fox and the Hound (San Antonio)"
+          "name": "Op. 09: The Fox and the Hound (San Antonio)"
         },
         {
           "id": "ra2_soviet_10_weathered_alliance",
-          "name": "RA2 Soviet 10: Weathered Alliance (U.S. Virgin Islands)"
+          "name": "Op. 10: Weathered Alliance (U.S. Virgin Islands)"
         },
         {
           "id": "ra2_soviet_11_red_revolution",
-          "name": "RA2 Soviet 11: Red Revolution (Moscow)"
+          "name": "Op. 11: Red Revolution (Moscow)"
         },
         {
           "id": "ra2_soviet_12_polar_storm",
-          "name": "RA2 Soviet 12: Polar Storm (Point Hope Alaska)"
+          "name": "Op. 12: Polar Storm (Point Hope, Alaska Finale)"
         },
         {
           "id": "river_crossing",
@@ -227,61 +227,74 @@
         },
         {
           "id": "yr_allied_01_time_shift",
-          "name": "YR Allied 01: Lightening the Load (San Francisco)"
+          "name": "YR Op. 01: Lightening the Load (San Francisco)"
         },
         {
           "id": "yr_allied_02_hollywood_and_vain",
-          "name": "YR Allied 02: Hollywood and Vain (Los Angeles)"
+          "name": "YR Op. 02: Hollywood and Vain (Los Angeles)"
         },
         {
           "id": "yr_allied_03_power_play",
-          "name": "YR Allied 03: Power Play (Seattle)"
+          "name": "YR Op. 03: Power Play (Seattle)"
         },
         {
           "id": "yr_allied_04_tomb_raided",
-          "name": "YR Allied 04: Tomb Raided (Egypt)"
+          "name": "YR Op. 04: Tomb Raided (Egypt)"
         },
         {
           "id": "yr_allied_05_cloning_around",
-          "name": "YR Allied 05: Cloning Around (Sydney)"
+          "name": "YR Op. 05: Cloning Around (Sydney)"
         },
         {
           "id": "yr_allied_06_trick_or_treaty",
-          "name": "YR Allied 06: Trick or Treaty (London)"
+          "name": "YR Op. 06: Trick or Treaty (London)"
         },
         {
           "id": "yr_allied_07_brain_dead",
-          "name": "YR Allied 07: Brain Dead (Antarctica)"
+          "name": "YR Op. 07: Brain Dead (Antarctica Finale)"
         },
         {
           "id": "yr_soviet_01_time_lapse",
-          "name": "YR Soviet 01: Time Lapse (San Francisco)"
+          "name": "YR Op. 01: Time Lapse (San Francisco)"
         },
         {
           "id": "yr_soviet_02_deja_vu",
-          "name": "YR Soviet 02: Deja Vu (Black Forest Germany)"
+          "name": "YR Op. 02: Deja Vu (Black Forest)"
         },
         {
           "id": "yr_soviet_03_brain_wash",
-          "name": "YR Soviet 03: Brain Wash (London)"
+          "name": "YR Op. 03: Brain Wash (London)"
         },
         {
           "id": "yr_soviet_04_romanov_on_the_run",
-          "name": "YR Soviet 04: Romanov on the Run (Morocco)"
+          "name": "YR Op. 04: Romanov on the Run (Morocco)"
         },
         {
           "id": "yr_soviet_05_escape_velocity",
-          "name": "YR Soviet 05: Escape Velocity (Easter Island)"
+          "name": "YR Op. 05: Escape Velocity (Easter Island)"
         },
         {
           "id": "yr_soviet_06_to_the_moon",
-          "name": "YR Soviet 06: To the Moon (Lunar Surface)"
+          "name": "YR Op. 06: To the Moon (Lunar Surface)"
         },
         {
           "id": "yr_soviet_07_head_games",
-          "name": "YR Soviet 07: Head Games (Transylvania)"
+          "name": "YR Op. 07: Head Games (Transylvania Finale)"
         }
       ]
+    },
+    {
+      "id": "mutator-turbo-economy",
+      "name": "Turbo Economy & Rapid Ascension Mutator",
+      "version": "0.1.0",
+      "description": "Stacked overlay mutator for sdk-showcase-heroes-ages-mutators doubling starting reserves, passive resource trickle, streaming build power, harvester gather rate, and era research pace via depends_on + $append delta patches.",
+      "entry_map": "",
+      "scripts": [],
+      "factions_count": 2,
+      "units_count": 6,
+      "buildings_count": 6,
+      "weapons_count": 0,
+      "maps": []
     },
     {
       "id": "openra_classic",
@@ -318,6 +331,47 @@
         {
           "id": "a_path_beyond_ii",
           "name": "A Path Beyond II"
+        }
+      ]
+    },
+    {
+      "id": "sdk-showcase-heroes-ages-mutators",
+      "name": "Aetherion: Heroes, Ages & Relics (SDK Showcase #2)",
+      "version": "0.1.0",
+      "description": "Genre-agnostic SDK Showcase #2 demonstrating BAR streaming economy, 3-age progression, WC3-style levelable hero with mana & 6-slot inventory relics, free ArmorTag x WarheadTag matrix, SC2 bottom command card HUD, data-driven VFX, AI Behavior Trees, and Multi-Zone Control-Point ticket bleed.",
+      "entry_map": "maps/citadel_crossroads.toml",
+      "scripts": [
+        "scripts/hero_rules.rhai"
+      ],
+      "factions_count": 2,
+      "units_count": 6,
+      "buildings_count": 7,
+      "weapons_count": 7,
+      "maps": [
+        {
+          "id": "citadel_crossroads",
+          "name": "Citadel Crossroads (3-Zone Relic Sanctum)"
+        }
+      ]
+    },
+    {
+      "id": "sdk-showcase-workers-squads",
+      "name": "IRONLOCK SDK Showcase: Workers, Multi-Resource & Tactical Squads",
+      "version": "0.1.0",
+      "description": "Reference showcase mod demonstrating custom resources (credits/timber/alloy), on-site Dozer construction, multi-resource harvesting, 6-man infantry squads with directional cover & suppression, and deterministic world-query scripting.",
+      "entry_map": "maps/timberline_valley.toml",
+      "scripts": [
+        "scripts/showcase_rules.rhai",
+        "scripts/showcase_events.lua"
+      ],
+      "factions_count": 2,
+      "units_count": 4,
+      "buildings_count": 5,
+      "weapons_count": 5,
+      "maps": [
+        {
+          "id": "timberline_valley",
+          "name": "Timberline Valley (3-Resource & Squad Showcase)"
         }
       ]
     },

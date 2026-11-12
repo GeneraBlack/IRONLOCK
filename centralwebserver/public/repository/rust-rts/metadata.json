@@ -1,6 +1,6 @@
 {
   "name": "IRONLOCK // RUST-RTS",
-  "upstream_name": "IRONLOCK // RUST-RTS 1.0.13",
+  "upstream_name": "IRONLOCK // RUST-RTS 1.0.14",
   "description": {
     "en": "Official Project Portal, Deterministic 20 Hz Lockstep Multiplayer Registry & Reverse-TCP NAT Relay Hub (rust-rts.bls-isp.net)",
     "de": "Offizielles Projektportal, Deterministisches 20-Hz Lockstep-Multiplayer-Register & Reverse-TCP NAT-Relay-Hub (rust-rts.bls-isp.net)"

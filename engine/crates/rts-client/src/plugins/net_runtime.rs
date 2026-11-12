@@ -301,7 +301,7 @@ pub fn step_fixed_simulation(
             if let Some((team_only, chat_msg)) = interaction.pending_outgoing_chat.take() {
                 let _ = cl.send_chat_message(team_only, chat_msg);
             }
-            let local_cmds: Vec<_> = sim_res.0.pending_commands.drain(..).collect();
+            let local_cmds: Vec<_> = std::mem::take(&mut sim_res.0.pending_commands);
             let curr_tick = sim_res.0.tick;
             for cmd in local_cmds {
                 cl.queue_command(curr_tick, cmd);

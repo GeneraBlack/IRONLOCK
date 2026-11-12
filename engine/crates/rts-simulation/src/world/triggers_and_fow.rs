@@ -267,12 +267,9 @@ impl SimWorld {
                 }
                 let mut last_match = Some((0, 1));
                 for sub in conditions {
-                    if let Some(m) = self.evaluate_trigger_condition(sub, zone, elapsed_secs) {
-                        if m.0 != 0 {
-                            last_match = Some(m);
-                        }
-                    } else {
-                        return None;
+                    let m = self.evaluate_trigger_condition(sub, zone, elapsed_secs)?;
+                    if m.0 != 0 {
+                        last_match = Some(m);
                     }
                 }
                 last_match

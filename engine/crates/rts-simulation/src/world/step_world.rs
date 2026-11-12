@@ -16,7 +16,7 @@ impl SimWorld {
         }
         self.combat_events.clear();
         self.destruction_events.clear();
-        let commands: Vec<GameCommand> = self.pending_commands.drain(..).collect();
+        let commands: Vec<GameCommand> = std::mem::take(&mut self.pending_commands);
 
         for cmd in commands {
             self.apply_command(cmd, loaded);

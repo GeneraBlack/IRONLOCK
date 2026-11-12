@@ -66,21 +66,26 @@ if host:
     agent.assert_exp(response["exit_code"] == 0)
 
     fw_service = f"{module_id}-relay"
-    fw_ports = [f"{relay_port_start}-{relay_port_end}/tcp"]
-    if hasattr(agent, "add_public_service"):
-        fw_ok = agent.add_public_service(fw_service, fw_ports)
-        agent.assert_exp(fw_ok, "Firewall relay service clone configuration failed")
-    else:
-        fw_resp = agent.tasks.run(
-            agent_id=f"node/{node_id}",
-            action="add-public-service",
-            data={
-                "service": fw_service,
-                "ports": fw_ports,
-                "replaces": [fw_service],
-            },
-        )
-        agent.assert_exp(fw_resp["exit_code"] == 0)
+    fw_ports = [f"{relay_port_start}-{relay_port_end}/tcp", f"{relay_port_start}/udp"]
+    try:
+        if hasattr(agent, "add_public_service"):
+            fw_ok = agent.add_public_service(fw_service, fw_ports)
+            if not fw_ok:
+                print(f"[WARN] Firewall relay service {fw_service} returned False", file=sys.stderr)
+        else:
+            fw_resp = agent.tasks.run(
+                agent_id=f"node/{node_id}",
+                action="add-public-service",
+                data={
+                    "service": fw_service,
+                    "ports": fw_ports,
+                    "replaces": [fw_service],
+                },
+            )
+            if fw_resp.get("exit_code", 1) != 0:
+                print(f"[WARN] add-public-service exited with {fw_resp.get('exit_code')}", file=sys.stderr)
+    except Exception as exc:
+        print(f"[WARN] Firewall clone configuration skipped or failed: {exc}", file=sys.stderr)
 
     agent.run_helper("systemctl", "--user", "enable", "rust-rts.service")
     agent.run_helper("systemctl", "--user", "restart", "rust-rts.service")

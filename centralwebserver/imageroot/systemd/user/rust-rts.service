@@ -18,6 +18,7 @@ ExecStart=/usr/bin/podman run \
     --pull=missing \
     -p 127.0.0.1:${TCP_PORT}:8080 \
     -p ${RELAY_PORT_START}-${RELAY_PORT_END}:${RELAY_PORT_START}-${RELAY_PORT_END}/tcp \
+    -p ${RELAY_PORT_START}:${RELAY_PORT_START}/udp \
     -v rust-rts-data:/app/data:Z \
     -e HOST=0.0.0.0 \
     -e PORT=8080 \
@@ -28,6 +29,8 @@ ExecStart=/usr/bin/podman run \
     -e TTL_SECS=${TTL_SECS} \
     -e RELAY_PORT_START=${RELAY_PORT_START} \
     -e RELAY_PORT_END=${RELAY_PORT_END} \
+    -e RELAY_MUX_PORT=${RELAY_PORT_END} \
+    -e UDP_RENDEZVOUS_PORT=${RELAY_PORT_START} \
     ${RUST_RTS_SERVER_IMAGE}
 ExecStop=/usr/bin/podman stop --ignore --cidfile %t/rust-rts.ctr-id -t 10
 ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/rust-rts.ctr-id
