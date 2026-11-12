@@ -8,6 +8,14 @@ import agent.tasks
 agent.run_helper("podman", "volume", "create", "--ignore", "rust-rts-data")
 agent.run_helper("systemctl", "--user", "daemon-reload")
 
+module_id = os.environ["MODULE_ID"]
+node_id = os.environ.get("NODE_ID", "1")
+if not str(node_id).isdigit():
+    node_id = "1"
+
+relay_port_start = int(os.environ.get("RELAY_PORT_START", "30100"))
+relay_port_end = int(os.environ.get("RELAY_PORT_END", "30139"))
+
 host = (os.environ.get("TRAEFIK_HOST") or os.environ.get("HOST") or "").strip()
 if host:
     default_traefik_id = agent.resolve_agent_id("traefik@node")
@@ -16,13 +24,13 @@ if host:
 
     tcp_port = os.environ["TCP_PORT"]
     lets_encrypt = (os.environ.get("TRAEFIK_LETS_ENCRYPT") or os.environ.get("LETS_ENCRYPT") or "False") == "True"
-    http2https = (os.environ.get("TRAEFIK_HTTP2HTTPS") or os.environ.get("HTTP2HTTPS") or "True") == "True"
+    http2https = (os.environ.get("TRAEFIK_HTTP2HTTPS") or os.environ.get("HTTP2HTTPS") or "False") == "True"
 
     response = agent.tasks.run(
         agent_id=default_traefik_id,
         action="set-route",
         data={
-            "instance": os.environ["MODULE_ID"],
+            "instance": module_id,
             "url": f"http://127.0.0.1:{tcp_port}",
             "host": host,
             "lets_encrypt": lets_encrypt,
@@ -30,5 +38,23 @@ if host:
         },
     )
     agent.assert_exp(response["exit_code"] == 0)
+
+    fw_service = f"{module_id}-relay"
+    fw_ports = [f"{relay_port_start}-{relay_port_end}/tcp"]
+    if hasattr(agent, "add_public_service"):
+        fw_ok = agent.add_public_service(fw_service, fw_ports)
+        agent.assert_exp(fw_ok, "Firewall relay service restore failed")
+    else:
+        fw_resp = agent.tasks.run(
+            agent_id=f"node/{node_id}",
+            action="add-public-service",
+            data={
+                "service": fw_service,
+                "ports": fw_ports,
+                "replaces": [fw_service],
+            },
+        )
+        agent.assert_exp(fw_resp["exit_code"] == 0)
+
     agent.run_helper("systemctl", "--user", "enable", "rust-rts.service")
     agent.run_helper("systemctl", "--user", "restart", "rust-rts.service")

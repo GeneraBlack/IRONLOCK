@@ -1,0 +1,391 @@
+# ==============================================================================
+# Units Catalog — Multi-Worker Streaming Assist, Aether Harvester, Age I/II/III
+# Combat Roster, and Levelable WC3-Style Commander Hero with Mana & Inventory
+# ==============================================================================
+
+[[units]]
+id = "acolyte_worker"
+name = "Sanctum Acolyte Builder"
+faction = "shared"
+role = "infantry"
+cost = 100
+build_time_secs = 3.0
+health = 220.0
+armor = "light"
+armor_tag = "runic_medium"
+speed = 5.4
+vision_range = 15.0
+harvest_capacity = 0
+primary_weapon = "worker_arc_cutter"
+prerequisites = ["citadel_hq"]
+streaming_build_power = 40.0
+tags = ["worker", "builder", "support_unit"]
+
+[units.builder_trait]
+build_speed_multiplier = 1.25
+build_range = 4.5
+can_repair = true
+buildable_buildings = [
+    "citadel_hq",
+    "aether_extractor",
+    "vanguard_barracks",
+    "arcane_smithy",
+    "grand_archive",
+    "construct_foundry",
+    "sunbeam_spire",
+]
+
+[units.locomotor]
+turn_rate_deg_per_sec = 320.0
+accel = 16.0
+decel = 20.0
+
+[units.visual]
+model = "assets/models/acolyte_worker.glb"
+icon = "assets/ui/cameos/acolyte_worker.png"
+archetype = "infantry"
+scale = [1.0, 1.0, 1.0]
+primary_color = [0.85, 0.72, 0.28]
+team_color_tint = true
+metallic = 0.30
+roughness = 0.62
+
+[[units]]
+id = "crystal_harvester"
+name = "Astral Crystal Harvester"
+faction = "shared"
+role = "harvester"
+cost = 350
+build_time_secs = 6.0
+health = 680.0
+armor = "heavy"
+armor_tag = "runic_medium"
+speed = 4.6
+vision_range = 14.0
+harvest_capacity = 700
+prerequisites = ["aether_extractor"]
+crush_immune = true
+tags = ["economy", "harvester", "construct_unit"]
+
+[units.gatherer_trait]
+allowed_resources = ["credits", "aether"]
+carry_capacity = 700
+gather_rate_per_sec = 45.0
+dropoff_buildings = ["aether_extractor", "citadel_hq"]
+
+[units.locomotor]
+turn_rate_deg_per_sec = 190.0
+accel = 10.0
+decel = 14.0
+
+[units.visual]
+model = "assets/models/crystal_harvester.glb"
+icon = "assets/ui/cameos/crystal_harvester.png"
+archetype = "harvester"
+scale = [1.0, 1.0, 1.0]
+primary_color = [0.28, 0.78, 0.94]
+team_color_tint = true
+metallic = 0.45
+roughness = 0.50
+
+[[units]]
+id = "legion_sentinel"
+name = "Age I Sunlance Sentinel"
+faction = "shared"
+role = "infantry"
+cost = 120
+build_time_secs = 3.5
+health = 250.0
+armor = "light"
+armor_tag = "warded_plate"
+speed = 4.8
+vision_range = 16.0
+harvest_capacity = 0
+primary_weapon = "sunlance_rifle"
+prerequisites = ["vanguard_barracks"]
+tags = ["combat_unit", "frontline_infantry", "age_1_unit"]
+
+[units.locomotor]
+turn_rate_deg_per_sec = 300.0
+accel = 15.0
+decel = 18.0
+
+[units.visual]
+model = "assets/models/legion_sentinel.glb"
+icon = "assets/ui/cameos/legion_sentinel.png"
+archetype = "infantry"
+scale = [1.0, 1.0, 1.0]
+primary_color = [0.28, 0.56, 0.92]
+team_color_tint = true
+metallic = 0.42
+roughness = 0.52
+
+[[units.visual.sockets]]
+name = "Muzzle_0"
+offset = [0.0, 1.15, 0.48]
+
+[[units]]
+id = "pyre_warden"
+name = "Age II Pyre Flame Warden"
+faction = "shared"
+role = "infantry"
+cost = 240
+build_time_secs = 5.0
+health = 430.0
+armor = "medium"
+armor_tag = "runic_medium"
+speed = 4.6
+vision_range = 16.0
+harvest_capacity = 0
+required_era = "age_2"
+prerequisites = ["vanguard_barracks", "arcane_smithy"]
+prerequisite_upgrades = ["advance_age_2"]
+primary_weapon = "pyre_cone_projector"
+tags = ["combat_unit", "frontline_infantry", "flame_specialist", "age_2_unit"]
+
+[units.resource_costs]
+aether = 60
+
+[units.locomotor]
+turn_rate_deg_per_sec = 280.0
+accel = 14.0
+decel = 18.0
+
+[units.visual]
+model = "assets/models/pyre_warden.glb"
+icon = "assets/ui/cameos/pyre_warden.png"
+archetype = "infantry"
+scale = [1.1, 1.1, 1.1]
+primary_color = [0.92, 0.45, 0.20]
+team_color_tint = true
+metallic = 0.48
+roughness = 0.46
+emissive_boost = 1.25
+
+[[units.visual.sockets]]
+name = "Muzzle_0"
+offset = [0.0, 1.25, 0.55]
+
+[[units]]
+id = "astral_colossus"
+name = "Age III Astral Siege Colossus"
+faction = "shared"
+role = "vehicle"
+cost = 650
+build_time_secs = 9.0
+health = 1450.0
+armor = "heavy"
+armor_tag = "titan_hull"
+speed = 3.7
+vision_range = 20.0
+harvest_capacity = 0
+required_era = "age_3"
+prerequisites = ["construct_foundry", "grand_archive"]
+prerequisite_upgrades = ["advance_age_3"]
+primary_weapon = "meteor_siege_cannon"
+secondary_weapon = "aether_seeker_pod"
+can_crush_infantry = true
+crush_immune = true
+tags = ["combat_unit", "construct_unit", "siege_engine", "age_3_unit"]
+death_vfx_id = "vfx_arcane_collapse"
+
+[units.resource_costs]
+aether = 220
+relic_flux = 40
+
+[units.locomotor]
+turn_rate_deg_per_sec = 140.0
+turret_slew_deg_per_sec = 180.0
+accel = 8.0
+decel = 12.0
+
+[units.visual]
+model = "assets/models/astral_colossus.glb"
+icon = "assets/ui/cameos/astral_colossus.png"
+archetype = "tank"
+scale = [1.25, 1.25, 1.25]
+primary_color = [0.58, 0.36, 0.92]
+team_color_tint = true
+metallic = 0.65
+roughness = 0.38
+emissive_boost = 1.40
+
+[[units.visual.sockets]]
+name = "Muzzle_0"
+offset = [0.0, 2.1, 0.95]
+
+[[units]]
+id = "archon_commander"
+name = "High Archon Valerius (Commander Hero)"
+faction = "shared"
+role = "infantry"
+cost = 450
+build_time_secs = 8.0
+health = 880.0
+armor = "heavy"
+armor_tag = "heroic_aegis"
+speed = 5.1
+vision_range = 19.0
+harvest_capacity = 0
+build_limit = 1
+crush_immune = true
+primary_weapon = "archon_sunblade"
+ability_id = "solar_nova"
+prerequisites = ["citadel_hq"]
+tags = ["hero", "commander", "combat_unit", "frontline_infantry"]
+ambient_vfx_id = "vfx_hero_aura"
+death_vfx_id = "vfx_hero_ascend"
+
+[units.resource_costs]
+aether = 100
+
+[units.script_hooks]
+on_hit = "on_archon_hit"
+on_ability = "on_solar_nova_cast"
+
+[units.energy_pool]
+max_energy = 200.0
+initial_energy = 150.0
+regen_per_sec = 4.5
+
+[units.hero_trait]
+max_level = 10
+xp_curve = [100.0, 220.0, 380.0, 580.0, 820.0, 1100.0, 1420.0, 1780.0, 2200.0]
+xp_share_radius = 18.0
+hp_per_level = 80.0
+damage_mult_per_level = 0.08
+energy_per_level = 25.0
+inventory_slots = 6
+revive_at_building_tags = ["construction_yard", "citadel_altar"]
+revive_cost_mult = 0.5
+revive_time_per_level_secs = 3.5
+learnable_abilities = ["solar_nova", "aegis_bulwark", "astral_blink_strike"]
+
+# Skill 1: Area-damage + burning slow with independent cooldown, mana & auto-cast
+[[units.abilities]]
+id = "solar_nova"
+name = "Solar Nova"
+cooldown_secs = 8.0
+cost = 0
+energy_cost = 45.0
+allow_auto_cast = true
+default_auto_cast = true
+max_rank = 3
+cooldown_reduction_per_rank = 1.0
+value_scale_per_rank = 0.25
+range = 9.0
+radius = 4.5
+target_mode = "area_radius"
+script_hook = "on_solar_nova_cast"
+cast_vfx_id = "vfx_solar_nova_cast"
+impact_vfx_id = "vfx_solar_nova_blast"
+
+[[units.abilities.payloads]]
+kind = "area_damage"
+damage = 95.0
+radius = 4.5
+friendly_fire = false
+
+[[units.abilities.payloads]]
+kind = "apply_area_status"
+radius = 4.5
+friendly_only = false
+
+[units.abilities.payloads.status]
+id = "solar_nova_burn"
+duration_secs = 4.0
+dps = 12.0
+speed_multiplier = 0.80
+armor_multiplier = 0.90
+damage_multiplier = 1.0
+stack_policy = "refresh"
+max_stacks = 1
+dispel_category = "magic"
+
+# Skill 2: Self/aura heal + stackable ward buff with independent cooldown & mana
+[[units.abilities]]
+id = "aegis_bulwark"
+name = "Aegis Bulwark"
+cooldown_secs = 14.0
+cost = 0
+energy_cost = 55.0
+allow_auto_cast = true
+default_auto_cast = false
+max_rank = 3
+cooldown_reduction_per_rank = 1.5
+value_scale_per_rank = 0.20
+range = 0.0
+radius = 6.0
+target_mode = "self_only"
+script_hook = "on_aegis_bulwark_cast"
+cast_vfx_id = "vfx_aegis_shield_cast"
+impact_vfx_id = "vfx_aegis_shield_cast"
+
+[[units.abilities.payloads]]
+kind = "apply_area_status"
+radius = 6.0
+friendly_only = true
+
+[units.abilities.payloads.status]
+id = "aegis_ward_aura"
+duration_secs = 6.0
+dps = 0.0
+speed_multiplier = 1.10
+armor_multiplier = 1.35
+damage_multiplier = 1.12
+hp_regen_per_sec = 25.0
+stack_policy = "refresh"
+max_stacks = 1
+dispel_category = "magic"
+
+# Skill 3: Blink strike teleport + shockwave with independent cooldown & mana
+[[units.abilities]]
+id = "astral_blink_strike"
+name = "Astral Blink Strike"
+cooldown_secs = 11.0
+cost = 0
+energy_cost = 40.0
+allow_auto_cast = true
+default_auto_cast = false
+max_rank = 3
+cooldown_reduction_per_rank = 1.0
+value_scale_per_rank = 0.25
+range = 12.0
+radius = 3.2
+target_mode = "ground_point"
+script_hook = "on_astral_blink_cast"
+cast_vfx_id = "vfx_astral_blink_cast"
+impact_vfx_id = "vfx_astral_blink_impact"
+
+[[units.abilities.payloads]]
+kind = "teleport_units"
+radius = 2.5
+max_units = 1
+chrono_disable_secs = 0.0
+vaporize_organic_infantry = false
+
+[[units.abilities.payloads]]
+kind = "area_damage"
+damage = 75.0
+radius = 3.2
+friendly_fire = false
+
+[units.locomotor]
+turn_rate_deg_per_sec = 340.0
+accel = 18.0
+decel = 22.0
+
+[units.visual]
+model = "assets/models/archon_commander.glb"
+icon = "assets/ui/cameos/archon_commander.png"
+archetype = "infantry"
+scale = [1.22, 1.22, 1.22]
+primary_color = [0.96, 0.80, 0.26]
+team_color_tint = true
+metallic = 0.62
+roughness = 0.34
+emissive_boost = 1.55
+
+[[units.visual.sockets]]
+name = "Muzzle_0"
+offset = [0.0, 1.35, 0.55]

@@ -1,35 +1,465 @@
 id = "yr_allied_07_brain_dead"
-name = "YR Allied 07: Brain Dead (Antarctica)"
+name = "YR Op. 07: Brain Dead (Antarctica Finale)"
 width = 96
 height = 96
 tile_size = 2.0
 ore_regen_per_sec = 4.0
-mission_objective = "It's almost over, Commander. Yuri's plot lies in ruins. However, he still has one last Psychic Dominator located somewhere in his stronghold in Antarctica. Bring the abandoned Soviet Base on Tierra del Fuego back online and build a radar dish so that we can pinpoint Yuri's exact location. Then, with the combined might of Allied and Soviet forces, put an end to Yuri's plans once and for all. \n \n Objective 1: Build a Soviet Radar Dish \n Objective 2: Destroy the Psychic Dominator in Antarctica \n Objective 3: Destroy all Yuri forces"
+mission_objective = "Combine Allied Battle Fortresses and Soviet armor in Antarctica to destroy Yuri's final Psychic Dominator and citadel!"
 
 [[ore_patches]]
-position = [16, 8]
+position = [27, 74]
 radius = 3
-amount_per_tile = 1400
+amount_per_tile = 1600
 
 [[ore_patches]]
-position = [78, 86]
+position = [62, 36]
 radius = 3
-amount_per_tile = 1400
+amount_per_tile = 1550
 
-[[ore_patches]]
+[[gem_patches]]
 position = [48, 48]
-radius = 4
-amount_per_tile = 2000
+radius = 2
+amount_per_tile = 2500
 
-[[ore_patches]]
-position = [34, 65]
-radius = 3
-amount_per_tile = 1500
+[[water_rects]]
+min = [17, 1]
+max = [39, 1]
 
-[[ore_patches]]
-position = [34, 63]
-radius = 3
-amount_per_tile = 1500
+[[water_rects]]
+min = [45, 1]
+max = [70, 1]
+
+[[water_rects]]
+min = [16, 2]
+max = [38, 2]
+
+[[water_rects]]
+min = [47, 2]
+max = [70, 2]
+
+[[water_rects]]
+min = [15, 3]
+max = [38, 3]
+
+[[water_rects]]
+min = [47, 3]
+max = [71, 3]
+
+[[water_rects]]
+min = [14, 4]
+max = [38, 4]
+
+[[water_rects]]
+min = [49, 4]
+max = [72, 4]
+
+[[water_rects]]
+min = [12, 5]
+max = [38, 5]
+
+[[water_rects]]
+min = [49, 5]
+max = [74, 6]
+
+[[water_rects]]
+min = [11, 6]
+max = [39, 6]
+
+[[water_rects]]
+min = [12, 7]
+max = [39, 7]
+
+[[water_rects]]
+min = [49, 7]
+max = [72, 7]
+
+[[water_rects]]
+min = [13, 8]
+max = [40, 8]
+
+[[water_rects]]
+min = [49, 8]
+max = [71, 8]
+
+[[water_rects]]
+min = [14, 9]
+max = [41, 10]
+
+[[water_rects]]
+min = [48, 9]
+max = [70, 10]
+
+[[water_rects]]
+min = [44, 10]
+max = [45, 10]
+
+[[water_rects]]
+min = [15, 11]
+max = [67, 12]
+
+[[water_rects]]
+min = [16, 13]
+max = [66, 14]
+
+[[water_rects]]
+min = [19, 15]
+max = [65, 15]
+
+[[water_rects]]
+min = [20, 16]
+max = [65, 16]
+
+[[water_rects]]
+min = [21, 17]
+max = [65, 18]
+
+[[water_rects]]
+min = [21, 19]
+max = [23, 19]
+
+[[water_rects]]
+min = [28, 19]
+max = [65, 19]
+
+[[water_rects]]
+min = [30, 20]
+max = [66, 20]
+
+[[water_rects]]
+min = [32, 21]
+max = [59, 21]
+
+[[water_rects]]
+min = [63, 21]
+max = [65, 21]
+
+[[water_rects]]
+min = [32, 22]
+max = [58, 22]
+
+[[water_rects]]
+min = [64, 22]
+max = [64, 22]
+
+[[water_rects]]
+min = [33, 23]
+max = [58, 23]
+
+[[water_rects]]
+min = [35, 24]
+max = [57, 27]
+
+[[water_rects]]
+min = [35, 28]
+max = [59, 28]
+
+[[water_rects]]
+min = [33, 29]
+max = [59, 29]
+
+[[water_rects]]
+min = [32, 30]
+max = [58, 30]
+
+[[water_rects]]
+min = [29, 31]
+max = [57, 31]
+
+[[water_rects]]
+min = [30, 32]
+max = [56, 32]
+
+[[water_rects]]
+min = [30, 33]
+max = [54, 33]
+
+[[water_rects]]
+min = [31, 34]
+max = [54, 35]
+
+[[water_rects]]
+min = [30, 36]
+max = [53, 36]
+
+[[water_rects]]
+min = [26, 37]
+max = [53, 37]
+
+[[water_rects]]
+min = [27, 38]
+max = [46, 38]
+
+[[water_rects]]
+min = [49, 38]
+max = [52, 38]
+
+[[water_rects]]
+min = [29, 39]
+max = [45, 41]
+
+[[water_rects]]
+min = [49, 39]
+max = [51, 39]
+
+[[water_rects]]
+min = [29, 42]
+max = [47, 43]
+
+[[water_rects]]
+min = [29, 44]
+max = [46, 44]
+
+[[water_rects]]
+min = [29, 45]
+max = [45, 45]
+
+[[water_rects]]
+min = [14, 46]
+max = [15, 46]
+
+[[water_rects]]
+min = [28, 46]
+max = [43, 46]
+
+[[water_rects]]
+min = [10, 47]
+max = [16, 47]
+
+[[water_rects]]
+min = [27, 47]
+max = [43, 47]
+
+[[water_rects]]
+min = [7, 48]
+max = [16, 48]
+
+[[water_rects]]
+min = [27, 48]
+max = [42, 48]
+
+[[water_rects]]
+min = [6, 49]
+max = [17, 49]
+
+[[water_rects]]
+min = [26, 49]
+max = [42, 49]
+
+[[water_rects]]
+min = [5, 50]
+max = [17, 50]
+
+[[water_rects]]
+min = [25, 50]
+max = [40, 50]
+
+[[water_rects]]
+min = [4, 51]
+max = [19, 51]
+
+[[water_rects]]
+min = [24, 51]
+max = [39, 51]
+
+[[water_rects]]
+min = [2, 52]
+max = [38, 52]
+
+[[water_rects]]
+min = [1, 53]
+max = [36, 53]
+
+[[water_rects]]
+min = [1, 54]
+max = [34, 54]
+
+[[water_rects]]
+min = [1, 55]
+max = [33, 55]
+
+[[water_rects]]
+min = [2, 56]
+max = [32, 56]
+
+[[water_rects]]
+min = [3, 57]
+max = [31, 57]
+
+[[water_rects]]
+min = [4, 58]
+max = [29, 58]
+
+[[water_rects]]
+min = [5, 59]
+max = [28, 59]
+
+[[water_rects]]
+min = [6, 60]
+max = [26, 60]
+
+[[water_rects]]
+min = [7, 61]
+max = [24, 61]
+
+[[water_rects]]
+min = [8, 62]
+max = [23, 62]
+
+[[water_rects]]
+min = [9, 63]
+max = [22, 63]
+
+[[water_rects]]
+min = [10, 64]
+max = [22, 64]
+
+[[water_rects]]
+min = [11, 65]
+max = [21, 65]
+
+[[water_rects]]
+min = [12, 66]
+max = [19, 66]
+
+[[water_rects]]
+min = [14, 67]
+max = [18, 67]
+
+[[elevation_rects]]
+min = [35, 67]
+max = [49, 81]
+
+[[ramp_rects]]
+min = [34, 73]
+max = [35, 75]
+
+[[ramp_rects]]
+min = [49, 73]
+max = [50, 75]
+
+[[obstacles]]
+min = [19, 27]
+max = [20, 28]
+
+[[obstacles]]
+min = [24, 30]
+max = [25, 31]
+
+[[obstacles]]
+min = [19, 36]
+max = [20, 37]
+
+[[props]]
+kind = "tree"
+tile_pos = [2, 30]
+
+[[props]]
+kind = "tree"
+tile_pos = [39, 66]
+
+[[props]]
+kind = "tree"
+tile_pos = [6, 28]
+
+[[props]]
+kind = "tree"
+tile_pos = [6, 25]
+
+[[props]]
+kind = "tree"
+tile_pos = [15, 33]
+
+[[props]]
+kind = "tree"
+tile_pos = [15, 23]
+
+[[props]]
+kind = "tree"
+tile_pos = [12, 19]
+
+[[props]]
+kind = "tree"
+tile_pos = [14, 16]
+
+[[props]]
+kind = "tree"
+tile_pos = [15, 39]
+
+[[props]]
+kind = "tree"
+tile_pos = [26, 30]
+
+[[props]]
+kind = "tree"
+tile_pos = [22, 43]
+
+[[props]]
+kind = "tree"
+tile_pos = [11, 39]
+
+[[props]]
+kind = "tree"
+tile_pos = [19, 43]
+
+[[props]]
+kind = "tree"
+tile_pos = [8, 46]
+
+[[props]]
+kind = "tree"
+tile_pos = [9, 41]
+
+[[props]]
+kind = "tree"
+tile_pos = [37, 73]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [21, 27]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [26, 35]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [21, 28]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [21, 36]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [21, 38]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [21, 29]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [22, 29]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [43, 2]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [41, 3]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [45, 5]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [42, 7]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [46, 9]
 
 [[preplaced_entities]]
 player_id = 2
@@ -42,17 +472,17 @@ building_id = "soviet_tesla_reactor"
 tile_pos = [22, 36]
 
 [[preplaced_entities]]
-player_id = 2
+player_id = 0
 building_id = "tech_oil_derrick"
 tile_pos = [50, 79]
 
 [[preplaced_entities]]
-player_id = 2
+player_id = 0
 building_id = "tech_machine_shop"
 tile_pos = [10, 44]
 
 [[preplaced_entities]]
-player_id = 2
+player_id = 0
 building_id = "tech_oil_derrick"
 tile_pos = [50, 81]
 
@@ -204,7 +634,7 @@ tile_pos = [72, 49]
 [[preplaced_entities]]
 player_id = 2
 unit_id = "gattling_tank"
-tile_pos = [69, 48]
+tile_pos = [68, 49]
 
 [[preplaced_entities]]
 player_id = 2
@@ -231,121 +661,240 @@ player_id = 2
 unit_id = "lasher_tank"
 tile_pos = [64, 46]
 
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_psychic_dominator"
+tile_pos = [66, 30]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_genetic_mutator"
+tile_pos = [72, 30]
+
+[[preplaced_entities]]
+player_id = 1
+unit_id = "tanya"
+tile_pos = [20, 69]
+tag = "tanya"
+
+[[objectives]]
+id = "obj_primary_main"
+tier = "primary"
+title = "Combine Allied Battle Fortresses and Soviet armor in Antarctica to destroy Yuri's fin..."
+marker_tile = [68, 36]
+
+[[objectives]]
+id = "obj_vip_tanya"
+tier = "secondary"
+title = "Keep Agent Tanya Alive Throughout the Operation"
+marker_tile = [20, 69]
+
+[[objectives]]
+id = "obj_secondary_strike"
+tier = "secondary"
+title = "Neutralize or Capture Enemy Strategic Facility"
+marker_tile = [68, 36]
+
+[[objectives]]
+id = "obj_bonus_tech"
+tier = "bonus"
+title = "Capture Neutral Tech Oil Derrick with an Engineer"
+marker_tile = [50, 79]
+
+[[cutscenes]]
+id = "intro_flyover"
+skippable = true
+letterbox = true
+
+[[cutscenes.keyframes]]
+time_secs = 0.0
+focus = [137.0, 0.0, 73.0]
+distance = 46.0
+pitch_deg = 52.0
+yaw_deg = -22.0
+
+[[cutscenes.keyframes]]
+time_secs = 2.2
+focus = [89.0, 0.0, 105.0]
+distance = 42.0
+pitch_deg = 55.0
+yaw_deg = -10.0
+
+[[cutscenes.keyframes]]
+time_secs = 4.5
+focus = [41.0, 0.0, 139.0]
+distance = 36.0
+pitch_deg = 58.0
+yaw_deg = 0.0
+
 [[spawns]]
 player_id = 1
 faction = "allies"
-base_tile = [8, 8]
+sub_faction = "usa"
+base_tile = [18, 76]
+team_id = 1
 
 [[spawns.initial_buildings]]
 building_id = "allied_conyard"
-tile_pos = [8, 8]
+tile_pos = [18, 76]
 
 [[spawns.initial_buildings]]
 building_id = "allied_power_plant"
-tile_pos = [11, 8]
+tile_pos = [15, 76]
 
 [[spawns.initial_buildings]]
 building_id = "allied_refinery"
-tile_pos = [8, 11]
+tile_pos = [22, 76]
 
 [[spawns.initial_buildings]]
 building_id = "allied_barracks"
-tile_pos = [11, 11]
+tile_pos = [18, 72]
 
 [[spawns.initial_buildings]]
 building_id = "allied_war_factory"
-tile_pos = [14, 8]
-
-[[spawns.initial_units]]
-unit_id = "allied_gi"
-tile_pos = [10, 13]
-
-[[spawns.initial_units]]
-unit_id = "allied_gi"
-tile_pos = [12, 13]
-
-[[spawns.initial_units]]
-unit_id = "grizzly_tank"
-tile_pos = [14, 12]
+tile_pos = [22, 72]
 
 [[spawns.initial_units]]
 unit_id = "chrono_miner"
-tile_pos = [10, 12]
+tile_pos = [24, 75]
+
+[[spawns.initial_units]]
+unit_id = "guardian_gi"
+tile_pos = [18, 70]
+
+[[spawns.initial_units]]
+unit_id = "guardian_gi"
+tile_pos = [20, 70]
+
+[[spawns.initial_units]]
+unit_id = "grizzly_tank"
+tile_pos = [22, 70]
+
+[[spawns.initial_units]]
+unit_id = "prism_tank"
+tile_pos = [24, 70]
+
+[[spawns.initial_units]]
+unit_id = "battle_fortress"
+tile_pos = [18, 69]
 
 [[spawns]]
 player_id = 2
 faction = "yuri"
-base_tile = [86, 86]
-
-[[spawns.initial_buildings]]
-building_id = "yuri_conyard"
-tile_pos = [86, 86]
-
-[[spawns.initial_buildings]]
-building_id = "yuri_bio_reactor"
-tile_pos = [83, 86]
-
-[[spawns.initial_buildings]]
-building_id = "yuri_slave_refinery"
-tile_pos = [86, 83]
-
-[[spawns.initial_buildings]]
-building_id = "yuri_barracks"
-tile_pos = [83, 83]
-
-[[spawns.initial_buildings]]
-building_id = "yuri_war_factory"
-tile_pos = [80, 86]
-
-[[spawns.initial_units]]
-unit_id = "yuri_initiate"
-tile_pos = [84, 81]
-
-[[spawns.initial_units]]
-unit_id = "yuri_initiate"
-tile_pos = [82, 81]
-
-[[spawns.initial_units]]
-unit_id = "lasher_tank"
-tile_pos = [80, 82]
-
-[[spawns.initial_units]]
-unit_id = "yuri_slave_miner"
-tile_pos = [84, 82]
+sub_faction = "yuri"
+base_tile = [68, 36]
+team_id = 2
 
 [[trigger_zones]]
-id = "mission_stage_init"
-min = [6, 6]
-max = [12, 12]
+id = "yr_allied_07_brain_dead_init"
+min = [0, 0]
+max = [3, 3]
 once = true
 condition = { type = "timer_elapsed", secs = 1.0 }
 actions = [
+    { type = "play_cutscene", cutscene_id = "intro_flyover" },
+    { type = "set_objective_status", objective_id = "obj_primary_main", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_vip_tanya", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_secondary_strike", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_bonus_tech", status = "active" },
+    { type = "start_countdown", timer_id = "antarctica_dominator_timer", label = "Psychic Dominator Alignment", duration_secs = 240 },
+    { type = "set_weather", preset = "ion_storm" },
     { type = "set_variable", name = "mission_stage", value = 1 },
-    { type = "eva_transmission", speaker = "EVA", text = "Battle Control Online. Primary tactical objectives initialized." },
-    { type = "reveal_area", tile = [8, 8], radius = 14 }
+    { type = "reveal_area", tile = [68, 36], radius = 9 },
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Combine Allied Battle Fortresses and Soviet armor in Antarctica to destroy Yuri's final Psychic Dominator and citadel!", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "battle_control_online" },
 ]
 
 [[trigger_zones]]
-id = "tactical_reinforcement_wave"
-min = [7, 6]
-max = [11, 10]
+id = "yr_allied_07_brain_dead_stage2_reinf"
+min = [0, 0]
+max = [3, 3]
 once = true
-condition = { type = "all", conditions = [{ type = "timer_elapsed", secs = 45.0 }, { type = "variable_equals", name = "mission_stage", value = 1 }] }
+condition = { type = "timer_elapsed", secs = 60.0 }
 actions = [
+    { type = "play_radar_video", video_path = "assets/videos/radar_pip/yr_allied_07_pip_02.mp4" },
     { type = "set_variable", name = "mission_stage", value = 2 },
-    { type = "spawn_reinforcements", player_id = 1, unit_id = "grizzly_tank", count = 2, tile = [7, 6] },
-    { type = "grant_credits", player_id = 1, amount = 1500 },
-    { type = "eva_transmission", speaker = "EVA", text = "Reinforcements have arrived. Forward command has authorized 1500 bonus credits." }
+    { type = "grant_credits", player_id = 1, amount = 2000 },
+    { type = "spawn_reinforcements", player_id = 1, unit_id = "battle_fortress", count = 2, tile = [21, 77] },
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Heavy armored reinforcements have arrived at the staging area!", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "reinforcements_have_arrived", radar_video = "assets/videos/radar_pip/yr_allied_07_pip_02.mp4" },
 ]
 
 [[trigger_zones]]
-id = "decisive_campaign_victory"
-min = [2, 2]
-max = [6, 6]
+id = "yr_allied_07_brain_dead_target_down"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "building_destroyed", building_id = "yuri_psychic_dominator", player_id = 2 }
+actions = [
+    { type = "set_objective_status", objective_id = "obj_secondary_strike", status = "completed" },
+    { type = "stop_countdown", timer_id = "antarctica_dominator_timer" },
+    { type = "grant_credits", player_id = 1, amount = 2000 },
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Key Psi-Corps structure destroyed! Press the assault and wipe out the rest of Yuri's base!", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "battle_control_online" },
+]
+
+[[trigger_zones]]
+id = "yr_allied_07_brain_dead_victory"
+min = [0, 0]
+max = [3, 3]
 once = true
 condition = { type = "all_buildings_destroyed", player_id = 2 }
 actions = [
+    { type = "set_objective_status", objective_id = "obj_primary_main", status = "completed" },
+    { type = "set_objective_status", objective_id = "obj_vip_tanya", status = "completed" },
     { type = "set_variable", name = "mission_stage", value = 3 },
-    { type = "eva_transmission", speaker = "EVA", text = "Mission Accomplished. All primary hostile command structures neutralized." },
-    { type = "declare_winner", player_id = 1 }
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Yuri's forces in this sector have been completely eradicated! Victory is ours!", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "primary_objective_achieved" },
+    { type = "declare_winner", player_id = 1 },
+]
+
+[[trigger_zones]]
+id = "p22_vip_tanya_lost"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "tagged_entity_destroyed", tag = "tanya" }
+actions = [
+    { type = "set_objective_status", objective_id = "obj_vip_tanya", status = "failed" },
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Agent Tanya has fallen in combat!", portrait = "assets/ui/cameos/tanyicon.png", audio_cue = "unit_lost" },
+]
+
+[[trigger_zones]]
+id = "p22_crisis_countdown_expired"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "countdown_expired", timer_id = "antarctica_dominator_timer" }
+actions = [
+    { type = "spawn_reinforcements", player_id = 2, unit_id = "lasher_tank", count = 4, tile = [66, 34] },
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Warning: Psychic Dominator Alignment reached zero! Enemy heavy armor strike group deployed!", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "base_under_attack" },
+]
+
+[[trigger_zones]]
+id = "p22_crisis_target_neutralized"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "building_destroyed", building_id = "yuri_psychic_dominator", player_id = 2 }
+actions = [
+    { type = "stop_countdown", timer_id = "antarctica_dominator_timer" },
+]
+
+[[trigger_zones]]
+id = "p22_bonus_tech_captured"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "building_captured", building_id = "tech_oil_derrick", by_player_id = 1 }
+actions = [
+    { type = "set_objective_status", objective_id = "obj_bonus_tech", status = "completed" },
+    { type = "grant_credits", player_id = 1, amount = 750 },
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Bonus objective achieved: Neutral tech structure secured!", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "building_captured" },
+]
+
+[[trigger_zones]]
+id = "p22_periodic_skirmish_wave"
+min = [0, 0]
+max = [3, 3]
+once = false
+condition = { type = "periodic_timer", start_secs = 75, interval_secs = 75, max_repeats = 3 }
+actions = [
+    { type = "spawn_reinforcements", player_id = 2, unit_id = "yuri_initiate", count = 3, tile = [67, 35] },
 ]

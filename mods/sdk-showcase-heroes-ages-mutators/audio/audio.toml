@@ -1,0 +1,13 @@
+[weapon_sfx]
+worker_arc_cutter = "assets/audio/sfx/sunlance_shot.wav"
+sunlance_rifle = "assets/audio/sfx/sunlance_shot.wav"
+pyre_cone_projector = "assets/audio/sfx/pyre_flame.wav"
+sunbeam_prism_lance = "assets/audio/sfx/sunbeam_hum.wav"
+meteor_siege_cannon = "assets/audio/sfx/meteor_launch.wav"
+aether_seeker_pod = "assets/audio/sfx/meteor_launch.wav"
+archon_sunblade = "assets/audio/sfx/sunbeam_hum.wav"
+
+[eva_cues]
+building_complete = "assets/audio/sfx/eva_era_advanced.wav"
+unit_ready = "assets/audio/sfx/hero_confirm.wav"
+era_advanced = "assets/audio/sfx/eva_era_advanced.wav"

@@ -1,4 +1,3 @@
-
 #[inline]
 fn vxl_luma(c: [f32; 3]) -> f32 {
     c[0] * 0.30 + c[1] * 0.59 + c[2] * 0.11
@@ -33,12 +32,7 @@ fn upscale_3d_voxel_grid_2x(
     let mut out = vec![None; ux * uy * uz];
 
     let sample = |x: isize, y: isize, z: isize| -> Option<[f32; 3]> {
-        if x < 0
-            || y < 0
-            || z < 0
-            || (x as usize) >= sx
-            || (y as usize) >= sy
-            || (z as usize) >= sz
+        if x < 0 || y < 0 || z < 0 || (x as usize) >= sx || (y as usize) >= sy || (z as usize) >= sz
         {
             None
         } else {
@@ -452,7 +446,9 @@ pub(super) fn emit_crisp_vxl_limb_faces(
     for vi in 0..v_count {
         let p = limb_pos[vi];
         let sn = smooth_normals[vi];
-        let sl = (sn[0] * sn[0] + sn[1] * sn[1] + sn[2] * sn[2]).sqrt().max(1e-6);
+        let sl = (sn[0] * sn[0] + sn[1] * sn[1] + sn[2] * sn[2])
+            .sqrt()
+            .max(1e-6);
         let rx = p[0] - center_gltf[0];
         let ry = (p[1] - center_gltf[1]) * 1.25;
         let rz = p[2] - center_gltf[2];
@@ -473,4 +469,3 @@ pub(super) fn emit_crisp_vxl_limb_faces(
         out_indices.extend_from_slice(&[base_v + i0, base_v + i1, base_v + i2]);
     }
 }
-

@@ -1,11 +1,12 @@
-use anyhow::{bail, Context, Result};
+mod cli_commands;
+mod cli_legacy;
+
+use anyhow::{bail, Result};
 use clap::{Parser, Subcommand};
+use cli_legacy::print_smart_report;
+use rts_asset_pipeline::{discovery, inspector, scaffold};
 use rts_sdk::loader::LoadedMod;
-use rts_sdk::validator::{validate_mod, Severity};
-use rts_asset_pipeline::{
-    discovery, doc_gen, inspector, mesh_builder, openra, packager, scaffold, westwood,
-};
-use std::fs;
+use rts_sdk::validator::validate_mod;
 use std::io::{self, Write};
 use std::path::{Path, PathBuf};
 
@@ -20,7 +21,7 @@ struct Cli {
 }
 
 #[derive(Subcommand, Debug)]
-enum Commands {
+pub(crate) enum Commands {
     /// Smart Auto-Import: Automatically detects Westwood (.ini, .mix, .vxl) or OpenRA (.yaml) files/folders and converts them
     Import {
         /// Path to any Westwood or OpenRA file or folder (.ini, .mix, .vxl, .yaml, or mod folder)
@@ -64,10 +65,16 @@ enum Commands {
         #[arg(long, default_value = "allies")]
         faction: String,
     },
-    /// Convert legacy Westwood INI rules (rules.ini / rulesmd.ini) and optional .vxl models into a new RTS mod
+    /// Convert legacy Westwood INI rules (rules.ini / rulesmd.ini) + optional art.ini, sound.ini, eva.ini and .vxl/.shp assets into a new RTS mod
     ConvertWestwood {
         #[arg(long)]
         rules_ini: PathBuf,
+        #[arg(long)]
+        art_ini: Option<PathBuf>,
+        #[arg(long)]
+        sound_ini: Option<PathBuf>,
+        #[arg(long)]
+        eva_ini: Option<PathBuf>,
         #[arg(long)]
         vxl_dir: Option<PathBuf>,
         #[arg(long)]
@@ -77,16 +84,27 @@ enum Commands {
         #[arg(long, default_value = "Converted Westwood Mod")]
         mod_name: String,
     },
-    /// Convert a single Westwood .vxl voxel 3D model (with optional 768-byte .pal palette) into a .glb 3D file
+    /// Convert a Westwood .csf binary string table into a clean locales/<lang>.toml file
+    ConvertCsf {
+        #[arg(long)]
+        input: PathBuf,
+        #[arg(long)]
+        output: PathBuf,
+        #[arg(long)]
+        lang: Option<String>,
+    },
+    /// Convert a single Westwood .vxl voxel 3D model (with optional .hva animation and 768-byte .pal palette) into a .glb 3D file
     ConvertVxl {
         #[arg(long)]
         input: PathBuf,
+        #[arg(long)]
+        hva: Option<PathBuf>,
         #[arg(long)]
         palette: Option<PathBuf>,
         #[arg(long)]
         output: PathBuf,
     },
-    /// Extract files from an unencrypted classic Westwood .mix archive
+    /// Extract files from a classic or Blowfish-encrypted Westwood .mix archive
     ExtractMix {
         #[arg(long)]
         input: PathBuf,
@@ -94,6 +112,18 @@ enum Commands {
         output_dir: PathBuf,
         #[arg(long, default_value = "")]
         names: String,
+        /// Optional hex-encoded 56-byte Blowfish key override for custom encrypted .mix archives
+        #[arg(long)]
+        key_hex: Option<String>,
+    },
+    /// Convert Westwood WSADPCM .aud, IMA ADPCM .wav, or audio.bag (+ audio.idx) sound banks into standard 16-bit PCM .wav files
+    ExtractAudio {
+        #[arg(long)]
+        input: PathBuf,
+        #[arg(long)]
+        idx: Option<PathBuf>,
+        #[arg(long)]
+        output: PathBuf,
     },
     /// Convert OpenRA MiniYAML rules, weapons, and optional map.yaml into a new RTS mod
     ConvertOpenra {
@@ -110,19 +140,30 @@ enum Commands {
         #[arg(long, default_value = "Converted OpenRA Mod")]
         mod_name: String,
     },
-    /// Pack a mod directory into a portable .rtsmod.json bundle with deterministic content_hash
+    /// Pack a mod directory into a Zlib-compressed RTSMOD03 .rtsmod archive with deterministic content_hash
     Pack {
         #[arg(long, default_value = "rust-ra2")]
         mod_path: PathBuf,
         #[arg(short, long)]
         output: PathBuf,
     },
-    /// Unpack a .rtsmod.json bundle into a target directory and verify its content_hash
+    /// Unpack an RTSMOD03 / RTSMOD02 .rtsmod archive into a target directory and verify its content_hash
     Unpack {
         #[arg(short, long)]
         input: PathBuf,
         #[arg(short, long)]
         output_dir: PathBuf,
+    },
+    /// Cook a validated mod into a self-contained standalone game distribution folder (KTX2 mipmapped textures + cameo atlas + RTSMOD03 archive + game_bundle.toml)
+    CookStandalone {
+        #[arg(long, default_value = "rust-ra2")]
+        mod_path: PathBuf,
+        #[arg(short, long)]
+        output_dir: PathBuf,
+        #[arg(long)]
+        title: Option<String>,
+        #[arg(long, num_args = 0..=1, default_missing_value = "true", default_value_t = true)]
+        lock_player_mode: bool,
     },
     /// Run deterministic 1v1 unit duel matrix & AI vs AI faction balance benchmark (with >2.0x cost-efficiency warnings)
     BenchmarkBalance {
@@ -139,6 +180,13 @@ enum Commands {
     GenerateDocs {
         #[arg(short, long, default_value = "docs/MOD_DEV_KIT.md")]
         output: PathBuf,
+    },
+    /// Auto-derive all 14 schemars JSON Schemas (<mod>/schemas/*.schema.json), <mod>/taplo.toml, and docs/MOD_SCHEMA_REFERENCE.md
+    GenDocs {
+        #[arg(long, default_value = "rust-ra2")]
+        mod_path: PathBuf,
+        #[arg(long)]
+        reference_output: Option<PathBuf>,
     },
     /// Scaffold a complete new RTS mod project directory (standalone total-conversion or --extends sub-mod)
     NewMod {
@@ -174,58 +222,47 @@ enum Commands {
         #[arg(long, default_value = "rust-ra2")]
         mod_path: PathBuf,
     },
-}
-
-fn read_file_or_dir_with_ext(path: &Path, ext: &str) -> Result<String> {
-    if path.is_file() {
-        return fs::read_to_string(path)
-            .with_context(|| format!("Failed to read file {}", path.display()));
-    }
-    if path.is_dir() {
-        let mut files: Vec<PathBuf> = fs::read_dir(path)
-            .with_context(|| format!("Failed to read directory {}", path.display()))?
-            .filter_map(|e| e.ok().map(|entry| entry.path()))
-            .filter(|p| {
-                p.is_file()
-                    && p.extension()
-                        .and_then(|e| e.to_str())
-                        .map(|e| e.eq_ignore_ascii_case(ext))
-                        .unwrap_or(false)
-            })
-            .collect();
-        files.sort();
-        if files.is_empty() {
-            bail!("Directory {} contains no .{} files", path.display(), ext);
-        }
-        let mut combined = String::new();
-        for f in files {
-            combined.push_str(&fs::read_to_string(&f)?);
-            combined.push('\n');
-        }
-        return Ok(combined);
-    }
-    bail!("Path {} does not exist", path.display())
-}
-
-fn print_smart_report(rep: &discovery::SmartImportReport) {
-    println!("============================================================");
-    println!("  SMART IMPORT COMPLETE");
-    println!("============================================================");
-    println!("  Detected Format  : {}", rep.detected_format);
-    println!("  Output Path      : {}", rep.output_path.display());
-    if let Some(id) = &rep.mod_id {
-        println!("  Mod ID           : {id}");
-        println!(
-            "  Contents         : {} Buildings | {} Units | {} Weapons | {} 3D .glb Models",
-            rep.buildings_count, rep.units_count, rep.weapons_count, rep.models_count
-        );
-        println!("  Validation       : {} Error(s)", rep.validation_errors);
-        println!(
-            "  Quick Launch     : cargo run --manifest-path engine/Cargo.toml -p rts-client-3d -- --mod-path {}",
-            rep.output_path.display()
-        );
-    }
-    println!("============================================================");
+    /// Simplify high-poly .glb meshes via QEM vertex clustering and embed articulated *_LOD1 nodes
+    OptimizeModels {
+        #[arg(long, default_value = "rust-ra2")]
+        mod_path: PathBuf,
+        #[arg(long, default_value_t = 6_000)]
+        max_unit_verts: usize,
+        #[arg(long, default_value_t = 12_000)]
+        max_building_verts: usize,
+        #[arg(long, default_value_t = 0.22)]
+        lod1_ratio: f32,
+        #[arg(long)]
+        force: bool,
+    },
+    /// Import modern .glb, .png, .ogg, .flac, .wav, or .mp4 assets into a mod workspace with auto AABB/socket/clip inspection
+    ImportAsset {
+        /// Path to the modern asset file (.glb, .png, .ogg, .flac, .wav, .mp4)
+        #[arg(value_name = "SOURCE", required_unless_present = "input")]
+        source: Option<PathBuf>,
+        /// Optional named alias for the source asset path
+        #[arg(long)]
+        input: Option<PathBuf>,
+        #[arg(long, default_value = "rust-ra2")]
+        mod_path: PathBuf,
+        #[arg(long)]
+        id: Option<String>,
+        #[arg(long)]
+        as_building: bool,
+        #[arg(long, num_args = 0..=1, default_missing_value = "true", default_value_t = true)]
+        render_cameos: bool,
+        #[arg(long, num_args = 0..=1, default_missing_value = "true", default_value_t = true)]
+        optimize_glb: bool,
+    },
+    /// Render deterministic 96x72 RGBA .png cameos directly from .glb 3D models via 2x2 SSAA software rasterization
+    RenderCameos {
+        #[arg(long, default_value = "rust-ra2")]
+        mod_path: PathBuf,
+        #[arg(long)]
+        def_id: Option<String>,
+        #[arg(long)]
+        only_missing: bool,
+    },
 }
 
 fn prompt_line(prompt: &str) -> Result<String> {
@@ -249,7 +286,11 @@ fn run_interactive_wizard() -> Result<()> {
     println!("====================================================================");
 
     let choice = prompt_line("\nEnter selection [1-5, Enter=2]: ")?;
-    let choice = if choice.is_empty() { "2" } else { choice.as_str() };
+    let choice = if choice.is_empty() {
+        "2"
+    } else {
+        choice.as_str()
+    };
 
     match choice {
         "1" => {
@@ -307,7 +348,10 @@ fn run_interactive_wizard() -> Result<()> {
             };
             scaffold::generate_scaffold_model("rust-ra2", &id)?;
             println!("Generated 3D model: rust-ra2/assets/models/{id}.glb\n");
-            print!("{}", scaffold::format_unit_scaffold_toml(&id, &name, faction));
+            print!(
+                "{}",
+                scaffold::format_unit_scaffold_toml(&id, &name, faction)
+            );
         }
         _ => {
             println!("Exited.");
@@ -323,348 +367,5 @@ fn main() -> Result<()> {
         return run_interactive_wizard();
     };
 
-    match command {
-        Commands::Import { source, output } => {
-            let rep = discovery::smart_import(&source, output.as_deref())?;
-            print_smart_report(&rep);
-        }
-        Commands::DemoConvert { workspace_root } => {
-            let (ww, ora) = discovery::generate_and_convert_demo_packs(&workspace_root)?;
-            print_smart_report(&ww);
-            print_smart_report(&ora);
-        }
-        Commands::GenerateModels { mod_path, force } => {
-            let loaded = LoadedMod::load_from_dir(&mod_path)?;
-            let generated = mesh_builder::generate_mod_models(&loaded, force)?;
-            println!(
-                "Generated {} .glb 3D model file(s) for mod '{}'.",
-                generated.len(),
-                loaded.manifest.id
-            );
-            for path in generated {
-                println!("  + {}", path.display());
-            }
-        }
-        Commands::Validate {
-            mod_path,
-            require_models,
-        } => {
-            let loaded = LoadedMod::load_from_dir(&mod_path)?;
-            let report = validate_mod(&loaded, require_models);
-            for issue in &report.issues {
-                let prefix = match issue.severity {
-                    Severity::Error => "ERROR",
-                    Severity::Warning => "WARN ",
-                };
-                println!("[{prefix}] {}: {}", issue.code, issue.message);
-            }
-            println!(
-                "Validation finished for '{}' ({}): {} error(s), {} warning(s).",
-                loaded.manifest.name,
-                loaded.manifest.id,
-                report.error_count(),
-                report.warning_count()
-            );
-            if !report.is_valid() {
-                bail!("Mod validation failed with {} error(s)", report.error_count());
-            }
-        }
-        Commands::Inspect { mod_path } => {
-            let loaded = LoadedMod::load_from_dir(&mod_path)?;
-            print!("{}", inspector::format_mod_inspection(&loaded));
-        }
-        Commands::ScaffoldUnit {
-            mod_path,
-            id,
-            name,
-            faction,
-        } => {
-            scaffold::generate_scaffold_model(&mod_path, &id)?;
-            println!(
-                "Generated 3D model at {}/assets/models/{id}.glb",
-                mod_path.display()
-            );
-            println!("\nAdd the following snippet to your units.toml:\n");
-            print!("{}", scaffold::format_unit_scaffold_toml(&id, &name, &faction));
-        }
-        Commands::ConvertWestwood {
-            rules_ini,
-            vxl_dir,
-            output_mod,
-            mod_id,
-            mod_name,
-        } => {
-            let ini_text = read_file_or_dir_with_ext(&rules_ini, "ini")?;
-            let bundle =
-                westwood::convert_westwood_ini_to_bundle(&ini_text, &mod_id, &mod_name)?;
-            let models = westwood::write_converted_bundle_to_dir(
-                &bundle,
-                &output_mod,
-                vxl_dir.as_deref(),
-            )?;
-            println!(
-                "Converted Westwood INI '{}' -> mod '{}' at '{}':",
-                rules_ini.display(),
-                bundle.manifest.id,
-                output_mod.display()
-            );
-            println!(
-                "  Buildings: {}, Units: {}, Weapons: {}, 3D .glb Models: {}",
-                bundle.buildings.buildings.len(),
-                bundle.units.units.len(),
-                bundle.weapons.weapons.len(),
-                models.len()
-            );
-        }
-        Commands::ConvertVxl {
-            input,
-            palette,
-            output,
-        } => {
-            let vxl_bytes = fs::read(&input)
-                .with_context(|| format!("Failed to read .vxl file {}", input.display()))?;
-            let pal_bytes = match palette {
-                Some(p) => Some(
-                    fs::read(&p)
-                        .with_context(|| format!("Failed to read .pal file {}", p.display()))?,
-                ),
-                None => None,
-            };
-            let stem = input
-                .file_stem()
-                .and_then(|s| s.to_str())
-                .unwrap_or("voxel_model");
-            let glb_bytes = westwood::convert_vxl_bytes_to_glb(
-                &vxl_bytes,
-                pal_bytes.as_deref(),
-                stem,
-            )?;
-            if let Some(parent) = output.parent() {
-                if !parent.as_os_str().is_empty() {
-                    fs::create_dir_all(parent)?;
-                }
-            }
-            fs::write(&output, &glb_bytes)
-                .with_context(|| format!("Failed to write .glb file {}", output.display()))?;
-            println!(
-                "Converted Westwood VXL '{}' -> '{}' ({} bytes).",
-                input.display(),
-                output.display(),
-                glb_bytes.len()
-            );
-        }
-        Commands::ExtractMix {
-            input,
-            output_dir,
-            names,
-        } => {
-            let mix_bytes = fs::read(&input)
-                .with_context(|| format!("Failed to read .mix file {}", input.display()))?;
-            let extra_names: Vec<String> = names
-                .split(',')
-                .map(str::trim)
-                .filter(|s| !s.is_empty())
-                .map(String::from)
-                .collect();
-            let extracted =
-                westwood::extract_mix_archive(&mix_bytes, &output_dir, &extra_names)?;
-            println!(
-                "Extracted {} file(s) from '{}' into '{}':",
-                extracted.len(),
-                input.display(),
-                output_dir.display()
-            );
-            for path in extracted {
-                println!("  + {}", path.display());
-            }
-        }
-        Commands::ConvertOpenra {
-            rules_yaml,
-            weapons_yaml,
-            map_yaml,
-            output_mod,
-            mod_id,
-            mod_name,
-        } => {
-            let rules_str = read_file_or_dir_with_ext(&rules_yaml, "yaml")?;
-            let weapons_str = match &weapons_yaml {
-                Some(p) => Some(read_file_or_dir_with_ext(p, "yaml")?),
-                None => None,
-            };
-            let map_str = match &map_yaml {
-                Some(p) => Some(
-                    fs::read_to_string(p)
-                        .with_context(|| format!("Failed to read map.yaml {}", p.display()))?,
-                ),
-                None => None,
-            };
-            let bundle = openra::convert_openra_yaml_to_bundle(
-                &rules_str,
-                weapons_str.as_deref(),
-                map_str.as_deref(),
-                &mod_id,
-                &mod_name,
-            )?;
-            let models =
-                westwood::write_converted_bundle_to_dir(&bundle, &output_mod, None)?;
-            println!(
-                "Converted OpenRA MiniYAML '{}' -> mod '{}' at '{}':",
-                rules_yaml.display(),
-                bundle.manifest.id,
-                output_mod.display()
-            );
-            println!(
-                "  Buildings: {}, Units: {}, Weapons: {}, Map: '{}', 3D .glb Models: {}",
-                bundle.buildings.buildings.len(),
-                bundle.units.units.len(),
-                bundle.weapons.weapons.len(),
-                bundle.map.name,
-                models.len()
-            );
-        }
-        Commands::Pack { mod_path, output } => {
-            let pkg = packager::pack_mod_to_file(&mod_path, &output)?;
-            println!(
-                "Packed mod '{}' v{} ({} files, content_hash={:016x}) -> '{}'",
-                pkg.mod_id,
-                pkg.mod_version,
-                pkg.files.len(),
-                pkg.content_hash,
-                output.display()
-            );
-        }
-        Commands::Unpack { input, output_dir } => {
-            let loaded = packager::unpack_mod_from_file(&input, &output_dir)?;
-            println!(
-                "Unpacked mod '{}' v{} (content_hash={:016x} verified) -> '{}'",
-                loaded.manifest.id,
-                loaded.manifest.version,
-                loaded.content_hash(),
-                output_dir.display()
-            );
-        }
-        Commands::BenchmarkBalance {
-            mod_path,
-            matches,
-            ticks,
-            output,
-        } => {
-            let loaded = LoadedMod::load_from_dir(&mod_path)?;
-            let duel_report = rts_simulation::benchmark::run_unit_duel_matrix(&loaded, ticks);
-            let mut md = duel_report.to_markdown_table();
-            let factions: Vec<String> = loaded.factions.keys().cloned().collect();
-            if factions.len() >= 2 {
-                let summary = rts_simulation::benchmark::run_faction_ai_matchup_batch(
-                    &loaded,
-                    &factions[0],
-                    &factions[1],
-                    matches,
-                    ticks,
-                );
-                md.push_str(&format!(
-                    "\n## Headless AI vs AI Faction Matchup (`{}` vs `{}`, {} matches)\n\n- `{}` Wins: {} (Avg Army Value: ${})\n- `{}` Wins: {} (Avg Army Value: ${})\n- Draws: {}\n",
-                    summary.faction_a,
-                    summary.faction_b,
-                    summary.matches_played,
-                    summary.faction_a,
-                    summary.faction_a_wins,
-                    summary.faction_a_avg_army_value,
-                    summary.faction_b,
-                    summary.faction_b_wins,
-                    summary.faction_b_avg_army_value,
-                    summary.draws
-                ));
-            }
-            println!("{md}");
-            if let Some(out_path) = output {
-                if let Some(p) = out_path.parent() {
-                    if !p.as_os_str().is_empty() {
-                        fs::create_dir_all(p)?;
-                    }
-                }
-                fs::write(&out_path, &md)?;
-                println!("Balance report written to {}", out_path.display());
-            }
-        }
-        Commands::GenerateDocs { output } => {
-            doc_gen::write_mod_dev_kit_markdown(&output)?;
-            println!(
-                "Mod Development Kit reference manual generated at {}",
-                output.display()
-            );
-        }
-        Commands::NewMod {
-            id,
-            name,
-            extends,
-            output,
-        } => {
-            scaffold::scaffold_new_mod_project(&output, &id, &name, extends.as_deref())?;
-            println!(
-                "New RTS mod '{}' ({}) scaffolded at {}",
-                name,
-                id,
-                output.display()
-            );
-        }
-        Commands::GenerateSchema { output_dir } => {
-            let files = doc_gen::generate_json_schemas_and_taplo(&output_dir)?;
-            println!(
-                "Generated {} JSON-Schema & Taplo config files in {}",
-                files.len(),
-                output_dir.display()
-            );
-        }
-        Commands::GenerateMap {
-            mod_path,
-            seed,
-            players,
-            size,
-            output,
-        } => {
-            let loaded = LoadedMod::load_from_dir(&mod_path)?;
-            let cfg = rts_simulation::map_gen::MapGenConfig {
-                id: output
-                    .file_stem()
-                    .and_then(|s| s.to_str())
-                    .unwrap_or("proc_arena")
-                    .to_string(),
-                name: format!("Procedural Arena ({players}P)"),
-                seed,
-                width: size,
-                height: size,
-                player_count: players,
-                symmetry: rts_simulation::world::MapSymmetryMode::Rotational2Way,
-                ore_patches_per_player: 2,
-            };
-            let map_def = rts_simulation::map_gen::generate_procedural_map(&cfg, &loaded);
-            map_def.save_to_file(&output)?;
-            println!(
-                "Generated procedural {}x{} map '{}' ({} players, seed {}) at {}",
-                map_def.width,
-                map_def.height,
-                map_def.name,
-                players,
-                seed,
-                output.display()
-            );
-        }
-        Commands::TestMod { mod_path } => {
-            let loaded = LoadedMod::load_from_dir(&mod_path)?;
-            let outcomes = rts_simulation::scenario_runner::run_all_mod_tests_in_dir(&loaded)?;
-            for o in &outcomes {
-                println!(
-                    "[PASS] Scenario '{}' (tick={}, state_hash=0x{:016x})",
-                    o.scenario_name, o.final_tick, o.final_state_hash
-                );
-            }
-            println!(
-                "All {} declarative mod scenario test(s) passed for '{}'!",
-                outcomes.len(),
-                loaded.manifest.id
-            );
-        }
-    }
-
-    Ok(())
+    cli_commands::execute_command(command)
 }

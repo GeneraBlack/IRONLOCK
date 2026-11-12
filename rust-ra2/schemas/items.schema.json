@@ -1,0 +1,743 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "AbilityDef": {
+      "properties": {
+        "allow_auto_cast": {
+          "default": false,
+          "type": "boolean"
+        },
+        "applies_status": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/StatusEffectDef"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "cast_vfx_id": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "cooldown_reduction_per_rank": {
+          "default": 0.0,
+          "format": "float",
+          "type": "number"
+        },
+        "cooldown_secs": {
+          "default": 0.0,
+          "format": "float",
+          "type": "number"
+        },
+        "cost": {
+          "default": 0,
+          "format": "uint32",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "default_auto_cast": {
+          "default": false,
+          "type": "boolean"
+        },
+        "energy_cost": {
+          "default": 0.0,
+          "format": "float",
+          "type": "number"
+        },
+        "id": {
+          "type": "string"
+        },
+        "impact_vfx_id": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "max_rank": {
+          "default": 1,
+          "format": "uint8",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "payloads": {
+          "default": [],
+          "items": {
+            "$ref": "#/definitions/EffectPayload"
+          },
+          "type": "array"
+        },
+        "radius": {
+          "default": 0.0,
+          "format": "float",
+          "type": "number"
+        },
+        "range": {
+          "default": 0.0,
+          "format": "float",
+          "type": "number"
+        },
+        "script_hook": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "target_mode": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/AbilityTargetMode"
+            }
+          ],
+          "default": "self_only"
+        },
+        "value_scale_per_rank": {
+          "default": 0.0,
+          "format": "float",
+          "type": "number"
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ],
+      "type": "object"
+    },
+    "AbilityTargetMode": {
+      "enum": [
+        "self_only",
+        "single_entity",
+        "ground_point",
+        "area_radius"
+      ],
+      "type": "string"
+    },
+    "BuffModifierSpec": {
+      "properties": {
+        "armor_mult": {
+          "default": 1.0,
+          "format": "float",
+          "type": "number"
+        },
+        "build_speed_mult": {
+          "default": 1.0,
+          "format": "float",
+          "type": "number"
+        },
+        "damage_mult": {
+          "default": 1.0,
+          "format": "float",
+          "type": "number"
+        },
+        "dispel_category": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "fire_rate_mult": {
+          "default": 1.0,
+          "format": "float",
+          "type": "number"
+        },
+        "hp_regen_per_sec": {
+          "default": 0.0,
+          "format": "float",
+          "type": "number"
+        },
+        "max_stacks": {
+          "default": 1,
+          "format": "uint8",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "range_bonus": {
+          "default": 0.0,
+          "format": "float",
+          "type": "number"
+        },
+        "speed_mult": {
+          "default": 1.0,
+          "format": "float",
+          "type": "number"
+        },
+        "stack_policy": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/StackPolicy"
+            }
+          ],
+          "default": "refresh"
+        },
+        "vision_mult": {
+          "default": 1.0,
+          "format": "float",
+          "type": "number"
+        }
+      },
+      "type": "object"
+    },
+    "EffectPayload": {
+      "oneOf": [
+        {
+          "properties": {
+            "count": {
+              "default": 1,
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "kind": {
+              "enum": [
+                "spawn_units"
+              ],
+              "type": "string"
+            },
+            "parachute": {
+              "default": false,
+              "type": "boolean"
+            },
+            "unit_id": {
+              "default": null,
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "duration_secs": {
+              "format": "float",
+              "type": "number"
+            },
+            "kind": {
+              "enum": [
+                "reveal_area"
+              ],
+              "type": "string"
+            },
+            "radius_tiles": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "duration_secs",
+            "kind",
+            "radius_tiles"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "damage": {
+              "format": "float",
+              "type": "number"
+            },
+            "friendly_fire": {
+              "default": false,
+              "type": "boolean"
+            },
+            "kind": {
+              "enum": [
+                "area_damage"
+              ],
+              "type": "string"
+            },
+            "radius": {
+              "format": "float",
+              "type": "number"
+            }
+          },
+          "required": [
+            "damage",
+            "kind",
+            "radius"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "dps": {
+              "format": "float",
+              "type": "number"
+            },
+            "duration_secs": {
+              "format": "float",
+              "type": "number"
+            },
+            "is_toxic_cloud": {
+              "default": false,
+              "type": "boolean"
+            },
+            "kind": {
+              "enum": [
+                "spawn_hazard_zone"
+              ],
+              "type": "string"
+            },
+            "radius": {
+              "format": "float",
+              "type": "number"
+            }
+          },
+          "required": [
+            "dps",
+            "duration_secs",
+            "kind",
+            "radius"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "buildings_only": {
+              "default": false,
+              "type": "boolean"
+            },
+            "friendly_only": {
+              "default": false,
+              "type": "boolean"
+            },
+            "kills_organic_infantry": {
+              "default": false,
+              "type": "boolean"
+            },
+            "kind": {
+              "enum": [
+                "apply_area_status"
+              ],
+              "type": "string"
+            },
+            "radius": {
+              "format": "float",
+              "type": "number"
+            },
+            "status": {
+              "$ref": "#/definitions/StatusEffectDef"
+            }
+          },
+          "required": [
+            "kind",
+            "radius",
+            "status"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "chrono_disable_secs": {
+              "default": 1.0,
+              "format": "float",
+              "type": "number"
+            },
+            "kind": {
+              "enum": [
+                "teleport_units"
+              ],
+              "type": "string"
+            },
+            "max_units": {
+              "default": 6,
+              "format": "uint",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "radius": {
+              "format": "float",
+              "type": "number"
+            },
+            "vaporize_organic_infantry": {
+              "default": true,
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "kind",
+            "radius"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "into_unit_id": {
+              "default": null,
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "kind": {
+              "enum": [
+                "mutate_organic_infantry"
+              ],
+              "type": "string"
+            },
+            "radius": {
+              "format": "float",
+              "type": "number"
+            }
+          },
+          "required": [
+            "kind",
+            "radius"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "blast_damage": {
+              "default": 0.0,
+              "format": "float",
+              "type": "number"
+            },
+            "kind": {
+              "enum": [
+                "mind_control_wave"
+              ],
+              "type": "string"
+            },
+            "max_units": {
+              "default": 8,
+              "format": "uint",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "radius": {
+              "format": "float",
+              "type": "number"
+            }
+          },
+          "required": [
+            "kind",
+            "radius"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "kind": {
+              "enum": [
+                "unload_passengers"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "type": "object"
+        }
+      ]
+    },
+    "ItemDef": {
+      "description": "Equippable or consumable inventory item definition (`items/items.toml`).",
+      "properties": {
+        "active_ability": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/AbilityDef"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "bonus_max_energy": {
+          "default": 0.0,
+          "format": "float",
+          "type": "number"
+        },
+        "bonus_max_health": {
+          "default": 0.0,
+          "format": "float",
+          "type": "number"
+        },
+        "consumable": {
+          "default": false,
+          "type": "boolean"
+        },
+        "cost": {
+          "default": 0,
+          "format": "uint32",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "description": {
+          "default": "",
+          "type": "string"
+        },
+        "icon": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "id": {
+          "type": "string"
+        },
+        "max_charges": {
+          "default": 1,
+          "format": "uint8",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "passive_modifiers": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BuffModifierSpec"
+            }
+          ],
+          "default": {
+            "armor_mult": 1.0,
+            "build_speed_mult": 1.0,
+            "damage_mult": 1.0,
+            "dispel_category": null,
+            "fire_rate_mult": 1.0,
+            "hp_regen_per_sec": 0.0,
+            "max_stacks": 1,
+            "range_bonus": 0.0,
+            "speed_mult": 1.0,
+            "stack_policy": "refresh",
+            "vision_mult": 1.0
+          }
+        },
+        "visual_model": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ],
+      "type": "object"
+    },
+    "StackPolicy": {
+      "enum": [
+        "refresh",
+        "stack_intensity",
+        "independent"
+      ],
+      "type": "string"
+    },
+    "StatusEffectDef": {
+      "properties": {
+        "armor_multiplier": {
+          "default": 1.0,
+          "format": "float",
+          "type": "number"
+        },
+        "build_speed_mult": {
+          "default": 1.0,
+          "format": "float",
+          "type": "number"
+        },
+        "confused": {
+          "default": false,
+          "type": "boolean"
+        },
+        "cure_at_service_depot": {
+          "default": false,
+          "type": "boolean"
+        },
+        "damage_multiplier": {
+          "default": 1.0,
+          "format": "float",
+          "type": "number"
+        },
+        "delayed_burst_damage": {
+          "default": 0.0,
+          "format": "float",
+          "type": "number"
+        },
+        "delayed_burst_splash": {
+          "default": 0.0,
+          "format": "float",
+          "type": "number"
+        },
+        "disarmed": {
+          "default": false,
+          "type": "boolean"
+        },
+        "dispel_category": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "display_label": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "dot_dps": {
+          "default": 0.0,
+          "format": "float",
+          "type": "number"
+        },
+        "duration_secs": {
+          "format": "float",
+          "type": "number"
+        },
+        "fire_rate_mult": {
+          "default": 1.0,
+          "format": "float",
+          "type": "number"
+        },
+        "hp_regen_per_sec": {
+          "default": 0.0,
+          "format": "float",
+          "type": "number"
+        },
+        "id": {
+          "type": "string"
+        },
+        "immobilized": {
+          "default": false,
+          "type": "boolean"
+        },
+        "invulnerable": {
+          "default": false,
+          "type": "boolean"
+        },
+        "max_stacks": {
+          "default": 1,
+          "format": "uint8",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "modifier": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/BuffModifierSpec"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "on_kill_spawn_unit": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "phased_out": {
+          "default": false,
+          "type": "boolean"
+        },
+        "power_charge_boost": {
+          "default": false,
+          "type": "boolean"
+        },
+        "range_bonus": {
+          "default": 0.0,
+          "format": "float",
+          "type": "number"
+        },
+        "speed_multiplier": {
+          "default": 1.0,
+          "format": "float",
+          "type": "number"
+        },
+        "stack_policy": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/StackPolicy"
+            }
+          ],
+          "default": "refresh"
+        },
+        "stunned": {
+          "default": false,
+          "type": "boolean"
+        },
+        "vfx_ring_color": {
+          "default": null,
+          "items": {
+            "format": "float",
+            "type": "number"
+          },
+          "maxItems": 4,
+          "minItems": 4,
+          "type": [
+            "array",
+            "null"
+          ]
+        },
+        "vfx_style": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/StatusVfxStyle"
+            }
+          ],
+          "default": "none"
+        },
+        "vision_mult": {
+          "default": 1.0,
+          "format": "float",
+          "type": "number"
+        }
+      },
+      "required": [
+        "duration_secs",
+        "id"
+      ],
+      "type": "object"
+    },
+    "StatusVfxStyle": {
+      "enum": [
+        "none",
+        "ring",
+        "electric_arcs",
+        "parasite_sparks",
+        "countdown_beacon",
+        "tentacle_grapple",
+        "temporal_vortex"
+      ],
+      "type": "string"
+    }
+  },
+  "properties": {
+    "items": {
+      "default": [],
+      "items": {
+        "$ref": "#/definitions/ItemDef"
+      },
+      "type": "array"
+    }
+  },
+  "title": "ItemCatalog",
+  "type": "object"
+}

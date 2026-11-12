@@ -14,23 +14,23 @@ buildings = "buildings/buildings.toml"
 units = "units/units.toml"
 
 [rules]
-default_liberated_worker_unit = "soviet_conscript"
-default_mutant_unit = "yuri_brute"
+default_liberated_worker_unit = "e2"
+default_mutant_unit = "e2"
 
 [rules.free_unit_by_faction]
-allies = "grizzly_tank"
-soviets = "rhino_tank"
-yuri = "lasher_tank"
+allies = "mtnk"
+soviets = "htnk"
+yuri = "htnk"
 
 [rules.default_infantry_by_faction]
-allies = "allied_gi"
-soviets = "soviet_conscript"
-yuri = "yuri_initiate"
+allies = "e1"
+soviets = "e2"
+yuri = "yuri"
 
 [rules.stolen_tech_commando_by_pair]
-"allies:soviets" = "chrono_ivan"
-"soviets:soviets" = "yuri_prime"
-"*:allies" = "chrono_commando"
-"*:yuri" = "psi_commando"
-"*:soviets" = "chrono_ivan"
+"allies:soviets" = "civan"
+"soviets:soviets" = "civan"
+"*:allies" = "ccomand"
+"*:yuri" = "yuripr"
+"*:soviets" = "civan"
 

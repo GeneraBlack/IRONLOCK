@@ -11,6 +11,7 @@ import {
   MatchListResponse,
   MatchRecord,
   ProjectOverview,
+  RegisteredLobbyResponse,
   RegistryStats,
 } from './types.js';
 
@@ -76,8 +77,8 @@ export async function fetchLobbies(
 
 export async function registerLobby(
   ann: LobbyAnnouncement
-): Promise<LobbyEntry> {
-  return requestJson<LobbyEntry>('/api/lobbies', {
+): Promise<RegisteredLobbyResponse> {
+  return requestJson<RegisteredLobbyResponse>('/api/lobbies', {
     method: 'POST',
     body: JSON.stringify(ann),
   });
@@ -85,22 +86,28 @@ export async function registerLobby(
 
 export async function sendLobbyHeartbeat(
   lobbyId: string,
-  hb: LobbyHeartbeatRequest
+  hb: LobbyHeartbeatRequest,
+  hostToken?: string
 ): Promise<LobbyEntry> {
   return requestJson<LobbyEntry>(
     `/api/lobbies/${encodeURIComponent(lobbyId)}/heartbeat`,
     {
       method: 'POST',
+      headers: hostToken ? { 'X-Host-Token': hostToken } : {},
       body: JSON.stringify(hb),
     }
   );
 }
 
-export async function deleteLobby(lobbyId: string): Promise<boolean> {
+export async function deleteLobby(
+  lobbyId: string,
+  hostToken?: string
+): Promise<boolean> {
   const res = await requestJson<{ deleted: boolean }>(
     `/api/lobbies/${encodeURIComponent(lobbyId)}`,
     {
       method: 'DELETE',
+      headers: hostToken ? { 'X-Host-Token': hostToken } : {},
     }
   );
   return res.deleted;

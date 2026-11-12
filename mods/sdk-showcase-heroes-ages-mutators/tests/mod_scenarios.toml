@@ -1,0 +1,149 @@
+# ==============================================================================
+# AETHERION SDK SHOWCASE #2 — DECLARATIVE DETERMINISTIC SCENARIO SUITE
+# Covers: Streaming Multi-Worker Assist Construction, Passive Multi-Resource
+# Trickle, Commander Hero Combat & Relic Pickup, Custom ArmorTag x WarheadTag
+# Damage Matrix, Control-Point Crossroads, and AI Behavior Tree Execution.
+# ==============================================================================
+
+# 1. BAR-STYLE STREAMING ECONOMY & MULTI-WORKER ASSIST CONSTRUCTION SCENARIO
+[[scenarios]]
+name = "streaming_multi_worker_assist_and_economy_trickle_test"
+map_id = "citadel_crossroads"
+ticks = 200
+clear_initial_entities = true
+
+[[scenarios.spawns]]
+player_id = 1
+building_id = "citadel_hq"
+tile = [8, 8]
+
+[[scenarios.spawns]]
+player_id = 1
+building_id = "aether_extractor"
+tile = [12, 8]
+
+[[scenarios.spawns]]
+player_id = 1
+unit_id = "acolyte_worker"
+tile = [13, 12]
+tag = "acolyte1"
+
+[[scenarios.spawns]]
+player_id = 1
+unit_id = "acolyte_worker"
+tile = [13, 13]
+tag = "acolyte2"
+
+[[scenarios.commands]]
+tick = 2
+command = "worker_build @acolyte1 vanguard_barracks 14 12 1"
+
+[[scenarios.commands]]
+tick = 3
+command = "worker_build @acolyte2 vanguard_barracks 14 12 1"
+
+[[scenarios.assertions]]
+kind = "ai_built_building_role"
+player_id = 1
+role = "barracks"
+min_count = 1
+
+[[scenarios.assertions]]
+kind = "player_credits_at_least"
+player_id = 1
+min_credits = 1500
+
+[[scenarios.assertions]]
+kind = "entity_health_fraction_above"
+tag = "acolyte1"
+min_fraction = 0.95
+
+[[scenarios.assertions]]
+kind = "max_avg_tick_ms"
+max_ms = 20.0
+
+# 2. COMMANDER HERO RELIC PICKUP, RHAI BUFF HOOK & CUSTOM DAMAGE MATRIX DUEL
+[[scenarios]]
+name = "archon_hero_relic_pickup_and_warhead_matrix_combat_test"
+map_id = "citadel_crossroads"
+ticks = 140
+clear_initial_entities = true
+
+[[scenarios.spawns]]
+player_id = 1
+building_id = "citadel_hq"
+tile = [8, 8]
+
+[[scenarios.spawns]]
+player_id = 1
+unit_id = "archon_commander"
+tile = [31, 30]
+tag = "archon_hero"
+
+[[scenarios.spawns]]
+player_id = 2
+building_id = "citadel_hq"
+tile = [54, 54]
+
+[[scenarios.spawns]]
+player_id = 2
+unit_id = "legion_sentinel"
+tile = [34, 30]
+tag = "pact_raider"
+
+[[scenarios.commands]]
+tick = 1
+command = "move @archon_hero 32 30"
+
+[[scenarios.commands]]
+tick = 16
+command = "attack @archon_hero @pact_raider"
+
+[[scenarios.assertions]]
+kind = "player_units_at_least"
+player_id = 1
+min_count = 1
+
+[[scenarios.assertions]]
+kind = "player_units_at_most"
+player_id = 2
+max_count = 0
+
+[[scenarios.assertions]]
+kind = "entity_health_fraction_above"
+tag = "archon_hero"
+min_fraction = 0.45
+
+[[scenarios.assertions]]
+kind = "max_avg_tick_ms"
+max_ms = 20.0
+
+# 3. MULTI-ZONE CONTROL-POINT CROSSROADS, PARALLEL TECH & AI BEHAVIOR TREE
+[[scenarios]]
+name = "control_point_crossroads_and_behavior_tree_ai_test"
+map_id = "citadel_crossroads"
+ticks = 120
+clear_initial_entities = false
+
+[[scenarios.commands]]
+tick = 2
+command = "ai_takeover 2 medium"
+
+[[scenarios.assertions]]
+kind = "player_units_at_least"
+player_id = 1
+min_count = 5
+
+[[scenarios.assertions]]
+kind = "player_units_at_least"
+player_id = 2
+min_count = 5
+
+[[scenarios.assertions]]
+kind = "player_credits_at_least"
+player_id = 1
+min_credits = 1800
+
+[[scenarios.assertions]]
+kind = "max_avg_tick_ms"
+max_ms = 25.0

@@ -2,10 +2,15 @@ use super::*;
 use anyhow::{bail, Result};
 use rts_sdk::manifest::{ModCatalogPaths, ModManifest};
 use rts_sdk::schema::{
-    BuildingCatalog, BuildingDef, BuildingRole, FactionCatalog, MapDef, OrePatchDef, UnitCatalog, UnitDef, UnitRole, VisualArchetype,
-    VisualDef, WeaponCatalog, WeaponDef,
+    AudioCatalog, BuildingCatalog, BuildingDef, BuildingRole, FactionCatalog, MapDef, UnitCatalog,
+    UnitDef, UnitRole, UnitVoiceSpec, VisualArchetype, VisualDef, WeaponCatalog, WeaponDef,
 };
 use std::collections::{BTreeMap, BTreeSet};
+
+pub use super::rules_map_audio::parse_westwood_map_ini;
+use super::rules_map_audio::{
+    assemble_westwood_audio_catalog, get_ini_ci, resolve_art_entity_meta, resolve_sound_cue_paths,
+};
 
 pub struct ConvertedModBundle {
     pub manifest: ModManifest,
@@ -14,6 +19,8 @@ pub struct ConvertedModBundle {
     pub buildings: BuildingCatalog,
     pub units: UnitCatalog,
     pub map: MapDef,
+    pub audio: Option<AudioCatalog>,
+    pub model_asset_overrides: BTreeMap<String, String>,
 }
 
 pub fn convert_westwood_ini_to_bundle(
@@ -21,7 +28,23 @@ pub fn convert_westwood_ini_to_bundle(
     mod_id: &str,
     mod_name: &str,
 ) -> Result<ConvertedModBundle> {
-    let ini = WestwoodIni::parse(ini_text);
+    convert_westwood_ini_files_to_bundle(ini_text, None, None, None, mod_id, mod_name)
+}
+
+/// Converts Westwood `rules.ini`/`rulesmd.ini` together with optional companion `art.ini`/`artmd.ini`,
+/// `sound.ini`/`soundmd.ini`, and `eva.ini`/`evamd.ini` into a validated `ConvertedModBundle`.
+pub fn convert_westwood_ini_files_to_bundle(
+    rules_ini_text: &str,
+    art_ini_text: Option<&str>,
+    sound_ini_text: Option<&str>,
+    eva_ini_text: Option<&str>,
+    mod_id: &str,
+    mod_name: &str,
+) -> Result<ConvertedModBundle> {
+    let ini = WestwoodIni::parse(rules_ini_text);
+    let art_ini = art_ini_text.map(WestwoodIni::parse);
+    let sound_ini = sound_ini_text.map(WestwoodIni::parse);
+    let eva_ini = eva_ini_text.map(WestwoodIni::parse);
 
     let mut building_sections: Vec<String> = ini.list_values("BuildingTypes");
     let mut infantry_sections: Vec<String> = ini.list_values("InfantryTypes");
@@ -72,6 +95,9 @@ pub fn convert_westwood_ini_to_bundle(
     }
 
     let mut weapons_map: BTreeMap<String, WeaponDef> = BTreeMap::new();
+    let mut weapon_raw_sections: BTreeMap<String, String> = BTreeMap::new();
+    let mut model_asset_overrides: BTreeMap<String, String> = BTreeMap::new();
+    let mut unit_voices_map: BTreeMap<String, UnitVoiceSpec> = BTreeMap::new();
     let mut raw_buildings = Vec::new();
     let mut known_building_ids = BTreeSet::new();
     let mut has_custom_script_hooks = false;
@@ -113,6 +139,9 @@ pub fn convert_westwood_ini_to_bundle(
             .map(|w| {
                 let w_def = extract_weapon_def(w, &ini);
                 let w_id = w_def.id.clone();
+                weapon_raw_sections
+                    .entry(w_id.clone())
+                    .or_insert_with(|| w.to_string());
                 weapons_map.entry(w_id.clone()).or_insert(w_def);
                 w_id
             });
@@ -121,6 +150,11 @@ pub fn convert_westwood_ini_to_bundle(
             infer_building_role_and_archetype(sec, &ini, power_delta, primary_weapon.is_some());
         let footprint = ini
             .get(sec, "Foundation")
+            .or_else(|| {
+                art_ini
+                    .as_ref()
+                    .and_then(|a| get_ini_ci(a, sec, "Foundation"))
+            })
             .and_then(|f| {
                 let (w, h) = f.split_once('x')?;
                 Some([w.trim().parse().ok()?, h.trim().parse().ok()?])
@@ -140,6 +174,12 @@ pub fn convert_westwood_ini_to_bundle(
             parse_bool(ini.get(sec, "WaterBound")) || parse_bool(ini.get(sec, "Naval"));
         let detects_cloak =
             parse_bool(ini.get(sec, "Sensors")) || parse_bool(ini.get(sec, "DetectDisguise"));
+
+        let (cameo_icon, model_override, voxel_flag) =
+            resolve_art_entity_meta(sec, &id, &ini, art_ini.as_ref());
+        if let Some(ov) = model_override {
+            model_asset_overrides.insert(id.clone(), ov);
+        }
 
         let mut script_hooks = BTreeMap::new();
         if parse_bool(ini.get(sec, "SelfHealing")) {
@@ -194,11 +234,16 @@ pub fn convert_westwood_ini_to_bundle(
                 script_hooks,
                 visual: VisualDef {
                     model: format!("assets/models/{id}.glb"),
-                    icon: None,
+                    icon: cameo_icon,
                     archetype,
                     scale: [footprint[0] as f32 * 0.9, 1.4, footprint[1] as f32 * 0.9],
                     primary_color,
                     team_color_tint: true,
+                    has_turret: parse_bool(ini.get(sec, "Turret"))
+                        || voxel_flag.unwrap_or(false)
+                            && parse_bool(ini.get(sec, "TurretAnimIsVoxel"))
+                        || (archetype == VisualArchetype::Turret
+                            && !matches!(id.as_str(), "atesla" | "tesla" | "tsla")),
                     ..Default::default()
                 },
                 ..BuildingDef::default()
@@ -269,6 +314,9 @@ pub fn convert_westwood_ini_to_bundle(
             .map(|w| {
                 let w_def = extract_weapon_def(w, &ini);
                 let w_id = w_def.id.clone();
+                weapon_raw_sections
+                    .entry(w_id.clone())
+                    .or_insert_with(|| w.to_string());
                 weapons_map.entry(w_id.clone()).or_insert(w_def);
                 w_id
             });
@@ -308,6 +356,9 @@ pub fn convert_westwood_ini_to_bundle(
             .map(|w| {
                 let w_def = extract_weapon_def(w, &ini);
                 let w_id = w_def.id.clone();
+                weapon_raw_sections
+                    .entry(w_id.clone())
+                    .or_insert_with(|| w.to_string());
                 weapons_map.entry(w_id.clone()).or_insert(w_def);
                 w_id
             });
@@ -317,6 +368,9 @@ pub fn convert_westwood_ini_to_bundle(
             .map(|w| {
                 let w_def = extract_weapon_def(w, &ini);
                 let w_id = w_def.id.clone();
+                weapon_raw_sections
+                    .entry(w_id.clone())
+                    .or_insert_with(|| w.to_string());
                 weapons_map.entry(w_id.clone()).or_insert(w_def);
                 w_id
             });
@@ -335,6 +389,50 @@ pub fn convert_westwood_ini_to_bundle(
         } else {
             rts_sdk::schema::MovementDomain::Ground
         };
+
+        let (cameo_icon, model_override, voxel_flag) =
+            resolve_art_entity_meta(&sec, &id, &ini, art_ini.as_ref());
+        if let Some(ov) = model_override {
+            model_asset_overrides.insert(id.clone(), ov);
+        }
+
+        // Extract unit voice links (`VoiceSelect`, `VoiceMove`, `VoiceAttack`, `DieSound`/`VoiceDie`)
+        let select_cues = resolve_sound_cue_paths(
+            get_ini_ci(&ini, &sec, "VoiceSelect"),
+            sound_ini.as_ref(),
+            &ini,
+        );
+        let move_cues = resolve_sound_cue_paths(
+            get_ini_ci(&ini, &sec, "VoiceMove"),
+            sound_ini.as_ref(),
+            &ini,
+        );
+        let attack_cues = resolve_sound_cue_paths(
+            get_ini_ci(&ini, &sec, "VoiceAttack")
+                .or_else(|| get_ini_ci(&ini, &sec, "VoiceSpecialAttack")),
+            sound_ini.as_ref(),
+            &ini,
+        );
+        let death_cues = resolve_sound_cue_paths(
+            get_ini_ci(&ini, &sec, "DieSound").or_else(|| get_ini_ci(&ini, &sec, "VoiceDie")),
+            sound_ini.as_ref(),
+            &ini,
+        );
+        if !select_cues.is_empty()
+            || !move_cues.is_empty()
+            || !attack_cues.is_empty()
+            || !death_cues.is_empty()
+        {
+            unit_voices_map.insert(
+                id.clone(),
+                UnitVoiceSpec {
+                    select: select_cues,
+                    move_order: move_cues,
+                    attack_order: attack_cues,
+                    death: death_cues,
+                },
+            );
+        }
 
         let mut script_hooks = BTreeMap::new();
         if parse_bool(ini.get(&sec, "SelfHealing")) {
@@ -389,11 +487,37 @@ pub fn convert_westwood_ini_to_bundle(
             script_hooks,
             visual: VisualDef {
                 model: format!("assets/models/{id}.glb"),
-                icon: None,
+                icon: cameo_icon,
                 archetype,
                 scale,
                 primary_color,
                 team_color_tint: true,
+                has_turret: parse_bool(ini.get(&sec, "Turret"))
+                    || voxel_flag.unwrap_or(false) && parse_bool(ini.get(&sec, "Turret"))
+                    || (matches!(archetype, VisualArchetype::Tank | VisualArchetype::Ship)
+                        && !matches!(
+                            id.as_str(),
+                            "tnkd"
+                                | "dtruck"
+                                | "amcv"
+                                | "smcv"
+                                | "cmin"
+                                | "sub"
+                                | "sqd"
+                                | "dlph"
+                                | "carrier"
+                                | "lcrf"
+                                | "sapc"
+                                | "v3"
+                                | "dron"
+                        )),
+                spin_speed_deg_per_sec: if archetype == VisualArchetype::Aircraft
+                    && matches!(id.as_str(), "shad" | "hind")
+                {
+                    540.0
+                } else {
+                    0.0
+                },
                 ..Default::default()
             },
             ..UnitDef::default()
@@ -429,6 +553,17 @@ pub fn convert_westwood_ini_to_bundle(
     }
 
     let factions = build_dynamic_faction_catalog(&buildings, &units);
+    let defined_factions: BTreeSet<String> =
+        factions.factions.iter().map(|f| f.id.clone()).collect();
+
+    let audio = assemble_westwood_audio_catalog(
+        &ini,
+        sound_ini.as_ref(),
+        eva_ini.as_ref(),
+        &weapon_raw_sections,
+        unit_voices_map,
+        &defined_factions,
+    );
 
     let map = parse_westwood_map_ini(&ini, &buildings, &units, &factions)
         .unwrap_or_else(|| build_default_converted_map(&buildings, &units));
@@ -444,6 +579,8 @@ pub fn convert_westwood_ini_to_bundle(
         name: mod_name.to_string(),
         version: "0.1.0".to_string(),
         extends: None,
+        depends_on: Vec::new(),
+        default_hud_layout: Default::default(),
         authors: vec!["rts-mod-tools Westwood Converter".to_string()],
         description: "Converted from legacy Westwood INI, VXL & SHP data".to_string(),
         engine_version: "0.1.0".to_string(),
@@ -453,6 +590,7 @@ pub fn convert_westwood_ini_to_bundle(
             weapons: "weapons/weapons.toml".to_string(),
             buildings: "buildings/buildings.toml".to_string(),
             units: "units/units.toml".to_string(),
+            ..Default::default()
         },
         scripts,
         rules: Default::default(),
@@ -467,88 +605,7 @@ pub fn convert_westwood_ini_to_bundle(
         buildings: BuildingCatalog { buildings },
         units: UnitCatalog { units },
         map,
+        audio,
+        model_asset_overrides,
     })
 }
-
-/// Parses a Westwood `.map` / `.mpr` INI section (`[Map]`, `[Waypoints]`, `[OverlayPack]`) into a `MapDef` if present.
-pub fn parse_westwood_map_ini(
-    ini: &WestwoodIni,
-    buildings: &[BuildingDef],
-    units: &[UnitDef],
-    factions: &FactionCatalog,
-) -> Option<MapDef> {
-    let size_str = ini
-        .get("Map", "Size")
-        .or_else(|| ini.get("Map", "LocalSize"))?;
-    let parts: Vec<u32> = size_str
-        .split(',')
-        .filter_map(|s| s.trim().parse::<u32>().ok())
-        .collect();
-    if parts.len() < 4 {
-        return None;
-    }
-    let width = parts[2].clamp(24, 128);
-    let height = parts[3].clamp(24, 128);
-
-    let map_name = ini
-        .get("Basic", "Name")
-        .unwrap_or("Converted Westwood Map")
-        .to_string();
-
-    let mut base_map = build_default_converted_map(buildings, units);
-    base_map.name = map_name;
-    base_map.width = width;
-    base_map.height = height;
-
-    // Extract waypoints (0..7 are multiplayer start positions in Westwood maps)
-    let mut wp_coords: Vec<[i32; 2]> = Vec::new();
-    let max_x = width as i32 - 4;
-    let max_y = height as i32 - 4;
-    for wp_idx in 0..8 {
-        if let Some(val) = ini.get("Waypoints", &wp_idx.to_string()) {
-            if let Ok(cell) = val.trim().parse::<i32>() {
-                // Classic RA/TS/RA2 cell encoding: cell = y * 1000 + x or y * 128 + x
-                let (wx, wy) = if cell >= 1000 {
-                    ((cell % 1000).min(max_x), (cell / 1000).min(max_y))
-                } else {
-                    ((cell % 128).min(max_x), (cell / 128).min(max_y))
-                };
-                wp_coords.push([wx.max(4), wy.max(4)]);
-            }
-        }
-    }
-    if wp_coords.len() >= 2 {
-        for (idx, spawn) in base_map.spawns.iter_mut().enumerate() {
-            if let Some(&coord) = wp_coords.get(idx) {
-                spawn.base_tile = coord;
-                if let Some(b) = spawn.initial_buildings.first_mut() {
-                    b.tile_pos = coord;
-                }
-                for (u_idx, u) in spawn.initial_units.iter_mut().enumerate() {
-                    u.tile_pos = [
-                        (coord[0] + 3 + (u_idx as i32 % 3)).min(width as i32 - 2),
-                        (coord[1] + 1 + (u_idx as i32 / 3)).min(height as i32 - 2),
-                    ];
-                }
-            }
-            if let Some(f) = factions.factions.get(idx % factions.factions.len().max(1)) {
-                spawn.faction = f.id.clone();
-            }
-        }
-        base_map.ore_patches = wp_coords
-            .iter()
-            .take(2)
-            .map(|c| OrePatchDef {
-                position: [
-                    (c[0] + 5).min(width as i32 - 3),
-                    (c[1] + 4).min(height as i32 - 3),
-                ],
-                radius: 3,
-                amount_per_tile: 650,
-            })
-            .collect();
-    }
-
-    Some(base_map)
-}
-

@@ -1,0 +1,2145 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "BuffModifierSpec": {
+      "properties": {
+        "armor_mult": {
+          "default": 1.0,
+          "format": "float",
+          "type": "number"
+        },
+        "build_speed_mult": {
+          "default": 1.0,
+          "format": "float",
+          "type": "number"
+        },
+        "damage_mult": {
+          "default": 1.0,
+          "format": "float",
+          "type": "number"
+        },
+        "dispel_category": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "fire_rate_mult": {
+          "default": 1.0,
+          "format": "float",
+          "type": "number"
+        },
+        "hp_regen_per_sec": {
+          "default": 0.0,
+          "format": "float",
+          "type": "number"
+        },
+        "max_stacks": {
+          "default": 1,
+          "format": "uint8",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "range_bonus": {
+          "default": 0.0,
+          "format": "float",
+          "type": "number"
+        },
+        "speed_mult": {
+          "default": 1.0,
+          "format": "float",
+          "type": "number"
+        },
+        "stack_policy": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/StackPolicy"
+            }
+          ],
+          "default": "refresh"
+        },
+        "vision_mult": {
+          "default": 1.0,
+          "format": "float",
+          "type": "number"
+        }
+      },
+      "type": "object"
+    },
+    "CampaignDef": {
+      "properties": {
+        "description": {
+          "default": "",
+          "type": "string"
+        },
+        "display_name": {
+          "type": "string"
+        },
+        "faction": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "missions": {
+          "default": [],
+          "items": {
+            "$ref": "#/definitions/MissionDef"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "display_name",
+        "faction",
+        "id"
+      ],
+      "type": "object"
+    },
+    "LogicGateOp": {
+      "oneOf": [
+        {
+          "properties": {
+            "op": {
+              "enum": [
+                "and"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "op"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "op": {
+              "enum": [
+                "or"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "op"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "op": {
+              "enum": [
+                "not"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "op"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "op": {
+              "enum": [
+                "counter_threshold"
+              ],
+              "type": "string"
+            },
+            "threshold": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            }
+          },
+          "required": [
+            "op",
+            "threshold"
+          ],
+          "type": "object"
+        }
+      ]
+    },
+    "MissionDef": {
+      "properties": {
+        "briefing": {
+          "default": "",
+          "type": "string"
+        },
+        "carry_over_credits_ratio": {
+          "default": 0.0,
+          "format": "float",
+          "type": "number"
+        },
+        "carry_over_max_veteran_units": {
+          "default": 0,
+          "format": "uint",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "display_name": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "intro_video": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "loading_screen": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "map_id": {
+          "type": "string"
+        },
+        "next_mission_id": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "radar_video": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "trigger_graphs": {
+          "default": [],
+          "items": {
+            "$ref": "#/definitions/TriggerGraphDef"
+          },
+          "type": "array"
+        },
+        "victory_video": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "display_name",
+        "id",
+        "map_id"
+      ],
+      "type": "object"
+    },
+    "MissionObjectiveDef": {
+      "properties": {
+        "description": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "id": {
+          "type": "string"
+        },
+        "marker_tile": {
+          "default": null,
+          "items": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "maxItems": 2,
+          "minItems": 2,
+          "type": [
+            "array",
+            "null"
+          ]
+        },
+        "target_count": {
+          "default": 0,
+          "format": "uint32",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "tier": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/ObjectiveTier"
+            }
+          ],
+          "default": "primary"
+        },
+        "title": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "title"
+      ],
+      "type": "object"
+    },
+    "ObjectiveStatus": {
+      "enum": [
+        "pending",
+        "active",
+        "completed",
+        "failed"
+      ],
+      "type": "string"
+    },
+    "ObjectiveTier": {
+      "enum": [
+        "primary",
+        "secondary",
+        "bonus"
+      ],
+      "type": "string"
+    },
+    "StackPolicy": {
+      "enum": [
+        "refresh",
+        "stack_intensity",
+        "independent"
+      ],
+      "type": "string"
+    },
+    "StatusEffectDef": {
+      "properties": {
+        "armor_multiplier": {
+          "default": 1.0,
+          "format": "float",
+          "type": "number"
+        },
+        "build_speed_mult": {
+          "default": 1.0,
+          "format": "float",
+          "type": "number"
+        },
+        "confused": {
+          "default": false,
+          "type": "boolean"
+        },
+        "cure_at_service_depot": {
+          "default": false,
+          "type": "boolean"
+        },
+        "damage_multiplier": {
+          "default": 1.0,
+          "format": "float",
+          "type": "number"
+        },
+        "delayed_burst_damage": {
+          "default": 0.0,
+          "format": "float",
+          "type": "number"
+        },
+        "delayed_burst_splash": {
+          "default": 0.0,
+          "format": "float",
+          "type": "number"
+        },
+        "disarmed": {
+          "default": false,
+          "type": "boolean"
+        },
+        "dispel_category": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "display_label": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "dot_dps": {
+          "default": 0.0,
+          "format": "float",
+          "type": "number"
+        },
+        "duration_secs": {
+          "format": "float",
+          "type": "number"
+        },
+        "fire_rate_mult": {
+          "default": 1.0,
+          "format": "float",
+          "type": "number"
+        },
+        "hp_regen_per_sec": {
+          "default": 0.0,
+          "format": "float",
+          "type": "number"
+        },
+        "id": {
+          "type": "string"
+        },
+        "immobilized": {
+          "default": false,
+          "type": "boolean"
+        },
+        "invulnerable": {
+          "default": false,
+          "type": "boolean"
+        },
+        "max_stacks": {
+          "default": 1,
+          "format": "uint8",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "modifier": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/BuffModifierSpec"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "on_kill_spawn_unit": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "phased_out": {
+          "default": false,
+          "type": "boolean"
+        },
+        "power_charge_boost": {
+          "default": false,
+          "type": "boolean"
+        },
+        "range_bonus": {
+          "default": 0.0,
+          "format": "float",
+          "type": "number"
+        },
+        "speed_multiplier": {
+          "default": 1.0,
+          "format": "float",
+          "type": "number"
+        },
+        "stack_policy": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/StackPolicy"
+            }
+          ],
+          "default": "refresh"
+        },
+        "stunned": {
+          "default": false,
+          "type": "boolean"
+        },
+        "vfx_ring_color": {
+          "default": null,
+          "items": {
+            "format": "float",
+            "type": "number"
+          },
+          "maxItems": 4,
+          "minItems": 4,
+          "type": [
+            "array",
+            "null"
+          ]
+        },
+        "vfx_style": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/StatusVfxStyle"
+            }
+          ],
+          "default": "none"
+        },
+        "vision_mult": {
+          "default": 1.0,
+          "format": "float",
+          "type": "number"
+        }
+      },
+      "required": [
+        "duration_secs",
+        "id"
+      ],
+      "type": "object"
+    },
+    "StatusVfxStyle": {
+      "enum": [
+        "none",
+        "ring",
+        "electric_arcs",
+        "parasite_sparks",
+        "countdown_beacon",
+        "tentacle_grapple",
+        "temporal_vortex"
+      ],
+      "type": "string"
+    },
+    "TriggerAction": {
+      "oneOf": [
+        {
+          "properties": {
+            "count": {
+              "default": 1,
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "player_id": {
+              "format": "uint8",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "tile": {
+              "items": {
+                "format": "int32",
+                "type": "integer"
+              },
+              "maxItems": 2,
+              "minItems": 2,
+              "type": "array"
+            },
+            "type": {
+              "enum": [
+                "spawn_reinforcements"
+              ],
+              "type": "string"
+            },
+            "unit_id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "player_id",
+            "tile",
+            "type",
+            "unit_id"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "building_id": {
+              "type": "string"
+            },
+            "player_id": {
+              "format": "uint8",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "tile": {
+              "items": {
+                "format": "int32",
+                "type": "integer"
+              },
+              "maxItems": 2,
+              "minItems": 2,
+              "type": "array"
+            },
+            "type": {
+              "enum": [
+                "spawn_building"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "building_id",
+            "player_id",
+            "tile",
+            "type"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "building_id": {
+              "default": null,
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "from_player_id": {
+              "format": "uint8",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "to_player_id": {
+              "format": "uint8",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "type": {
+              "enum": [
+                "change_owner"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "from_player_id",
+            "to_player_id",
+            "type"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "player_id": {
+              "format": "uint8",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "power_id": {
+              "type": "string"
+            },
+            "target_tile": {
+              "items": {
+                "format": "int32",
+                "type": "integer"
+              },
+              "maxItems": 2,
+              "minItems": 2,
+              "type": "array"
+            },
+            "type": {
+              "enum": [
+                "fire_support_power"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "player_id",
+            "power_id",
+            "target_tile",
+            "type"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "amount": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "player_id": {
+              "format": "uint8",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "type": {
+              "enum": [
+                "grant_credits"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "amount",
+            "player_id",
+            "type"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "radius": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "tile": {
+              "items": {
+                "format": "int32",
+                "type": "integer"
+              },
+              "maxItems": 2,
+              "minItems": 2,
+              "type": "array"
+            },
+            "type": {
+              "enum": [
+                "reveal_area"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "radius",
+            "tile",
+            "type"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "center": {
+              "items": {
+                "format": "float",
+                "type": "number"
+              },
+              "maxItems": 3,
+              "minItems": 3,
+              "type": "array"
+            },
+            "duration_secs": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "player_id": {
+              "format": "uint8",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "radius": {
+              "format": "float",
+              "type": "number"
+            },
+            "type": {
+              "enum": [
+                "reveal_area_for_player"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "center",
+            "duration_secs",
+            "player_id",
+            "radius",
+            "type"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "text": {
+              "type": "string"
+            },
+            "type": {
+              "enum": [
+                "set_objective"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "text",
+            "type"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "objective": {
+              "$ref": "#/definitions/MissionObjectiveDef"
+            },
+            "status": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/ObjectiveStatus"
+                }
+              ],
+              "default": "pending"
+            },
+            "type": {
+              "enum": [
+                "upsert_objective"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "objective",
+            "type"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "objective_id": {
+              "type": "string"
+            },
+            "status": {
+              "$ref": "#/definitions/ObjectiveStatus"
+            },
+            "type": {
+              "enum": [
+                "set_objective_status"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "objective_id",
+            "status",
+            "type"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "delta": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "objective_id": {
+              "type": "string"
+            },
+            "type": {
+              "enum": [
+                "add_objective_progress"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "delta",
+            "objective_id",
+            "type"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "duration_secs": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "label": {
+              "type": "string"
+            },
+            "timer_id": {
+              "type": "string"
+            },
+            "type": {
+              "enum": [
+                "start_countdown"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "duration_secs",
+            "label",
+            "timer_id",
+            "type"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "timer_id": {
+              "type": "string"
+            },
+            "type": {
+              "enum": [
+                "stop_countdown"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "timer_id",
+            "type"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "type": {
+              "enum": [
+                "play_radar_video"
+              ],
+              "type": "string"
+            },
+            "video_path": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "video_path"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "cutscene_id": {
+              "type": "string"
+            },
+            "type": {
+              "enum": [
+                "play_cutscene"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "cutscene_id",
+            "type"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "max_tile": {
+              "items": {
+                "format": "int32",
+                "type": "integer"
+              },
+              "maxItems": 2,
+              "minItems": 2,
+              "type": "array"
+            },
+            "min_tile": {
+              "items": {
+                "format": "int32",
+                "type": "integer"
+              },
+              "maxItems": 2,
+              "minItems": 2,
+              "type": "array"
+            },
+            "type": {
+              "enum": [
+                "expand_playable_bounds"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "max_tile",
+            "min_tile",
+            "type"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "preset": {
+              "type": "string"
+            },
+            "type": {
+              "enum": [
+                "set_weather"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "preset",
+            "type"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "player_id": {
+              "format": "uint8",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "type": {
+              "enum": [
+                "declare_winner"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "player_id",
+            "type"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "type": {
+              "enum": [
+                "set_variable"
+              ],
+              "type": "string"
+            },
+            "value": {
+              "format": "int64",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "name",
+            "type",
+            "value"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "delta": {
+              "format": "int64",
+              "type": "integer"
+            },
+            "name": {
+              "type": "string"
+            },
+            "type": {
+              "enum": [
+                "add_variable"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "delta",
+            "name",
+            "type"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "tile": {
+              "items": {
+                "format": "int32",
+                "type": "integer"
+              },
+              "maxItems": 2,
+              "minItems": 2,
+              "type": "array"
+            },
+            "type": {
+              "enum": [
+                "focus_camera"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "tile",
+            "type"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "audio_cue": {
+              "default": null,
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "portrait": {
+              "default": null,
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "radar_video": {
+              "default": null,
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "speaker": {
+              "type": "string"
+            },
+            "text": {
+              "type": "string"
+            },
+            "type": {
+              "enum": [
+                "eva_transmission"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "speaker",
+            "text",
+            "type"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "order": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/TriggerOrderKind"
+                }
+              ],
+              "default": "attack_move"
+            },
+            "player_id": {
+              "default": null,
+              "format": "uint8",
+              "minimum": 0.0,
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "tag": {
+              "default": null,
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "target_tile": {
+              "items": {
+                "format": "int32",
+                "type": "integer"
+              },
+              "maxItems": 2,
+              "minItems": 2,
+              "type": "array"
+            },
+            "type": {
+              "enum": [
+                "issue_order"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "target_tile",
+            "type"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "player_id": {
+              "default": null,
+              "format": "uint8",
+              "minimum": 0.0,
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "radius": {
+              "default": 0.0,
+              "format": "float",
+              "type": "number"
+            },
+            "status": {
+              "$ref": "#/definitions/StatusEffectDef"
+            },
+            "tag": {
+              "default": null,
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "tile": {
+              "default": null,
+              "items": {
+                "format": "int32",
+                "type": "integer"
+              },
+              "maxItems": 2,
+              "minItems": 2,
+              "type": [
+                "array",
+                "null"
+              ]
+            },
+            "type": {
+              "enum": [
+                "apply_status_effect"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "status",
+            "type"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "destination_tile": {
+              "items": {
+                "format": "int32",
+                "type": "integer"
+              },
+              "maxItems": 2,
+              "minItems": 2,
+              "type": "array"
+            },
+            "from_tile": {
+              "default": null,
+              "items": {
+                "format": "int32",
+                "type": "integer"
+              },
+              "maxItems": 2,
+              "minItems": 2,
+              "type": [
+                "array",
+                "null"
+              ]
+            },
+            "player_id": {
+              "default": null,
+              "format": "uint8",
+              "minimum": 0.0,
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "radius": {
+              "default": 0.0,
+              "format": "float",
+              "type": "number"
+            },
+            "tag": {
+              "default": null,
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "type": {
+              "enum": [
+                "teleport_entity"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "destination_tile",
+            "type"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "capture_time_secs": {
+              "default": 8.0,
+              "format": "float",
+              "type": "number"
+            },
+            "initial_owner": {
+              "default": null,
+              "format": "uint8",
+              "minimum": 0.0,
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "radius": {
+              "default": 5.0,
+              "format": "float",
+              "type": "number"
+            },
+            "tile": {
+              "items": {
+                "format": "int32",
+                "type": "integer"
+              },
+              "maxItems": 2,
+              "minItems": 2,
+              "type": "array"
+            },
+            "type": {
+              "enum": [
+                "spawn_capture_zone"
+              ],
+              "type": "string"
+            },
+            "zone_id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "tile",
+            "type",
+            "zone_id"
+          ],
+          "type": "object"
+        }
+      ]
+    },
+    "TriggerCondition": {
+      "oneOf": [
+        {
+          "properties": {
+            "player_id": {
+              "default": null,
+              "format": "uint8",
+              "minimum": 0.0,
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "type": {
+              "enum": [
+                "entered_zone"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "type"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "secs": {
+              "format": "float",
+              "type": "number"
+            },
+            "type": {
+              "enum": [
+                "timer_elapsed"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "secs",
+            "type"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "interval_secs": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "max_repeats": {
+              "default": null,
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "start_secs": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "type": {
+              "enum": [
+                "periodic_timer"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "interval_secs",
+            "start_secs",
+            "type"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "timer_id": {
+              "type": "string"
+            },
+            "type": {
+              "enum": [
+                "countdown_expired"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "timer_id",
+            "type"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "tag": {
+              "type": "string"
+            },
+            "type": {
+              "enum": [
+                "tagged_entity_destroyed"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "tag",
+            "type"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "tag": {
+              "type": "string"
+            },
+            "type": {
+              "enum": [
+                "tagged_entity_entered_zone"
+              ],
+              "type": "string"
+            },
+            "zone_id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "tag",
+            "type",
+            "zone_id"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "objective_id": {
+              "type": "string"
+            },
+            "status": {
+              "$ref": "#/definitions/ObjectiveStatus"
+            },
+            "type": {
+              "enum": [
+                "objective_status_is"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "objective_id",
+            "status",
+            "type"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "building_id": {
+              "type": "string"
+            },
+            "by_player_id": {
+              "default": null,
+              "format": "uint8",
+              "minimum": 0.0,
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "type": {
+              "enum": [
+                "building_captured"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "building_id",
+            "type"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "max_count": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "player_id": {
+              "format": "uint8",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "type": {
+              "enum": [
+                "player_units_below"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "max_count",
+            "player_id",
+            "type"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "building_id": {
+              "type": "string"
+            },
+            "player_id": {
+              "default": null,
+              "format": "uint8",
+              "minimum": 0.0,
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "type": {
+              "enum": [
+                "building_destroyed"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "building_id",
+            "type"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "player_id": {
+              "format": "uint8",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "type": {
+              "enum": [
+                "all_buildings_destroyed"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "player_id",
+            "type"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "type": {
+              "enum": [
+                "variable_at_least"
+              ],
+              "type": "string"
+            },
+            "value": {
+              "format": "int64",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "name",
+            "type",
+            "value"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "type": {
+              "enum": [
+                "variable_equals"
+              ],
+              "type": "string"
+            },
+            "value": {
+              "format": "int64",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "name",
+            "type",
+            "value"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "conditions": {
+              "items": {
+                "$ref": "#/definitions/TriggerCondition"
+              },
+              "type": "array"
+            },
+            "type": {
+              "enum": [
+                "all"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "conditions",
+            "type"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "conditions": {
+              "items": {
+                "$ref": "#/definitions/TriggerCondition"
+              },
+              "type": "array"
+            },
+            "type": {
+              "enum": [
+                "any"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "conditions",
+            "type"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "condition": {
+              "$ref": "#/definitions/TriggerCondition"
+            },
+            "type": {
+              "enum": [
+                "not"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "condition",
+            "type"
+          ],
+          "type": "object"
+        }
+      ]
+    },
+    "TriggerEventKind": {
+      "oneOf": [
+        {
+          "properties": {
+            "event": {
+              "enum": [
+                "match_start"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "event"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "event": {
+              "enum": [
+                "tick_interval"
+              ],
+              "type": "string"
+            },
+            "interval_ticks": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            }
+          },
+          "required": [
+            "event",
+            "interval_ticks"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "event": {
+              "enum": [
+                "timer_elapsed"
+              ],
+              "type": "string"
+            },
+            "secs": {
+              "format": "float",
+              "type": "number"
+            }
+          },
+          "required": [
+            "event",
+            "secs"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "event": {
+              "enum": [
+                "zone_entered"
+              ],
+              "type": "string"
+            },
+            "player_id": {
+              "default": null,
+              "format": "uint8",
+              "minimum": 0.0,
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "zone_id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "event",
+            "zone_id"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "event": {
+              "enum": [
+                "entity_destroyed"
+              ],
+              "type": "string"
+            },
+            "player_id": {
+              "default": null,
+              "format": "uint8",
+              "minimum": 0.0,
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "tag": {
+              "default": null,
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "event"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "building_id": {
+              "default": null,
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "by_player_id": {
+              "default": null,
+              "format": "uint8",
+              "minimum": 0.0,
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "event": {
+              "enum": [
+                "building_captured"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "event"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "condition": {
+              "$ref": "#/definitions/TriggerCondition"
+            },
+            "event": {
+              "enum": [
+                "condition_met"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "condition",
+            "event"
+          ],
+          "type": "object"
+        }
+      ]
+    },
+    "TriggerGraphDef": {
+      "properties": {
+        "enabled": {
+          "default": true,
+          "type": "boolean"
+        },
+        "groups": {
+          "default": [],
+          "items": {
+            "$ref": "#/definitions/TriggerGraphGroupDef"
+          },
+          "type": "array"
+        },
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "default": "",
+          "type": "string"
+        },
+        "nodes": {
+          "default": [],
+          "items": {
+            "$ref": "#/definitions/TriggerGraphNode"
+          },
+          "type": "array"
+        },
+        "wires": {
+          "default": [],
+          "items": {
+            "$ref": "#/definitions/TriggerGraphWire"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "type": "object"
+    },
+    "TriggerGraphGroupDef": {
+      "properties": {
+        "color_rgba": {
+          "default": [
+            0.18000000715255737,
+            0.3199999928474426,
+            0.47999998927116394,
+            0.3499999940395355
+          ],
+          "items": {
+            "format": "float",
+            "type": "number"
+          },
+          "maxItems": 4,
+          "minItems": 4,
+          "type": "array"
+        },
+        "comment": {
+          "default": "",
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "rect_max": {
+          "default": [
+            0.0,
+            0.0
+          ],
+          "items": {
+            "format": "float",
+            "type": "number"
+          },
+          "maxItems": 2,
+          "minItems": 2,
+          "type": "array"
+        },
+        "rect_min": {
+          "default": [
+            0.0,
+            0.0
+          ],
+          "items": {
+            "format": "float",
+            "type": "number"
+          },
+          "maxItems": 2,
+          "minItems": 2,
+          "type": "array"
+        },
+        "title": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "title"
+      ],
+      "type": "object"
+    },
+    "TriggerGraphNode": {
+      "properties": {
+        "canvas_pos": {
+          "default": [
+            0.0,
+            0.0
+          ],
+          "items": {
+            "format": "float",
+            "type": "number"
+          },
+          "maxItems": 2,
+          "minItems": 2,
+          "type": "array"
+        },
+        "comment": {
+          "default": "",
+          "type": "string"
+        },
+        "group_id": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "id": {
+          "type": "string"
+        },
+        "node_kind": {
+          "$ref": "#/definitions/TriggerGraphNodeKind"
+        },
+        "title": {
+          "default": "",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "node_kind"
+      ],
+      "type": "object"
+    },
+    "TriggerGraphNodeKind": {
+      "oneOf": [
+        {
+          "properties": {
+            "event": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/TriggerEventKind"
+                }
+              ],
+              "default": {
+                "event": "match_start"
+              }
+            },
+            "kind": {
+              "enum": [
+                "event_start"
+              ],
+              "type": "string"
+            },
+            "once": {
+              "default": true,
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "gate": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/LogicGateOp"
+                }
+              ],
+              "default": {
+                "op": "and"
+              }
+            },
+            "kind": {
+              "enum": [
+                "logic_gate"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "delay_secs": {
+              "format": "float",
+              "type": "number"
+            },
+            "kind": {
+              "enum": [
+                "delay"
+              ],
+              "type": "string"
+            },
+            "repeat_count": {
+              "default": 0,
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "repeat_interval_secs": {
+              "default": 0.0,
+              "format": "float",
+              "type": "number"
+            }
+          },
+          "required": [
+            "delay_secs",
+            "kind"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "condition": {
+              "$ref": "#/definitions/TriggerCondition"
+            },
+            "kind": {
+              "enum": [
+                "if_else"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "condition",
+            "kind"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "action": {
+              "$ref": "#/definitions/TriggerAction"
+            },
+            "kind": {
+              "enum": [
+                "action"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "action",
+            "kind"
+          ],
+          "type": "object"
+        }
+      ]
+    },
+    "TriggerGraphWire": {
+      "properties": {
+        "from_node": {
+          "type": "string"
+        },
+        "from_port": {
+          "default": "out",
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "to_node": {
+          "type": "string"
+        },
+        "to_port": {
+          "default": "in",
+          "type": "string"
+        }
+      },
+      "required": [
+        "from_node",
+        "id",
+        "to_node"
+      ],
+      "type": "object"
+    },
+    "TriggerOrderKind": {
+      "enum": [
+        "move",
+        "attack_move",
+        "patrol",
+        "guard",
+        "stop",
+        "hold_position"
+      ],
+      "type": "string"
+    }
+  },
+  "properties": {
+    "campaigns": {
+      "default": [],
+      "items": {
+        "$ref": "#/definitions/CampaignDef"
+      },
+      "type": "array"
+    }
+  },
+  "title": "CampaignCatalog",
+  "type": "object"
+}

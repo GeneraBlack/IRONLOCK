@@ -1,36 +1,11 @@
 use super::*;
 use anyhow::{bail, Result};
 
-/// Parses a Westwood `.hva` (Hierarchical Voxel Animation) binary buffer and returns
-/// the frame-0 translation offsets `[x, y_up, z]` for each section.
-pub fn parse_hva_offsets(hva: &[u8]) -> Vec<[f32; 3]> {
-    if hva.len() < 24 {
-        return Vec::new();
-    }
-    let num_frames = u32::from_le_bytes(hva[16..20].try_into().unwrap()) as usize;
-    let num_sections = u32::from_le_bytes(hva[20..24].try_into().unwrap()) as usize;
-    if num_frames == 0 || num_sections == 0 || num_sections > 64 {
-        return Vec::new();
-    }
-    let matrices_offset = 24 + num_sections * 16;
-    if hva.len() < matrices_offset + num_sections * 48 {
-        return Vec::new();
-    }
-    let mut offsets = Vec::with_capacity(num_sections);
-    for s in 0..num_sections {
-        let m_base = matrices_offset + s * 48;
-        let mat = &hva[m_base..m_base + 48];
-        let tx = f32::from_le_bytes(mat[12..16].try_into().unwrap());
-        let ty = f32::from_le_bytes(mat[28..32].try_into().unwrap());
-        let tz = f32::from_le_bytes(mat[44..48].try_into().unwrap());
-        if tx.is_finite() && ty.is_finite() && tz.is_finite() {
-            offsets.push([tx * 0.0833333, tz * 0.0833333, ty * 0.0833333]);
-        } else {
-            offsets.push([0.0, 0.0, 0.0]);
-        }
-    }
-    offsets
-}
+use super::voxel_hva::GlbNodeAnimationTrack;
+pub use super::voxel_hva::{
+    build_sample_multiframe_hva_bytes, parse_hva_animation, parse_hva_offsets, HvaAnimation,
+    HvaSectionTransform,
+};
 
 /// Converts a Westwood `.vxl` (Voxel Animation) binary buffer and optional 768-byte 6-bit VGA `.pal`
 /// into a standard Binary glTF 2.0 (`.glb`) 3D mesh with `POSITION`, `NORMAL`, and `COLOR_0`.
@@ -40,6 +15,20 @@ pub fn convert_vxl_bytes_to_glb(
     mesh_name: &str,
 ) -> Result<Vec<u8>> {
     convert_multipart_vxl_to_glb(&[(vxl, [0.0, 0.0, 0.0])], external_pal, mesh_name)
+}
+
+/// Converts a Westwood `.vxl` buffer paired with an optional multi-frame `.hva` buffer
+/// into a Binary glTF 2.0 (`.glb`) 3D model, embedding `animations` channels/samplers when `num_frames > 1`.
+pub fn convert_vxl_with_hva_bytes_to_glb(
+    vxl: &[u8],
+    hva: Option<&[u8]>,
+    external_pal: Option<&[u8]>,
+    mesh_name: &str,
+) -> Result<Vec<u8>> {
+    let off = hva
+        .and_then(|b| parse_hva_offsets(b).into_iter().next())
+        .unwrap_or([0.0, 0.0, 0.0]);
+    convert_multipart_vxl_with_hva_to_glb(&[(vxl, hva, off)], external_pal, None, mesh_name)
 }
 
 /// Combines multiple Westwood `.vxl` buffers (e.g., hull + turret + barrel) with `[x, y, z]` offsets
@@ -91,10 +80,25 @@ pub(crate) fn infer_default_westwood_team_color(mesh_name: &str) -> [f32; 3] {
     }
 }
 
+/// Borrowed `(vxl_bytes, optional_hva_bytes, translation_offset)` tuple for multi-part VXL assembly.
+pub type VxlHvaPartRef<'a> = (&'a [u8], Option<&'a [u8]>, [f32; 3]);
+
 /// Combines multiple Westwood `.vxl` buffers (e.g., hull + turret + barrel) with `[x, y, z]` offsets
 /// and optional Westwood house color remap (`indices 16..=31`) into a crisp Binary glTF 2.0 (`.glb`) 3D mesh.
 pub fn convert_multipart_vxl_to_glb_with_team_color(
     parts: &[(&[u8], [f32; 3])],
+    external_pal: Option<&[u8]>,
+    team_color: Option<[f32; 3]>,
+    mesh_name: &str,
+) -> Result<Vec<u8>> {
+    let wrapped: Vec<VxlHvaPartRef<'_>> = parts.iter().map(|&(b, off)| (b, None, off)).collect();
+    convert_multipart_vxl_with_hva_to_glb(&wrapped, external_pal, team_color, mesh_name)
+}
+
+/// Combines one or more Westwood `.vxl` buffers with optional companion `.hva` animations and house color remap
+/// into a Binary glTF 2.0 (`.glb`) model, embedding multi-frame keyframe `animations` when `num_frames > 1`.
+pub fn convert_multipart_vxl_with_hva_to_glb(
+    parts: &[VxlHvaPartRef<'_>],
     external_pal: Option<&[u8]>,
     team_color: Option<[f32; 3]>,
     mesh_name: &str,
@@ -104,12 +108,35 @@ pub fn convert_multipart_vxl_to_glb_with_team_color(
     }
 
     let remap_rgb = team_color.unwrap_or_else(|| infer_default_westwood_team_color(mesh_name));
-    let mut positions: Vec<[f32; 3]> = Vec::new();
-    let mut normals: Vec<[f32; 3]> = Vec::new();
-    let mut colors: Vec<[f32; 4]> = Vec::new();
-    let mut indices: Vec<u32> = Vec::new();
+    let mesh_lower = mesh_name.to_ascii_lowercase();
+    let is_helicopter_mesh = mesh_lower.contains("chopper")
+        || mesh_lower.contains("heli")
+        || mesh_lower.contains("nighthawk")
+        || mesh_lower.contains("osprey")
+        || matches!(mesh_lower.as_str(), "shad" | "hind" | "orca_heli");
 
-    for &(vxl, part_offset) in parts {
+    let mut named_parts: Vec<ColoredMeshPart> = Vec::new();
+    let mut anim_tracks: Vec<GlbNodeAnimationTrack> = Vec::new();
+    let mut rotor_counter = 0usize;
+
+    let find_or_create_part = |list: &mut Vec<ColoredMeshPart>, name: &str| -> usize {
+        if let Some(idx) = list.iter().position(|p| p.name == name) {
+            idx
+        } else {
+            let idx = list.len();
+            list.push(ColoredMeshPart {
+                name: name.to_string(),
+                translation: None,
+                positions: Vec::new(),
+                normals: Vec::new(),
+                colors: Vec::new(),
+                indices: Vec::new(),
+            });
+            idx
+        }
+    };
+
+    for (part_idx, &(vxl, hva_opt, part_offset)) in parts.iter().enumerate() {
         if vxl.len() < 802 {
             bail!(
                 "Westwood .vxl file is too short ({} bytes, expected >= 802)",
@@ -119,6 +146,12 @@ pub fn convert_multipart_vxl_to_glb_with_team_color(
         if &vxl[0..15] != b"Voxel Animation" {
             bail!("Invalid Westwood .vxl magic header (expected 'Voxel Animation')");
         }
+
+        let parsed_hva = hva_opt.and_then(|hb| parse_hva_animation(hb).ok());
+        let has_multiframe_hva = parsed_hva
+            .as_ref()
+            .map(|a| a.num_frames > 1)
+            .unwrap_or(false);
 
         let num_limbs = u32::from_le_bytes(vxl[20..24].try_into().unwrap()) as usize;
         let num_tailers = u32::from_le_bytes(vxl[24..28].try_into().unwrap()) as usize;
@@ -172,6 +205,13 @@ pub fn convert_multipart_vxl_to_glb_with_team_color(
         let body = &vxl[body_offset..tailer_offset];
 
         for limb_idx in 0..num_limbs {
+            let h_base = 802 + limb_idx * 28;
+            let limb_raw = &vxl[h_base..h_base + 16];
+            let limb_end = limb_raw.iter().position(|&b| b == 0).unwrap_or(16);
+            let limb_name = String::from_utf8_lossy(&limb_raw[..limb_end])
+                .trim()
+                .to_ascii_uppercase();
+
             let t_base = tailer_offset + limb_idx * 92;
             let tailer = &vxl[t_base..t_base + 92];
 
@@ -183,6 +223,20 @@ pub fn convert_multipart_vxl_to_glb_with_team_color(
             } else {
                 0.0833333
             };
+
+            let tailer_tx = f32::from_le_bytes(tailer[28..32].try_into().unwrap());
+            let tailer_ty = f32::from_le_bytes(tailer[44..48].try_into().unwrap());
+            let tailer_tz = f32::from_le_bytes(tailer[60..64].try_into().unwrap());
+            let tailer_offset_gltf =
+                if tailer_tx.is_finite() && tailer_ty.is_finite() && tailer_tz.is_finite() {
+                    [
+                        tailer_ty * voxel_scale,
+                        tailer_tz * voxel_scale,
+                        tailer_tx * voxel_scale,
+                    ]
+                } else {
+                    [0.0, 0.0, 0.0]
+                };
 
             let min_bx = f32::from_le_bytes(tailer[64..68].try_into().unwrap());
             let min_by = f32::from_le_bytes(tailer[68..72].try_into().unwrap());
@@ -244,19 +298,121 @@ pub fn convert_multipart_vxl_to_glb_with_team_color(
                 && (max_by - min_by) > 0.01
                 && (max_bz - min_bz) > 0.01;
 
+            let hva_f0_off = parsed_hva.as_ref().and_then(|anim| {
+                let sec_i = anim
+                    .section_names
+                    .iter()
+                    .position(|n| n == &limb_name)
+                    .unwrap_or(limb_idx);
+                anim.frames.first()?.get(sec_i).map(|t| t.translation)
+            });
+
             let (bounds_min, bounds_max, extra_offset) = if has_westwood_bounds {
                 (
-                    [min_bx * voxel_scale, min_by * voxel_scale, min_bz * voxel_scale],
-                    [max_bx * voxel_scale, max_by * voxel_scale, max_bz * voxel_scale],
-                    [0.0, 0.0, 0.0],
+                    [
+                        min_bx * voxel_scale,
+                        min_by * voxel_scale,
+                        min_bz * voxel_scale,
+                    ],
+                    [
+                        max_bx * voxel_scale,
+                        max_by * voxel_scale,
+                        max_bz * voxel_scale,
+                    ],
+                    hva_f0_off.unwrap_or(tailer_offset_gltf),
                 )
             } else {
                 let hx = (size_x as f32) * 0.5 * voxel_scale;
                 let hy = (size_y as f32) * 0.5 * voxel_scale;
                 let hz = (size_z as f32) * voxel_scale;
-                ([-hx, -hy, 0.0], [hx, hy, hz], part_offset)
+                (
+                    [-hx, -hy, 0.0],
+                    [hx, hy, hz],
+                    if limb_idx > 0 {
+                        hva_f0_off.unwrap_or(part_offset)
+                    } else {
+                        part_offset
+                    },
+                )
             };
 
+            let target_role: String = match part_idx {
+                0 => {
+                    let is_heli_rotor_disc = is_helicopter_mesh
+                        && num_limbs > 1
+                        && !limb_name.contains("DUMMY")
+                        && !limb_name.contains("BODY")
+                        && !limb_name.contains("HULL")
+                        && size_x >= 30
+                        && size_y >= 30
+                        && size_z <= 12;
+                    if limb_name.contains("ROTOR") || is_heli_rotor_disc {
+                        let name = if rotor_counter == 0 {
+                            "Rotor".to_string()
+                        } else {
+                            format!("Rotor_{rotor_counter}")
+                        };
+                        rotor_counter += 1;
+                        name
+                    } else if num_limbs > 1 && limb_name.contains("BAR") {
+                        "Barrel".to_string()
+                    } else if num_limbs > 1 && limb_name.contains("TUR") {
+                        "Turret".to_string()
+                    } else if has_multiframe_hva
+                        && limb_idx > 0
+                        && !limb_name.is_empty()
+                        && !limb_name.contains("BODY")
+                        && !limb_name.contains("HULL")
+                    {
+                        format!("Limb_{}", normalize_id(&limb_name))
+                    } else {
+                        "Hull".to_string()
+                    }
+                }
+                1 => "Turret".to_string(),
+                _ => "Barrel".to_string(),
+            };
+
+            // Record glTF keyframe track for this section when `num_frames > 1`
+            if let Some(ref anim) = parsed_hva {
+                if anim.num_frames > 1
+                    && !anim_tracks
+                        .iter()
+                        .any(|t| t.target_node_name.eq_ignore_ascii_case(&target_role))
+                {
+                    let sec_i = anim
+                        .section_names
+                        .iter()
+                        .position(|n| n == &limb_name)
+                        .unwrap_or(limb_idx);
+                    if sec_i < anim.num_sections {
+                        let dt = 1.0f32 / 15.0;
+                        let f0_tr = anim.frames[0][sec_i].translation;
+                        let mut times = Vec::with_capacity(anim.num_frames);
+                        let mut translations = Vec::with_capacity(anim.num_frames);
+                        let mut rotations = Vec::with_capacity(anim.num_frames);
+                        for (f_idx, frame_secs) in anim.frames.iter().enumerate() {
+                            let st = &frame_secs[sec_i];
+                            times.push((f_idx as f32) * dt);
+                            translations.push([
+                                st.translation[0] - f0_tr[0],
+                                st.translation[1] - f0_tr[1],
+                                st.translation[2] - f0_tr[2],
+                            ]);
+                            rotations.push(st.rotation);
+                        }
+                        anim_tracks.push(GlbNodeAnimationTrack {
+                            target_node_name: target_role.clone(),
+                            times,
+                            translations,
+                            rotations,
+                        });
+                    }
+                }
+            }
+
+            let dst_idx = find_or_create_part(&mut named_parts, &target_role);
+            let dst = &mut named_parts[dst_idx];
             emit_crisp_vxl_limb_faces(
                 &grid,
                 &palette_rgb,
@@ -266,39 +422,99 @@ pub fn convert_multipart_vxl_to_glb_with_team_color(
                 bounds_min,
                 bounds_max,
                 extra_offset,
-                &mut positions,
-                &mut normals,
-                &mut colors,
-                &mut indices,
+                &mut dst.positions,
+                &mut dst.normals,
+                &mut dst.colors,
+                &mut dst.indices,
             );
         }
     }
 
-    if positions.is_empty() {
+    named_parts.retain(|p| !p.positions.is_empty() && !p.indices.is_empty());
+    if named_parts.is_empty() {
         bail!("Westwood .vxl contained 0 non-empty voxels");
     }
 
-    // Center X/Z around 0 and ground min_y at 0.0
-    let mut min_x = f32::MAX;
-    let mut max_x = f32::MIN;
-    let mut min_y = f32::MAX;
-    let mut min_z = f32::MAX;
-    let mut max_z = f32::MIN;
-    for p in &positions {
-        min_x = min_x.min(p[0]);
-        max_x = max_x.max(p[0]);
-        min_y = min_y.min(p[1]);
-        min_z = min_z.min(p[2]);
-        max_z = max_z.max(p[2]);
-    }
-    let cx = (min_x + max_x) * 0.5;
-    let cz = (min_z + max_z) * 0.5;
-    for p in &mut positions {
-        p[0] -= cx;
-        p[1] -= min_y;
-        p[2] -= cz;
+    // Center X/Z around Hull center (so Turret pivots around the hull center) and ground overall min_y at 0.0
+    let mut hull_min_x = f32::MAX;
+    let mut hull_max_x = f32::MIN;
+    let mut hull_min_z = f32::MAX;
+    let mut hull_max_z = f32::MIN;
+    let mut all_min_x = f32::MAX;
+    let mut all_max_x = f32::MIN;
+    let mut all_min_y = f32::MAX;
+    let mut all_min_z = f32::MAX;
+    let mut all_max_z = f32::MIN;
+
+    for part in &named_parts {
+        let is_hull = part.name == "Hull";
+        for p in &part.positions {
+            all_min_x = all_min_x.min(p[0]);
+            all_max_x = all_max_x.max(p[0]);
+            all_min_y = all_min_y.min(p[1]);
+            all_min_z = all_min_z.min(p[2]);
+            all_max_z = all_max_z.max(p[2]);
+            if is_hull {
+                hull_min_x = hull_min_x.min(p[0]);
+                hull_max_x = hull_max_x.max(p[0]);
+                hull_min_z = hull_min_z.min(p[2]);
+                hull_max_z = hull_max_z.max(p[2]);
+            }
+        }
     }
 
-    pack_colored_mesh_to_glb(&positions, &normals, &colors, &indices, mesh_name)
+    let cx = if hull_min_x <= hull_max_x {
+        (hull_min_x + hull_max_x) * 0.5
+    } else {
+        (all_min_x + all_max_x) * 0.5
+    };
+    let cz = if hull_min_z <= hull_max_z {
+        (hull_min_z + hull_max_z) * 0.5
+    } else {
+        (all_min_z + all_max_z) * 0.5
+    };
+
+    for part in &mut named_parts {
+        for p in &mut part.positions {
+            p[0] -= cx;
+            p[1] -= all_min_y;
+            p[2] -= cz;
+        }
+        // Center spinning Rotor and articulated Limb_* nodes around their own hub pivot
+        if part.name.starts_with("Rotor") || part.name.starts_with("Limb_") {
+            let mut rmin = [f32::MAX; 3];
+            let mut rmax = [f32::MIN; 3];
+            for p in &part.positions {
+                for axis in 0..3 {
+                    rmin[axis] = rmin[axis].min(p[axis]);
+                    rmax[axis] = rmax[axis].max(p[axis]);
+                }
+            }
+            let pivot = [
+                (rmin[0] + rmax[0]) * 0.5,
+                (rmin[1] + rmax[1]) * 0.5,
+                (rmin[2] + rmax[2]) * 0.5,
+            ];
+            for p in &mut part.positions {
+                p[0] -= pivot[0];
+                p[1] -= pivot[1];
+                p[2] -= pivot[2];
+            }
+            part.translation = Some(pivot);
+        }
+    }
+
+    if parts.len() == 1 && named_parts.len() == 1 && named_parts[0].name == "Hull" {
+        let p = &named_parts[0];
+        return pack_colored_mesh_to_glb_with_tracks(
+            &p.positions,
+            &p.normals,
+            &p.colors,
+            &p.indices,
+            mesh_name,
+            &anim_tracks,
+        );
+    }
+
+    pack_multipart_colored_meshes_to_glb_with_tracks(&named_parts, mesh_name, &anim_tracks)
 }
-

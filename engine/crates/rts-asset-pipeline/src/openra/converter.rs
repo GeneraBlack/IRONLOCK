@@ -1,13 +1,13 @@
-use anyhow::bail;
-use rts_sdk::schema::ProjectileStyle;
 use super::map_reader::*;
 use super::miniyaml::*;
 use crate::westwood::{
     build_default_converted_map, build_dynamic_faction_catalog, faction_display_meta, normalize_id,
     ConvertedModBundle,
 };
+use anyhow::bail;
 use anyhow::Result;
 use rts_sdk::manifest::{ModCatalogPaths, ModManifest};
+use rts_sdk::schema::ProjectileStyle;
 use rts_sdk::schema::{
     BuildingCatalog, BuildingDef, BuildingRole, MovementDomain, SuperweaponType, UnitCatalog,
     UnitDef, UnitRole, VisualArchetype, VisualDef, WeaponCatalog, WeaponDef,
@@ -124,16 +124,18 @@ pub fn convert_openra_yaml_to_bundle(
                 continue;
             };
             let w_id = normalize_id(w_raw);
-            weapons_map.entry(w_id.clone()).or_insert_with(|| WeaponDef {
-                id: w_id.clone(),
-                name: w_raw.to_string(),
-                damage: 45.0,
-                range: 14.0,
-                cooldown_secs: 1.5,
-                projectile_speed: 35.0,
-                armor_multipliers: BTreeMap::new(),
-                ..Default::default()
-            });
+            weapons_map
+                .entry(w_id.clone())
+                .or_insert_with(|| WeaponDef {
+                    id: w_id.clone(),
+                    name: w_raw.to_string(),
+                    damage: 45.0,
+                    range: 14.0,
+                    cooldown_secs: 1.5,
+                    projectile_speed: 35.0,
+                    armor_multipliers: BTreeMap::new(),
+                    ..Default::default()
+                });
             let arm_key_lower = arm.key.to_ascii_lowercase();
             let req_cond = arm
                 .child_value("RequiresCondition")
@@ -163,17 +165,19 @@ pub fn convert_openra_yaml_to_bundle(
         }
         if primary_weapon.is_none() && actor.child("MindController").is_some() {
             let mc_id = "mind_control_psi".to_string();
-            weapons_map.entry(mc_id.clone()).or_insert_with(|| WeaponDef {
-                id: mc_id.clone(),
-                name: "Psychic Mind Control".to_string(),
-                damage: 10.0,
-                range: 16.0,
-                cooldown_secs: 3.5,
-                projectile_speed: 40.0,
-                projectile_style: ProjectileStyle::MindControl,
-                mind_control: true,
-                ..Default::default()
-            });
+            weapons_map
+                .entry(mc_id.clone())
+                .or_insert_with(|| WeaponDef {
+                    id: mc_id.clone(),
+                    name: "Psychic Mind Control".to_string(),
+                    damage: 10.0,
+                    range: 16.0,
+                    cooldown_secs: 3.5,
+                    projectile_speed: 40.0,
+                    projectile_style: ProjectileStyle::MindControl,
+                    mind_control: true,
+                    ..Default::default()
+                });
             primary_weapon = Some(mc_id);
         }
 
@@ -187,13 +191,10 @@ pub fn convert_openra_yaml_to_bundle(
             || actor.child("Refinery").is_some()
             || actor.child("BaseProvider").is_some()
             || actor.child("CashTrickler").is_some()
-            || actor
-                .children_matching("Inherits")
-                .iter()
-                .any(|i| {
-                    let v = i.value.to_ascii_lowercase();
-                    v.contains("building") || v.contains("defense")
-                });
+            || actor.children_matching("Inherits").iter().any(|i| {
+                let v = i.value.to_ascii_lowercase();
+                v.contains("building") || v.contains("defense")
+            });
 
         let prereq_raw = actor
             .nested_value("Buildable", "Prerequisites")
@@ -209,14 +210,10 @@ pub fn convert_openra_yaml_to_bundle(
                     provided_by_faction
                         .entry((faction.clone(), norm_tok.clone()))
                         .or_insert_with(|| id.clone());
-                    provided_any
-                        .entry(norm_tok)
-                        .or_insert_with(|| id.clone());
+                    provided_any.entry(norm_tok).or_insert_with(|| id.clone());
                 }
             }
-            let free_actor = actor
-                .nested_value("FreeActor", "Actor")
-                .map(normalize_id);
+            let free_actor = actor.nested_value("FreeActor", "Actor").map(normalize_id);
             let armor = map_openra_armor(actor.nested_value("Armor", "Type"), true);
             let power_delta = actor
                 .nested_value("Power", "Amount")
@@ -397,10 +394,10 @@ pub fn convert_openra_yaml_to_bundle(
                 .unwrap_or("")
                 .to_ascii_lowercase();
             let is_aircraft = actor.child("Aircraft").is_some()
-                || actor
-                    .children_matching("Inherits")
-                    .iter()
-                    .any(|i| i.value.to_ascii_lowercase().contains("plane") || i.value.to_ascii_lowercase().contains("aircraft"));
+                || actor.children_matching("Inherits").iter().any(|i| {
+                    i.value.to_ascii_lowercase().contains("plane")
+                        || i.value.to_ascii_lowercase().contains("aircraft")
+                });
             let movement_domain = if locomotor.contains("jumpjet") || id == "jumpjet" {
                 MovementDomain::Jumpjet
             } else if is_aircraft {
@@ -430,14 +427,10 @@ pub fn convert_openra_yaml_to_bundle(
                 _ => 0.0,
             };
 
-            let is_infantry = actor
-                .children_matching("Inherits")
-                .iter()
-                .any(|i| {
-                    let v = i.value.to_ascii_lowercase();
-                    v.contains("soldier") || v.contains("infantry")
-                })
-                || actor.child("TakeCover").is_some()
+            let is_infantry = actor.children_matching("Inherits").iter().any(|i| {
+                let v = i.value.to_ascii_lowercase();
+                v.contains("soldier") || v.contains("infantry")
+            }) || actor.child("TakeCover").is_some()
                 || id == "jumpjet";
 
             let (role, archetype) = if actor.child("Harvester").is_some()
@@ -462,8 +455,8 @@ pub fn convert_openra_yaml_to_bundle(
             };
 
             let harvest_capacity = if role == UnitRole::Harvester { 500 } else { 0 };
-            let immobile_when_deployed = actor.child("GrantConditionOnDeploy").is_some()
-                || deploy_weapon.is_some();
+            let immobile_when_deployed =
+                actor.child("GrantConditionOnDeploy").is_some() || deploy_weapon.is_some();
             let chrono_harvester = actor.child("ChronoResourceDelivery").is_some() || id == "cmin";
             let cloaked = actor.child("Cloak").is_some() || actor.child("Mirage").is_some();
             let spy_infiltrator = actor.child("Infiltrates").is_some()
@@ -654,9 +647,11 @@ pub fn convert_openra_yaml_to_bundle(
             weapons: "weapons/weapons.toml".to_string(),
             buildings: "buildings/buildings.toml".to_string(),
             units: "units/units.toml".to_string(),
+            ..Default::default()
         },
         scripts,
         rules: Default::default(),
+        ..Default::default()
     };
 
     Ok(ConvertedModBundle {
@@ -668,6 +663,7 @@ pub fn convert_openra_yaml_to_bundle(
         buildings: BuildingCatalog { buildings },
         units: UnitCatalog { units },
         map,
+        audio: None,
+        model_asset_overrides: BTreeMap::new(),
     })
 }
-

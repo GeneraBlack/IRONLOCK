@@ -1,0 +1,6 @@
+language = "en"
+
+[strings]
+"ui.main_menu.title" = "AETHERION [TURBO ECONOMY MUTATOR]"
+"mutator.turbo_economy.name" = "Turbo Economy & Rapid Ascension"
+"mutator.turbo_economy.description" = "Doubles starting resources, passive sanctum income, streaming build power, and era progression speed."

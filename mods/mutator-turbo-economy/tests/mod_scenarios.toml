@@ -1,0 +1,78 @@
+# ==============================================================================
+# TURBO ECONOMY OVERLAY MUTATOR — DETERMINISTIC SCENARIO SUITE
+# Verifies `depends_on` inheritance from `sdk-showcase-heroes-ages-mutators`,
+# boosted starting reserves (5000), rapid streaming worker construction, and
+# inherited map/hero/AI execution.
+# ==============================================================================
+
+# 1. TURBO STREAMING CONSTRUCTION & BOOSTED RESERVE VERIFICATION
+[[scenarios]]
+name = "turbo_economy_rapid_streaming_build_and_reserves_test"
+map_id = "citadel_crossroads"
+ticks = 110
+clear_initial_entities = true
+
+[[scenarios.spawns]]
+player_id = 1
+building_id = "citadel_hq"
+tile = [8, 8]
+
+[[scenarios.spawns]]
+player_id = 1
+building_id = "aether_extractor"
+tile = [12, 8]
+
+[[scenarios.spawns]]
+player_id = 1
+unit_id = "acolyte_worker"
+tile = [13, 12]
+tag = "turbo_acolyte"
+
+[[scenarios.commands]]
+tick = 2
+command = "worker_build @turbo_acolyte vanguard_barracks 14 12 1"
+
+[[scenarios.assertions]]
+kind = "ai_built_building_role"
+player_id = 1
+role = "barracks"
+min_count = 1
+
+[[scenarios.assertions]]
+kind = "player_credits_at_least"
+player_id = 1
+min_credits = 4700
+
+[[scenarios.assertions]]
+kind = "entity_health_fraction_above"
+tag = "turbo_acolyte"
+min_fraction = 0.95
+
+[[scenarios.assertions]]
+kind = "max_avg_tick_ms"
+max_ms = 20.0
+
+# 2. INHERITED HERO, RELIC & BEHAVIOR TREE AI ON STACKED MUTATOR OVERLAY
+[[scenarios]]
+name = "turbo_overlay_inherited_hero_and_ai_skirmish_test"
+map_id = "citadel_crossroads"
+ticks = 90
+clear_initial_entities = false
+
+[[scenarios.commands]]
+tick = 2
+command = "ai_takeover 2 hard"
+
+[[scenarios.assertions]]
+kind = "player_units_at_least"
+player_id = 1
+min_count = 5
+
+[[scenarios.assertions]]
+kind = "player_credits_at_least"
+player_id = 1
+min_credits = 4800
+
+[[scenarios.assertions]]
+kind = "max_avg_tick_ms"
+max_ms = 25.0

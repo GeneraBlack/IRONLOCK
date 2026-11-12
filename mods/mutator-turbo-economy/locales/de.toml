@@ -1,0 +1,6 @@
+language = "de"
+
+[strings]
+"ui.main_menu.title" = "AETHERION [TURBO-ÖKONOMIE-MUTATOR]"
+"mutator.turbo_economy.name" = "Turbo-Ökonomie & Schneller Aufstieg"
+"mutator.turbo_economy.description" = "Verdoppelt Startressourcen, passives Sanktumeinkommen, Streaming-Baukraft und Zeitalter-Forschungstempo."

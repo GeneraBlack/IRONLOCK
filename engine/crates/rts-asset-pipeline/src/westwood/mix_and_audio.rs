@@ -1,27 +1,12 @@
+pub use super::audio_codecs::*;
+use super::blowfish::{
+    decode_westwood_mix_key_block, encode_westwood_mix_key_block, BlowfishCipher,
+};
+pub use super::mix_filenames::*;
 use anyhow::{bail, Context, Result};
 use std::collections::BTreeMap;
 use std::fs;
 use std::path::{Path, PathBuf};
-
-/// Computes the classic Westwood `.mix` CRC/ID hash for an ASCII filename.
-pub fn westwood_mix_crc(filename: &str) -> u32 {
-    let upper = filename.trim().to_ascii_uppercase();
-    let bytes = upper.as_bytes();
-    let mut id: u32 = 0;
-    let mut i = 0;
-    while i < bytes.len() {
-        let mut group: u32 = 0;
-        for j in 0..4 {
-            group >>= 8;
-            if i + j < bytes.len() {
-                group |= (bytes[i + j] as u32) << 24;
-            }
-        }
-        id = id.rotate_left(1).wrapping_add(group);
-        i += 4;
-    }
-    id
-}
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct MixEntry {
@@ -31,136 +16,107 @@ pub struct MixEntry {
     pub size: usize,
 }
 
-const KNOWN_WESTWOOD_FILENAMES: &[&str] = &[
-    "rules.ini",
-    "rulesmd.ini",
-    "art.ini",
-    "artmd.ini",
-    "sound.ini",
-    "eva.ini",
-    "ai.ini",
-    "aimd.ini",
-    "temperat.pal",
-    "isotemp.pal",
-    "unittem.pal",
-    "unitsno.pal",
-    "uniturb.pal",
-    "mtnk.vxl",
-    "mtnktur.vxl",
-    "mtnkbarl.vxl",
-    "mtnk.hva",
-    "htnk.vxl",
-    "htnktur.vxl",
-    "htnkbarl.vxl",
-    "htnk.hva",
-    "harv.vxl",
-    "harvtur.vxl",
-    "cmin.vxl",
-    "amcv.vxl",
-    "smcv.vxl",
-    "apoc.vxl",
-    "apoctur.vxl",
-    "apocbarl.vxl",
-    "sref.vxl",
-    "mgtk.vxl",
-    "mgtktur.vxl",
-    "ttnk.vxl",
-    "ttnktur.vxl",
-    "tnkd.vxl",
-    "fv.vxl",
-    "fvtur.vxl",
-    "htk.vxl",
-    "htktur.vxl",
-    "dtruck.vxl",
-    "v3.vxl",
-    "zep.vxl",
-    "orca.vxl",
-    "beag.vxl",
-    "shad.vxl",
-    "dest.vxl",
-    "aegis.vxl",
-    "carrier.vxl",
-    "sub.vxl",
-    "hyd.vxl",
-    "lcrf.vxl",
-    "sapc.vxl",
-    "gtgcan.vxl",
-    "gtgcantur.vxl",
-    "gtgcanbarl.vxl",
-    "e1.shp",
-    "e2.shp",
-    "engineer.shp",
-    "dog.shp",
-    "adva.shp",
-    "snipe.shp",
-    "spy.shp",
-    "tany.shp",
-    "ccommand.shp",
-    "cleg.shp",
-    "ivan.shp",
-    "deso.shp",
-    "shk.shp",
-    "flakt.shp",
-    "yuri.shp",
-    "gapowr.shp",
-    "napowr.shp",
-    "nanrct.shp",
-    "gapile.shp",
-    "nahand.shp",
-    "garefn.shp",
-    "narefn.shp",
-    "gaweap.shp",
-    "naweap.shp",
-    "gacnst.shp",
-    "nacnst.shp",
-    "gaairc.shp",
-    "amradr.shp",
-    "naradr.shp",
-    "gatech.shp",
-    "natech.shp",
-    "gayard.shp",
-    "nayard.shp",
-    "gadept.shp",
-    "nadept.shp",
-    "gaorep.shp",
-    "napsis.shp",
-    "naclon.shp",
-    "gacsph.shp",
-    "gaweat.shp",
-    "nairon.shp",
-    "namisl.shp",
-    "gaspysat.shp",
-    "gagap.shp",
-];
-
-pub fn parse_mix_archive(
+/// Parses a Westwood `.mix` archive header (unencrypted TD, unencrypted RA/TS/RA2 extended,
+/// or Blowfish-encrypted RA/TS/RA2/YR `flags & 0x0002_0000` header).
+///
+/// When `explicit_blowfish_key` is `None` and the archive has `flags & 0x0002_0000`,
+/// the 80-byte Westwood RSA `key_source` block at `4..84` is automatically decoded into
+/// the 56-byte Blowfish session key!
+pub fn parse_mix_archive_with_key(
     mix_bytes: &[u8],
     extra_known_names: &[String],
+    explicit_blowfish_key: Option<&[u8]>,
 ) -> Result<(usize, Vec<MixEntry>)> {
     if mix_bytes.len() < 6 {
         bail!("Westwood .mix archive is too short");
     }
 
     let first_u16 = u16::from_le_bytes(mix_bytes[0..2].try_into().unwrap());
-    let (header_offset, num_files, _body_size) = if first_u16 == 0 && mix_bytes.len() >= 10 {
-        // RA/TS/RA2 extended header with 4-byte flags (0x00000000 for unencrypted)
+    let (body_start, num_files, index_bytes_vec): (usize, usize, Vec<u8>) = if first_u16 == 0
+        && mix_bytes.len() >= 10
+    {
         let flags = u32::from_le_bytes(mix_bytes[0..4].try_into().unwrap());
         if (flags & 0x0002_0000) != 0 {
-            bail!("Encrypted Westwood Blowfish .mix headers require key decryption");
+            // Encrypted Westwood Blowfish .mix header:
+            // [0..4] flags, [4..84] 80-byte RSA key_source, [84..] Blowfish-ECB encrypted header+index
+            if mix_bytes.len() < 92 {
+                bail!(
+                    "Encrypted Westwood .mix archive is too short ({} bytes, expected >= 92)",
+                    mix_bytes.len()
+                );
+            }
+            let derived_key: [u8; 56];
+            let key_slice: &[u8] = if let Some(k) = explicit_blowfish_key {
+                k
+            } else {
+                let key_source: &[u8; 80] = mix_bytes[4..84].try_into().unwrap();
+                derived_key = decode_westwood_mix_key_block(key_source)?;
+                &derived_key
+            };
+
+            let cipher = BlowfishCipher::new(key_slice)?;
+
+            // Try Westwood x86 LE-word Blowfish first; fall back to big-endian Schneier ECB if needed
+            let mut first_le: [u8; 8] = mix_bytes[84..92].try_into().unwrap();
+            cipher.decrypt_block_le(&mut first_le);
+            let count_le = u16::from_le_bytes([first_le[0], first_le[1]]) as usize;
+            let body_le =
+                u32::from_le_bytes([first_le[2], first_le[3], first_le[4], first_le[5]]) as usize;
+            let enc_len_le = (6usize.saturating_add(count_le.saturating_mul(12)) + 7) & !7;
+            let le_plausible = count_le <= 65_535
+                && 84usize.saturating_add(enc_len_le).saturating_add(body_le) <= mix_bytes.len()
+                && mix_bytes.len() >= 84 + enc_len_le;
+
+            let (use_be, count, enc_len) = if le_plausible {
+                (false, count_le, enc_len_le)
+            } else {
+                let mut first_be: [u8; 8] = mix_bytes[84..92].try_into().unwrap();
+                cipher.decrypt_block_be(&mut first_be);
+                let count_be = u16::from_le_bytes([first_be[0], first_be[1]]) as usize;
+                let body_be =
+                    u32::from_le_bytes([first_be[2], first_be[3], first_be[4], first_be[5]])
+                        as usize;
+                let enc_len_be = (6usize.saturating_add(count_be.saturating_mul(12)) + 7) & !7;
+                if count_be <= 65_535
+                    && 84usize.saturating_add(enc_len_be).saturating_add(body_be) <= mix_bytes.len()
+                    && mix_bytes.len() >= 84 + enc_len_be
+                {
+                    (true, count_be, enc_len_be)
+                } else {
+                    bail!(
+                        "Failed to decrypt Westwood Blowfish .mix header (invalid key or corrupt index)"
+                    );
+                }
+            };
+
+            let mut decrypted = mix_bytes[84..84 + enc_len].to_vec();
+            for chunk in decrypted.chunks_exact_mut(8) {
+                let mut blk: [u8; 8] = chunk.try_into().unwrap();
+                if use_be {
+                    cipher.decrypt_block_be(&mut blk);
+                } else {
+                    cipher.decrypt_block_le(&mut blk);
+                }
+                chunk.copy_from_slice(&blk);
+            }
+            let index_slice = decrypted[6..6 + count * 12].to_vec();
+            (84 + enc_len, count, index_slice)
+        } else {
+            let count = u16::from_le_bytes(mix_bytes[4..6].try_into().unwrap()) as usize;
+            let index_end = 10usize.saturating_add(count.saturating_mul(12));
+            if mix_bytes.len() < index_end {
+                bail!("Truncated .mix index table");
+            }
+            (index_end, count, mix_bytes[10..index_end].to_vec())
         }
-        let count = u16::from_le_bytes(mix_bytes[4..6].try_into().unwrap()) as usize;
-        let size = u32::from_le_bytes(mix_bytes[6..10].try_into().unwrap()) as usize;
-        (10usize, count, size)
     } else {
         let count = first_u16 as usize;
-        let size = u32::from_le_bytes(mix_bytes[2..6].try_into().unwrap()) as usize;
-        (6usize, count, size)
+        let index_end = 6usize.saturating_add(count.saturating_mul(12));
+        if mix_bytes.len() < index_end {
+            bail!("Truncated .mix index table");
+        }
+        (index_end, count, mix_bytes[6..index_end].to_vec())
     };
-
-    let index_end = header_offset + num_files * 12;
-    if mix_bytes.len() < index_end {
-        bail!("Truncated .mix index table");
-    }
 
     let mut crc_lookup = BTreeMap::new();
     for &name in KNOWN_WESTWOOD_FILENAMES {
@@ -171,28 +127,60 @@ pub fn parse_mix_archive(
     }
 
     let mut entries = Vec::with_capacity(num_files);
+    let xcc_db_crc = westwood_mix_crc("local mix database.dat");
+    let mut xcc_db_range: Option<(usize, usize)> = None;
+
     for i in 0..num_files {
-        let base = header_offset + i * 12;
-        let crc_id = u32::from_le_bytes(mix_bytes[base..base + 4].try_into().unwrap());
-        let offset = u32::from_le_bytes(mix_bytes[base + 4..base + 8].try_into().unwrap()) as usize;
-        let size = u32::from_le_bytes(mix_bytes[base + 8..base + 12].try_into().unwrap()) as usize;
+        let base = i * 12;
+        let crc_id = u32::from_le_bytes(index_bytes_vec[base..base + 4].try_into().unwrap());
+        let offset =
+            u32::from_le_bytes(index_bytes_vec[base + 4..base + 8].try_into().unwrap()) as usize;
+        let size =
+            u32::from_le_bytes(index_bytes_vec[base + 8..base + 12].try_into().unwrap()) as usize;
+        if crc_id == xcc_db_crc {
+            let abs_start = body_start.saturating_add(offset);
+            let abs_end = abs_start.saturating_add(size);
+            if abs_end <= mix_bytes.len() {
+                xcc_db_range = Some((abs_start, abs_end));
+            }
+        }
         entries.push(MixEntry {
             crc_id,
-            resolved_name: crc_lookup.get(&crc_id).cloned(),
+            resolved_name: None,
             offset,
             size,
         });
     }
 
-    Ok((index_end, entries))
+    // Auto-extract embedded XCC `local mix database.dat` filenames if present inside the .mix!
+    if let Some((db_start, db_end)) = xcc_db_range {
+        for db_name in parse_xcc_local_mix_database(&mix_bytes[db_start..db_end]) {
+            crc_lookup.insert(westwood_mix_crc(&db_name), db_name);
+        }
+    }
+
+    for entry in &mut entries {
+        entry.resolved_name = crc_lookup.get(&entry.crc_id).cloned();
+    }
+
+    Ok((body_start, entries))
 }
 
-pub fn extract_mix_archive(
+pub fn parse_mix_archive(
+    mix_bytes: &[u8],
+    extra_known_names: &[String],
+) -> Result<(usize, Vec<MixEntry>)> {
+    parse_mix_archive_with_key(mix_bytes, extra_known_names, None)
+}
+
+pub fn extract_mix_archive_with_key(
     mix_bytes: &[u8],
     out_dir: impl AsRef<Path>,
     extra_known_names: &[String],
+    explicit_blowfish_key: Option<&[u8]>,
 ) -> Result<Vec<PathBuf>> {
-    let (body_start, entries) = parse_mix_archive(mix_bytes, extra_known_names)?;
+    let (body_start, entries) =
+        parse_mix_archive_with_key(mix_bytes, extra_known_names, explicit_blowfish_key)?;
     fs::create_dir_all(out_dir.as_ref())?;
     let mut extracted = Vec::new();
 
@@ -210,7 +198,18 @@ pub fn extract_mix_archive(
         let filename = entry
             .resolved_name
             .unwrap_or_else(|| format!("file_{:08x}.bin", entry.crc_id));
-        let dest = out_dir.as_ref().join(filename);
+        let safe_rel: PathBuf = filename
+            .replace('\\', "/")
+            .split('/')
+            .filter(|seg| !seg.is_empty() && *seg != ".." && *seg != ".")
+            .collect();
+        if safe_rel.as_os_str().is_empty() {
+            continue;
+        }
+        let dest = out_dir.as_ref().join(safe_rel);
+        if let Some(parent) = dest.parent() {
+            fs::create_dir_all(parent)?;
+        }
         fs::write(&dest, &mix_bytes[abs_start..abs_end])
             .with_context(|| format!("Failed to write MIX entry to {}", dest.display()))?;
         extracted.push(dest);
@@ -219,257 +218,56 @@ pub fn extract_mix_archive(
     Ok(extracted)
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct WestwoodAudioIdxEntry {
-    pub name: String,
-    pub offset: usize,
-    pub size: usize,
-    pub sample_rate: u32,
-    pub flags: u32,
-    pub chunk_size: usize,
+pub fn extract_mix_archive(
+    mix_bytes: &[u8],
+    out_dir: impl AsRef<Path>,
+    extra_known_names: &[String],
+) -> Result<Vec<PathBuf>> {
+    extract_mix_archive_with_key(mix_bytes, out_dir, extra_known_names, None)
 }
 
-const IMA_INDEX_TABLE: [i32; 16] = [
-    -1, -1, -1, -1, 2, 4, 6, 8, -1, -1, -1, -1, 2, 4, 6, 8,
-];
-
-const IMA_STEP_TABLE: [i32; 89] = [
-    7, 8, 9, 10, 11, 12, 13, 14, 16, 17, 19, 21, 23, 25, 28, 31, 34, 37, 41, 45, 50, 55, 60, 66,
-    73, 80, 88, 97, 107, 118, 130, 143, 157, 173, 190, 209, 230, 253, 279, 307, 337, 371, 408,
-    449, 494, 544, 598, 658, 724, 796, 876, 963, 1060, 1166, 1282, 1411, 1552, 1707, 1878, 2066,
-    2272, 2499, 2749, 3024, 3327, 3660, 4026, 4428, 4871, 5358, 5894, 6484, 7132, 7845, 8630,
-    9493, 10442, 11487, 12635, 13899, 15289, 16818, 18500, 20350, 22385, 24623, 27086, 29794,
-    32767,
-];
-
-#[inline]
-pub(super) fn decode_ima_nibble(nibble: u8, predictor: &mut i32, step_index: &mut i32) -> i16 {
-    let step = IMA_STEP_TABLE[(*step_index).clamp(0, 88) as usize];
-    let mut diff = step >> 3;
-    if (nibble & 1) != 0 {
-        diff += step >> 2;
-    }
-    if (nibble & 2) != 0 {
-        diff += step >> 1;
-    }
-    if (nibble & 4) != 0 {
-        diff += step;
-    }
-    if (nibble & 8) != 0 {
-        *predictor = (*predictor - diff).clamp(-32768, 32767);
-    } else {
-        *predictor = (*predictor + diff).clamp(-32768, 32767);
-    }
-    *step_index = (*step_index + IMA_INDEX_TABLE[(nibble & 0x0F) as usize]).clamp(0, 88);
-    *predictor as i16
-}
-
-/// Decodes Westwood 4-bit IMA ADPCM (`wFormatTag = 0x0011`) blocks into 16-bit signed Linear PCM samples.
-pub fn decode_westwood_ima_adpcm(
-    adpcm_bytes: &[u8],
-    channels: u16,
-    block_align: usize,
-) -> Vec<i16> {
-    let ch = channels.max(1) as usize;
-    let align = block_align.max(4 * ch);
-    let mut pcm = Vec::with_capacity(adpcm_bytes.len() * 2);
-
-    for block in adpcm_bytes.chunks(align) {
-        if block.len() < 4 * ch {
-            break;
-        }
-        if ch == 1 {
-            let mut pred = i16::from_le_bytes([block[0], block[1]]) as i32;
-            let mut idx = (block[2] as i32).clamp(0, 88);
-            pcm.push(pred as i16);
-            for &byte in &block[4..] {
-                pcm.push(decode_ima_nibble(byte & 0x0F, &mut pred, &mut idx));
-                pcm.push(decode_ima_nibble(byte >> 4, &mut pred, &mut idx));
-            }
-        } else {
-            let mut pred_l = i16::from_le_bytes([block[0], block[1]]) as i32;
-            let mut idx_l = (block[2] as i32).clamp(0, 88);
-            let mut pred_r = i16::from_le_bytes([block[4], block[5]]) as i32;
-            let mut idx_r = (block[6] as i32).clamp(0, 88);
-            pcm.push(pred_l as i16);
-            pcm.push(pred_r as i16);
-
-            let payload = &block[8..];
-            for pair in payload.chunks(8) {
-                if pair.len() < 8 {
-                    break;
-                }
-                let mut left_samples = [0i16; 8];
-                let mut right_samples = [0i16; 8];
-                for i in 0..4 {
-                    left_samples[i * 2] = decode_ima_nibble(pair[i] & 0x0F, &mut pred_l, &mut idx_l);
-                    left_samples[i * 2 + 1] =
-                        decode_ima_nibble(pair[i] >> 4, &mut pred_l, &mut idx_l);
-                    right_samples[i * 2] =
-                        decode_ima_nibble(pair[4 + i] & 0x0F, &mut pred_r, &mut idx_r);
-                    right_samples[i * 2 + 1] =
-                        decode_ima_nibble(pair[4 + i] >> 4, &mut pred_r, &mut idx_r);
-                }
-                for i in 0..8 {
-                    pcm.push(left_samples[i]);
-                    pcm.push(right_samples[i]);
-                }
-            }
-        }
-    }
-    pcm
-}
-
-/// Encodes interleaved 16-bit signed Linear PCM (`i16`) samples into a standard RIFF WAVE (`0x0001`) buffer.
-pub fn encode_pcm16_to_riff_wav(samples: &[i16], sample_rate: u32, channels: u16) -> Vec<u8> {
-    let ch = channels.max(1);
-    let block_align = ch * 2;
-    let byte_rate = sample_rate * (block_align as u32);
-    let data_bytes = (samples.len() * 2) as u32;
-    let riff_size = 36 + data_bytes;
-
-    let mut out = Vec::with_capacity(44 + samples.len() * 2);
-    out.extend_from_slice(b"RIFF");
-    out.extend_from_slice(&riff_size.to_le_bytes());
-    out.extend_from_slice(b"WAVE");
-    out.extend_from_slice(b"fmt ");
-    out.extend_from_slice(&16u32.to_le_bytes());
-    out.extend_from_slice(&1u16.to_le_bytes()); // PCM = 1
-    out.extend_from_slice(&ch.to_le_bytes());
-    out.extend_from_slice(&sample_rate.to_le_bytes());
-    out.extend_from_slice(&byte_rate.to_le_bytes());
-    out.extend_from_slice(&block_align.to_le_bytes());
-    out.extend_from_slice(&16u16.to_le_bytes()); // 16 bits per sample
-    out.extend_from_slice(b"data");
-    out.extend_from_slice(&data_bytes.to_le_bytes());
-    for &s in samples {
-        out.extend_from_slice(&s.to_le_bytes());
-    }
-    out
-}
-
-/// Converts a Westwood RIFF `.wav` file (including 4-bit IMA ADPCM `wFormatTag = 0x0011`)
-/// into a standard, universally playable 16-bit Linear PCM (`wFormatTag = 0x0001`) `.wav`.
-pub fn convert_westwood_wav_to_pcm16(wav_bytes: &[u8]) -> Result<Vec<u8>> {
-    if wav_bytes.len() < 44 || &wav_bytes[0..4] != b"RIFF" || &wav_bytes[8..12] != b"WAVE" {
-        bail!("Invalid RIFF WAVE header");
-    }
-
-    let mut cursor = 12usize;
-    let mut fmt_tag = 0u16;
-    let mut channels = 1u16;
-    let mut sample_rate = 22_050u32;
-    let mut block_align = 512usize;
-    let mut bits_per_sample = 16u16;
-    let mut data_slice: Option<&[u8]> = None;
-
-    while cursor + 8 <= wav_bytes.len() {
-        let chunk_id = &wav_bytes[cursor..cursor + 4];
-        let chunk_len =
-            u32::from_le_bytes(wav_bytes[cursor + 4..cursor + 8].try_into().unwrap()) as usize;
-        let payload_start = cursor + 8;
-        let payload_end = (payload_start + chunk_len).min(wav_bytes.len());
-        if chunk_id == b"fmt " && payload_end >= payload_start + 16 {
-            let fmt = &wav_bytes[payload_start..payload_end];
-            fmt_tag = u16::from_le_bytes([fmt[0], fmt[1]]);
-            channels = u16::from_le_bytes([fmt[2], fmt[3]]);
-            sample_rate = u32::from_le_bytes([fmt[4], fmt[5], fmt[6], fmt[7]]);
-            block_align = u16::from_le_bytes([fmt[12], fmt[13]]) as usize;
-            bits_per_sample = u16::from_le_bytes([fmt[14], fmt[15]]);
-        } else if chunk_id == b"data" {
-            data_slice = Some(&wav_bytes[payload_start..payload_end]);
-            break;
-        }
-        cursor = payload_start + chunk_len + (chunk_len & 1);
-    }
-
-    let raw_data = data_slice.context("RIFF WAVE missing 'data' chunk")?;
-    match fmt_tag {
-        0x0001 if bits_per_sample == 16 => {
-            let samples: Vec<i16> = raw_data
-                .chunks_exact(2)
-                .map(|b| i16::from_le_bytes([b[0], b[1]]))
-                .collect();
-            Ok(encode_pcm16_to_riff_wav(&samples, sample_rate, channels))
-        }
-        0x0011 => {
-            let samples = decode_westwood_ima_adpcm(raw_data, channels, block_align.max(4));
-            Ok(encode_pcm16_to_riff_wav(&samples, sample_rate, channels))
-        }
-        other => bail!("Unsupported WAV format tag: 0x{other:04X}"),
-    }
-}
-
-/// Parses Westwood's `audio.idx` (`GABA` magic) sound bank index table.
-pub fn parse_westwood_audio_idx(idx_bytes: &[u8]) -> Result<Vec<WestwoodAudioIdxEntry>> {
-    if idx_bytes.len() < 12 || &idx_bytes[0..4] != b"GABA" {
-        bail!("Invalid Westwood audio.idx header (expected 'GABA')");
-    }
-    let count = u32::from_le_bytes(idx_bytes[8..12].try_into().unwrap()) as usize;
-    if idx_bytes.len() < 12 + count * 36 {
-        bail!("Truncated Westwood audio.idx entry table");
-    }
-
-    let mut entries = Vec::with_capacity(count);
-    for i in 0..count {
-        let base = 12 + i * 36;
-        let name_raw = &idx_bytes[base..base + 16];
-        let name_end = name_raw.iter().position(|&b| b == 0).unwrap_or(16);
-        let name = String::from_utf8_lossy(&name_raw[..name_end]).to_string();
-        let offset = u32::from_le_bytes(idx_bytes[base + 16..base + 20].try_into().unwrap()) as usize;
-        let size = u32::from_le_bytes(idx_bytes[base + 20..base + 24].try_into().unwrap()) as usize;
-        let sample_rate = u32::from_le_bytes(idx_bytes[base + 24..base + 28].try_into().unwrap());
-        let flags = u32::from_le_bytes(idx_bytes[base + 28..base + 32].try_into().unwrap());
-        let chunk_size =
-            u32::from_le_bytes(idx_bytes[base + 32..base + 36].try_into().unwrap()) as usize;
-        entries.push(WestwoodAudioIdxEntry {
-            name,
-            offset,
-            size,
-            sample_rate,
-            flags,
-            chunk_size,
-        });
-    }
-    Ok(entries)
-}
-
-/// Extracts a single sound entry from `audio.bag` using its `WestwoodAudioIdxEntry` metadata
-/// and converts it into a standard 16-bit Linear PCM RIFF `.wav`.
-pub fn extract_westwood_bag_entry_to_pcm16_wav(
-    bag_bytes: &[u8],
-    entry: &WestwoodAudioIdxEntry,
+/// Builds a genuine Blowfish-encrypted Westwood RA2/TS `.mix` archive (`flags = 0x0002_0000`)
+/// complete with the 80-byte RSA `key_source` header block and Blowfish-ECB encrypted file table.
+pub fn build_encrypted_mix_archive(
+    files: &[(&str, &[u8])],
+    blowfish_key: &[u8; 56],
 ) -> Result<Vec<u8>> {
-    let end = entry.offset.saturating_add(entry.size);
-    if end > bag_bytes.len() {
-        bail!(
-            "audio.bag entry '{}' ({}..{}) exceeds bag size ({})",
-            entry.name,
-            entry.offset,
-            end,
-            bag_bytes.len()
-        );
+    let key_source = encode_westwood_mix_key_block(blowfish_key)?;
+    let cipher = BlowfishCipher::new(blowfish_key)?;
+
+    // Sort entries by signed i32 CRC or unsigned u32 CRC (standard MIX entries)
+    let mut indexed: Vec<(u32, &[u8])> = files
+        .iter()
+        .map(|(name, data)| (westwood_mix_crc(name), *data))
+        .collect();
+    indexed.sort_by_key(|(crc, _)| *crc as i32);
+
+    let mut body = Vec::new();
+    let mut records = Vec::with_capacity(indexed.len());
+    for (crc, data) in indexed {
+        let offset = body.len() as u32;
+        let size = data.len() as u32;
+        body.extend_from_slice(data);
+        records.push((crc, offset, size));
     }
-    let slice = &bag_bytes[entry.offset..end];
-    let channels: u16 = if (entry.flags & 1) != 0 { 2 } else { 1 };
-    let samples = if (entry.flags & 8) != 0 {
-        let align = if entry.chunk_size > 0 {
-            entry.chunk_size
-        } else {
-            512 * (channels as usize)
-        };
-        decode_westwood_ima_adpcm(slice, channels, align)
-    } else {
-        slice
-            .chunks_exact(2)
-            .map(|b| i16::from_le_bytes([b[0], b[1]]))
-            .collect()
-    };
 
-    Ok(encode_pcm16_to_riff_wav(
-        &samples,
-        entry.sample_rate.max(8_000),
-        channels,
-    ))
+    let plain_header_len = 6 + records.len() * 12;
+    let padded_header_len = (plain_header_len + 7) & !7;
+    let mut enc_header = vec![0u8; padded_header_len];
+    enc_header[0..2].copy_from_slice(&(records.len() as u16).to_le_bytes());
+    enc_header[2..6].copy_from_slice(&(body.len() as u32).to_le_bytes());
+    for (i, (crc, offset, size)) in records.iter().enumerate() {
+        let base = 6 + i * 12;
+        enc_header[base..base + 4].copy_from_slice(&crc.to_le_bytes());
+        enc_header[base + 4..base + 8].copy_from_slice(&offset.to_le_bytes());
+        enc_header[base + 8..base + 12].copy_from_slice(&size.to_le_bytes());
+    }
+    cipher.encrypt_westwood_ecb(&mut enc_header)?;
+
+    let mut out = Vec::with_capacity(4 + 80 + enc_header.len() + body.len());
+    out.extend_from_slice(&0x0002_0000u32.to_le_bytes());
+    out.extend_from_slice(&key_source);
+    out.extend_from_slice(&enc_header);
+    out.extend_from_slice(&body);
+    Ok(out)
 }
-

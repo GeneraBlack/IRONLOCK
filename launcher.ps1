@@ -1,7 +1,8 @@
-param(
+﻿param(
     [ValidateSet("gui", "game", "engine", "stop")]
     [string]$Mode = "gui",
-    [string]$ModPath = "rust-ra2"
+    [string]$ModPath = "rust-ra2",
+    [switch]$ReplaceExisting
 )
 
 $ErrorActionPreference = "Continue"
@@ -9,66 +10,108 @@ $WorkspaceRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $WorkspaceRoot
 
 $ReleaseExe = Join-Path $WorkspaceRoot "engine\target\release\rts-client.exe"
-$DebugExe   = Join-Path $WorkspaceRoot "engine\target\debug\rts-client.exe"
 $CargoToml  = Join-Path $WorkspaceRoot "engine\Cargo.toml"
-$StdoutLog  = Join-Path $WorkspaceRoot "client_stdout.log"
-$StderrLog  = Join-Path $WorkspaceRoot "client_stderr.log"
 
 function Get-RunningEngineProcesses {
     Get-Process -Name "rts-client", "rts-client-3d" -ErrorAction SilentlyContinue
 }
 
+function Resolve-LogPaths {
+    param([int]$InstanceIndex = 1)
+    if ($InstanceIndex -le 1) {
+        $outPath = Join-Path $WorkspaceRoot "client_stdout.log"
+        $errPath = Join-Path $WorkspaceRoot "client_stderr.log"
+    } else {
+        $stamp = "$InstanceIndex-$(Get-Date -Format 'HHmmss')"
+        $outPath = Join-Path $WorkspaceRoot "client_stdout_$stamp.log"
+        $errPath = Join-Path $WorkspaceRoot "client_stderr_$stamp.log"
+    }
+    return @{ Stdout = $outPath; Stderr = $errPath }
+}
+
 function Stop-EngineProcess {
-    $procs = Get-RunningEngineProcesses
-    if ($procs) {
+    $procs = @(Get-RunningEngineProcesses)
+    if ($procs.Count -gt 0) {
         foreach ($p in $procs) {
+            try {
+                if ($p.MainWindowHandle -ne [IntPtr]::Zero) {
+                    [void]$p.CloseMainWindow()
+                }
+            } catch {}
+        }
+
+        $deadline = (Get-Date).AddMilliseconds(800)
+        while ((Get-Date) -lt $deadline) {
+            if (@(Get-RunningEngineProcesses).Count -eq 0) {
+                return $true
+            }
+            Start-Sleep -Milliseconds 100
+        }
+
+        foreach ($p in @(Get-RunningEngineProcesses)) {
             try {
                 Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue
             } catch {}
         }
-        Start-Sleep -Milliseconds 250
+        Start-Sleep -Milliseconds 150
         return $true
     }
     return $false
 }
 
+function Invoke-ReleaseBuildSync {
+    Write-Host "[BUILD] COMPILING rts-client (--release)..." -ForegroundColor Yellow
+    & cargo build --manifest-path $CargoToml --release -p rts-client
+    $code = $LASTEXITCODE
+    if ($code -ne 0) {
+        Write-Error "[ERROR] Cargo release build failed with exit code $code."
+        return $code
+    }
+    if (-not (Test-Path $ReleaseExe)) {
+        Write-Error "[ERROR] Expected release binary not found at '$ReleaseExe'."
+        return 1
+    }
+    return 0
+}
+
 function Start-EngineProcess {
     param(
         [bool]$EngineStudioMode,
-        [string]$SelectedMod = "rust-ra2"
+        [string]$SelectedMod = "rust-ra2",
+        [bool]$StopRunning = $false
     )
-    Stop-EngineProcess | Out-Null
-
-    $exeToRun = $null
-    if (Test-Path $ReleaseExe) {
-        $exeToRun = $ReleaseExe
-    } elseif (Test-Path $DebugExe) {
-        $exeToRun = $DebugExe
+    if ($StopRunning) {
+        Stop-EngineProcess | Out-Null
     }
+
+    if (-not (Test-Path $ReleaseExe)) {
+        $buildCode = Invoke-ReleaseBuildSync
+        if ($buildCode -ne 0) {
+            throw "Cargo release build failed (ExitCode: $buildCode)"
+        }
+    }
+
+    $runningCount = @(Get-RunningEngineProcesses).Count
+    $logs = Resolve-LogPaths -InstanceIndex ($runningCount + 1)
 
     $argList = @("--mod-path", $SelectedMod)
     if ($EngineStudioMode) {
         $argList += "--studio"
     }
 
-    if ($exeToRun) {
-        $proc = Start-Process -FilePath $exeToRun `
-            -ArgumentList $argList `
-            -WorkingDirectory $WorkspaceRoot `
-            -RedirectStandardOutput $StdoutLog `
-            -RedirectStandardError $StderrLog `
-            -PassThru
-        return $proc
-    } else {
-        $cargoArgs = @("run", "--manifest-path", $CargoToml, "--release", "-p", "rts-client", "--") + $argList
-        $proc = Start-Process -FilePath "cargo" `
-            -ArgumentList $cargoArgs `
-            -WorkingDirectory $WorkspaceRoot `
-            -RedirectStandardOutput $StdoutLog `
-            -RedirectStandardError $StderrLog `
-            -PassThru
-        return $proc
+    $proc = Start-Process -FilePath $ReleaseExe `
+        -ArgumentList $argList `
+        -WorkingDirectory $WorkspaceRoot `
+        -RedirectStandardOutput $logs.Stdout `
+        -RedirectStandardError $logs.Stderr `
+        -PassThru
+
+    Start-Sleep -Milliseconds 200
+    if ($proc.HasExited -and $proc.ExitCode -ne 0) {
+        throw "rts-client exited immediately with code $($proc.ExitCode). Check $($logs.Stderr)."
     }
+
+    return $proc
 }
 
 # Direct CLI mode support: .\launcher.ps1 game | engine | stop
@@ -82,14 +125,24 @@ if ($Mode -eq "stop") {
     exit 0
 }
 elseif ($Mode -eq "game") {
-    $p = Start-EngineProcess -EngineStudioMode $false -SelectedMod $ModPath
-    Write-Host "[GAME MODE] Gestartet (PID $($p.Id)) mit Mod '$ModPath'." -ForegroundColor Green
-    exit 0
+    try {
+        $p = Start-EngineProcess -EngineStudioMode $false -SelectedMod $ModPath -StopRunning ([bool]$ReplaceExisting)
+        Write-Host "[GAME MODE] Gestartet (PID $($p.Id)) mit Mod '$ModPath'." -ForegroundColor Green
+        exit 0
+    } catch {
+        Write-Error $_
+        exit 1
+    }
 }
 elseif ($Mode -eq "engine") {
-    $p = Start-EngineProcess -EngineStudioMode $true -SelectedMod $ModPath
-    Write-Host "[ENGINE MODE] Gestartet (PID $($p.Id)) mit Mod '$ModPath' (--studio)." -ForegroundColor Cyan
-    exit 0
+    try {
+        $p = Start-EngineProcess -EngineStudioMode $true -SelectedMod $ModPath -StopRunning ([bool]$ReplaceExisting)
+        Write-Host "[ENGINE MODE] Gestartet (PID $($p.Id)) mit Mod '$ModPath' (--studio)." -ForegroundColor Cyan
+        exit 0
+    } catch {
+        Write-Error $_
+        exit 1
+    }
 }
 
 # GUI Mode (Windows Forms Control Center)
@@ -98,6 +151,10 @@ Add-Type -AssemblyName System.Drawing
 [System.Windows.Forms.Application]::EnableVisualStyles()
 
 $script:ActiveModeName = "Kein Prozess aktiv"
+$script:BuildProcess = $null
+$script:PendingLaunchStudio = $false
+$script:PendingLaunchMod = "rust-ra2"
+$script:LastBuildError = $null
 
 $form = New-Object System.Windows.Forms.Form
 $form.Text = "IRONLOCK // RUST-RTS - Start & Stop Control Panel"
@@ -145,7 +202,7 @@ $form.Controls.Add($cmbMod)
 
 # Button 1: GAME MODE
 $btnGame = New-Object System.Windows.Forms.Button
-$btnGame.Text = "GAME MODE`r`n(Spiel direkt starten)"
+$btnGame.Text = "GAME MODE`r`n(Spiel / Peer starten)"
 $btnGame.Font = $fontBtn
 $btnGame.FlatStyle = "Flat"
 $btnGame.FlatAppearance.BorderSize = 1
@@ -173,7 +230,7 @@ $form.Controls.Add($btnEngine)
 
 # Button 3: STOP ENGINE
 $btnStop = New-Object System.Windows.Forms.Button
-$btnStop.Text = "STOP ENGINE (Laufende Instanz beenden)"
+$btnStop.Text = "STOP ENGINE (Laufende Instanzen beenden)"
 $btnStop.Font = $fontBtn
 $btnStop.FlatStyle = "Flat"
 $btnStop.FlatAppearance.BorderSize = 1
@@ -197,13 +254,71 @@ $lblStatus.Location = New-Object System.Drawing.Point(24, 252)
 $lblStatus.Size = New-Object System.Drawing.Size(436, 36)
 $form.Controls.Add($lblStatus)
 
+function Start-GuiLaunchOrCompile {
+    param([bool]$StudioMode, [string]$SelectedMod)
+    $script:LastBuildError = $null
+    if ($script:BuildProcess -and -not $script:BuildProcess.HasExited) {
+        return
+    }
+
+    if (-not (Test-Path $ReleaseExe)) {
+        $script:PendingLaunchStudio = $StudioMode
+        $script:PendingLaunchMod = $SelectedMod
+        $buildOut = Join-Path $WorkspaceRoot "cargo_build_stdout.log"
+        $buildErr = Join-Path $WorkspaceRoot "cargo_build_stderr.log"
+        $script:BuildProcess = Start-Process -FilePath "cargo" `
+            -ArgumentList @("build", "--manifest-path", $CargoToml, "--release", "-p", "rts-client") `
+            -WorkingDirectory $WorkspaceRoot `
+            -RedirectStandardOutput $buildOut `
+            -RedirectStandardError $buildErr `
+            -NoNewWindow `
+            -PassThru
+        Update-UiStatus
+        return
+    }
+
+    try {
+        [void](Start-EngineProcess -EngineStudioMode $StudioMode -SelectedMod $SelectedMod -StopRunning $false)
+        $script:ActiveModeName = if ($StudioMode) { "ENGINE MODE [$SelectedMod --studio]" } else { "GAME MODE [$SelectedMod]" }
+    } catch {
+        $script:LastBuildError = $_.Exception.Message
+    }
+    Update-UiStatus
+}
+
 function Update-UiStatus {
-    $procs = Get-RunningEngineProcesses
-    if ($procs) {
+    if ($script:BuildProcess) {
+        if (-not $script:BuildProcess.HasExited) {
+            $lblStatus.Text = "  COMPILING... Cargo Release-Build (PID: $($script:BuildProcess.Id))"
+            $lblStatus.ForeColor = [System.Drawing.Color]::FromArgb(245, 210, 90)
+            $btnGame.Enabled = $false
+            $btnEngine.Enabled = $false
+            $btnStop.Enabled = $true
+            return
+        } else {
+            $exitCode = $script:BuildProcess.ExitCode
+            $script:BuildProcess = $null
+            $btnGame.Enabled = $true
+            $btnEngine.Enabled = $true
+            if ($exitCode -eq 0 -and (Test-Path $ReleaseExe)) {
+                Start-GuiLaunchOrCompile -StudioMode $script:PendingLaunchStudio -SelectedMod $script:PendingLaunchMod
+                return
+            } else {
+                $script:LastBuildError = "Cargo Build fehlgeschlagen (ExitCode: $exitCode)"
+            }
+        }
+    }
+
+    $procs = @(Get-RunningEngineProcesses)
+    if ($procs.Count -gt 0) {
         $pids = ($procs | Select-Object -ExpandProperty Id) -join ", "
-        $lblStatus.Text = "  LAEUFT: $($script:ActiveModeName) (PID: $pids)"
+        $lblStatus.Text = "  LAEUFT ($($procs.Count)x): $($script:ActiveModeName) (PID: $pids)"
         $lblStatus.ForeColor = [System.Drawing.Color]::FromArgb(95, 235, 135)
         $btnStop.Enabled = $true
+    } elseif ($script:LastBuildError) {
+        $lblStatus.Text = "  FEHLER: $($script:LastBuildError)"
+        $lblStatus.ForeColor = [System.Drawing.Color]::FromArgb(245, 105, 105)
+        $btnStop.Enabled = $false
     } else {
         $script:ActiveModeName = "Engine gestoppt"
         $lblStatus.Text = "  BEREIT: Keine Engine-Instanz aktiv"
@@ -214,32 +329,31 @@ function Update-UiStatus {
 
 $btnGame.Add_Click({
     $mod = $cmbMod.SelectedItem.ToString()
-    $lblStatus.Text = "  STARTE GAME MODE ($mod)..."
-    $lblStatus.ForeColor = [System.Drawing.Color]::FromArgb(245, 210, 90)
-    $form.Refresh()
-    $p = Start-EngineProcess -EngineStudioMode $false -SelectedMod $mod
-    $script:ActiveModeName = "GAME MODE [$mod]"
-    Update-UiStatus
+    Start-GuiLaunchOrCompile -StudioMode $false -SelectedMod $mod
 })
 
 $btnEngine.Add_Click({
     $mod = $cmbMod.SelectedItem.ToString()
-    $lblStatus.Text = "  STARTE ENGINE MODE ($mod --studio)..."
-    $lblStatus.ForeColor = [System.Drawing.Color]::FromArgb(100, 195, 255)
-    $form.Refresh()
-    $p = Start-EngineProcess -EngineStudioMode $true -SelectedMod $mod
-    $script:ActiveModeName = "ENGINE MODE [$mod --studio]"
-    Update-UiStatus
+    Start-GuiLaunchOrCompile -StudioMode $true -SelectedMod $mod
 })
 
 $btnStop.Add_Click({
+    if ($script:BuildProcess -and -not $script:BuildProcess.HasExited) {
+        try {
+            Stop-Process -Id $script:BuildProcess.Id -Force -ErrorAction SilentlyContinue
+        } catch {}
+        $script:BuildProcess = $null
+    }
     Stop-EngineProcess | Out-Null
+    $script:LastBuildError = $null
     $script:ActiveModeName = "Engine gestoppt"
+    $btnGame.Enabled = $true
+    $btnEngine.Enabled = $true
     Update-UiStatus
 })
 
 $timer = New-Object System.Windows.Forms.Timer
-$timer.Interval = 1000
+$timer.Interval = 750
 $timer.Add_Tick({ Update-UiStatus })
 $timer.Start()
 

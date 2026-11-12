@@ -1,35 +1,281 @@
 id = "yr_soviet_07_head_games"
-name = "YR Soviet 07: Head Games (Transylvania)"
+name = "YR Op. 07: Head Games (Transylvania Finale)"
 width = 96
 height = 96
 tile_size = 2.0
 ore_regen_per_sec = 4.0
-mission_objective = "Hoping to hide from your onslaught, Yuri has retreated to his ancestral home in Transylvania. We can not allow him any respite or he will only rally his forces and return again to threaten us all. Eliminate Yuri now and forever! \n \n Objective 1: Destroy Yuri's Fortress."
+mission_objective = "Shatter the twin Psychic Beacons guarding Transylvania and raze Yuri's ancestral Castle Fortress once and for all!"
 
 [[ore_patches]]
-position = [48, 16]
+position = [39, 78]
 radius = 3
-amount_per_tile = 1400
+amount_per_tile = 1600
 
 [[ore_patches]]
-position = [13, 45]
+position = [34, 28]
 radius = 3
-amount_per_tile = 1400
+amount_per_tile = 1550
 
-[[ore_patches]]
+[[gem_patches]]
 position = [48, 48]
-radius = 4
-amount_per_tile = 2000
+radius = 2
+amount_per_tile = 2500
 
-[[ore_patches]]
-position = [87, 46]
-radius = 3
-amount_per_tile = 1500
+[[water_rects]]
+min = [39, 1]
+max = [42, 1]
 
-[[ore_patches]]
-position = [50, 90]
-radius = 3
-amount_per_tile = 1500
+[[water_rects]]
+min = [38, 2]
+max = [42, 2]
+
+[[water_rects]]
+min = [37, 3]
+max = [42, 3]
+
+[[water_rects]]
+min = [36, 4]
+max = [42, 4]
+
+[[water_rects]]
+min = [35, 5]
+max = [41, 5]
+
+[[water_rects]]
+min = [34, 6]
+max = [40, 6]
+
+[[water_rects]]
+min = [33, 7]
+max = [37, 7]
+
+[[water_rects]]
+min = [32, 8]
+max = [36, 8]
+
+[[water_rects]]
+min = [31, 9]
+max = [36, 9]
+
+[[water_rects]]
+min = [31, 10]
+max = [35, 10]
+
+[[water_rects]]
+min = [32, 11]
+max = [34, 11]
+
+[[water_rects]]
+min = [32, 12]
+max = [33, 12]
+
+[[water_rects]]
+min = [33, 13]
+max = [33, 13]
+
+[[water_rects]]
+min = [54, 53]
+max = [54, 53]
+
+[[water_rects]]
+min = [54, 54]
+max = [55, 54]
+
+[[water_rects]]
+min = [51, 55]
+max = [56, 55]
+
+[[water_rects]]
+min = [50, 56]
+max = [56, 56]
+
+[[water_rects]]
+min = [49, 57]
+max = [52, 57]
+
+[[water_rects]]
+min = [55, 57]
+max = [56, 58]
+
+[[water_rects]]
+min = [50, 58]
+max = [52, 58]
+
+[[water_rects]]
+min = [51, 59]
+max = [55, 59]
+
+[[water_rects]]
+min = [52, 60]
+max = [54, 60]
+
+[[water_rects]]
+min = [52, 61]
+max = [53, 61]
+
+[[water_rects]]
+min = [53, 62]
+max = [53, 62]
+
+[[elevation_rects]]
+min = [10, 4]
+max = [24, 18]
+
+[[elevation_rects]]
+min = [4, 34]
+max = [18, 48]
+
+[[ramp_rects]]
+min = [9, 10]
+max = [10, 12]
+
+[[ramp_rects]]
+min = [24, 10]
+max = [25, 12]
+
+[[ramp_rects]]
+min = [3, 40]
+max = [4, 42]
+
+[[ramp_rects]]
+min = [18, 40]
+max = [19, 42]
+
+[[obstacles]]
+min = [62, 35]
+max = [63, 36]
+
+[[obstacles]]
+min = [75, 38]
+max = [76, 39]
+
+[[obstacles]]
+min = [63, 41]
+max = [64, 42]
+
+[[obstacles]]
+min = [80, 41]
+max = [81, 42]
+
+[[obstacles]]
+min = [70, 43]
+max = [71, 44]
+
+[[obstacles]]
+min = [36, 66]
+max = [37, 67]
+
+[[props]]
+kind = "tree"
+tile_pos = [46, 25]
+
+[[props]]
+kind = "tree"
+tile_pos = [35, 68]
+
+[[props]]
+kind = "tree"
+tile_pos = [29, 67]
+
+[[props]]
+kind = "tree"
+tile_pos = [40, 69]
+
+[[props]]
+kind = "tree"
+tile_pos = [45, 65]
+
+[[props]]
+kind = "tree"
+tile_pos = [42, 61]
+
+[[props]]
+kind = "tree"
+tile_pos = [44, 66]
+
+[[props]]
+kind = "tree"
+tile_pos = [78, 36]
+
+[[props]]
+kind = "tree"
+tile_pos = [79, 51]
+
+[[props]]
+kind = "tree"
+tile_pos = [88, 50]
+
+[[props]]
+kind = "tree"
+tile_pos = [92, 47]
+
+[[props]]
+kind = "tree"
+tile_pos = [82, 43]
+
+[[props]]
+kind = "tree"
+tile_pos = [70, 28]
+
+[[props]]
+kind = "tree"
+tile_pos = [72, 39]
+
+[[props]]
+kind = "tree"
+tile_pos = [78, 43]
+
+[[props]]
+kind = "tree"
+tile_pos = [23, 26]
+
+[[props]]
+kind = "tree"
+tile_pos = [62, 37]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [45, 84]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [52, 83]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [48, 87]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [82, 41]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [65, 41]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [68, 36]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [46, 5]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [47, 6]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [53, 8]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [57, 13]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [59, 19]
 
 [[preplaced_entities]]
 player_id = 2
@@ -54,7 +300,7 @@ tile_pos = [47, 18]
 [[preplaced_entities]]
 player_id = 2
 building_id = "psychic_beacon"
-tile_pos = [9, 41]
+tile_pos = [2, 34]
 
 [[preplaced_entities]]
 player_id = 2
@@ -69,27 +315,27 @@ tile_pos = [16, 52]
 [[preplaced_entities]]
 player_id = 2
 building_id = "allied_power_plant"
-tile_pos = [16, 51]
+tile_pos = [15, 50]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "allied_power_plant"
-tile_pos = [15, 51]
+tile_pos = [14, 52]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "allied_power_plant"
-tile_pos = [17, 48]
+tile_pos = [17, 49]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "allied_power_plant"
-tile_pos = [18, 47]
+tile_pos = [19, 46]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "allied_power_plant"
-tile_pos = [18, 48]
+tile_pos = [19, 48]
 
 [[preplaced_entities]]
 player_id = 2
@@ -104,7 +350,7 @@ tile_pos = [21, 48]
 [[preplaced_entities]]
 player_id = 2
 building_id = "allied_refinery"
-tile_pos = [12, 46]
+tile_pos = [9, 49]
 
 [[preplaced_entities]]
 player_id = 2
@@ -134,7 +380,7 @@ tile_pos = [27, 47]
 [[preplaced_entities]]
 player_id = 2
 building_id = "allied_pillbox"
-tile_pos = [11, 43]
+tile_pos = [5, 49]
 
 [[preplaced_entities]]
 player_id = 2
@@ -154,7 +400,7 @@ tile_pos = [25, 51]
 [[preplaced_entities]]
 player_id = 2
 unit_id = "chrono_miner"
-tile_pos = [20, 56]
+tile_pos = [19, 55]
 
 [[preplaced_entities]]
 player_id = 2
@@ -231,121 +477,197 @@ player_id = 2
 unit_id = "grizzly_tank"
 tile_pos = [26, 44]
 
+[[preplaced_entities]]
+player_id = 1
+unit_id = "boris"
+tile_pos = [48, 74]
+tag = "boris"
+
+[[objectives]]
+id = "obj_primary_main"
+tier = "primary"
+title = "Shatter the twin Psychic Beacons guarding Transylvania and raze Yuri's ancestral Cast..."
+marker_tile = [28, 28]
+
+[[objectives]]
+id = "obj_vip_boris"
+tier = "secondary"
+title = "Keep Hero Boris Alive Throughout the Operation"
+marker_tile = [48, 74]
+
+[[objectives]]
+id = "obj_secondary_strike"
+tier = "secondary"
+title = "Neutralize or Capture Enemy Strategic Facility"
+marker_tile = [28, 28]
+
+[[objectives]]
+id = "obj_bonus_waves"
+tier = "bonus"
+title = "Weather Enemy Tactical Counterattack Waves"
+target_count = 2
+marker_tile = [48, 80]
+
+[[cutscenes]]
+id = "intro_flyover"
+skippable = true
+letterbox = true
+
+[[cutscenes.keyframes]]
+time_secs = 0.0
+focus = [57.0, 0.0, 57.0]
+distance = 46.0
+pitch_deg = 52.0
+yaw_deg = -22.0
+
+[[cutscenes.keyframes]]
+time_secs = 2.2
+focus = [77.0, 0.0, 103.0]
+distance = 42.0
+pitch_deg = 55.0
+yaw_deg = -10.0
+
+[[cutscenes.keyframes]]
+time_secs = 4.5
+focus = [97.0, 0.0, 149.0]
+distance = 36.0
+pitch_deg = 58.0
+yaw_deg = 0.0
+
 [[spawns]]
 player_id = 1
 faction = "soviets"
-base_tile = [40, 16]
+sub_faction = "russia"
+base_tile = [48, 80]
+team_id = 1
 
 [[spawns.initial_buildings]]
 building_id = "soviet_conyard"
-tile_pos = [40, 16]
+tile_pos = [48, 80]
 
 [[spawns.initial_buildings]]
 building_id = "soviet_tesla_reactor"
-tile_pos = [43, 16]
+tile_pos = [52, 80]
 
 [[spawns.initial_buildings]]
 building_id = "soviet_refinery"
-tile_pos = [40, 19]
+tile_pos = [44, 80]
 
 [[spawns.initial_buildings]]
 building_id = "soviet_barracks"
-tile_pos = [43, 19]
+tile_pos = [48, 76]
 
 [[spawns.initial_buildings]]
 building_id = "soviet_war_factory"
-tile_pos = [46, 16]
-
-[[spawns.initial_units]]
-unit_id = "soviet_conscript"
-tile_pos = [42, 21]
-
-[[spawns.initial_units]]
-unit_id = "soviet_conscript"
-tile_pos = [44, 21]
-
-[[spawns.initial_units]]
-unit_id = "rhino_tank"
-tile_pos = [46, 20]
+tile_pos = [44, 76]
 
 [[spawns.initial_units]]
 unit_id = "war_miner"
-tile_pos = [42, 20]
+tile_pos = [42, 79]
+
+[[spawns.initial_units]]
+unit_id = "tesla_trooper"
+tile_pos = [46, 74]
+
+[[spawns.initial_units]]
+unit_id = "flak_trooper"
+tile_pos = [44, 74]
+
+[[spawns.initial_units]]
+unit_id = "rhino_tank"
+tile_pos = [42, 74]
+
+[[spawns.initial_units]]
+unit_id = "apocalypse_tank"
+tile_pos = [48, 73]
+
+[[spawns.initial_units]]
+unit_id = "siege_chopper"
+tile_pos = [46, 73]
 
 [[spawns]]
 player_id = 2
 faction = "yuri"
-base_tile = [5, 45]
-
-[[spawns.initial_buildings]]
-building_id = "yuri_conyard"
-tile_pos = [5, 45]
-
-[[spawns.initial_buildings]]
-building_id = "yuri_bio_reactor"
-tile_pos = [8, 45]
-
-[[spawns.initial_buildings]]
-building_id = "yuri_slave_refinery"
-tile_pos = [5, 48]
-
-[[spawns.initial_buildings]]
-building_id = "yuri_barracks"
-tile_pos = [8, 48]
-
-[[spawns.initial_buildings]]
-building_id = "yuri_war_factory"
-tile_pos = [11, 45]
-
-[[spawns.initial_units]]
-unit_id = "yuri_initiate"
-tile_pos = [7, 50]
-
-[[spawns.initial_units]]
-unit_id = "yuri_initiate"
-tile_pos = [9, 50]
-
-[[spawns.initial_units]]
-unit_id = "lasher_tank"
-tile_pos = [11, 49]
-
-[[spawns.initial_units]]
-unit_id = "yuri_slave_miner"
-tile_pos = [7, 49]
+sub_faction = "yuri"
+base_tile = [28, 28]
+team_id = 2
 
 [[trigger_zones]]
-id = "mission_stage_init"
-min = [6, 6]
-max = [12, 12]
+id = "yr_soviet_07_head_games_init"
+min = [0, 0]
+max = [3, 3]
 once = true
 condition = { type = "timer_elapsed", secs = 1.0 }
 actions = [
+    { type = "play_cutscene", cutscene_id = "intro_flyover" },
+    { type = "set_objective_status", objective_id = "obj_primary_main", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_vip_boris", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_secondary_strike", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_bonus_waves", status = "active" },
+    { type = "set_weather", preset = "night" },
     { type = "set_variable", name = "mission_stage", value = 1 },
-    { type = "eva_transmission", speaker = "ZOFIA", text = "Battle Control Online. Primary tactical objectives initialized." },
-    { type = "reveal_area", tile = [40, 16], radius = 14 }
+    { type = "reveal_area", tile = [28, 28], radius = 9 },
+    { type = "eva_transmission", speaker = "LT. ZOFIA", text = "Shatter the twin Psychic Beacons guarding Transylvania and raze Yuri's ancestral Castle Fortress once and for all!", portrait = "assets/ui/cameos/nradicon.png", audio_cue = "battle_control_online" },
 ]
 
 [[trigger_zones]]
-id = "tactical_reinforcement_wave"
-min = [39, 14]
-max = [43, 18]
+id = "yr_soviet_07_head_games_stage2_reinf"
+min = [0, 0]
+max = [3, 3]
 once = true
-condition = { type = "all", conditions = [{ type = "timer_elapsed", secs = 45.0 }, { type = "variable_equals", name = "mission_stage", value = 1 }] }
+condition = { type = "timer_elapsed", secs = 60.0 }
 actions = [
+    { type = "play_radar_video", video_path = "assets/videos/radar_pip/yr_soviet_07_pip_02.mp4" },
     { type = "set_variable", name = "mission_stage", value = 2 },
-    { type = "spawn_reinforcements", player_id = 1, unit_id = "apocalypse_tank", count = 2, tile = [39, 14] },
-    { type = "grant_credits", player_id = 1, amount = 1500 },
-    { type = "eva_transmission", speaker = "ZOFIA", text = "Reinforcements have arrived. Forward command has authorized 1500 bonus credits." }
+    { type = "grant_credits", player_id = 1, amount = 2000 },
+    { type = "spawn_reinforcements", player_id = 1, unit_id = "apocalypse_tank", count = 2, tile = [51, 81] },
+    { type = "eva_transmission", speaker = "LT. ZOFIA", text = "Heavy armored reinforcements have arrived at the staging area!", portrait = "assets/ui/cameos/nradicon.png", audio_cue = "reinforcements_have_arrived", radar_video = "assets/videos/radar_pip/yr_soviet_07_pip_02.mp4" },
 ]
 
 [[trigger_zones]]
-id = "decisive_campaign_victory"
-min = [2, 2]
-max = [6, 6]
+id = "yr_soviet_07_head_games_target_down"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "building_destroyed", building_id = "transylvania_fortress", player_id = 2 }
+actions = [
+    { type = "set_objective_status", objective_id = "obj_secondary_strike", status = "completed" },
+    { type = "grant_credits", player_id = 1, amount = 2000 },
+    { type = "eva_transmission", speaker = "LT. ZOFIA", text = "Key Psi-Corps structure destroyed! Press the assault and wipe out the rest of Yuri's base!", portrait = "assets/ui/cameos/nradicon.png", audio_cue = "battle_control_online" },
+]
+
+[[trigger_zones]]
+id = "yr_soviet_07_head_games_victory"
+min = [0, 0]
+max = [3, 3]
 once = true
 condition = { type = "all_buildings_destroyed", player_id = 2 }
 actions = [
+    { type = "set_objective_status", objective_id = "obj_primary_main", status = "completed" },
+    { type = "set_objective_status", objective_id = "obj_vip_boris", status = "completed" },
     { type = "set_variable", name = "mission_stage", value = 3 },
-    { type = "eva_transmission", speaker = "ZOFIA", text = "Mission Accomplished. All primary hostile command structures neutralized." },
-    { type = "declare_winner", player_id = 1 }
+    { type = "eva_transmission", speaker = "LT. ZOFIA", text = "Yuri's forces in this sector have been completely eradicated! Victory is ours!", portrait = "assets/ui/cameos/nradicon.png", audio_cue = "primary_objective_achieved" },
+    { type = "declare_winner", player_id = 1 },
+]
+
+[[trigger_zones]]
+id = "p22_vip_boris_lost"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "tagged_entity_destroyed", tag = "boris" }
+actions = [
+    { type = "set_objective_status", objective_id = "obj_vip_boris", status = "failed" },
+    { type = "eva_transmission", speaker = "LT. ZOFIA", text = "Hero Boris has fallen in combat!", portrait = "assets/ui/cameos/nradicon.png", audio_cue = "unit_lost" },
+]
+
+[[trigger_zones]]
+id = "p22_periodic_skirmish_wave"
+min = [0, 0]
+max = [3, 3]
+once = false
+condition = { type = "periodic_timer", start_secs = 75, interval_secs = 75, max_repeats = 3 }
+actions = [
+    { type = "spawn_reinforcements", player_id = 2, unit_id = "yuri_initiate", count = 3, tile = [26, 26] },
+    { type = "add_objective_progress", objective_id = "obj_bonus_waves", delta = 1 },
 ]

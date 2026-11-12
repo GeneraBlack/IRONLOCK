@@ -1,12 +1,14 @@
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 
 use super::common::{
-    default_burst, default_true, ArmorType, EffectPayload, MovementDomain, ProjectileStyle,
-    StatusEffectDef,
+    default_burst, default_one, default_true, ArmorType, EffectPayload, MovementDomain,
+    ProjectileStyle, StatusEffectDef,
 };
+use crate::manifest::DamageMatrixDef;
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, JsonSchema)]
 pub struct HazardZoneSpec {
     #[serde(default = "default_hazard_radius")]
     pub radius: f32,
@@ -41,16 +43,59 @@ fn default_hazard_duration() -> f32 {
     6.0
 }
 
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "snake_case")]
 pub enum DeliveryKind {
     #[default]
     Instant,
     Ballistic,
     Missile,
+    Beam,
+    Cone,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, JsonSchema)]
+pub struct BallisticSpec {
+    #[serde(default)]
+    pub gravity: f32,
+    #[serde(default)]
+    pub scatter_radius: f32,
+    #[serde(default = "default_one")]
+    pub moving_scatter_multiplier: f32,
+    #[serde(default = "default_one")]
+    pub lead_factor: f32,
+    #[serde(default = "default_true")]
+    pub collides_with_terrain: bool,
+    #[serde(default)]
+    pub collides_with_structures: bool,
+    #[serde(default)]
+    pub suppression_amount: f32,
+    #[serde(default)]
+    pub turn_rate_deg_per_sec: f32,
+    #[serde(default)]
+    pub cone_half_angle_deg: f32,
+    #[serde(default)]
+    pub penetrating: bool,
+}
+
+impl Default for BallisticSpec {
+    fn default() -> Self {
+        Self {
+            gravity: 0.0,
+            scatter_radius: 0.0,
+            moving_scatter_multiplier: 1.0,
+            lead_factor: 1.0,
+            collides_with_terrain: true,
+            collides_with_structures: false,
+            suppression_amount: 0.0,
+            turn_rate_deg_per_sec: 0.0,
+            cone_half_angle_deg: 0.0,
+            penetrating: false,
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, JsonSchema)]
 pub struct WeaponDef {
     pub id: String,
     pub name: String,
@@ -68,6 +113,8 @@ pub struct WeaponDef {
     #[serde(default)]
     pub friendly_fire: bool,
     #[serde(default)]
+    pub warhead_tag: Option<String>,
+    #[serde(default)]
     pub armor_multipliers: BTreeMap<ArmorType, f32>,
     #[serde(default = "default_true")]
     pub targets_ground: bool,
@@ -79,6 +126,16 @@ pub struct WeaponDef {
     pub burst: u32,
     #[serde(default)]
     pub projectile_style: ProjectileStyle,
+    #[serde(default)]
+    pub turn_rate_deg_per_sec: Option<f32>,
+    #[serde(default)]
+    pub cone_angle_deg: f32,
+    #[serde(default)]
+    pub muzzle_vfx_id: Option<String>,
+    #[serde(default)]
+    pub projectile_vfx_id: Option<String>,
+    #[serde(default)]
+    pub impact_vfx_id: Option<String>,
     #[serde(default)]
     pub on_hit_status: Option<StatusEffectDef>,
     #[serde(default)]
@@ -127,6 +184,8 @@ pub struct WeaponDef {
     pub naval_only: bool,
     #[serde(default)]
     pub kamikaze: bool,
+    #[serde(default)]
+    pub ballistics: BallisticSpec,
 }
 
 impl Default for WeaponDef {
@@ -142,12 +201,18 @@ impl Default for WeaponDef {
             delivery: DeliveryKind::Instant,
             arc_height: 0.0,
             friendly_fire: false,
+            warhead_tag: None,
             armor_multipliers: BTreeMap::new(),
             targets_ground: true,
             targets_air: false,
             splash_radius: 0.0,
             burst: 1,
             projectile_style: ProjectileStyle::Bullet,
+            turn_rate_deg_per_sec: None,
+            cone_angle_deg: 0.0,
+            muzzle_vfx_id: None,
+            projectile_vfx_id: None,
+            impact_vfx_id: None,
             on_hit_status: None,
             on_hit_statuses: Vec::new(),
             on_hit_zone: None,
@@ -172,6 +237,7 @@ impl Default for WeaponDef {
             can_mind_control_buildings: false,
             naval_only: false,
             kamikaze: false,
+            ballistics: BallisticSpec::default(),
         }
     }
 }
@@ -182,8 +248,81 @@ fn default_projectile_speed() -> f32 {
 
 impl WeaponDef {
     pub fn effective_damage(&self, target_armor: ArmorType) -> f32 {
-        let mult = self.armor_multipliers.get(&target_armor).copied().unwrap_or(1.0);
+        let mult = self
+            .armor_multipliers
+            .get(&target_armor)
+            .copied()
+            .unwrap_or(1.0);
         self.damage * mult
+    }
+
+    /// Computes damage resolving custom `warhead_tag` x `armor_tag` via `DamageMatrixDef` first,
+    /// falling back to `self.armor_multipliers[target_armor]`.
+    pub fn effective_damage_with_matrix(
+        &self,
+        target_armor: ArmorType,
+        target_armor_tag: Option<&str>,
+        matrix: &DamageMatrixDef,
+    ) -> f32 {
+        if let Some(wh) = self.warhead_tag.as_deref().filter(|s| !s.is_empty()) {
+            let resolved_armor = target_armor_tag
+                .filter(|s| !s.is_empty())
+                .unwrap_or_else(|| target_armor.as_tag_str());
+            if let Some(mult) = matrix.multiplier(wh, resolved_armor) {
+                return self.damage * mult;
+            }
+        }
+        self.effective_damage(target_armor)
+    }
+
+    /// Returns physical 3D ballistic parameters, synthesizing sensible defaults from `delivery`,
+    /// `arc_height`, `projectile_style`, and `splash_radius` when `ballistics` uses defaults.
+    pub fn resolved_ballistics(&self) -> BallisticSpec {
+        let mut b = self.ballistics;
+        if let Some(tr) = self.turn_rate_deg_per_sec {
+            if tr > 0.0 && b.turn_rate_deg_per_sec <= 0.0 {
+                b.turn_rate_deg_per_sec = tr;
+            }
+        }
+        if self.cone_angle_deg > 0.0 && b.cone_half_angle_deg <= 0.0 {
+            b.cone_half_angle_deg = self.cone_angle_deg * 0.5;
+        }
+        match self.delivery {
+            DeliveryKind::Ballistic => {
+                if b.gravity <= 0.0 {
+                    b.gravity = 18.0;
+                }
+                if b.scatter_radius <= 0.0 && self.splash_radius >= 1.5 {
+                    b.scatter_radius = 0.65;
+                }
+                if b.suppression_amount <= 0.0 && self.damage > 0.0 {
+                    b.suppression_amount = (self.damage * 0.15).clamp(2.0, 25.0);
+                }
+            }
+            DeliveryKind::Missile if b.turn_rate_deg_per_sec <= 0.0 => {
+                b.turn_rate_deg_per_sec = 210.0;
+            }
+            DeliveryKind::Missile => {}
+            DeliveryKind::Beam => {
+                b.penetrating = true;
+            }
+            DeliveryKind::Cone => {
+                b.penetrating = true;
+                if b.cone_half_angle_deg <= 0.0 {
+                    b.cone_half_angle_deg = 22.5;
+                }
+            }
+            DeliveryKind::Instant if self.projectile_style == ProjectileStyle::Bullet => {
+                if b.gravity <= 0.0 && self.arc_height > 0.0 {
+                    b.gravity = 9.81;
+                }
+                if b.suppression_amount <= 0.0 && self.damage > 0.0 {
+                    b.suppression_amount = (self.damage * 0.08).clamp(1.0, 12.0);
+                }
+            }
+            _ => {}
+        }
+        b
     }
 
     pub fn can_target_domain(&self, domain: MovementDomain) -> bool {
@@ -203,8 +342,7 @@ impl WeaponDef {
     pub fn emp_duration_secs(&self) -> f32 {
         self.iter_on_hit_statuses()
             .filter(|s| {
-                s.id == "emp_disable"
-                    || (s.stunned && s.immobilized && s.disarmed && !s.phased_out)
+                s.id == "emp_disable" || (s.stunned && s.immobilized && s.disarmed && !s.phased_out)
             })
             .map(|s| s.duration_secs)
             .fold(0.0, f32::max)
@@ -229,9 +367,7 @@ impl WeaponDef {
 
     pub fn grapple_spec(&self) -> Option<(f32, f32)> {
         self.iter_on_hit_statuses()
-            .find(|s| {
-                s.id == "grappled" || (s.immobilized && !s.stunned && s.dot_dps > 0.0)
-            })
+            .find(|s| s.id == "grappled" || (s.immobilized && !s.stunned && s.dot_dps > 0.0))
             .map(|s| (s.duration_secs, s.dot_dps))
     }
 
@@ -245,12 +381,25 @@ impl WeaponDef {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize, JsonSchema)]
 pub struct WeaponCatalog {
     pub weapons: Vec<WeaponDef>,
 }
 
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[derive(
+    Debug,
+    Clone,
+    Copy,
+    Default,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    Hash,
+    Serialize,
+    Deserialize,
+    JsonSchema,
+)]
 #[serde(rename_all = "snake_case")]
 pub enum BuildingRole {
     ConstructionYard,
@@ -263,13 +412,27 @@ pub enum BuildingRole {
     Wall,
     Gate,
     Bridge,
+    BridgeRepairHut,
     Airfield,
     ServiceDepot,
     #[default]
     Support,
 }
 
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[derive(
+    Debug,
+    Clone,
+    Copy,
+    Default,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    Hash,
+    Serialize,
+    Deserialize,
+    JsonSchema,
+)]
 #[serde(rename_all = "snake_case")]
 pub enum SupportPowerKind {
     #[default]
@@ -286,7 +449,7 @@ pub enum SupportPowerKind {
     PsychicDominator,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, JsonSchema)]
 pub struct SupportPowerDef {
     pub id: String,
     pub name: String,
@@ -308,6 +471,12 @@ pub struct SupportPowerDef {
     pub payloads: Vec<EffectPayload>,
     #[serde(default)]
     pub sub_factions: Vec<String>,
+    #[serde(default)]
+    pub delivery_speed: Option<f32>,
+    #[serde(default)]
+    pub delivery_aircraft_hp: Option<f32>,
+    #[serde(default)]
+    pub missile_flight_secs: Option<f32>,
 }
 
 fn default_support_cooldown() -> f32 {
@@ -336,6 +505,9 @@ impl Default for SupportPowerDef {
             damage: 200.0,
             payloads: Vec::new(),
             sub_factions: Vec::new(),
+            delivery_speed: None,
+            delivery_aircraft_hp: None,
+            missile_flight_secs: None,
         }
     }
 }
@@ -354,7 +526,20 @@ impl SupportPowerDef {
     }
 }
 
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[derive(
+    Debug,
+    Clone,
+    Copy,
+    Default,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    Hash,
+    Serialize,
+    Deserialize,
+    JsonSchema,
+)]
 #[serde(rename_all = "snake_case")]
 pub enum CrateKind {
     #[default]

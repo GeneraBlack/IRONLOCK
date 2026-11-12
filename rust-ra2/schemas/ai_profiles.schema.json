@@ -1,0 +1,829 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "AiBtActionKind": {
+      "oneOf": [
+        {
+          "properties": {
+            "action": {
+              "enum": [
+                "execute_build_order"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "action"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "action": {
+              "enum": [
+                "train_unit"
+              ],
+              "type": "string"
+            },
+            "role_tag": {
+              "default": null,
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "unit_id": {
+              "default": null,
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "action"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "action": {
+              "enum": [
+                "construct_building"
+              ],
+              "type": "string"
+            },
+            "building_id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "action",
+            "building_id"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "action": {
+              "enum": [
+                "research_upgrade"
+              ],
+              "type": "string"
+            },
+            "upgrade_id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "action",
+            "upgrade_id"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "action": {
+              "enum": [
+                "advance_era"
+              ],
+              "type": "string"
+            },
+            "era_id": {
+              "default": null,
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "action"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "action": {
+              "enum": [
+                "expand_outpost"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "action"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "action": {
+              "enum": [
+                "launch_attack_wave"
+              ],
+              "type": "string"
+            },
+            "min_units": {
+              "default": 6,
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            }
+          },
+          "required": [
+            "action"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "action": {
+              "enum": [
+                "launch_amphibious_wave"
+              ],
+              "type": "string"
+            },
+            "min_units": {
+              "default": 6,
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            }
+          },
+          "required": [
+            "action"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "action": {
+              "enum": [
+                "cast_superweapon"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "action"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "action": {
+              "enum": [
+                "retreat_wounded"
+              ],
+              "type": "string"
+            },
+            "health_ratio_below": {
+              "default": 0.30000001192092896,
+              "format": "float",
+              "type": "number"
+            }
+          },
+          "required": [
+            "action"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "action": {
+              "enum": [
+                "defend_base"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "action"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "action": {
+              "enum": [
+                "capture_control_point"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "action"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "action": {
+              "enum": [
+                "use_hero_skills"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "action"
+          ],
+          "type": "object"
+        }
+      ]
+    },
+    "AiProfileDef": {
+      "properties": {
+        "amphibious_assault_enabled": {
+          "default": null,
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "behavior_tree": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/BehaviorTreeDef"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "build_order": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "expand_at_credits": {
+          "default": null,
+          "format": "int64",
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "faction": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "min_attack_wave_size": {
+          "default": null,
+          "format": "uint",
+          "minimum": 0.0,
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "on_ai_tick": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "personality": {
+          "default": "balanced",
+          "type": "string"
+        },
+        "personality_id": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "preferred_superweapons": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "superweapon_doctrine": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "target_priority_weights": {
+          "additionalProperties": {
+            "format": "float",
+            "type": "number"
+          },
+          "default": {},
+          "type": "object"
+        },
+        "unit_role_quotas": {
+          "additionalProperties": {
+            "format": "float",
+            "type": "number"
+          },
+          "default": {},
+          "type": "object"
+        },
+        "unit_weights": {
+          "additionalProperties": {
+            "format": "uint32",
+            "minimum": 0.0,
+            "type": "integer"
+          },
+          "default": {},
+          "type": "object"
+        }
+      },
+      "required": [
+        "faction",
+        "id"
+      ],
+      "type": "object"
+    },
+    "BehaviorTreeDef": {
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "default": "",
+          "type": "string"
+        },
+        "nodes": {
+          "default": [],
+          "items": {
+            "$ref": "#/definitions/BtNode"
+          },
+          "type": "array"
+        },
+        "root_node": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "root_node"
+      ],
+      "type": "object"
+    },
+    "BlackboardConditionKind": {
+      "oneOf": [
+        {
+          "properties": {
+            "amount": {
+              "format": "int64",
+              "type": "integer"
+            },
+            "check": {
+              "enum": [
+                "credits_above"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "amount",
+            "check"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "amount": {
+              "format": "int64",
+              "type": "integer"
+            },
+            "check": {
+              "enum": [
+                "credits_below"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "amount",
+            "check"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "amount": {
+              "format": "int64",
+              "type": "integer"
+            },
+            "check": {
+              "enum": [
+                "resource_above"
+              ],
+              "type": "string"
+            },
+            "resource_id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "amount",
+            "check",
+            "resource_id"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "check": {
+              "enum": [
+                "under_attack"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "check"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "check": {
+              "enum": [
+                "army_count_at_least"
+              ],
+              "type": "string"
+            },
+            "count": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            }
+          },
+          "required": [
+            "check",
+            "count"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "check": {
+              "enum": [
+                "enemy_air_ratio_above"
+              ],
+              "type": "string"
+            },
+            "ratio": {
+              "format": "float",
+              "type": "number"
+            }
+          },
+          "required": [
+            "check",
+            "ratio"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "check": {
+              "enum": [
+                "era_at_least"
+              ],
+              "type": "string"
+            },
+            "era_order": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            }
+          },
+          "required": [
+            "check",
+            "era_order"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "check": {
+              "enum": [
+                "has_era"
+              ],
+              "type": "string"
+            },
+            "era_id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "check",
+            "era_id"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "check": {
+              "enum": [
+                "has_upgrade"
+              ],
+              "type": "string"
+            },
+            "upgrade_id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "check",
+            "upgrade_id"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "building_id": {
+              "type": "string"
+            },
+            "check": {
+              "enum": [
+                "has_building"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "building_id",
+            "check"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "check": {
+              "enum": [
+                "supply_ratio_above"
+              ],
+              "type": "string"
+            },
+            "ratio": {
+              "format": "float",
+              "type": "number"
+            }
+          },
+          "required": [
+            "check",
+            "ratio"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "check": {
+              "enum": [
+                "hero_alive"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "check"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "check": {
+              "enum": [
+                "blackboard_key_at_least"
+              ],
+              "type": "string"
+            },
+            "key": {
+              "type": "string"
+            },
+            "threshold": {
+              "format": "float",
+              "type": "number"
+            }
+          },
+          "required": [
+            "check",
+            "key",
+            "threshold"
+          ],
+          "type": "object"
+        }
+      ]
+    },
+    "BtNode": {
+      "properties": {
+        "base_utility": {
+          "default": 1.0,
+          "format": "float",
+          "type": "number"
+        },
+        "canvas_pos": {
+          "default": [
+            0.0,
+            0.0
+          ],
+          "items": {
+            "format": "float",
+            "type": "number"
+          },
+          "maxItems": 2,
+          "minItems": 2,
+          "type": "array"
+        },
+        "comment": {
+          "default": "",
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "label": {
+          "default": "",
+          "type": "string"
+        },
+        "node_kind": {
+          "$ref": "#/definitions/BtNodeKind"
+        }
+      },
+      "required": [
+        "id",
+        "node_kind"
+      ],
+      "type": "object"
+    },
+    "BtNodeKind": {
+      "oneOf": [
+        {
+          "properties": {
+            "children": {
+              "default": [],
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "kind": {
+              "enum": [
+                "selector"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "children": {
+              "default": [],
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "kind": {
+              "enum": [
+                "sequence"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "children": {
+              "default": [],
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "kind": {
+              "enum": [
+                "utility_selector"
+              ],
+              "type": "string"
+            },
+            "utility_weights": {
+              "additionalProperties": {
+                "format": "float",
+                "type": "number"
+              },
+              "default": {},
+              "type": "object"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "child": {
+              "type": "string"
+            },
+            "kind": {
+              "enum": [
+                "inverter"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "child",
+            "kind"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "child": {
+              "type": "string"
+            },
+            "cooldown_secs": {
+              "format": "float",
+              "type": "number"
+            },
+            "kind": {
+              "enum": [
+                "cooldown"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "child",
+            "cooldown_secs",
+            "kind"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "condition": {
+              "$ref": "#/definitions/BlackboardConditionKind"
+            },
+            "kind": {
+              "enum": [
+                "blackboard_condition"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "condition",
+            "kind"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "action": {
+              "$ref": "#/definitions/AiBtActionKind"
+            },
+            "kind": {
+              "enum": [
+                "ai_action"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "action",
+            "kind"
+          ],
+          "type": "object"
+        }
+      ]
+    }
+  },
+  "properties": {
+    "profiles": {
+      "default": [],
+      "items": {
+        "$ref": "#/definitions/AiProfileDef"
+      },
+      "type": "array"
+    }
+  },
+  "title": "AiProfileCatalog",
+  "type": "object"
+}

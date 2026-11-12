@@ -2,66 +2,93 @@ use super::*;
 use crate::input::{ClientInteractionState, MenuScreen};
 use bevy::prelude::*;
 
-/// Converts non-ASCII characters (German Umlauts, tactical badges, and Unicode symbols)
-/// into crisp ASCII equivalents so Bevy's built-in `FiraMono-subset` font never renders `▯` missing-glyph boxes.
+/// Holds the loaded full-UTF-8 system TrueType font handle (with automatic fallback to Bevy's default font).
+#[derive(Resource, Debug, Clone, Default)]
+pub struct UiFontResource {
+    pub font: Handle<Font>,
+    pub loaded_system_ttf: bool,
+    pub source_path: String,
+}
+
+impl UiFontResource {
+    pub const CANDIDATE_PATHS: &'static [&'static str] = &[
+        "C:/Windows/Fonts/segoeui.ttf",
+        "C:/Windows/Fonts/arial.ttf",
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+        "/System/Library/Fonts/Supplemental/Arial.ttf",
+    ];
+
+    pub fn load_or_fallback(fonts: Option<&mut Assets<Font>>) -> Self {
+        if let Some(font_assets) = fonts {
+            for candidate in Self::CANDIDATE_PATHS {
+                if let Ok(bytes) = std::fs::read(candidate) {
+                    if let Ok(font) = Font::try_from_bytes(bytes) {
+                        let handle = font_assets.add(font);
+                        return Self {
+                            font: handle,
+                            loaded_system_ttf: true,
+                            source_path: (*candidate).to_string(),
+                        };
+                    }
+                }
+            }
+        }
+        Self {
+            font: Handle::default(),
+            loaded_system_ttf: false,
+            source_path: "builtin-default".to_string(),
+        }
+    }
+}
+
+/// Repairs UTF-8 mojibake sequences while preserving 100% of native UTF-8 characters (`ä, ö, ü, ß`,
+/// accented Latin, em-dashes, tactical glyphs, and Unicode symbols).
 pub fn sanitize_ui_text(input: &str) -> String {
-    let pre = input
-        .replace("â€”", "-")
-        .replace("â˜…", "[*]")
-        .replace("âœ”", "[OK]")
+    let repaired = input
+        .replace("â€”", "—")
+        .replace("â€“", "–")
+        .replace("â˜…", "★")
+        .replace("âœ”", "✔")
         .replace("ðŸ”’", "[LOCK]")
-        .replace("â€¢", "*")
+        .replace("â€¢", "•")
         .replace("ðŸ’¬", "[CHAT]");
-    let mut out = String::with_capacity(pre.len() + 16);
-    for ch in pre.chars() {
-        match ch {
-            'ä' => out.push_str("ae"),
-            'ö' => out.push_str("oe"),
-            'ü' => out.push_str("ue"),
-            'Ä' => out.push_str("AE"),
-            'Ö' => out.push_str("OE"),
-            'Ü' => out.push_str("UE"),
-            'ß' => out.push_str("ss"),
-            '—' | '–' => out.push('-'),
-            '×' => out.push('x'),
-            '•' => out.push('*'),
-            '↔' | '⇄' => out.push_str("<->"),
-            '★' => out.push_str("[*]"),
-            '✔' => out.push_str("[OK]"),
-            '▶' => out.push('>'),
-            '◀' => out.push('<'),
-            '⟳' | '🔄' => out.push_str("[R] "),
-            '🎲' => out.push_str("[RNG] "),
-            '🎬' => out.push_str("[FMV] "),
-            '📡' => out.push_str("[PIP] "),
-            '🎵' => out.push_str("[BGM] "),
-            '🔊' => out.push_str("[VOL] "),
-            '🎥' => out.push_str("[CAM] "),
-            '🌤' | '🌫' => out.push_str("[ENV] "),
-            '🔨' | '⚙' => out.push_str("[DEV] "),
-            '🔍' => out.push_str("[SCAN] "),
-            '🖌' => out.push_str("[EDIT] "),
-            '🗺' => out.push_str("[MAP] "),
-            '⚖' => out.push_str("[BAL] "),
-            '💾' => out.push_str("[SAVE] "),
-            '📂' => out.push_str("[LOAD] "),
-            '⚠' | '⚡' => out.push_str("[!] "),
-            '🔒' => out.push_str("[LOCK]"),
-            '💬' => out.push_str("[CHAT]"),
-            '🌐' => out.push_str("[NET] "),
-            '✎' => out.push_str("[EDIT] "),
-            '👁' => out.push_str("[POV] "),
-            '⏪' => out.push_str("<<"),
-            '⏩' | '⏭' => out.push_str(">>"),
-            c if c.is_ascii() => out.push(c),
-            _ => {}
+
+    let mut out = String::with_capacity(repaired.len());
+    for ch in repaired.chars() {
+        if ch == '\n' || ch == '\t' || !ch.is_control() {
+            out.push(ch);
         }
     }
     out
 }
 
+/// Automatically injects the full UTF-8 TrueType `Handle<Font>` into newly spawned UI text nodes
+/// and keeps Bevy's global `UiScale` synchronized with `ClientInteractionState.ui_scale` (`0.75..=1.50`).
+pub fn apply_utf8_font_and_ui_scale(
+    interaction: Res<ClientInteractionState>,
+    ui_font: Option<Res<UiFontResource>>,
+    mut ui_scale: Option<ResMut<UiScale>>,
+    mut added_text_q: Query<&mut TextFont, Added<TextFont>>,
+) {
+    let target_scale = interaction.ui_scale.clamp(0.75, 1.50);
+    if let Some(scale_res) = ui_scale.as_deref_mut() {
+        if (scale_res.0 - target_scale).abs() > 1e-4 {
+            scale_res.0 = target_scale;
+        }
+    }
+
+    if let Some(font_res) = ui_font.as_deref() {
+        if font_res.loaded_system_ttf {
+            for mut tf in &mut added_text_q {
+                if tf.font == Handle::default() {
+                    tf.font = font_res.font.clone();
+                }
+            }
+        }
+    }
+}
+
 pub(super) fn spawn_studio_modal(commands: &mut Commands) {
-    // Full-Viewport Triple-A Command-Center Canvas (Live 3D Orbital Diorama Stage + Glassmorphic Blades)
     commands
         .spawn((
             StudioModalRoot,
@@ -77,18 +104,18 @@ pub(super) fn spawn_studio_modal(commands: &mut Commands) {
                 row_gap: Val::Px(10.0),
                 ..default()
             },
-            BackgroundColor(Color::srgba(0.01, 0.02, 0.05, 0.14)),
+            BackgroundColor(Color::srgba(0.01, 0.02, 0.05, 0.16)),
         ))
         .with_children(|modal| {
-            // Top Glassmorphic Command-Center Deck (shown in Engine Dev Mode [F12]; hidden in RA2 Player Mode)
+            // Top Navigation Header Bar for Secondary Player Submenus (hidden on Root Main Menu, LoadingScreen & PauseMenu)
             modal
                 .spawn((
                     StudioTopDeckNode,
                     Node {
                         width: Val::Percent(100.0),
                         flex_direction: FlexDirection::Column,
-                        padding: UiRect::all(Val::Px(12.0)),
-                        row_gap: Val::Px(8.0),
+                        padding: UiRect::all(Val::Px(10.0)),
+                        row_gap: Val::Px(6.0),
                         border: UiRect::all(Val::Px(1.5)),
                         ..default()
                     },
@@ -96,7 +123,6 @@ pub(super) fn spawn_studio_modal(commands: &mut Commands) {
                     BorderColor(Color::srgb(0.32, 0.58, 0.92)),
                 ))
                 .with_children(|top_deck| {
-                    // 1. Header Row: Brand Title + Quick Resume / Return to Main Menu
                     top_deck
                         .spawn(Node {
                             width: Val::Percent(100.0),
@@ -108,11 +134,9 @@ pub(super) fn spawn_studio_modal(commands: &mut Commands) {
                         .with_children(|hdr| {
                             hdr.spawn((
                                 StudioHeaderTitleText,
-                                Text::new(sanitize_ui_text(
-                                    "COMMAND & CONQUER: RED ALERT 2 (IRONLOCK EDITION) - COMMAND CENTER",
-                                )),
+                                Text::new("COMMAND CENTER"),
                                 TextFont {
-                                    font_size: 13.5,
+                                    font_size: 14.0,
                                     ..default()
                                 },
                                 TextColor(Color::srgb(0.98, 0.88, 0.48)),
@@ -125,29 +149,21 @@ pub(super) fn spawn_studio_modal(commands: &mut Commands) {
                             .with_children(|actions| {
                                 spawn_styled_button(
                                     actions,
-                                    "DEV MODE [F12]",
-                                    SidebarAction::ToggleDevMode,
-                                    Color::srgb(0.36, 0.22, 0.14),
+                                    "BACK TO MAIN MENU",
+                                    SidebarAction::NavigateMenu(MenuScreen::Root),
+                                    Color::srgb(0.18, 0.28, 0.44),
                                     Val::Auto,
                                 );
                                 spawn_styled_button(
                                     actions,
-                                    "TACTICAL PAUSE",
-                                    SidebarAction::NavigateMenu(MenuScreen::PauseMenu),
-                                    Color::srgb(0.28, 0.24, 0.38),
-                                    Val::Auto,
-                                );
-                                spawn_styled_button(
-                                    actions,
-                                    "▶ ENTER / RESUME LIVE 3D BATTLE [ESC]",
-                                    SidebarAction::FinishLoadingEnterGame,
-                                    Color::srgb(0.16, 0.48, 0.28),
+                                    "EXIT",
+                                    SidebarAction::ExitApplication,
+                                    Color::srgb(0.48, 0.14, 0.16),
                                     Val::Auto,
                                 );
                             });
                         });
 
-                    // 2. Top Submenu Navigation Tab Bar (7 Primary Screens)
                     top_deck
                         .spawn(Node {
                             width: Val::Percent(100.0),
@@ -158,84 +174,60 @@ pub(super) fn spawn_studio_modal(commands: &mut Commands) {
                         .with_children(|nav| {
                             spawn_styled_button(
                                 nav,
-                                "1. MAIN MENU",
+                                "MAIN MENU",
                                 SidebarAction::NavigateMenu(MenuScreen::Root),
                                 Color::srgb(0.16, 0.28, 0.46),
                                 Val::Percent(14.0),
                             );
                             spawn_styled_button(
                                 nav,
-                                "2. CAMPAIGN",
+                                "CAMPAIGN",
                                 SidebarAction::NavigateMenu(MenuScreen::Campaign),
                                 Color::srgb(0.40, 0.26, 0.14),
-                                Val::Percent(14.0),
+                                Val::Percent(15.0),
                             );
                             spawn_styled_button(
                                 nav,
-                                "3. SKIRMISH",
+                                "SKIRMISH",
                                 SidebarAction::NavigateMenu(MenuScreen::Skirmish),
                                 Color::srgb(0.18, 0.38, 0.26),
-                                Val::Percent(16.0),
+                                Val::Percent(15.0),
                             );
                             spawn_styled_button(
                                 nav,
-                                "4. MULTIPLAYER",
+                                "MULTIPLAYER",
                                 SidebarAction::NavigateMenu(MenuScreen::Multiplayer),
                                 Color::srgb(0.16, 0.38, 0.48),
                                 Val::Percent(15.0),
                             );
                             spawn_styled_button(
                                 nav,
-                                "5. REPLAYS & ARCHIVE",
+                                "THEATER & REPLAYS",
                                 SidebarAction::NavigateMenu(MenuScreen::Theater),
                                 Color::srgb(0.32, 0.24, 0.44),
                                 Val::Percent(15.0),
                             );
-                            nav.spawn((
-                                Button,
-                                SidebarAction::NavigateMenu(MenuScreen::Studio),
-                                ButtonVisualStyle {
-                                    normal: Color::srgb(0.24, 0.30, 0.48),
-                                    hovered: Color::srgb(0.40, 0.46, 0.64),
-                                    pressed: Color::srgb(0.17, 0.22, 0.35),
-                                },
-                                Node {
-                                    width: Val::Percent(14.0),
-                                    padding: UiRect::axes(Val::Px(7.0), Val::Px(5.0)),
-                                    justify_content: JustifyContent::Center,
-                                    align_items: AlignItems::Center,
-                                    border: UiRect::all(Val::Px(1.5)),
-                                    ..default()
-                                },
-                                BackgroundColor(Color::srgb(0.24, 0.30, 0.48)),
-                                BorderColor(Color::srgba(0.85, 0.92, 1.0, 0.28)),
-                            ))
-                            .with_children(|btn| {
-                                btn.spawn((
-                                    StudioTab6ButtonText,
-                                    Text::new("6. UNIT ENCYCLOPEDIA"),
-                                    TextFont {
-                                        font_size: 11.0,
-                                        ..default()
-                                    },
-                                    TextColor(Color::WHITE),
-                                ));
-                            });
                             spawn_styled_button(
                                 nav,
-                                "7. OPTIONS",
+                                "ENCYCLOPEDIA",
+                                SidebarAction::NavigateMenu(MenuScreen::Encyclopedia),
+                                Color::srgb(0.24, 0.30, 0.48),
+                                Val::Percent(14.0),
+                            );
+                            spawn_styled_button(
+                                nav,
+                                "OPTIONS",
                                 SidebarAction::NavigateMenu(MenuScreen::Settings),
                                 Color::srgb(0.24, 0.28, 0.36),
                                 Val::Percent(12.0),
                             );
                         });
 
-                    // 3. Status & EVA Command Output Banner
                     top_deck
                         .spawn((
                             Node {
                                 width: Val::Percent(100.0),
-                                padding: UiRect::axes(Val::Px(12.0), Val::Px(6.0)),
+                                padding: UiRect::axes(Val::Px(10.0), Val::Px(5.0)),
                                 border: UiRect::all(Val::Px(1.0)),
                                 ..default()
                             },
@@ -255,7 +247,6 @@ pub(super) fn spawn_studio_modal(commands: &mut Commands) {
                         });
                 });
 
-            // 4. Dynamic Submenu Content Viewport (populated by `menu_screens.rs` based on `active_menu_screen` & `app_phase`)
             modal.spawn((
                 StudioModListContainer,
                 Node {
@@ -298,6 +289,7 @@ pub fn spawn_icon_styled_button(
         (srgba.green * 0.72).max(0.0),
         (srgba.blue * 0.72).max(0.0),
     );
+    let default_border = Color::srgba(0.85, 0.92, 1.0, 0.28);
 
     parent
         .spawn((
@@ -307,6 +299,7 @@ pub fn spawn_icon_styled_button(
                 normal: base_color,
                 hovered,
                 pressed,
+                default_border,
             },
             Node {
                 width,
@@ -322,7 +315,7 @@ pub fn spawn_icon_styled_button(
                 ..default()
             },
             BackgroundColor(base_color),
-            BorderColor(Color::srgba(0.85, 0.92, 1.0, 0.28)),
+            BorderColor(default_border),
         ))
         .with_children(|btn| {
             if let Some(img) = icon_handle {
@@ -348,145 +341,7 @@ pub fn spawn_icon_styled_button(
         });
 }
 
-#[allow(clippy::too_many_arguments)]
-pub fn spawn_cameo_grid_button(
-    parent: &mut ChildBuilder,
-    short_title: &str,
-    cost_label: &str,
-    status_badge: &str,
-    icon_handle: Option<Handle<Image>>,
-    action: SidebarAction,
-    base_color: Color,
-    is_highlighted: bool,
-) {
-    let border_col = if is_highlighted {
-        Color::srgb(1.0, 0.90, 0.30)
-    } else {
-        Color::srgba(0.65, 0.82, 1.0, 0.42)
-    };
-
-    parent
-        .spawn((
-            Button,
-            action,
-            ButtonVisualStyle {
-                normal: if icon_handle.is_some() {
-                    Color::WHITE
-                } else {
-                    base_color
-                },
-                hovered: Color::srgb(0.88, 0.96, 1.0),
-                pressed: Color::srgb(0.68, 0.78, 0.92),
-            },
-            Node {
-                width: Val::Px(104.0),
-                height: Val::Px(74.0),
-                justify_content: JustifyContent::SpaceBetween,
-                align_items: AlignItems::Stretch,
-                flex_direction: FlexDirection::Column,
-                border: UiRect::all(Val::Px(if is_highlighted { 2.0 } else { 1.0 })),
-                overflow: Overflow::clip(),
-                ..default()
-            },
-            BackgroundColor(if icon_handle.is_some() {
-                Color::WHITE
-            } else {
-                base_color
-            }),
-            BorderColor(border_col),
-        ))
-        .with_children(|btn| {
-            // Full-bleed RA2 Cameo image background so the original baked-in unit/building name at the bottom is crisp
-            if let Some(img) = icon_handle.clone() {
-                btn.spawn((
-                    ImageNode::new(img),
-                    Node {
-                        position_type: PositionType::Absolute,
-                        left: Val::Px(0.0),
-                        top: Val::Px(0.0),
-                        width: Val::Percent(100.0),
-                        height: Val::Percent(100.0),
-                        ..default()
-                    },
-                ));
-            }
-
-            // Top row: optional active status badge on left + compact $Cost pill on right
-            btn.spawn(Node {
-                width: Val::Percent(100.0),
-                flex_direction: FlexDirection::Row,
-                justify_content: JustifyContent::SpaceBetween,
-                align_items: AlignItems::FlexStart,
-                padding: UiRect::all(Val::Px(2.0)),
-                ..default()
-            })
-            .with_children(|top_row| {
-                if !status_badge.is_empty() {
-                    top_row
-                        .spawn((
-                            Node {
-                                padding: UiRect::axes(Val::Px(3.0), Val::Px(1.0)),
-                                ..default()
-                            },
-                            BackgroundColor(Color::srgba(0.08, 0.42, 0.16, 0.88)),
-                        ))
-                        .with_children(|badge| {
-                            badge.spawn((
-                                Text::new(sanitize_ui_text(status_badge)),
-                                TextFont {
-                                    font_size: 8.5,
-                                    ..default()
-                                },
-                                TextColor(Color::srgb(0.75, 1.0, 0.78)),
-                            ));
-                        });
-                } else {
-                    top_row.spawn(Node::default());
-                }
-
-                top_row
-                    .spawn((
-                        Node {
-                            padding: UiRect::axes(Val::Px(3.5), Val::Px(1.0)),
-                            ..default()
-                        },
-                        BackgroundColor(Color::srgba(0.02, 0.04, 0.08, 0.82)),
-                    ))
-                    .with_children(|cost_pill| {
-                        cost_pill.spawn((
-                            Text::new(sanitize_ui_text(cost_label)),
-                            TextFont {
-                                font_size: 9.0,
-                                ..default()
-                            },
-                            TextColor(Color::srgb(1.0, 0.90, 0.38)),
-                        ));
-                    });
-            });
-
-            // Only show fallback text label if the mod entity has no cameo image
-            if icon_handle.is_none() {
-                btn.spawn((
-                    Node {
-                        width: Val::Percent(100.0),
-                        padding: UiRect::axes(Val::Px(3.0), Val::Px(2.0)),
-                        ..default()
-                    },
-                    BackgroundColor(Color::srgba(0.02, 0.04, 0.08, 0.82)),
-                ))
-                .with_children(|lbl_box| {
-                    lbl_box.spawn((
-                        Text::new(sanitize_ui_text(short_title)),
-                        TextFont {
-                            font_size: 9.5,
-                            ..default()
-                        },
-                        TextColor(Color::WHITE),
-                    ));
-                });
-            }
-        });
-}
+pub use super::sidebar_cameos::spawn_cameo_grid_button;
 
 #[allow(clippy::type_complexity)]
 pub fn update_selection_drag_box_ui(
@@ -495,21 +350,20 @@ pub fn update_selection_drag_box_ui(
         &mut Node,
         (
             With<SelectionDragBoxNode>,
+            Without<HudLayoutRole>,
             Without<StudioModalRoot>,
-            Without<ProductionProgressBarFill>,
-            Without<BattleFeedRoot>,
-            Without<InGameHudNode>,
-            Without<TopBarRootNode>,
-            Without<DevToolbarNode>,
-            Without<RightSidebarRootNode>,
         ),
     >,
 ) {
     if let Ok(mut box_node) = drag_box_q.get_single_mut() {
-        if !interaction.studio_open {
-            if let (Some(a), Some(b)) =
-                (interaction.drag_start_screen, interaction.drag_current_screen)
-            {
+        if !interaction.menu_open
+            && !interaction.studio_open
+            && interaction.app_phase == crate::input::AppPhase::InGame
+        {
+            if let (Some(a), Some(b)) = (
+                interaction.drag_start_screen,
+                interaction.drag_current_screen,
+            ) {
                 if a.distance(b) > 8.0 {
                     let min_p = a.min(b);
                     let size = (a - b).abs();
@@ -551,8 +405,19 @@ pub fn update_button_hover_styles(mut q: ButtonHoverQuery) {
             }
             Interaction::None => {
                 *bg = BackgroundColor(style.normal);
-                *border = BorderColor(Color::srgba(0.85, 0.92, 1.0, 0.25));
+                *border = BorderColor(style.default_border);
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn sanitize_ui_text_preserves_full_utf8_umlauts_and_repairs_mojibake() {
+        let out = sanitize_ui_text("Panzerjäger Größe — Café Élite äöüß â˜… ðŸ”’");
+        assert_eq!(out, "Panzerjäger Größe — Café Élite äöüß ★ [LOCK]");
     }
 }

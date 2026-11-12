@@ -245,14 +245,9 @@ SONIC:
 	ChangesHealth:
 		Step: 50
 "#;
-        let mut bundle = convert_openra_yaml_to_bundle(
-            rules_yaml,
-            None,
-            None,
-            "dune2k-test",
-            "Dune 2000 Test",
-        )
-        .expect("should convert Dune 2000 OpenRA YAML");
+        let mut bundle =
+            convert_openra_yaml_to_bundle(rules_yaml, None, None, "dune2k-test", "Dune 2000 Test")
+                .expect("should convert Dune 2000 OpenRA YAML");
 
         let faction_ids: Vec<&str> = bundle
             .factions

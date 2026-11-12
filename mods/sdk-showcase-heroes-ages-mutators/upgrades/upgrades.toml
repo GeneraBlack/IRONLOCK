@@ -1,0 +1,75 @@
+# ==============================================================================
+# Upgrades Catalog — Age II & Age III Advancement + Parallel Local Research
+# Upgrades Targeting `target_tags` and `target_def_ids` Across Units & Buildings
+# ==============================================================================
+
+[[upgrades]]
+id = "advance_age_2"
+name = "Ascend to Age II: Sanctified Era"
+faction = "shared"
+cost = 400
+research_time_secs = 8.0
+prerequisites = ["vanguard_barracks", "arcane_smithy"]
+advances_to_era = "age_2"
+
+[upgrades.resource_costs]
+aether = 150
+
+[[upgrades]]
+id = "advance_age_3"
+name = "Ascend to Age III: Astral Zenith"
+faction = "shared"
+cost = 800
+research_time_secs = 12.0
+required_era = "age_2"
+prerequisites = ["grand_archive"]
+prerequisite_upgrades = ["advance_age_2"]
+advances_to_era = "age_3"
+
+[upgrades.resource_costs]
+aether = 350
+relic_flux = 50
+
+[[upgrades]]
+id = "sunforged_weapons"
+name = "Sunforged Halberds & Lances"
+faction = "shared"
+cost = 250
+research_time_secs = 6.0
+prerequisites = ["arcane_smithy"]
+target_tags = ["frontline_infantry", "hero"]
+damage_bonus_mult = 1.20
+speed_bonus_mult = 1.05
+
+[upgrades.resource_costs]
+aether = 80
+
+[[upgrades]]
+id = "warded_masonry"
+name = "Warded Citadel Masonry"
+faction = "shared"
+cost = 220
+research_time_secs = 6.0
+prerequisites = ["arcane_smithy"]
+target_tags = ["fortified_building"]
+armor_bonus_mult = 1.25
+
+[upgrades.resource_costs]
+aether = 60
+
+[[upgrades]]
+id = "astral_overcharge"
+name = "Astral Prism Overcharge"
+faction = "shared"
+cost = 350
+research_time_secs = 8.0
+required_era = "age_2"
+prerequisites = ["grand_archive"]
+prerequisite_upgrades = ["advance_age_2"]
+target_def_ids = ["sunbeam_spire", "astral_colossus", "archon_commander"]
+damage_bonus_mult = 1.18
+range_bonus = 1.5
+
+[upgrades.resource_costs]
+aether = 140
+relic_flux = 30

@@ -1,35 +1,521 @@
 id = "ra2_allied_04_last_chance"
-name = "RA2 Allied 04: Last Chance (Chicago)"
+name = "Op. 04: Last Chance (Chicago)"
 width = 96
 height = 70
 tile_size = 2.0
 ore_regen_per_sec = 4.0
-mission_objective = "Soviet forces continue to rampage across America. Our agents have discovered a large Psychic Amplifier in Chicago. If activated, this device will allow the Soviets to mind control all of North America. \n \n Objective 1: Force a shore landing and establish a base. \n \n Objective 2: Destroy the Psychic Amplifier before it comes online."
+mission_objective = "Secure a beachhead across Lake Michigan, sink the Typhoon Submarine screen, and destroy General Vladimir's Psychic Amplifier before downtown Chicago falls."
 
 [[ore_patches]]
-position = [16, 8]
+position = [23, 16]
 radius = 3
-amount_per_tile = 1400
+amount_per_tile = 1600
 
 [[ore_patches]]
-position = [78, 60]
+position = [44, 46]
 radius = 3
-amount_per_tile = 1400
+amount_per_tile = 1550
 
-[[ore_patches]]
+[[gem_patches]]
 position = [48, 35]
-radius = 4
-amount_per_tile = 2000
+radius = 2
+amount_per_tile = 2300
 
-[[ore_patches]]
-position = [78, 21]
-radius = 3
-amount_per_tile = 1500
+[[water_rects]]
+min = [59, 6]
+max = [60, 6]
 
-[[ore_patches]]
-position = [45, 43]
-radius = 3
-amount_per_tile = 1500
+[[water_rects]]
+min = [63, 6]
+max = [64, 6]
+
+[[water_rects]]
+min = [57, 7]
+max = [66, 7]
+
+[[water_rects]]
+min = [56, 8]
+max = [67, 8]
+
+[[water_rects]]
+min = [54, 9]
+max = [69, 9]
+
+[[water_rects]]
+min = [53, 10]
+max = [70, 10]
+
+[[water_rects]]
+min = [51, 11]
+max = [72, 11]
+
+[[water_rects]]
+min = [50, 12]
+max = [73, 12]
+
+[[water_rects]]
+min = [50, 13]
+max = [75, 14]
+
+[[water_rects]]
+min = [51, 15]
+max = [57, 15]
+
+[[water_rects]]
+min = [52, 16]
+max = [57, 16]
+
+[[water_rects]]
+min = [53, 17]
+max = [57, 18]
+
+[[water_rects]]
+min = [79, 17]
+max = [81, 17]
+
+[[water_rects]]
+min = [79, 18]
+max = [82, 18]
+
+[[water_rects]]
+min = [54, 19]
+max = [56, 19]
+
+[[water_rects]]
+min = [79, 19]
+max = [84, 19]
+
+[[water_rects]]
+min = [79, 20]
+max = [85, 20]
+
+[[water_rects]]
+min = [67, 21]
+max = [86, 21]
+
+[[water_rects]]
+min = [67, 22]
+max = [88, 22]
+
+[[water_rects]]
+min = [67, 23]
+max = [89, 23]
+
+[[water_rects]]
+min = [67, 24]
+max = [91, 24]
+
+[[water_rects]]
+min = [79, 25]
+max = [92, 25]
+
+[[water_rects]]
+min = [79, 26]
+max = [94, 26]
+
+[[water_rects]]
+min = [78, 27]
+max = [94, 27]
+
+[[water_rects]]
+min = [68, 28]
+max = [94, 31]
+
+[[water_rects]]
+min = [47, 30]
+max = [62, 31]
+
+[[water_rects]]
+min = [14, 32]
+max = [18, 36]
+
+[[water_rects]]
+min = [57, 32]
+max = [62, 32]
+
+[[water_rects]]
+min = [72, 32]
+max = [94, 32]
+
+[[water_rects]]
+min = [57, 33]
+max = [70, 33]
+
+[[water_rects]]
+min = [73, 33]
+max = [94, 33]
+
+[[water_rects]]
+min = [33, 34]
+max = [40, 34]
+
+[[water_rects]]
+min = [44, 34]
+max = [45, 34]
+
+[[water_rects]]
+min = [51, 34]
+max = [70, 34]
+
+[[water_rects]]
+min = [76, 34]
+max = [94, 34]
+
+[[water_rects]]
+min = [31, 35]
+max = [45, 35]
+
+[[water_rects]]
+min = [51, 35]
+max = [94, 35]
+
+[[water_rects]]
+min = [30, 36]
+max = [45, 36]
+
+[[water_rects]]
+min = [51, 36]
+max = [64, 37]
+
+[[water_rects]]
+min = [80, 36]
+max = [94, 36]
+
+[[water_rects]]
+min = [13, 37]
+max = [21, 37]
+
+[[water_rects]]
+min = [25, 37]
+max = [45, 37]
+
+[[water_rects]]
+min = [68, 37]
+max = [94, 38]
+
+[[water_rects]]
+min = [11, 38]
+max = [21, 38]
+
+[[water_rects]]
+min = [25, 38]
+max = [29, 38]
+
+[[water_rects]]
+min = [53, 38]
+max = [64, 44]
+
+[[water_rects]]
+min = [10, 39]
+max = [29, 39]
+
+[[water_rects]]
+min = [68, 39]
+max = [93, 39]
+
+[[water_rects]]
+min = [68, 40]
+max = [92, 40]
+
+[[water_rects]]
+min = [68, 41]
+max = [90, 41]
+
+[[water_rects]]
+min = [68, 42]
+max = [89, 42]
+
+[[water_rects]]
+min = [68, 43]
+max = [87, 43]
+
+[[water_rects]]
+min = [68, 44]
+max = [86, 44]
+
+[[water_rects]]
+min = [50, 45]
+max = [64, 45]
+
+[[water_rects]]
+min = [68, 45]
+max = [84, 45]
+
+[[water_rects]]
+min = [47, 46]
+max = [64, 46]
+
+[[water_rects]]
+min = [68, 46]
+max = [83, 46]
+
+[[water_rects]]
+min = [47, 47]
+max = [81, 47]
+
+[[water_rects]]
+min = [50, 48]
+max = [80, 48]
+
+[[water_rects]]
+min = [50, 49]
+max = [78, 49]
+
+[[water_rects]]
+min = [50, 50]
+max = [77, 50]
+
+[[water_rects]]
+min = [50, 51]
+max = [64, 51]
+
+[[water_rects]]
+min = [68, 51]
+max = [76, 51]
+
+[[water_rects]]
+min = [47, 52]
+max = [64, 54]
+
+[[water_rects]]
+min = [68, 52]
+max = [74, 52]
+
+[[water_rects]]
+min = [68, 53]
+max = [73, 53]
+
+[[water_rects]]
+min = [68, 54]
+max = [71, 54]
+
+[[water_rects]]
+min = [48, 55]
+max = [64, 56]
+
+[[water_rects]]
+min = [68, 55]
+max = [70, 55]
+
+[[water_rects]]
+min = [68, 56]
+max = [68, 56]
+
+[[water_rects]]
+min = [47, 57]
+max = [64, 59]
+
+[[water_rects]]
+min = [47, 60]
+max = [62, 60]
+
+[[water_rects]]
+min = [47, 61]
+max = [61, 61]
+
+[[water_rects]]
+min = [48, 62]
+max = [59, 62]
+
+[[water_rects]]
+min = [48, 63]
+max = [58, 63]
+
+[[water_rects]]
+min = [48, 64]
+max = [56, 64]
+
+[[water_rects]]
+min = [48, 65]
+max = [55, 65]
+
+[[water_rects]]
+min = [48, 66]
+max = [53, 66]
+
+[[water_rects]]
+min = [48, 67]
+max = [52, 67]
+
+[[water_rects]]
+min = [47, 68]
+max = [50, 68]
+
+[[bridge_rects]]
+min = [40, 33]
+max = [42, 33]
+
+[[bridge_rects]]
+min = [44, 33]
+max = [46, 33]
+
+[[bridge_rects]]
+min = [40, 34]
+max = [46, 38]
+
+[[bridge_rects]]
+min = [26, 36]
+max = [29, 40]
+
+[[elevation_rects]]
+min = [26, 13]
+max = [30, 25]
+
+[[ramp_rects]]
+min = [25, 18]
+max = [26, 20]
+
+[[ramp_rects]]
+min = [30, 18]
+max = [31, 20]
+
+[[obstacles]]
+min = [57, 23]
+max = [58, 24]
+
+[[obstacles]]
+min = [44, 24]
+max = [45, 25]
+
+[[obstacles]]
+min = [39, 26]
+max = [40, 27]
+
+[[obstacles]]
+min = [20, 44]
+max = [21, 45]
+
+[[obstacles]]
+min = [25, 44]
+max = [26, 45]
+
+[[obstacles]]
+min = [6, 50]
+max = [7, 51]
+
+[[obstacles]]
+min = [20, 50]
+max = [21, 51]
+
+[[obstacles]]
+min = [25, 51]
+max = [26, 52]
+
+[[obstacles]]
+min = [20, 55]
+max = [21, 56]
+
+[[props]]
+kind = "tree"
+tile_pos = [44, 40]
+
+[[props]]
+kind = "tree"
+tile_pos = [50, 32]
+
+[[props]]
+kind = "tree"
+tile_pos = [47, 38]
+
+[[props]]
+kind = "tree"
+tile_pos = [61, 19]
+
+[[props]]
+kind = "tree"
+tile_pos = [40, 64]
+
+[[props]]
+kind = "tree"
+tile_pos = [37, 61]
+
+[[props]]
+kind = "tree"
+tile_pos = [44, 42]
+
+[[props]]
+kind = "tree"
+tile_pos = [32, 63]
+
+[[props]]
+kind = "tree"
+tile_pos = [31, 63]
+
+[[props]]
+kind = "tree"
+tile_pos = [53, 24]
+
+[[props]]
+kind = "tree"
+tile_pos = [29, 63]
+
+[[props]]
+kind = "tree"
+tile_pos = [17, 55]
+
+[[props]]
+kind = "tree"
+tile_pos = [62, 24]
+
+[[props]]
+kind = "tree"
+tile_pos = [41, 46]
+
+[[props]]
+kind = "tree"
+tile_pos = [43, 32]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [28, 42]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [26, 56]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [27, 62]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [11, 53]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [27, 53]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [22, 44]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [15, 56]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [61, 22]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [21, 33]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [15, 41]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [45, 13]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [12, 44]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [26, 31]
 
 [[preplaced_entities]]
 player_id = 2
@@ -39,12 +525,12 @@ tile_pos = [22, 33]
 [[preplaced_entities]]
 player_id = 2
 building_id = "soviet_conyard"
-tile_pos = [19, 42]
+tile_pos = [18, 41]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "soviet_radar_tower"
-tile_pos = [17, 42]
+tile_pos = [16, 41]
 
 [[preplaced_entities]]
 player_id = 2
@@ -59,7 +545,7 @@ tile_pos = [13, 42]
 [[preplaced_entities]]
 player_id = 2
 building_id = "soviet_sentry_gun"
-tile_pos = [14, 43]
+tile_pos = [13, 44]
 
 [[preplaced_entities]]
 player_id = 2
@@ -74,22 +560,22 @@ tile_pos = [27, 31]
 [[preplaced_entities]]
 player_id = 2
 building_id = "soviet_sentry_gun"
-tile_pos = [27, 38]
+tile_pos = [25, 40]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "soviet_sentry_gun"
-tile_pos = [24, 33]
+tile_pos = [23, 32]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "soviet_sentry_gun"
-tile_pos = [24, 35]
+tile_pos = [26, 33]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "allied_grand_cannon"
-tile_pos = [65, 46]
+tile_pos = [65, 45]
 
 [[preplaced_entities]]
 player_id = 2
@@ -114,12 +600,12 @@ tile_pos = [43, 45]
 [[preplaced_entities]]
 player_id = 2
 building_id = "soviet_naval_shipyard"
-tile_pos = [48, 47]
+tile_pos = [50, 45]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "soviet_tesla_reactor"
-tile_pos = [43, 46]
+tile_pos = [42, 47]
 
 [[preplaced_entities]]
 player_id = 2
@@ -139,7 +625,7 @@ tile_pos = [38, 45]
 [[preplaced_entities]]
 player_id = 2
 building_id = "soviet_sentry_gun"
-tile_pos = [65, 33]
+tile_pos = [64, 32]
 
 [[preplaced_entities]]
 player_id = 2
@@ -149,22 +635,22 @@ tile_pos = [9, 44]
 [[preplaced_entities]]
 player_id = 2
 building_id = "soviet_tesla_reactor"
-tile_pos = [38, 29]
+tile_pos = [37, 28]
 
 [[preplaced_entities]]
 player_id = 2
 unit_id = "typhoon_sub"
-tile_pos = [35, 33]
+tile_pos = [34, 34]
 
 [[preplaced_entities]]
 player_id = 2
 unit_id = "typhoon_sub"
-tile_pos = [47, 27]
+tile_pos = [47, 30]
 
 [[preplaced_entities]]
 player_id = 2
 unit_id = "typhoon_sub"
-tile_pos = [29, 34]
+tile_pos = [31, 35]
 
 [[preplaced_entities]]
 player_id = 2
@@ -174,17 +660,17 @@ tile_pos = [22, 38]
 [[preplaced_entities]]
 player_id = 2
 unit_id = "rhino_tank"
-tile_pos = [21, 38]
+tile_pos = [22, 37]
 
 [[preplaced_entities]]
 player_id = 2
 unit_id = "flak_track"
-tile_pos = [18, 41]
+tile_pos = [17, 40]
 
 [[preplaced_entities]]
 player_id = 2
 unit_id = "flak_track"
-tile_pos = [13, 43]
+tile_pos = [12, 42]
 
 [[preplaced_entities]]
 player_id = 2
@@ -199,7 +685,7 @@ tile_pos = [13, 49]
 [[preplaced_entities]]
 player_id = 2
 unit_id = "typhoon_sub"
-tile_pos = [68, 20]
+tile_pos = [67, 21]
 
 [[preplaced_entities]]
 player_id = 2
@@ -219,133 +705,213 @@ tile_pos = [29, 31]
 [[preplaced_entities]]
 player_id = 2
 unit_id = "typhoon_sub"
-tile_pos = [31, 33]
+tile_pos = [33, 34]
 
 [[preplaced_entities]]
 player_id = 2
 unit_id = "typhoon_sub"
-tile_pos = [31, 34]
+tile_pos = [32, 35]
 
 [[preplaced_entities]]
 player_id = 2
 unit_id = "typhoon_sub"
-tile_pos = [35, 31]
+tile_pos = [35, 34]
+
+[[preplaced_entities]]
+player_id = 1
+unit_id = "allied_destroyer"
+tile_pos = [36, 34]
+
+[[objectives]]
+id = "obj_primary_main"
+tier = "primary"
+title = "Secure a beachhead across Lake Michigan, sink the Typhoon Submarine screen, and destr..."
+marker_tile = [38, 46]
+
+[[objectives]]
+id = "obj_secondary_strike"
+tier = "secondary"
+title = "Neutralize or Capture Enemy Strategic Facility"
+marker_tile = [38, 46]
+
+[[objectives]]
+id = "obj_bonus_waves"
+tier = "bonus"
+title = "Weather Enemy Tactical Counterattack Waves"
+target_count = 2
+marker_tile = [14, 14]
+
+[[cutscenes]]
+id = "intro_flyover"
+skippable = true
+letterbox = true
+
+[[cutscenes.keyframes]]
+time_secs = 0.0
+focus = [77.0, 0.0, 93.0]
+distance = 46.0
+pitch_deg = 52.0
+yaw_deg = -22.0
+
+[[cutscenes.keyframes]]
+time_secs = 2.2
+focus = [53.0, 0.0, 61.0]
+distance = 42.0
+pitch_deg = 55.0
+yaw_deg = -10.0
+
+[[cutscenes.keyframes]]
+time_secs = 4.5
+focus = [29.0, 0.0, 29.0]
+distance = 36.0
+pitch_deg = 58.0
+yaw_deg = 0.0
 
 [[spawns]]
 player_id = 1
 faction = "allies"
-base_tile = [8, 8]
+sub_faction = "usa"
+base_tile = [14, 14]
+team_id = 1
 
 [[spawns.initial_buildings]]
 building_id = "allied_conyard"
-tile_pos = [8, 8]
+tile_pos = [14, 14]
 
 [[spawns.initial_buildings]]
 building_id = "allied_power_plant"
-tile_pos = [11, 8]
+tile_pos = [11, 14]
 
 [[spawns.initial_buildings]]
 building_id = "allied_refinery"
-tile_pos = [8, 11]
+tile_pos = [18, 14]
 
 [[spawns.initial_buildings]]
 building_id = "allied_barracks"
-tile_pos = [11, 11]
+tile_pos = [14, 18]
 
 [[spawns.initial_buildings]]
 building_id = "allied_war_factory"
-tile_pos = [14, 8]
-
-[[spawns.initial_units]]
-unit_id = "allied_gi"
-tile_pos = [10, 13]
-
-[[spawns.initial_units]]
-unit_id = "allied_gi"
-tile_pos = [12, 13]
-
-[[spawns.initial_units]]
-unit_id = "grizzly_tank"
-tile_pos = [14, 12]
+tile_pos = [18, 18]
 
 [[spawns.initial_units]]
 unit_id = "chrono_miner"
-tile_pos = [10, 12]
+tile_pos = [21, 14]
+
+[[spawns.initial_units]]
+unit_id = "allied_gi"
+tile_pos = [14, 20]
+
+[[spawns.initial_units]]
+unit_id = "allied_gi"
+tile_pos = [16, 20]
+
+[[spawns.initial_units]]
+unit_id = "guardian_gi"
+tile_pos = [17, 19]
+
+[[spawns.initial_units]]
+unit_id = "grizzly_tank"
+tile_pos = [21, 19]
+
+[[spawns.initial_units]]
+unit_id = "grizzly_tank"
+tile_pos = [14, 21]
 
 [[spawns]]
 player_id = 2
 faction = "soviets"
-base_tile = [86, 60]
-
-[[spawns.initial_buildings]]
-building_id = "soviet_conyard"
-tile_pos = [86, 60]
-
-[[spawns.initial_buildings]]
-building_id = "soviet_tesla_reactor"
-tile_pos = [83, 60]
-
-[[spawns.initial_buildings]]
-building_id = "soviet_refinery"
-tile_pos = [86, 57]
-
-[[spawns.initial_buildings]]
-building_id = "soviet_barracks"
-tile_pos = [83, 57]
-
-[[spawns.initial_buildings]]
-building_id = "soviet_war_factory"
-tile_pos = [80, 60]
-
-[[spawns.initial_units]]
-unit_id = "soviet_conscript"
-tile_pos = [84, 55]
-
-[[spawns.initial_units]]
-unit_id = "soviet_conscript"
-tile_pos = [82, 55]
-
-[[spawns.initial_units]]
-unit_id = "rhino_tank"
-tile_pos = [80, 56]
-
-[[spawns.initial_units]]
-unit_id = "war_miner"
-tile_pos = [84, 56]
+sub_faction = "russia"
+base_tile = [38, 46]
+team_id = 2
 
 [[trigger_zones]]
-id = "mission_stage_init"
-min = [6, 6]
-max = [12, 12]
+id = "ra2_allied_04_last_chance_init"
+min = [0, 0]
+max = [3, 3]
 once = true
 condition = { type = "timer_elapsed", secs = 1.0 }
 actions = [
+    { type = "play_cutscene", cutscene_id = "intro_flyover" },
+    { type = "set_objective_status", objective_id = "obj_primary_main", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_secondary_strike", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_bonus_waves", status = "active" },
+    { type = "start_countdown", timer_id = "chicago_amplifier", label = "Psychic Amplifier Activation", duration_secs = 210 },
+    { type = "set_weather", preset = "dusk" },
     { type = "set_variable", name = "mission_stage", value = 1 },
-    { type = "eva_transmission", speaker = "EVA", text = "Battle Control Online. Primary tactical objectives initialized." },
-    { type = "reveal_area", tile = [8, 8], radius = 14 }
+    { type = "reveal_area", tile = [38, 46], radius = 9 },
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Secure a beachhead across Lake Michigan, sink the Typhoon Submarine screen, and destroy General Vladimir's Psychic Amplifier before downtown Chicago falls.", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "primary_objective_achieved" },
 ]
 
 [[trigger_zones]]
-id = "tactical_reinforcement_wave"
-min = [7, 6]
-max = [11, 10]
+id = "ra2_allied_04_last_chance_reinforcements"
+min = [0, 0]
+max = [3, 3]
 once = true
-condition = { type = "all", conditions = [{ type = "timer_elapsed", secs = 45.0 }, { type = "variable_equals", name = "mission_stage", value = 1 }] }
+condition = { type = "all", conditions = [{ type = "timer_elapsed", secs = 55.0 }, { type = "variable_equals", name = "mission_stage", value = 1 }] }
 actions = [
+    { type = "play_radar_video", video_path = "assets/videos/radar_pip/allied_04_pip_02.mp4" },
     { type = "set_variable", name = "mission_stage", value = 2 },
-    { type = "spawn_reinforcements", player_id = 1, unit_id = "grizzly_tank", count = 2, tile = [7, 6] },
-    { type = "grant_credits", player_id = 1, amount = 1500 },
-    { type = "eva_transmission", speaker = "EVA", text = "Reinforcements have arrived. Forward command has authorized 1500 bonus credits." }
+    { type = "grant_credits", player_id = 1, amount = 2000 },
+    { type = "spawn_reinforcements", player_id = 1, unit_id = "grizzly_tank", count = 3, tile = [17, 15] },
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Command reserves and emergency war funds have arrived at your base!", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "reinforcements_have_arrived", radar_video = "assets/videos/radar_pip/allied_04_pip_02.mp4" },
 ]
 
 [[trigger_zones]]
-id = "decisive_campaign_victory"
-min = [2, 2]
-max = [6, 6]
+id = "ra2_allied_04_last_chance_key_target_down"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "building_destroyed", building_id = "psychic_amplifier", player_id = 2 }
+actions = [
+    { type = "set_objective_status", objective_id = "obj_secondary_strike", status = "completed" },
+    { type = "stop_countdown", timer_id = "chicago_amplifier" },
+    { type = "grant_credits", player_id = 1, amount = 2000 },
+    { type = "set_variable", name = "primary_target_destroyed", value = 1 },
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Primary enemy strategic structure destroyed! Sweep the remaining enemy forces from the sector.", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "battle_control_online" },
+]
+
+[[trigger_zones]]
+id = "ra2_allied_04_last_chance_victory"
+min = [0, 0]
+max = [3, 3]
 once = true
 condition = { type = "all_buildings_destroyed", player_id = 2 }
 actions = [
+    { type = "set_objective_status", objective_id = "obj_primary_main", status = "completed" },
     { type = "set_variable", name = "mission_stage", value = 3 },
-    { type = "eva_transmission", speaker = "EVA", text = "Mission Accomplished. All primary hostile command structures neutralized." },
-    { type = "declare_winner", player_id = 1 }
+    { type = "eva_transmission", speaker = "LT. EVA", text = "All enemy structures neutralized. Mission accomplished, Commander!", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "primary_objective_achieved" },
+    { type = "declare_winner", player_id = 1 },
+]
+
+[[trigger_zones]]
+id = "p22_crisis_countdown_expired"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "countdown_expired", timer_id = "chicago_amplifier" }
+actions = [
+    { type = "spawn_reinforcements", player_id = 2, unit_id = "rhino_tank", count = 4, tile = [36, 44] },
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Warning: Psychic Amplifier Activation reached zero! Enemy heavy armor strike group deployed!", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "base_under_attack" },
+]
+
+[[trigger_zones]]
+id = "p22_crisis_target_neutralized"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "building_destroyed", building_id = "psychic_amplifier", player_id = 2 }
+actions = [
+    { type = "stop_countdown", timer_id = "chicago_amplifier" },
+]
+
+[[trigger_zones]]
+id = "p22_periodic_skirmish_wave"
+min = [0, 0]
+max = [3, 3]
+once = false
+condition = { type = "periodic_timer", start_secs = 75, interval_secs = 75, max_repeats = 3 }
+actions = [
+    { type = "spawn_reinforcements", player_id = 2, unit_id = "soviet_conscript", count = 3, tile = [36, 44] },
+    { type = "add_objective_progress", objective_id = "obj_bonus_waves", delta = 1 },
 ]

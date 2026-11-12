@@ -1,115 +1,655 @@
 id = "ra2_allied_11_fallout"
-name = "RA2 Allied 11: Fallout (Florida Keys)"
+name = "Op. 11: Fallout (Florida Keys)"
 width = 90
 height = 96
 tile_size = 2.0
 ore_regen_per_sec = 4.0
-mission_objective = "Einstein has found the perfect place for his Chronosphere. Unfortunately this location is very close to Soviet-controlled Cuba. Build the Chronosphere and clear the area of Soviet nuclear missiles. We are nearly ready for our final attack on Moscow. \n \n Objective 1: Build a Chronosphere. \n \n Objective 2: Neutralize the Soviet Nuclear threat on Cuba."
+mission_objective = "Protect the Allied Chronosphere in the Florida Keys, neutralize Cuba's three Nuclear Missile Silos, and sink the Soviet naval blockade."
 
 [[ore_patches]]
-position = [57, 77]
+position = [43, 38]
 radius = 3
-amount_per_tile = 1400
+amount_per_tile = 1600
 
 [[ore_patches]]
-position = [68, 69]
+position = [64, 74]
 radius = 3
-amount_per_tile = 1400
+amount_per_tile = 1550
 
-[[ore_patches]]
+[[gem_patches]]
 position = [45, 48]
-radius = 4
-amount_per_tile = 2000
+radius = 2
+amount_per_tile = 2300
 
-[[ore_patches]]
-position = [31, 58]
-radius = 3
-amount_per_tile = 1500
+[[water_rects]]
+min = [27, 1]
+max = [40, 1]
 
-[[ore_patches]]
-position = [32, 31]
-radius = 3
-amount_per_tile = 1500
+[[water_rects]]
+min = [27, 2]
+max = [41, 2]
+
+[[water_rects]]
+min = [27, 3]
+max = [42, 3]
+
+[[water_rects]]
+min = [27, 4]
+max = [40, 4]
+
+[[water_rects]]
+min = [29, 5]
+max = [40, 6]
+
+[[water_rects]]
+min = [29, 7]
+max = [39, 7]
+
+[[water_rects]]
+min = [29, 8]
+max = [34, 11]
+
+[[water_rects]]
+min = [30, 12]
+max = [34, 12]
+
+[[water_rects]]
+min = [31, 13]
+max = [34, 13]
+
+[[water_rects]]
+min = [34, 14]
+max = [35, 15]
+
+[[water_rects]]
+min = [33, 16]
+max = [35, 16]
+
+[[water_rects]]
+min = [33, 17]
+max = [39, 17]
+
+[[water_rects]]
+min = [53, 17]
+max = [55, 17]
+
+[[water_rects]]
+min = [31, 18]
+max = [41, 18]
+
+[[water_rects]]
+min = [47, 18]
+max = [56, 18]
+
+[[water_rects]]
+min = [30, 19]
+max = [41, 19]
+
+[[water_rects]]
+min = [44, 19]
+max = [57, 19]
+
+[[water_rects]]
+min = [28, 20]
+max = [58, 20]
+
+[[water_rects]]
+min = [28, 21]
+max = [59, 21]
+
+[[water_rects]]
+min = [28, 22]
+max = [60, 22]
+
+[[water_rects]]
+min = [32, 23]
+max = [61, 23]
+
+[[water_rects]]
+min = [32, 24]
+max = [42, 24]
+
+[[water_rects]]
+min = [48, 24]
+max = [62, 24]
+
+[[water_rects]]
+min = [31, 25]
+max = [34, 27]
+
+[[water_rects]]
+min = [39, 25]
+max = [40, 25]
+
+[[water_rects]]
+min = [49, 25]
+max = [62, 25]
+
+[[water_rects]]
+min = [39, 26]
+max = [39, 26]
+
+[[water_rects]]
+min = [49, 26]
+max = [64, 26]
+
+[[water_rects]]
+min = [51, 27]
+max = [64, 27]
+
+[[water_rects]]
+min = [51, 28]
+max = [65, 28]
+
+[[water_rects]]
+min = [51, 29]
+max = [66, 29]
+
+[[water_rects]]
+min = [25, 30]
+max = [25, 31]
+
+[[water_rects]]
+min = [51, 30]
+max = [67, 30]
+
+[[water_rects]]
+min = [51, 31]
+max = [68, 31]
+
+[[water_rects]]
+min = [51, 32]
+max = [69, 32]
+
+[[water_rects]]
+min = [50, 33]
+max = [70, 33]
+
+[[water_rects]]
+min = [49, 34]
+max = [71, 34]
+
+[[water_rects]]
+min = [49, 35]
+max = [72, 35]
+
+[[water_rects]]
+min = [25, 36]
+max = [25, 39]
+
+[[water_rects]]
+min = [49, 36]
+max = [73, 36]
+
+[[water_rects]]
+min = [47, 37]
+max = [73, 37]
+
+[[water_rects]]
+min = [47, 38]
+max = [75, 39]
+
+[[water_rects]]
+min = [19, 39]
+max = [20, 39]
+
+[[water_rects]]
+min = [17, 40]
+max = [19, 41]
+
+[[water_rects]]
+min = [47, 40]
+max = [76, 40]
+
+[[water_rects]]
+min = [47, 41]
+max = [77, 41]
+
+[[water_rects]]
+min = [17, 42]
+max = [18, 42]
+
+[[water_rects]]
+min = [47, 42]
+max = [78, 42]
+
+[[water_rects]]
+min = [11, 43]
+max = [11, 43]
+
+[[water_rects]]
+min = [15, 43]
+max = [18, 43]
+
+[[water_rects]]
+min = [46, 43]
+max = [79, 43]
+
+[[water_rects]]
+min = [11, 44]
+max = [17, 44]
+
+[[water_rects]]
+min = [46, 44]
+max = [80, 44]
+
+[[water_rects]]
+min = [11, 45]
+max = [11, 46]
+
+[[water_rects]]
+min = [15, 45]
+max = [17, 45]
+
+[[water_rects]]
+min = [46, 45]
+max = [81, 45]
+
+[[water_rects]]
+min = [48, 46]
+max = [82, 46]
+
+[[water_rects]]
+min = [26, 47]
+max = [26, 47]
+
+[[water_rects]]
+min = [48, 47]
+max = [83, 47]
+
+[[water_rects]]
+min = [26, 48]
+max = [42, 49]
+
+[[water_rects]]
+min = [48, 48]
+max = [84, 48]
+
+[[water_rects]]
+min = [48, 49]
+max = [85, 49]
+
+[[water_rects]]
+min = [19, 50]
+max = [42, 50]
+
+[[water_rects]]
+min = [48, 50]
+max = [86, 50]
+
+[[water_rects]]
+min = [17, 51]
+max = [87, 51]
+
+[[water_rects]]
+min = [17, 52]
+max = [38, 52]
+
+[[water_rects]]
+min = [42, 52]
+max = [88, 52]
+
+[[water_rects]]
+min = [17, 53]
+max = [37, 53]
+
+[[water_rects]]
+min = [44, 53]
+max = [88, 54]
+
+[[water_rects]]
+min = [18, 54]
+max = [37, 54]
+
+[[water_rects]]
+min = [19, 55]
+max = [36, 55]
+
+[[water_rects]]
+min = [44, 55]
+max = [78, 55]
+
+[[water_rects]]
+min = [82, 55]
+max = [88, 55]
+
+[[water_rects]]
+min = [20, 56]
+max = [35, 56]
+
+[[water_rects]]
+min = [43, 56]
+max = [77, 56]
+
+[[water_rects]]
+min = [21, 57]
+max = [35, 57]
+
+[[water_rects]]
+min = [43, 57]
+max = [76, 57]
+
+[[water_rects]]
+min = [22, 58]
+max = [37, 58]
+
+[[water_rects]]
+min = [43, 58]
+max = [73, 60]
+
+[[water_rects]]
+min = [23, 59]
+max = [37, 59]
+
+[[water_rects]]
+min = [24, 60]
+max = [37, 60]
+
+[[water_rects]]
+min = [25, 61]
+max = [39, 61]
+
+[[water_rects]]
+min = [42, 61]
+max = [73, 61]
+
+[[water_rects]]
+min = [26, 62]
+max = [71, 63]
+
+[[water_rects]]
+min = [27, 64]
+max = [72, 64]
+
+[[water_rects]]
+min = [28, 65]
+max = [72, 65]
+
+[[water_rects]]
+min = [29, 66]
+max = [61, 66]
+
+[[water_rects]]
+min = [30, 67]
+max = [61, 67]
+
+[[water_rects]]
+min = [31, 68]
+max = [61, 68]
+
+[[water_rects]]
+min = [32, 69]
+max = [61, 69]
+
+[[water_rects]]
+min = [33, 70]
+max = [61, 70]
+
+[[water_rects]]
+min = [34, 71]
+max = [61, 71]
+
+[[water_rects]]
+min = [35, 72]
+max = [61, 72]
+
+[[water_rects]]
+min = [36, 73]
+max = [58, 73]
+
+[[water_rects]]
+min = [37, 74]
+max = [58, 74]
+
+[[water_rects]]
+min = [38, 75]
+max = [58, 75]
+
+[[water_rects]]
+min = [38, 76]
+max = [57, 76]
+
+[[water_rects]]
+min = [40, 77]
+max = [57, 78]
+
+[[water_rects]]
+min = [41, 79]
+max = [57, 79]
+
+[[water_rects]]
+min = [42, 80]
+max = [57, 80]
+
+[[water_rects]]
+min = [43, 81]
+max = [56, 81]
+
+[[water_rects]]
+min = [44, 82]
+max = [52, 82]
+
+[[water_rects]]
+min = [56, 82]
+max = [56, 82]
+
+[[water_rects]]
+min = [45, 83]
+max = [51, 83]
+
+[[water_rects]]
+min = [46, 84]
+max = [51, 84]
+
+[[water_rects]]
+min = [47, 85]
+max = [51, 85]
+
+[[water_rects]]
+min = [48, 86]
+max = [52, 86]
+
+[[water_rects]]
+min = [49, 87]
+max = [51, 87]
+
+[[water_rects]]
+min = [50, 88]
+max = [51, 88]
+
+[[bridge_rects]]
+min = [28, 11]
+max = [35, 13]
+
+[[bridge_rects]]
+min = [40, 17]
+max = [42, 25]
+
+[[bridge_rects]]
+min = [30, 25]
+max = [35, 27]
+
+[[bridge_rects]]
+min = [38, 26]
+max = [42, 26]
+
+[[bridge_rects]]
+min = [38, 27]
+max = [40, 28]
+
+[[bridge_rects]]
+min = [39, 42]
+max = [41, 51]
+
+[[bridge_rects]]
+min = [16, 52]
+max = [41, 52]
+
+[[bridge_rects]]
+min = [16, 53]
+max = [39, 54]
+
+[[elevation_rects]]
+min = [6, 6]
+max = [9, 9]
+
+[[elevation_rects]]
+min = [15, 6]
+max = [18, 9]
+
+[[ramp_rects]]
+min = [5, 6]
+max = [6, 8]
+
+[[ramp_rects]]
+min = [9, 6]
+max = [10, 8]
+
+[[ramp_rects]]
+min = [14, 6]
+max = [15, 8]
+
+[[ramp_rects]]
+min = [18, 6]
+max = [19, 8]
+
+[[obstacles]]
+min = [23, 8]
+max = [24, 9]
+
+[[obstacles]]
+min = [21, 13]
+max = [22, 14]
+
+[[obstacles]]
+min = [15, 17]
+max = [16, 18]
+
+[[obstacles]]
+min = [21, 20]
+max = [22, 21]
+
+[[props]]
+kind = "tree"
+tile_pos = [13, 35]
+
+[[props]]
+kind = "tree"
+tile_pos = [16, 36]
+
+[[props]]
+kind = "tree"
+tile_pos = [19, 35]
+
+[[props]]
+kind = "tree"
+tile_pos = [11, 30]
+
+[[props]]
+kind = "tree"
+tile_pos = [14, 28]
+
+[[props]]
+kind = "tree"
+tile_pos = [12, 30]
+
+[[props]]
+kind = "tree"
+tile_pos = [15, 28]
+
+[[props]]
+kind = "tree"
+tile_pos = [23, 34]
+
+[[props]]
+kind = "tree"
+tile_pos = [17, 26]
+
+[[props]]
+kind = "tree"
+tile_pos = [24, 43]
+
+[[props]]
+kind = "tree"
+tile_pos = [80, 64]
+
+[[props]]
+kind = "tree"
+tile_pos = [26, 15]
+
+[[props]]
+kind = "tree"
+tile_pos = [19, 19]
+
+[[props]]
+kind = "tree"
+tile_pos = [27, 17]
+
+[[props]]
+kind = "tree"
+tile_pos = [24, 23]
+
+[[props]]
+kind = "tree"
+tile_pos = [11, 21]
+
+[[props]]
+kind = "tree"
+tile_pos = [36, 29]
+
+[[props]]
+kind = "tree"
+tile_pos = [86, 73]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [47, 34]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [67, 81]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [24, 14]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [25, 8]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [22, 11]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [39, 9]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [39, 11]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [27, 13]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [39, 14]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [42, 14]
 
 [[preplaced_entities]]
-player_id = 2
+player_id = 0
 building_id = "tech_oil_derrick"
 tile_pos = [20, 46]
 
 [[preplaced_entities]]
-player_id = 2
+player_id = 0
 building_id = "tech_oil_derrick"
 tile_pos = [22, 47]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "allied_conyard"
-tile_pos = [36, 38]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "allied_power_plant"
-tile_pos = [37, 36]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "allied_barracks"
-tile_pos = [41, 39]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "allied_refinery"
-tile_pos = [39, 56]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "allied_refinery"
-tile_pos = [27, 29]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "allied_pillbox"
-tile_pos = [38, 44]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "allied_pillbox"
-tile_pos = [40, 44]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "allied_pillbox"
-tile_pos = [40, 38]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "allied_patriot_missile"
-tile_pos = [35, 40]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "allied_patriot_missile"
-tile_pos = [40, 39]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "allied_refinery"
-tile_pos = [42, 39]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "allied_airforce_command"
-tile_pos = [41, 44]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "allied_power_plant"
-tile_pos = [38, 42]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "allied_power_plant"
-tile_pos = [41, 42]
 
 [[preplaced_entities]]
 player_id = 2
@@ -119,17 +659,12 @@ tile_pos = [68, 78]
 [[preplaced_entities]]
 player_id = 2
 building_id = "soviet_nuclear_silo"
-tile_pos = [69, 76]
+tile_pos = [68, 75]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "soviet_nuclear_silo"
 tile_pos = [71, 75]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "allied_pillbox"
-tile_pos = [27, 30]
 
 [[preplaced_entities]]
 player_id = 2
@@ -150,36 +685,6 @@ tile_pos = [71, 80]
 player_id = 2
 building_id = "soviet_tesla_coil"
 tile_pos = [73, 78]
-
-[[preplaced_entities]]
-player_id = 1
-unit_id = "chrono_miner"
-tile_pos = [41, 55]
-
-[[preplaced_entities]]
-player_id = 1
-unit_id = "chrono_miner"
-tile_pos = [26, 27]
-
-[[preplaced_entities]]
-player_id = 1
-unit_id = "dolphin"
-tile_pos = [34, 44]
-
-[[preplaced_entities]]
-player_id = 1
-unit_id = "dolphin"
-tile_pos = [34, 43]
-
-[[preplaced_entities]]
-player_id = 1
-unit_id = "allied_destroyer"
-tile_pos = [33, 41]
-
-[[preplaced_entities]]
-player_id = 1
-unit_id = "allied_destroyer"
-tile_pos = [36, 45]
 
 [[preplaced_entities]]
 player_id = 2
@@ -222,130 +727,242 @@ unit_id = "giant_squid"
 tile_pos = [32, 49]
 
 [[preplaced_entities]]
-player_id = 1
-unit_id = "chrono_miner"
-tile_pos = [44, 38]
-
-[[preplaced_entities]]
 player_id = 2
 unit_id = "apocalypse_tank"
 tile_pos = [67, 76]
 
+[[preplaced_entities]]
+player_id = 2
+building_id = "soviet_conyard"
+tile_pos = [68, 72]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "soviet_tesla_reactor"
+tile_pos = [72, 73]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "soviet_barracks"
+tile_pos = [71, 78]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "soviet_war_factory"
+tile_pos = [74, 78]
+
+[[objectives]]
+id = "obj_primary_main"
+tier = "primary"
+title = "Protect the Allied Chronosphere in the Florida Keys, neutralize Cuba's three Nuclear..."
+marker_tile = [70, 74]
+
+[[objectives]]
+id = "obj_secondary_strike"
+tier = "secondary"
+title = "Neutralize or Capture Enemy Strategic Facility"
+marker_tile = [70, 74]
+
+[[objectives]]
+id = "obj_bonus_tech"
+tier = "bonus"
+title = "Capture Neutral Tech Oil Derrick with an Engineer"
+marker_tile = [20, 46]
+
+[[cutscenes]]
+id = "intro_flyover"
+skippable = true
+letterbox = true
+
+[[cutscenes.keyframes]]
+time_secs = 0.0
+focus = [141.0, 0.0, 149.0]
+distance = 46.0
+pitch_deg = 52.0
+yaw_deg = -22.0
+
+[[cutscenes.keyframes]]
+time_secs = 2.2
+focus = [105.0, 0.0, 111.0]
+distance = 42.0
+pitch_deg = 55.0
+yaw_deg = -10.0
+
+[[cutscenes.keyframes]]
+time_secs = 4.5
+focus = [69.0, 0.0, 73.0]
+distance = 36.0
+pitch_deg = 58.0
+yaw_deg = 0.0
+
 [[spawns]]
 player_id = 1
 faction = "allies"
-base_tile = [65, 77]
+sub_faction = "usa"
+base_tile = [34, 36]
+team_id = 1
 
 [[spawns.initial_buildings]]
 building_id = "allied_conyard"
-tile_pos = [65, 77]
+tile_pos = [34, 36]
 
 [[spawns.initial_buildings]]
 building_id = "allied_power_plant"
-tile_pos = [62, 77]
+tile_pos = [31, 36]
 
 [[spawns.initial_buildings]]
 building_id = "allied_refinery"
-tile_pos = [65, 74]
+tile_pos = [38, 36]
 
 [[spawns.initial_buildings]]
 building_id = "allied_barracks"
-tile_pos = [62, 74]
+tile_pos = [34, 40]
 
 [[spawns.initial_buildings]]
 building_id = "allied_war_factory"
-tile_pos = [59, 77]
+tile_pos = [37, 39]
 
-[[spawns.initial_units]]
-unit_id = "allied_gi"
-tile_pos = [63, 72]
-
-[[spawns.initial_units]]
-unit_id = "allied_gi"
-tile_pos = [61, 72]
-
-[[spawns.initial_units]]
-unit_id = "grizzly_tank"
-tile_pos = [59, 73]
+[[spawns.initial_buildings]]
+building_id = "allied_chronosphere"
+tile_pos = [32, 43]
 
 [[spawns.initial_units]]
 unit_id = "chrono_miner"
-tile_pos = [63, 73]
+tile_pos = [41, 36]
+
+[[spawns.initial_units]]
+unit_id = "grizzly_tank"
+tile_pos = [34, 42]
+
+[[spawns.initial_units]]
+unit_id = "prism_tank"
+tile_pos = [36, 42]
+
+[[spawns.initial_units]]
+unit_id = "ifv"
+tile_pos = [38, 42]
+
+[[spawns.initial_units]]
+unit_id = "guardian_gi"
+tile_pos = [40, 42]
 
 [[spawns]]
 player_id = 2
 faction = "soviets"
-base_tile = [76, 69]
-
-[[spawns.initial_buildings]]
-building_id = "soviet_conyard"
-tile_pos = [76, 69]
-
-[[spawns.initial_buildings]]
-building_id = "soviet_tesla_reactor"
-tile_pos = [73, 69]
-
-[[spawns.initial_buildings]]
-building_id = "soviet_refinery"
-tile_pos = [76, 66]
-
-[[spawns.initial_buildings]]
-building_id = "soviet_barracks"
-tile_pos = [73, 66]
-
-[[spawns.initial_buildings]]
-building_id = "soviet_war_factory"
-tile_pos = [70, 69]
-
-[[spawns.initial_units]]
-unit_id = "soviet_conscript"
-tile_pos = [74, 64]
-
-[[spawns.initial_units]]
-unit_id = "soviet_conscript"
-tile_pos = [72, 64]
-
-[[spawns.initial_units]]
-unit_id = "rhino_tank"
-tile_pos = [70, 65]
-
-[[spawns.initial_units]]
-unit_id = "war_miner"
-tile_pos = [74, 65]
+sub_faction = "cuba"
+base_tile = [70, 74]
+team_id = 2
 
 [[trigger_zones]]
-id = "mission_stage_init"
-min = [6, 6]
-max = [12, 12]
+id = "ra2_allied_11_fallout_init"
+min = [0, 0]
+max = [3, 3]
 once = true
 condition = { type = "timer_elapsed", secs = 1.0 }
 actions = [
+    { type = "play_cutscene", cutscene_id = "intro_flyover" },
+    { type = "set_objective_status", objective_id = "obj_primary_main", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_secondary_strike", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_bonus_tech", status = "active" },
+    { type = "start_countdown", timer_id = "cuban_nuke_timer", label = "Cuban Nuclear Strike Window", duration_secs = 240 },
+    { type = "set_weather", preset = "dusk" },
     { type = "set_variable", name = "mission_stage", value = 1 },
-    { type = "eva_transmission", speaker = "EVA", text = "Battle Control Online. Primary tactical objectives initialized." },
-    { type = "reveal_area", tile = [65, 77], radius = 14 }
+    { type = "reveal_area", tile = [70, 74], radius = 9 },
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Protect the Allied Chronosphere in the Florida Keys, neutralize Cuba's three Nuclear Missile Silos, and sink the Soviet naval blockade.", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "battle_control_online" },
 ]
 
 [[trigger_zones]]
-id = "tactical_reinforcement_wave"
-min = [64, 75]
-max = [68, 79]
+id = "ra2_allied_11_fallout_reinforcements"
+min = [0, 0]
+max = [3, 3]
 once = true
-condition = { type = "all", conditions = [{ type = "timer_elapsed", secs = 45.0 }, { type = "variable_equals", name = "mission_stage", value = 1 }] }
+condition = { type = "all", conditions = [{ type = "timer_elapsed", secs = 55.0 }, { type = "variable_equals", name = "mission_stage", value = 1 }] }
 actions = [
+    { type = "play_radar_video", video_path = "assets/videos/radar_pip/allied_11_pip_02.mp4" },
     { type = "set_variable", name = "mission_stage", value = 2 },
-    { type = "spawn_reinforcements", player_id = 1, unit_id = "prism_tank", count = 2, tile = [64, 75] },
-    { type = "grant_credits", player_id = 1, amount = 1500 },
-    { type = "eva_transmission", speaker = "EVA", text = "Reinforcements have arrived. Forward command has authorized 1500 bonus credits." }
+    { type = "grant_credits", player_id = 1, amount = 2000 },
+    { type = "spawn_reinforcements", player_id = 1, unit_id = "prism_tank", count = 3, tile = [37, 37] },
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Command reserves and emergency war funds have arrived at your base!", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "reinforcements_have_arrived", radar_video = "assets/videos/radar_pip/allied_11_pip_02.mp4" },
 ]
 
 [[trigger_zones]]
-id = "decisive_campaign_victory"
-min = [2, 2]
-max = [6, 6]
+id = "ra2_allied_11_fallout_key_target_down"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "building_destroyed", building_id = "soviet_nuclear_silo", player_id = 2 }
+actions = [
+    { type = "set_objective_status", objective_id = "obj_secondary_strike", status = "completed" },
+    { type = "stop_countdown", timer_id = "cuban_nuke_timer" },
+    { type = "play_radar_video", video_path = "assets/videos/radar_pip/allied_11_pip_03.mp4" },
+    { type = "grant_credits", player_id = 1, amount = 2000 },
+    { type = "set_variable", name = "primary_target_destroyed", value = 1 },
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Primary enemy strategic structure destroyed! Sweep the remaining enemy forces from the sector.", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "battle_control_online", radar_video = "assets/videos/radar_pip/allied_11_pip_03.mp4" },
+]
+
+[[trigger_zones]]
+id = "ra2_allied_11_fallout_protect_fail"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "building_destroyed", building_id = "allied_chronosphere" }
+actions = [
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Critical structure lost! Mission failed.", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "unit_lost" },
+    { type = "declare_winner", player_id = 2 },
+]
+
+[[trigger_zones]]
+id = "ra2_allied_11_fallout_victory"
+min = [0, 0]
+max = [3, 3]
 once = true
 condition = { type = "all_buildings_destroyed", player_id = 2 }
 actions = [
+    { type = "set_objective_status", objective_id = "obj_primary_main", status = "completed" },
     { type = "set_variable", name = "mission_stage", value = 3 },
-    { type = "eva_transmission", speaker = "EVA", text = "Mission Accomplished. All primary hostile command structures neutralized." },
-    { type = "declare_winner", player_id = 1 }
+    { type = "eva_transmission", speaker = "LT. EVA", text = "All enemy structures neutralized. Mission accomplished, Commander!", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "primary_objective_achieved" },
+    { type = "declare_winner", player_id = 1 },
+]
+
+[[trigger_zones]]
+id = "p22_crisis_countdown_expired"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "countdown_expired", timer_id = "cuban_nuke_timer" }
+actions = [
+    { type = "spawn_reinforcements", player_id = 2, unit_id = "rhino_tank", count = 4, tile = [66, 70] },
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Warning: Cuban Nuclear Strike Window reached zero! Enemy heavy armor strike group deployed!", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "base_under_attack" },
+]
+
+[[trigger_zones]]
+id = "p22_crisis_target_neutralized"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "building_destroyed", building_id = "soviet_nuclear_silo", player_id = 2 }
+actions = [
+    { type = "stop_countdown", timer_id = "cuban_nuke_timer" },
+]
+
+[[trigger_zones]]
+id = "p22_bonus_tech_captured"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "building_captured", building_id = "tech_oil_derrick", by_player_id = 1 }
+actions = [
+    { type = "set_objective_status", objective_id = "obj_bonus_tech", status = "completed" },
+    { type = "grant_credits", player_id = 1, amount = 750 },
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Bonus objective achieved: Neutral tech structure secured!", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "building_captured" },
+]
+
+[[trigger_zones]]
+id = "p22_periodic_skirmish_wave"
+min = [0, 0]
+max = [3, 3]
+once = false
+condition = { type = "periodic_timer", start_secs = 75, interval_secs = 75, max_repeats = 3 }
+actions = [
+    { type = "spawn_reinforcements", player_id = 2, unit_id = "soviet_conscript", count = 3, tile = [72, 71] },
 ]

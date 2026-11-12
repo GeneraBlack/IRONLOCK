@@ -1,73 +1,678 @@
 id = "yr_allied_06_trick_or_treaty"
-name = "YR Allied 06: Trick or Treaty (London)"
+name = "YR Op. 06: Trick or Treaty (London)"
 width = 60
 height = 85
 tile_size = 2.0
 ore_regen_per_sec = 4.0
-mission_objective = "Having failed to clone the world leaders, Yuri plans to capture the real ones. Defend them at the Houses of Parliament in London, England...then deal with Yuri. \n \n Objective 1: Defend Parliament from assault. \n Objective 2: Destroy Yuri's Base."
+mission_objective = "Defend Parliament and Big Ben along the Thames until Soviet treaty reinforcements arrive, then storm Yuri's London citadel."
 
 [[ore_patches]]
-position = [16, 8]
+position = [23, 64]
 radius = 3
-amount_per_tile = 1400
+amount_per_tile = 1600
 
 [[ore_patches]]
-position = [42, 75]
+position = [24, 14]
 radius = 3
-amount_per_tile = 1400
+amount_per_tile = 1550
 
-[[ore_patches]]
+[[gem_patches]]
 position = [30, 42]
-radius = 4
-amount_per_tile = 2000
+radius = 2
+amount_per_tile = 2500
 
-[[ore_patches]]
-position = [26, 61]
-radius = 3
-amount_per_tile = 1500
+[[water_rects]]
+min = [21, 1]
+max = [26, 1]
 
-[[ore_patches]]
-position = [33, 61]
-radius = 3
-amount_per_tile = 1500
+[[water_rects]]
+min = [20, 2]
+max = [26, 2]
+
+[[water_rects]]
+min = [19, 3]
+max = [27, 3]
+
+[[water_rects]]
+min = [19, 4]
+max = [26, 4]
+
+[[water_rects]]
+min = [18, 5]
+max = [26, 5]
+
+[[water_rects]]
+min = [17, 6]
+max = [19, 8]
+
+[[water_rects]]
+min = [17, 9]
+max = [21, 9]
+
+[[water_rects]]
+min = [16, 10]
+max = [21, 10]
+
+[[water_rects]]
+min = [15, 11]
+max = [21, 12]
+
+[[water_rects]]
+min = [14, 13]
+max = [21, 13]
+
+[[water_rects]]
+min = [13, 14]
+max = [21, 16]
+
+[[water_rects]]
+min = [15, 17]
+max = [21, 19]
+
+[[water_rects]]
+min = [9, 19]
+max = [12, 19]
+
+[[water_rects]]
+min = [9, 20]
+max = [10, 21]
+
+[[water_rects]]
+min = [13, 20]
+max = [21, 20]
+
+[[water_rects]]
+min = [14, 21]
+max = [21, 22]
+
+[[water_rects]]
+min = [10, 22]
+max = [10, 22]
+
+[[water_rects]]
+min = [14, 23]
+max = [20, 25]
+
+[[water_rects]]
+min = [30, 24]
+max = [34, 24]
+
+[[water_rects]]
+min = [30, 25]
+max = [32, 25]
+
+[[water_rects]]
+min = [14, 26]
+max = [19, 28]
+
+[[water_rects]]
+min = [29, 26]
+max = [32, 26]
+
+[[water_rects]]
+min = [6, 27]
+max = [6, 27]
+
+[[water_rects]]
+min = [24, 27]
+max = [25, 28]
+
+[[water_rects]]
+min = [29, 27]
+max = [31, 27]
+
+[[water_rects]]
+min = [4, 28]
+max = [6, 28]
+
+[[water_rects]]
+min = [29, 28]
+max = [29, 28]
+
+[[water_rects]]
+min = [31, 28]
+max = [31, 28]
+
+[[water_rects]]
+min = [3, 29]
+max = [6, 29]
+
+[[water_rects]]
+min = [13, 29]
+max = [15, 29]
+
+[[water_rects]]
+min = [22, 29]
+max = [25, 29]
+
+[[water_rects]]
+min = [27, 29]
+max = [31, 29]
+
+[[water_rects]]
+min = [15, 30]
+max = [15, 31]
+
+[[water_rects]]
+min = [27, 30]
+max = [32, 30]
+
+[[water_rects]]
+min = [27, 31]
+max = [29, 32]
+
+[[water_rects]]
+min = [43, 31]
+max = [44, 37]
+
+[[water_rects]]
+min = [2, 32]
+max = [6, 32]
+
+[[water_rects]]
+min = [13, 32]
+max = [17, 35]
+
+[[water_rects]]
+min = [1, 33]
+max = [6, 33]
+
+[[water_rects]]
+min = [27, 33]
+max = [27, 35]
+
+[[water_rects]]
+min = [1, 34]
+max = [2, 35]
+
+[[water_rects]]
+min = [5, 34]
+max = [7, 34]
+
+[[water_rects]]
+min = [20, 34]
+max = [20, 35]
+
+[[water_rects]]
+min = [1, 36]
+max = [4, 36]
+
+[[water_rects]]
+min = [13, 36]
+max = [21, 37]
+
+[[water_rects]]
+min = [1, 37]
+max = [3, 37]
+
+[[water_rects]]
+min = [8, 37]
+max = [8, 46]
+
+[[water_rects]]
+min = [2, 38]
+max = [3, 38]
+
+[[water_rects]]
+min = [13, 38]
+max = [20, 39]
+
+[[water_rects]]
+min = [43, 38]
+max = [46, 38]
+
+[[water_rects]]
+min = [2, 39]
+max = [2, 39]
+
+[[water_rects]]
+min = [46, 39]
+max = [46, 40]
+
+[[water_rects]]
+min = [13, 40]
+max = [19, 44]
+
+[[water_rects]]
+min = [33, 41]
+max = [33, 42]
+
+[[water_rects]]
+min = [40, 41]
+max = [44, 41]
+
+[[water_rects]]
+min = [40, 42]
+max = [40, 42]
+
+[[water_rects]]
+min = [33, 43]
+max = [40, 43]
+
+[[water_rects]]
+min = [46, 43]
+max = [49, 43]
+
+[[water_rects]]
+min = [26, 44]
+max = [27, 44]
+
+[[water_rects]]
+min = [49, 44]
+max = [49, 50]
+
+[[water_rects]]
+min = [13, 45]
+max = [20, 46]
+
+[[water_rects]]
+min = [26, 45]
+max = [32, 45]
+
+[[water_rects]]
+min = [34, 45]
+max = [41, 45]
+
+[[water_rects]]
+min = [26, 46]
+max = [27, 48]
+
+[[water_rects]]
+min = [30, 46]
+max = [32, 49]
+
+[[water_rects]]
+min = [34, 46]
+max = [34, 49]
+
+[[water_rects]]
+min = [7, 47]
+max = [8, 47]
+
+[[water_rects]]
+min = [13, 47]
+max = [21, 48]
+
+[[water_rects]]
+min = [23, 47]
+max = [24, 47]
+
+[[water_rects]]
+min = [43, 47]
+max = [46, 47]
+
+[[water_rects]]
+min = [8, 48]
+max = [11, 48]
+
+[[water_rects]]
+min = [24, 48]
+max = [24, 48]
+
+[[water_rects]]
+min = [43, 48]
+max = [47, 48]
+
+[[water_rects]]
+min = [14, 49]
+max = [15, 49]
+
+[[water_rects]]
+min = [20, 49]
+max = [20, 50]
+
+[[water_rects]]
+min = [24, 49]
+max = [27, 49]
+
+[[water_rects]]
+min = [15, 50]
+max = [15, 50]
+
+[[water_rects]]
+min = [25, 50]
+max = [25, 50]
+
+[[water_rects]]
+min = [28, 50]
+max = [32, 50]
+
+[[water_rects]]
+min = [45, 50]
+max = [47, 50]
+
+[[water_rects]]
+min = [13, 51]
+max = [15, 51]
+
+[[water_rects]]
+min = [20, 51]
+max = [21, 51]
+
+[[water_rects]]
+min = [45, 51]
+max = [46, 51]
+
+[[water_rects]]
+min = [14, 52]
+max = [21, 52]
+
+[[water_rects]]
+min = [26, 52]
+max = [32, 52]
+
+[[water_rects]]
+min = [34, 52]
+max = [38, 53]
+
+[[water_rects]]
+min = [45, 52]
+max = [49, 52]
+
+[[water_rects]]
+min = [15, 53]
+max = [21, 53]
+
+[[water_rects]]
+min = [26, 53]
+max = [26, 55]
+
+[[water_rects]]
+min = [32, 53]
+max = [32, 53]
+
+[[water_rects]]
+min = [45, 53]
+max = [45, 54]
+
+[[water_rects]]
+min = [49, 53]
+max = [49, 54]
+
+[[water_rects]]
+min = [16, 54]
+max = [21, 54]
+
+[[water_rects]]
+min = [34, 54]
+max = [39, 54]
+
+[[water_rects]]
+min = [16, 55]
+max = [22, 55]
+
+[[water_rects]]
+min = [32, 55]
+max = [32, 55]
+
+[[water_rects]]
+min = [34, 55]
+max = [38, 55]
+
+[[water_rects]]
+min = [17, 56]
+max = [24, 56]
+
+[[water_rects]]
+min = [26, 56]
+max = [32, 56]
+
+[[water_rects]]
+min = [34, 56]
+max = [35, 56]
+
+[[water_rects]]
+min = [18, 57]
+max = [24, 57]
+
+[[water_rects]]
+min = [27, 57]
+max = [32, 57]
+
+[[water_rects]]
+min = [35, 57]
+max = [43, 57]
+
+[[water_rects]]
+min = [46, 57]
+max = [55, 57]
+
+[[water_rects]]
+min = [18, 58]
+max = [23, 58]
+
+[[water_rects]]
+min = [19, 59]
+max = [23, 59]
+
+[[water_rects]]
+min = [44, 59]
+max = [53, 60]
+
+[[water_rects]]
+min = [20, 60]
+max = [23, 61]
+
+[[water_rects]]
+min = [44, 61]
+max = [52, 61]
+
+[[water_rects]]
+min = [46, 62]
+max = [51, 63]
+
+[[water_rects]]
+min = [46, 64]
+max = [50, 64]
+
+[[water_rects]]
+min = [46, 65]
+max = [49, 66]
+
+[[water_rects]]
+min = [23, 67]
+max = [23, 67]
+
+[[water_rects]]
+min = [45, 67]
+max = [48, 67]
+
+[[bridge_rects]]
+min = [16, 6]
+max = [20, 8]
+
+[[bridge_rects]]
+min = [12, 29]
+max = [16, 31]
+
+[[bridge_rects]]
+min = [23, 55]
+max = [25, 61]
+
+[[bridge_rects]]
+min = [23, 62]
+max = [44, 64]
+
+[[bridge_rects]]
+min = [23, 65]
+max = [25, 68]
+
+[[elevation_rects]]
+min = [6, 6]
+max = [9, 9]
+
+[[elevation_rects]]
+min = [42, 6]
+max = [45, 9]
+
+[[ramp_rects]]
+min = [5, 6]
+max = [6, 8]
+
+[[ramp_rects]]
+min = [9, 6]
+max = [10, 8]
+
+[[ramp_rects]]
+min = [41, 6]
+max = [42, 8]
+
+[[ramp_rects]]
+min = [45, 6]
+max = [46, 8]
+
+[[obstacles]]
+min = [38, 26]
+max = [39, 27]
+
+[[obstacles]]
+min = [37, 33]
+max = [38, 34]
+
+[[props]]
+kind = "tree"
+tile_pos = [32, 69]
+
+[[props]]
+kind = "tree"
+tile_pos = [43, 70]
+
+[[props]]
+kind = "tree"
+tile_pos = [19, 29]
+
+[[props]]
+kind = "tree"
+tile_pos = [42, 28]
+
+[[props]]
+kind = "tree"
+tile_pos = [39, 48]
+
+[[props]]
+kind = "tree"
+tile_pos = [38, 24]
+
+[[props]]
+kind = "tree"
+tile_pos = [32, 38]
+
+[[props]]
+kind = "tree"
+tile_pos = [24, 22]
+
+[[props]]
+kind = "tree"
+tile_pos = [23, 70]
+
+[[props]]
+kind = "tree"
+tile_pos = [40, 77]
+
+[[props]]
+kind = "tree"
+tile_pos = [6, 44]
+
+[[props]]
+kind = "tree"
+tile_pos = [8, 32]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [37, 71]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [24, 53]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [48, 50]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [13, 26]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [50, 46]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [47, 39]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [45, 39]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [21, 42]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [21, 44]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [39, 33]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [28, 16]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [31, 17]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [27, 18]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [23, 17]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [28, 10]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [33, 13]
 
 [[preplaced_entities]]
-player_id = 2
-building_id = "london_big_ben"
-tile_pos = [35, 65]
-
-[[preplaced_entities]]
-player_id = 2
+player_id = 0
 building_id = "tech_oil_derrick"
 tile_pos = [47, 36]
 
 [[preplaced_entities]]
-player_id = 2
+player_id = 0
 building_id = "tech_oil_derrick"
-tile_pos = [46, 36]
+tile_pos = [45, 35]
 
 [[preplaced_entities]]
-player_id = 2
+player_id = 0
 building_id = "tech_oil_derrick"
 tile_pos = [45, 32]
 
 [[preplaced_entities]]
-player_id = 2
+player_id = 0
 building_id = "tech_oil_derrick"
 tile_pos = [27, 14]
 
 [[preplaced_entities]]
-player_id = 2
+player_id = 0
 building_id = "tech_oil_derrick"
 tile_pos = [29, 12]
 
 [[preplaced_entities]]
-player_id = 2
+player_id = 0
 building_id = "tech_hospital"
-tile_pos = [30, 43]
+tile_pos = [26, 39]
 
 [[preplaced_entities]]
-player_id = 2
+player_id = 0
 building_id = "tech_machine_shop"
 tile_pos = [34, 31]
 
@@ -94,7 +699,7 @@ tile_pos = [31, 11]
 [[preplaced_entities]]
 player_id = 2
 building_id = "yuri_bio_reactor"
-tile_pos = [29, 17]
+tile_pos = [28, 18]
 
 [[preplaced_entities]]
 player_id = 2
@@ -104,7 +709,7 @@ tile_pos = [24, 17]
 [[preplaced_entities]]
 player_id = 2
 building_id = "yuri_bio_reactor"
-tile_pos = [26, 14]
+tile_pos = [25, 13]
 
 [[preplaced_entities]]
 player_id = 2
@@ -119,17 +724,17 @@ tile_pos = [29, 10]
 [[preplaced_entities]]
 player_id = 2
 building_id = "yuri_bio_reactor"
-tile_pos = [33, 14]
+tile_pos = [34, 13]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "yuri_bio_reactor"
-tile_pos = [28, 19]
+tile_pos = [27, 20]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "yuri_bio_reactor"
-tile_pos = [28, 20]
+tile_pos = [29, 20]
 
 [[preplaced_entities]]
 player_id = 2
@@ -139,17 +744,17 @@ tile_pos = [35, 17]
 [[preplaced_entities]]
 player_id = 2
 building_id = "yuri_cloning_vats"
-tile_pos = [32, 19]
+tile_pos = [31, 20]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "yuri_psychic_sensor"
-tile_pos = [30, 14]
+tile_pos = [29, 14]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "yuri_grinder"
-tile_pos = [30, 21]
+tile_pos = [29, 22]
 
 [[preplaced_entities]]
 player_id = 2
@@ -201,121 +806,228 @@ player_id = 2
 unit_id = "guardian_gi"
 tile_pos = [34, 71]
 
+[[preplaced_entities]]
+player_id = 1
+building_id = "london_big_ben"
+tile_pos = [38, 65]
+
+[[preplaced_entities]]
+player_id = 1
+unit_id = "tanya"
+tile_pos = [30, 59]
+tag = "tanya"
+
+[[objectives]]
+id = "obj_primary_main"
+tier = "primary"
+title = "Defend Parliament and Big Ben along the Thames until Soviet treaty reinforcements arr..."
+marker_tile = [30, 14]
+
+[[objectives]]
+id = "obj_holdout_timer"
+tier = "primary"
+title = "Hold Perimeter Until Parliament Treaty Signing Completes"
+marker_tile = [32, 66]
+
+[[objectives]]
+id = "obj_vip_tanya"
+tier = "secondary"
+title = "Keep Agent Tanya Alive Throughout the Operation"
+marker_tile = [30, 59]
+
+[[objectives]]
+id = "obj_bonus_tech"
+tier = "bonus"
+title = "Capture Neutral Tech Oil Derrick with an Engineer"
+marker_tile = [47, 36]
+
+[[cutscenes]]
+id = "intro_flyover"
+skippable = true
+letterbox = true
+
+[[cutscenes.keyframes]]
+time_secs = 0.0
+focus = [61.0, 0.0, 29.0]
+distance = 46.0
+pitch_deg = 52.0
+yaw_deg = -22.0
+
+[[cutscenes.keyframes]]
+time_secs = 2.2
+focus = [61.0, 0.0, 73.0]
+distance = 42.0
+pitch_deg = 55.0
+yaw_deg = -10.0
+
+[[cutscenes.keyframes]]
+time_secs = 4.5
+focus = [61.0, 0.0, 119.0]
+distance = 36.0
+pitch_deg = 58.0
+yaw_deg = 0.0
+
 [[spawns]]
 player_id = 1
 faction = "allies"
-base_tile = [8, 8]
+sub_faction = "great_britain"
+base_tile = [32, 66]
+team_id = 1
 
 [[spawns.initial_buildings]]
 building_id = "allied_conyard"
-tile_pos = [8, 8]
+tile_pos = [32, 66]
 
 [[spawns.initial_buildings]]
 building_id = "allied_power_plant"
-tile_pos = [11, 8]
+tile_pos = [36, 66]
 
 [[spawns.initial_buildings]]
 building_id = "allied_refinery"
-tile_pos = [8, 11]
+tile_pos = [28, 66]
 
 [[spawns.initial_buildings]]
 building_id = "allied_barracks"
-tile_pos = [11, 11]
+tile_pos = [30, 60]
 
 [[spawns.initial_buildings]]
 building_id = "allied_war_factory"
-tile_pos = [14, 8]
-
-[[spawns.initial_units]]
-unit_id = "allied_gi"
-tile_pos = [10, 13]
-
-[[spawns.initial_units]]
-unit_id = "allied_gi"
-tile_pos = [12, 13]
-
-[[spawns.initial_units]]
-unit_id = "grizzly_tank"
-tile_pos = [14, 12]
+tile_pos = [26, 59]
 
 [[spawns.initial_units]]
 unit_id = "chrono_miner"
-tile_pos = [10, 12]
+tile_pos = [26, 65]
+
+[[spawns.initial_units]]
+unit_id = "guardian_gi"
+tile_pos = [32, 60]
+
+[[spawns.initial_units]]
+unit_id = "guardian_gi"
+tile_pos = [29, 59]
+
+[[spawns.initial_units]]
+unit_id = "grizzly_tank"
+tile_pos = [29, 60]
+
+[[spawns.initial_units]]
+unit_id = "prism_tank"
+tile_pos = [25, 59]
+
+[[spawns.initial_units]]
+unit_id = "battle_fortress"
+tile_pos = [32, 59]
 
 [[spawns]]
 player_id = 2
 faction = "yuri"
-base_tile = [50, 75]
-
-[[spawns.initial_buildings]]
-building_id = "yuri_conyard"
-tile_pos = [50, 75]
-
-[[spawns.initial_buildings]]
-building_id = "yuri_bio_reactor"
-tile_pos = [47, 75]
-
-[[spawns.initial_buildings]]
-building_id = "yuri_slave_refinery"
-tile_pos = [50, 72]
-
-[[spawns.initial_buildings]]
-building_id = "yuri_barracks"
-tile_pos = [47, 72]
-
-[[spawns.initial_buildings]]
-building_id = "yuri_war_factory"
-tile_pos = [44, 75]
-
-[[spawns.initial_units]]
-unit_id = "yuri_initiate"
-tile_pos = [48, 70]
-
-[[spawns.initial_units]]
-unit_id = "yuri_initiate"
-tile_pos = [46, 70]
-
-[[spawns.initial_units]]
-unit_id = "lasher_tank"
-tile_pos = [44, 71]
-
-[[spawns.initial_units]]
-unit_id = "yuri_slave_miner"
-tile_pos = [48, 71]
+sub_faction = "yuri"
+base_tile = [30, 14]
+team_id = 2
 
 [[trigger_zones]]
-id = "mission_stage_init"
-min = [6, 6]
-max = [12, 12]
+id = "yr_allied_06_trick_or_treaty_init"
+min = [0, 0]
+max = [3, 3]
 once = true
 condition = { type = "timer_elapsed", secs = 1.0 }
 actions = [
+    { type = "play_cutscene", cutscene_id = "intro_flyover" },
+    { type = "set_objective_status", objective_id = "obj_primary_main", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_holdout_timer", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_vip_tanya", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_bonus_tech", status = "active" },
+    { type = "start_countdown", timer_id = "parliament_treaty_timer", label = "Parliament Treaty Signing", duration_secs = 150 },
+    { type = "set_weather", preset = "dusk" },
     { type = "set_variable", name = "mission_stage", value = 1 },
-    { type = "eva_transmission", speaker = "EVA", text = "Battle Control Online. Primary tactical objectives initialized." },
-    { type = "reveal_area", tile = [8, 8], radius = 14 }
+    { type = "reveal_area", tile = [30, 14], radius = 9 },
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Defend Parliament and Big Ben along the Thames until Soviet treaty reinforcements arrive, then storm Yuri's London citadel.", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "battle_control_online" },
 ]
 
 [[trigger_zones]]
-id = "tactical_reinforcement_wave"
-min = [7, 6]
-max = [11, 10]
+id = "soviet_treaty_signed"
+min = [0, 0]
+max = [3, 3]
 once = true
-condition = { type = "all", conditions = [{ type = "timer_elapsed", secs = 45.0 }, { type = "variable_equals", name = "mission_stage", value = 1 }] }
+condition = { type = "timer_elapsed", secs = 70.0 }
 actions = [
+    { type = "play_radar_video", video_path = "assets/videos/radar_pip/yr_allied_06_pip_03.mp4" },
     { type = "set_variable", name = "mission_stage", value = 2 },
-    { type = "spawn_reinforcements", player_id = 1, unit_id = "grizzly_tank", count = 2, tile = [7, 6] },
-    { type = "grant_credits", player_id = 1, amount = 1500 },
-    { type = "eva_transmission", speaker = "EVA", text = "Reinforcements have arrived. Forward command has authorized 1500 bonus credits." }
+    { type = "grant_credits", player_id = 1, amount = 2500 },
+    { type = "spawn_reinforcements", player_id = 1, unit_id = "apocalypse_tank", count = 3, tile = [27, 65] },
+    { type = "spawn_reinforcements", player_id = 1, unit_id = "kirov_airship", count = 1, tile = [31, 65] },
+    { type = "eva_transmission", speaker = "GEN. CARVILLE", text = "The London Treaty is signed! Soviet Apocalypse Tanks and a Kirov Airship have joined your command!", portrait = "assets/ui/cameos/allied_conyard_icon.png", audio_cue = "reinforcements_have_arrived", radar_video = "assets/videos/radar_pip/yr_allied_06_pip_03.mp4" },
 ]
 
 [[trigger_zones]]
-id = "decisive_campaign_victory"
-min = [2, 2]
-max = [6, 6]
+id = "yr_allied_06_trick_or_treaty_protect_lost"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "building_destroyed", building_id = "london_big_ben" }
+actions = [
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Critical landmark destroyed! Mission failed.", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "unit_lost" },
+    { type = "declare_winner", player_id = 2 },
+]
+
+[[trigger_zones]]
+id = "yr_allied_06_trick_or_treaty_victory"
+min = [0, 0]
+max = [3, 3]
 once = true
 condition = { type = "all_buildings_destroyed", player_id = 2 }
 actions = [
+    { type = "set_objective_status", objective_id = "obj_primary_main", status = "completed" },
+    { type = "set_objective_status", objective_id = "obj_vip_tanya", status = "completed" },
+    { type = "set_objective_status", objective_id = "obj_holdout_timer", status = "completed" },
+    { type = "play_radar_video", video_path = "assets/videos/radar_pip/yr_allied_06_pip_04.mp4" },
     { type = "set_variable", name = "mission_stage", value = 3 },
-    { type = "eva_transmission", speaker = "EVA", text = "Mission Accomplished. All primary hostile command structures neutralized." },
-    { type = "declare_winner", player_id = 1 }
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Yuri's forces in this sector have been completely eradicated! Victory is ours!", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "primary_objective_achieved", radar_video = "assets/videos/radar_pip/yr_allied_06_pip_04.mp4" },
+    { type = "declare_winner", player_id = 1 },
+]
+
+[[trigger_zones]]
+id = "p22_vip_tanya_lost"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "tagged_entity_destroyed", tag = "tanya" }
+actions = [
+    { type = "set_objective_status", objective_id = "obj_vip_tanya", status = "failed" },
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Agent Tanya has fallen in combat!", portrait = "assets/ui/cameos/tanyicon.png", audio_cue = "unit_lost" },
+]
+
+[[trigger_zones]]
+id = "p22_holdout_expired"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "countdown_expired", timer_id = "parliament_treaty_timer" }
+actions = [
+    { type = "set_objective_status", objective_id = "obj_holdout_timer", status = "completed" },
+    { type = "grant_credits", player_id = 1, amount = 2500 },
+    { type = "spawn_reinforcements", player_id = 1, unit_id = "prism_tank", count = 3, tile = [32, 70] },
+    { type = "eva_transmission", speaker = "GEN. CARVILLE", text = "Parliament Treaty Signing succeeded! Heavy armored reinforcements have arrived on the battlefield!", portrait = "assets/ui/cameos/allied_conyard_icon.png", audio_cue = "primary_objective_achieved" },
+]
+
+[[trigger_zones]]
+id = "p22_bonus_tech_captured"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "building_captured", building_id = "tech_oil_derrick", by_player_id = 1 }
+actions = [
+    { type = "set_objective_status", objective_id = "obj_bonus_tech", status = "completed" },
+    { type = "grant_credits", player_id = 1, amount = 750 },
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Bonus objective achieved: Neutral tech structure secured!", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "building_captured" },
+]
+
+[[trigger_zones]]
+id = "p22_periodic_skirmish_wave"
+min = [0, 0]
+max = [3, 3]
+once = false
+condition = { type = "periodic_timer", start_secs = 75, interval_secs = 75, max_repeats = 3 }
+actions = [
+    { type = "spawn_reinforcements", player_id = 2, unit_id = "yuri_initiate", count = 3, tile = [26, 10] },
 ]

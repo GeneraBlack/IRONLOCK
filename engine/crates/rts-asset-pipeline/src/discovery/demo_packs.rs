@@ -1,7 +1,7 @@
-use anyhow::Context;
 use super::{smart_import, SmartImportReport};
 use crate::openra::build_sample_openra_map_bin;
 use crate::westwood::{build_sample_shp_bytes, build_sample_vxl_bytes, westwood_mix_crc};
+use anyhow::Context;
 use anyhow::Result;
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -625,8 +625,8 @@ Actors:
 
     let r1 = smart_import(&ww_src, Some(&ww_out))
         .context("Failed to smart-import Westwood demo pack")?;
-    let r2 =
-        smart_import(&ora_src, Some(&ora_out)).context("Failed to smart-import OpenRA demo pack")?;
+    let r2 = smart_import(&ora_src, Some(&ora_out))
+        .context("Failed to smart-import OpenRA demo pack")?;
 
     Ok((r1, r2))
 }
@@ -651,4 +651,3 @@ pub fn discover_available_mods(workspace_root: &Path) -> Vec<PathBuf> {
     }
     found
 }
-

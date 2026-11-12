@@ -1,6 +1,4 @@
 use super::*;
-use anyhow::Result;
-use serde_json::json;
 
 pub(super) struct TurntableViewField {
     w: usize,
@@ -91,7 +89,11 @@ pub(super) fn build_turntable_view_fields(
             let span = ((max_x - min_x + 1).max(max_y - min_y + 1) as f32 * 0.52).max(2.0);
             (cx, cy, span)
         } else {
-            (w as f32 * 0.5, h as f32 * 0.5, (w.max(h) as f32 * 0.5).max(2.0))
+            (
+                w as f32 * 0.5,
+                h as f32 * 0.5,
+                (w.max(h) as f32 * 0.5).max(2.0),
+            )
         };
 
         views.push(TurntableViewField {
@@ -187,11 +189,8 @@ pub(super) fn carve_visual_hull_from_turntable_frames(
                     && col_weight > 0.0
                 {
                     let inv_w = 1.0 / col_weight;
-                    grid[idx_3d(gx, gy, gz)] = Some([
-                        col_sum[0] * inv_w,
-                        col_sum[1] * inv_w,
-                        col_sum[2] * inv_w,
-                    ]);
+                    grid[idx_3d(gx, gy, gz)] =
+                        Some([col_sum[0] * inv_w, col_sum[1] * inv_w, col_sum[2] * inv_w]);
                     any_carved = true;
                 }
             }
@@ -332,141 +331,6 @@ pub fn build_sample_shp_bytes(width: u16, height: u16) -> Vec<u8> {
     shp
 }
 
-pub(super) fn pack_colored_mesh_to_glb(
-    positions: &[[f32; 3]],
-    normals: &[[f32; 3]],
-    colors: &[[f32; 4]],
-    indices: &[u32],
-    mesh_name: &str,
-) -> Result<Vec<u8>> {
-    let mut min = [f32::MAX; 3];
-    let mut max = [f32::MIN; 3];
-    for p in positions {
-        for i in 0..3 {
-            min[i] = min[i].min(p[i]);
-            max[i] = max[i].max(p[i]);
-        }
-    }
-
-    let mut bin_chunk = Vec::new();
-    let pos_offset = bin_chunk.len();
-    for p in positions {
-        for c in p {
-            bin_chunk.extend_from_slice(&c.to_le_bytes());
-        }
-    }
-    let pos_len = bin_chunk.len() - pos_offset;
-
-    let norm_offset = bin_chunk.len();
-    for n in normals {
-        for c in n {
-            bin_chunk.extend_from_slice(&c.to_le_bytes());
-        }
-    }
-    let norm_len = bin_chunk.len() - norm_offset;
-
-    let col_offset = bin_chunk.len();
-    for col in colors {
-        for c in col {
-            bin_chunk.extend_from_slice(&c.to_le_bytes());
-        }
-    }
-    let col_len = bin_chunk.len() - col_offset;
-
-    let idx_offset = bin_chunk.len();
-    for idx in indices {
-        bin_chunk.extend_from_slice(&idx.to_le_bytes());
-    }
-    let idx_len = bin_chunk.len() - idx_offset;
-    while !bin_chunk.len().is_multiple_of(4) {
-        bin_chunk.push(0);
-    }
-
-    let gltf_json = json!({
-        "asset": {
-            "version": "2.0",
-            "generator": "rts-mod-tools Westwood VXL/SHP->GLB converter"
-        },
-        "scene": 0,
-        "scenes": [{ "nodes": [0] }],
-        "nodes": [{ "name": mesh_name, "mesh": 0 }],
-        "meshes": [{
-            "name": format!("{mesh_name}_vxl_mesh"),
-            "primitives": [{
-                "attributes": {
-                    "POSITION": 0,
-                    "NORMAL": 1,
-                    "COLOR_0": 2
-                },
-                "indices": 3,
-                "material": 0
-            }]
-        }],
-        "materials": [{
-            "name": "VoxelVertexColorMaterial",
-            "pbrMetallicRoughness": {
-                "baseColorFactor": [1.0, 1.0, 1.0, 1.0],
-                "metallicFactor": 0.2,
-                "roughnessFactor": 0.65
-            }
-        }],
-        "accessors": [
-            {
-                "bufferView": 0,
-                "componentType": 5126,
-                "count": positions.len(),
-                "type": "VEC3",
-                "min": min,
-                "max": max
-            },
-            {
-                "bufferView": 1,
-                "componentType": 5126,
-                "count": normals.len(),
-                "type": "VEC3"
-            },
-            {
-                "bufferView": 2,
-                "componentType": 5126,
-                "count": colors.len(),
-                "type": "VEC4"
-            },
-            {
-                "bufferView": 3,
-                "componentType": 5125,
-                "count": indices.len(),
-                "type": "SCALAR"
-            }
-        ],
-        "bufferViews": [
-            { "buffer": 0, "byteOffset": pos_offset, "byteLength": pos_len, "target": 34962 },
-            { "buffer": 0, "byteOffset": norm_offset, "byteLength": norm_len, "target": 34962 },
-            { "buffer": 0, "byteOffset": col_offset, "byteLength": col_len, "target": 34962 },
-            { "buffer": 0, "byteOffset": idx_offset, "byteLength": idx_len, "target": 34963 }
-        ],
-        "buffers": [{ "byteLength": bin_chunk.len() }]
-    });
-
-    let mut json_bytes = serde_json::to_vec(&gltf_json)?;
-    while !json_bytes.len().is_multiple_of(4) {
-        json_bytes.push(0x20);
-    }
-
-    let total_len = 12 + 8 + json_bytes.len() + 8 + bin_chunk.len();
-    let mut out = Vec::with_capacity(total_len);
-    out.extend_from_slice(&0x46546C67u32.to_le_bytes()); // "glTF"
-    out.extend_from_slice(&2u32.to_le_bytes());
-    out.extend_from_slice(&(total_len as u32).to_le_bytes());
-    out.extend_from_slice(&(json_bytes.len() as u32).to_le_bytes());
-    out.extend_from_slice(&0x4E4F534Au32.to_le_bytes()); // "JSON"
-    out.extend_from_slice(&json_bytes);
-    out.extend_from_slice(&(bin_chunk.len() as u32).to_le_bytes());
-    out.extend_from_slice(&0x004E4942u32.to_le_bytes()); // "BIN\0"
-    out.extend_from_slice(&bin_chunk);
-
-    Ok(out)
-}
-
 /// Builds a synthetic valid Westwood `.vxl` binary buffer (e.g. a small tank hull voxel grid)
 /// for testing or bootstrapping `.vxl -> .glb` pipelines.
 pub fn build_sample_vxl_bytes(size_x: u8, size_y: u8, size_z: u8) -> Vec<u8> {
@@ -527,7 +391,7 @@ pub fn build_sample_vxl_bytes(size_x: u8, size_y: u8, size_z: u8) -> Vec<u8> {
     vxl.extend_from_slice(&(span_start_size as u32).to_le_bytes()); // span_end_off
     vxl.extend_from_slice(&((span_start_size + span_end_size) as u32).to_le_bytes()); // span_data_off
     vxl.extend_from_slice(&0.25f32.to_le_bytes()); // scale
-    // 12 floats transform matrix
+                                                   // 12 floats transform matrix
     for i in 0..12 {
         let v = if i == 0 || i == 5 || i == 10 {
             1.0f32
@@ -547,4 +411,3 @@ pub fn build_sample_vxl_bytes(size_x: u8, size_y: u8, size_z: u8) -> Vec<u8> {
 
     vxl
 }
-

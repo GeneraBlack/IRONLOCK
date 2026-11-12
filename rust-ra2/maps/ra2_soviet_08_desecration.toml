@@ -1,35 +1,429 @@
 id = "ra2_soviet_08_desecration"
-name = "RA2 Soviet 08: Desecration (Washington D.C.)"
+name = "Op. 08: Desecration (Washington D.C.)"
 width = 95
 height = 88
 tile_size = 2.0
 ore_regen_per_sec = 4.0
-mission_objective = "Even in the hour of our greatest victory, General Vladimir has turned against us. Tempted by the soft American lifestyle, he has gone rogue and convinced many loyal communists to turn against us. You must go to Washington DC and dig Vladimir out of his wretched hole. \n \n Objective 1: Capture the White House."
+mission_objective = "Defeat traitor General Vladimir's renegade Soviet guard in Washington D.C. and destroy his fortified White House command post."
 
 [[ore_patches]]
-position = [51, 70]
+position = [53, 68]
 radius = 3
-amount_per_tile = 1400
+amount_per_tile = 1600
 
 [[ore_patches]]
-position = [44, 55]
+position = [44, 22]
 radius = 3
-amount_per_tile = 1400
+amount_per_tile = 1550
 
-[[ore_patches]]
+[[gem_patches]]
 position = [47, 44]
-radius = 4
-amount_per_tile = 2000
+radius = 2
+amount_per_tile = 2300
 
-[[ore_patches]]
-position = [57, 16]
-radius = 3
-amount_per_tile = 1500
+[[water_rects]]
+min = [28, 36]
+max = [31, 36]
 
-[[ore_patches]]
-position = [56, 20]
-radius = 3
-amount_per_tile = 1500
+[[water_rects]]
+min = [35, 36]
+max = [37, 36]
+
+[[water_rects]]
+min = [28, 37]
+max = [38, 38]
+
+[[water_rects]]
+min = [29, 39]
+max = [29, 39]
+
+[[water_rects]]
+min = [35, 39]
+max = [36, 39]
+
+[[water_rects]]
+min = [43, 56]
+max = [49, 56]
+
+[[water_rects]]
+min = [43, 57]
+max = [51, 57]
+
+[[water_rects]]
+min = [43, 58]
+max = [52, 65]
+
+[[water_rects]]
+min = [1, 65]
+max = [2, 65]
+
+[[water_rects]]
+min = [1, 66]
+max = [4, 66]
+
+[[water_rects]]
+min = [43, 66]
+max = [50, 66]
+
+[[water_rects]]
+min = [1, 67]
+max = [11, 67]
+
+[[water_rects]]
+min = [42, 67]
+max = [50, 67]
+
+[[water_rects]]
+min = [82, 67]
+max = [93, 67]
+
+[[water_rects]]
+min = [1, 68]
+max = [14, 68]
+
+[[water_rects]]
+min = [41, 68]
+max = [50, 68]
+
+[[water_rects]]
+min = [76, 68]
+max = [93, 68]
+
+[[water_rects]]
+min = [1, 69]
+max = [15, 69]
+
+[[water_rects]]
+min = [40, 69]
+max = [50, 69]
+
+[[water_rects]]
+min = [75, 69]
+max = [93, 69]
+
+[[water_rects]]
+min = [1, 70]
+max = [5, 70]
+
+[[water_rects]]
+min = [8, 70]
+max = [16, 70]
+
+[[water_rects]]
+min = [39, 70]
+max = [50, 70]
+
+[[water_rects]]
+min = [74, 70]
+max = [93, 71]
+
+[[water_rects]]
+min = [1, 71]
+max = [16, 71]
+
+[[water_rects]]
+min = [37, 71]
+max = [53, 74]
+
+[[water_rects]]
+min = [3, 72]
+max = [17, 72]
+
+[[water_rects]]
+min = [74, 72]
+max = [78, 72]
+
+[[water_rects]]
+min = [81, 72]
+max = [93, 72]
+
+[[water_rects]]
+min = [4, 73]
+max = [17, 73]
+
+[[water_rects]]
+min = [74, 73]
+max = [93, 74]
+
+[[water_rects]]
+min = [5, 74]
+max = [18, 74]
+
+[[water_rects]]
+min = [6, 75]
+max = [19, 75]
+
+[[water_rects]]
+min = [37, 75]
+max = [52, 81]
+
+[[water_rects]]
+min = [74, 75]
+max = [92, 75]
+
+[[water_rects]]
+min = [8, 76]
+max = [19, 76]
+
+[[water_rects]]
+min = [74, 76]
+max = [77, 76]
+
+[[water_rects]]
+min = [82, 76]
+max = [91, 76]
+
+[[water_rects]]
+min = [9, 77]
+max = [20, 77]
+
+[[water_rects]]
+min = [10, 78]
+max = [21, 78]
+
+[[water_rects]]
+min = [11, 79]
+max = [21, 79]
+
+[[water_rects]]
+min = [12, 80]
+max = [22, 80]
+
+[[water_rects]]
+min = [14, 81]
+max = [22, 81]
+
+[[water_rects]]
+min = [15, 82]
+max = [23, 82]
+
+[[water_rects]]
+min = [49, 82]
+max = [52, 83]
+
+[[water_rects]]
+min = [16, 83]
+max = [23, 83]
+
+[[water_rects]]
+min = [17, 84]
+max = [25, 84]
+
+[[water_rects]]
+min = [49, 84]
+max = [56, 84]
+
+[[water_rects]]
+min = [18, 85]
+max = [27, 85]
+
+[[water_rects]]
+min = [49, 85]
+max = [57, 86]
+
+[[water_rects]]
+min = [20, 86]
+max = [30, 86]
+
+[[bridge_rects]]
+min = [42, 59]
+max = [53, 61]
+
+[[bridge_rects]]
+min = [78, 67]
+max = [80, 75]
+
+[[bridge_rects]]
+min = [69, 70]
+max = [73, 75]
+
+[[bridge_rects]]
+min = [68, 76]
+max = [80, 76]
+
+[[bridge_rects]]
+min = [68, 77]
+max = [71, 77]
+
+[[bridge_rects]]
+min = [73, 77]
+max = [78, 78]
+
+[[bridge_rects]]
+min = [68, 78]
+max = [70, 78]
+
+[[elevation_rects]]
+min = [8, 41]
+max = [13, 46]
+
+[[elevation_rects]]
+min = [81, 41]
+max = [86, 46]
+
+[[ramp_rects]]
+min = [7, 42]
+max = [8, 44]
+
+[[ramp_rects]]
+min = [13, 42]
+max = [14, 44]
+
+[[ramp_rects]]
+min = [80, 42]
+max = [81, 44]
+
+[[ramp_rects]]
+min = [86, 42]
+max = [87, 44]
+
+[[obstacles]]
+min = [70, 21]
+max = [71, 22]
+
+[[obstacles]]
+min = [39, 28]
+max = [40, 29]
+
+[[obstacles]]
+min = [60, 31]
+max = [61, 32]
+
+[[obstacles]]
+min = [70, 31]
+max = [71, 32]
+
+[[obstacles]]
+min = [55, 36]
+max = [56, 37]
+
+[[obstacles]]
+min = [11, 52]
+max = [12, 53]
+
+[[obstacles]]
+min = [38, 52]
+max = [39, 53]
+
+[[obstacles]]
+min = [75, 54]
+max = [76, 55]
+
+[[obstacles]]
+min = [83, 54]
+max = [84, 55]
+
+[[props]]
+kind = "tree"
+tile_pos = [22, 43]
+
+[[props]]
+kind = "tree"
+tile_pos = [22, 50]
+
+[[props]]
+kind = "tree"
+tile_pos = [69, 27]
+
+[[props]]
+kind = "tree"
+tile_pos = [89, 49]
+
+[[props]]
+kind = "tree"
+tile_pos = [79, 39]
+
+[[props]]
+kind = "tree"
+tile_pos = [88, 41]
+
+[[props]]
+kind = "tree"
+tile_pos = [53, 36]
+
+[[props]]
+kind = "tree"
+tile_pos = [68, 69]
+
+[[props]]
+kind = "tree"
+tile_pos = [11, 49]
+
+[[props]]
+kind = "tree"
+tile_pos = [91, 52]
+
+[[props]]
+kind = "tree"
+tile_pos = [54, 9]
+
+[[props]]
+kind = "tree"
+tile_pos = [35, 70]
+
+[[props]]
+kind = "tree"
+tile_pos = [81, 56]
+
+[[props]]
+kind = "tree"
+tile_pos = [56, 81]
+
+[[props]]
+kind = "tree"
+tile_pos = [26, 57]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [77, 35]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [85, 54]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [88, 61]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [62, 31]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [47, 31]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [13, 52]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [30, 52]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [66, 22]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [47, 19]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [49, 12]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [49, 19]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [53, 19]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [48, 14]
 
 [[preplaced_entities]]
 player_id = 2
@@ -59,12 +453,12 @@ tile_pos = [54, 19]
 [[preplaced_entities]]
 player_id = 2
 building_id = "soviet_sentry_gun"
-tile_pos = [53, 15]
+tile_pos = [54, 14]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "soviet_sentry_gun"
-tile_pos = [50, 15]
+tile_pos = [49, 14]
 
 [[preplaced_entities]]
 player_id = 2
@@ -89,7 +483,7 @@ tile_pos = [47, 24]
 [[preplaced_entities]]
 player_id = 2
 building_id = "soviet_tesla_reactor"
-tile_pos = [47, 25]
+tile_pos = [46, 26]
 
 [[preplaced_entities]]
 player_id = 2
@@ -114,7 +508,7 @@ tile_pos = [60, 24]
 [[preplaced_entities]]
 player_id = 2
 building_id = "soviet_tesla_reactor"
-tile_pos = [60, 25]
+tile_pos = [59, 26]
 
 [[preplaced_entities]]
 player_id = 2
@@ -149,17 +543,7 @@ tile_pos = [57, 26]
 [[preplaced_entities]]
 player_id = 2
 building_id = "soviet_tesla_reactor"
-tile_pos = [47, 27]
-
-[[preplaced_entities]]
-player_id = 1
-unit_id = "apocalypse_tank"
-tile_pos = [29, 60]
-
-[[preplaced_entities]]
-player_id = 1
-unit_id = "soviet_mcv"
-tile_pos = [27, 60]
+tile_pos = [48, 26]
 
 [[preplaced_entities]]
 player_id = 2
@@ -197,16 +581,6 @@ unit_id = "war_miner"
 tile_pos = [45, 36]
 
 [[preplaced_entities]]
-player_id = 1
-unit_id = "rhino_tank"
-tile_pos = [27, 61]
-
-[[preplaced_entities]]
-player_id = 1
-unit_id = "apocalypse_tank"
-tile_pos = [26, 60]
-
-[[preplaced_entities]]
 player_id = 2
 unit_id = "war_miner"
 tile_pos = [50, 37]
@@ -231,121 +605,172 @@ player_id = 2
 unit_id = "apocalypse_tank"
 tile_pos = [57, 73]
 
+[[objectives]]
+id = "obj_primary_main"
+tier = "primary"
+title = "Defeat traitor General Vladimir's renegade Soviet guard in Washington D.C. and destro..."
+marker_tile = [50, 22]
+
+[[objectives]]
+id = "obj_secondary_strike"
+tier = "secondary"
+title = "Neutralize or Capture Enemy Strategic Facility"
+marker_tile = [50, 22]
+
+[[objectives]]
+id = "obj_bonus_waves"
+tier = "bonus"
+title = "Weather Enemy Tactical Counterattack Waves"
+target_count = 2
+marker_tile = [62, 70]
+
+[[cutscenes]]
+id = "intro_flyover"
+skippable = true
+letterbox = true
+
+[[cutscenes.keyframes]]
+time_secs = 0.0
+focus = [101.0, 0.0, 45.0]
+distance = 46.0
+pitch_deg = 52.0
+yaw_deg = -22.0
+
+[[cutscenes.keyframes]]
+time_secs = 2.2
+focus = [113.0, 0.0, 93.0]
+distance = 42.0
+pitch_deg = 55.0
+yaw_deg = -10.0
+
+[[cutscenes.keyframes]]
+time_secs = 4.5
+focus = [125.0, 0.0, 141.0]
+distance = 36.0
+pitch_deg = 58.0
+yaw_deg = 0.0
+
 [[spawns]]
 player_id = 1
 faction = "soviets"
-base_tile = [59, 70]
+sub_faction = "russia"
+base_tile = [62, 70]
+team_id = 1
 
 [[spawns.initial_buildings]]
 building_id = "soviet_conyard"
-tile_pos = [59, 70]
+tile_pos = [62, 70]
 
 [[spawns.initial_buildings]]
 building_id = "soviet_tesla_reactor"
-tile_pos = [56, 70]
+tile_pos = [66, 70]
 
 [[spawns.initial_buildings]]
 building_id = "soviet_refinery"
-tile_pos = [59, 67]
+tile_pos = [58, 70]
 
 [[spawns.initial_buildings]]
 building_id = "soviet_barracks"
-tile_pos = [56, 67]
+tile_pos = [62, 66]
 
 [[spawns.initial_buildings]]
 building_id = "soviet_war_factory"
-tile_pos = [53, 70]
-
-[[spawns.initial_units]]
-unit_id = "soviet_conscript"
-tile_pos = [57, 65]
-
-[[spawns.initial_units]]
-unit_id = "soviet_conscript"
-tile_pos = [55, 65]
-
-[[spawns.initial_units]]
-unit_id = "rhino_tank"
-tile_pos = [53, 66]
+tile_pos = [58, 66]
 
 [[spawns.initial_units]]
 unit_id = "war_miner"
-tile_pos = [57, 66]
+tile_pos = [56, 69]
+
+[[spawns.initial_units]]
+unit_id = "soviet_conscript"
+tile_pos = [62, 64]
+
+[[spawns.initial_units]]
+unit_id = "soviet_conscript"
+tile_pos = [60, 64]
+
+[[spawns.initial_units]]
+unit_id = "flak_trooper"
+tile_pos = [58, 64]
+
+[[spawns.initial_units]]
+unit_id = "rhino_tank"
+tile_pos = [56, 64]
+
+[[spawns.initial_units]]
+unit_id = "rhino_tank"
+tile_pos = [62, 63]
 
 [[spawns]]
 player_id = 2
-faction = "allies"
-base_tile = [52, 55]
-
-[[spawns.initial_buildings]]
-building_id = "allied_conyard"
-tile_pos = [52, 55]
-
-[[spawns.initial_buildings]]
-building_id = "allied_power_plant"
-tile_pos = [49, 55]
-
-[[spawns.initial_buildings]]
-building_id = "allied_refinery"
-tile_pos = [52, 52]
-
-[[spawns.initial_buildings]]
-building_id = "allied_barracks"
-tile_pos = [49, 52]
-
-[[spawns.initial_buildings]]
-building_id = "allied_war_factory"
-tile_pos = [46, 55]
-
-[[spawns.initial_units]]
-unit_id = "allied_gi"
-tile_pos = [50, 50]
-
-[[spawns.initial_units]]
-unit_id = "allied_gi"
-tile_pos = [48, 50]
-
-[[spawns.initial_units]]
-unit_id = "grizzly_tank"
-tile_pos = [46, 51]
-
-[[spawns.initial_units]]
-unit_id = "chrono_miner"
-tile_pos = [50, 51]
+faction = "soviets"
+sub_faction = "russia"
+base_tile = [50, 22]
+team_id = 2
 
 [[trigger_zones]]
-id = "mission_stage_init"
-min = [6, 6]
-max = [12, 12]
+id = "ra2_soviet_08_desecration_init"
+min = [0, 0]
+max = [3, 3]
 once = true
 condition = { type = "timer_elapsed", secs = 1.0 }
 actions = [
+    { type = "play_cutscene", cutscene_id = "intro_flyover" },
+    { type = "set_objective_status", objective_id = "obj_primary_main", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_secondary_strike", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_bonus_waves", status = "active" },
+    { type = "set_weather", preset = "dusk" },
     { type = "set_variable", name = "mission_stage", value = 1 },
-    { type = "eva_transmission", speaker = "ZOFIA", text = "Battle Control Online. Primary tactical objectives initialized." },
-    { type = "reveal_area", tile = [59, 70], radius = 14 }
+    { type = "reveal_area", tile = [50, 22], radius = 9 },
+    { type = "eva_transmission", speaker = "LT. ZOFIA", text = "Defeat traitor General Vladimir's renegade Soviet guard in Washington D.C. and destroy his fortified White House command post.", portrait = "assets/ui/cameos/nradicon.png", audio_cue = "battle_control_online" },
 ]
 
 [[trigger_zones]]
-id = "tactical_reinforcement_wave"
-min = [58, 68]
-max = [62, 72]
+id = "ra2_soviet_08_desecration_reinforcements"
+min = [0, 0]
+max = [3, 3]
 once = true
-condition = { type = "all", conditions = [{ type = "timer_elapsed", secs = 45.0 }, { type = "variable_equals", name = "mission_stage", value = 1 }] }
+condition = { type = "all", conditions = [{ type = "timer_elapsed", secs = 55.0 }, { type = "variable_equals", name = "mission_stage", value = 1 }] }
 actions = [
     { type = "set_variable", name = "mission_stage", value = 2 },
-    { type = "spawn_reinforcements", player_id = 1, unit_id = "rhino_tank", count = 2, tile = [58, 68] },
-    { type = "grant_credits", player_id = 1, amount = 1500 },
-    { type = "eva_transmission", speaker = "ZOFIA", text = "Reinforcements have arrived. Forward command has authorized 1500 bonus credits." }
+    { type = "grant_credits", player_id = 1, amount = 2000 },
+    { type = "spawn_reinforcements", player_id = 1, unit_id = "apocalypse_tank", count = 3, tile = [65, 71] },
+    { type = "eva_transmission", speaker = "LT. ZOFIA", text = "Command reserves and emergency war funds have arrived at your base!", portrait = "assets/ui/cameos/nradicon.png", audio_cue = "reinforcements_have_arrived" },
 ]
 
 [[trigger_zones]]
-id = "decisive_campaign_victory"
-min = [2, 2]
-max = [6, 6]
+id = "ra2_soviet_08_desecration_key_target_down"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "building_destroyed", building_id = "white_house", player_id = 2 }
+actions = [
+    { type = "set_objective_status", objective_id = "obj_secondary_strike", status = "completed" },
+    { type = "grant_credits", player_id = 1, amount = 2000 },
+    { type = "set_variable", name = "primary_target_destroyed", value = 1 },
+    { type = "eva_transmission", speaker = "LT. ZOFIA", text = "Primary enemy strategic structure destroyed! Sweep the remaining enemy forces from the sector.", portrait = "assets/ui/cameos/nradicon.png", audio_cue = "battle_control_online" },
+]
+
+[[trigger_zones]]
+id = "ra2_soviet_08_desecration_victory"
+min = [0, 0]
+max = [3, 3]
 once = true
 condition = { type = "all_buildings_destroyed", player_id = 2 }
 actions = [
+    { type = "set_objective_status", objective_id = "obj_primary_main", status = "completed" },
     { type = "set_variable", name = "mission_stage", value = 3 },
-    { type = "eva_transmission", speaker = "ZOFIA", text = "Mission Accomplished. All primary hostile command structures neutralized." },
-    { type = "declare_winner", player_id = 1 }
+    { type = "eva_transmission", speaker = "LT. ZOFIA", text = "All enemy structures neutralized. Mission accomplished, Commander!", portrait = "assets/ui/cameos/nradicon.png", audio_cue = "primary_objective_achieved" },
+    { type = "declare_winner", player_id = 1 },
+]
+
+[[trigger_zones]]
+id = "p22_periodic_skirmish_wave"
+min = [0, 0]
+max = [3, 3]
+once = false
+condition = { type = "periodic_timer", start_secs = 75, interval_secs = 75, max_repeats = 3 }
+actions = [
+    { type = "spawn_reinforcements", player_id = 2, unit_id = "soviet_conscript", count = 3, tile = [49, 21] },
+    { type = "add_objective_progress", objective_id = "obj_bonus_waves", delta = 1 },
 ]

@@ -1,134 +1,601 @@
 id = "mp_yr_two_peaks"
-name = "Skirmish: Twin Peaks (2)"
+name = "Skirmish: Twin Peaks (2-4)"
 width = 80
 height = 96
 tile_size = 2.0
 ore_regen_per_sec = 4.0
-mission_objective = "Twin Peaks (2)"
+mission_objective = "Eliminate all rival commanders in Twin Peaks (2-4)."
 
 [[ore_patches]]
-position = [33, 29]
+position = [20, 15]
 radius = 3
-amount_per_tile = 1400
+amount_per_tile = 1550
 
 [[ore_patches]]
-position = [32, 66]
+position = [50, 71]
 radius = 3
-amount_per_tile = 1400
+amount_per_tile = 1550
 
 [[ore_patches]]
+position = [50, 15]
+radius = 3
+amount_per_tile = 1550
+
+[[ore_patches]]
+position = [20, 71]
+radius = 3
+amount_per_tile = 1550
+
+[[gem_patches]]
 position = [40, 48]
-radius = 4
-amount_per_tile = 2000
+radius = 2
+amount_per_tile = 2400
+
+[[gem_patches]]
+position = [28, 58]
+radius = 2
+amount_per_tile = 2200
+
+[[gem_patches]]
+position = [52, 38]
+radius = 2
+amount_per_tile = 2200
+
+[[water_rects]]
+min = [44, 23]
+max = [48, 25]
+
+[[water_rects]]
+min = [21, 25]
+max = [22, 25]
+
+[[water_rects]]
+min = [21, 26]
+max = [26, 28]
+
+[[water_rects]]
+min = [39, 26]
+max = [48, 26]
+
+[[water_rects]]
+min = [38, 27]
+max = [48, 27]
+
+[[water_rects]]
+min = [36, 28]
+max = [42, 28]
+
+[[water_rects]]
+min = [22, 29]
+max = [26, 29]
+
+[[water_rects]]
+min = [34, 29]
+max = [40, 29]
+
+[[water_rects]]
+min = [22, 30]
+max = [28, 30]
+
+[[water_rects]]
+min = [33, 30]
+max = [39, 30]
+
+[[water_rects]]
+min = [26, 31]
+max = [29, 31]
+
+[[water_rects]]
+min = [31, 31]
+max = [37, 31]
+
+[[water_rects]]
+min = [26, 32]
+max = [35, 32]
+
+[[water_rects]]
+min = [27, 33]
+max = [34, 33]
+
+[[water_rects]]
+min = [28, 34]
+max = [32, 35]
+
+[[water_rects]]
+min = [29, 36]
+max = [33, 36]
+
+[[water_rects]]
+min = [30, 37]
+max = [33, 37]
+
+[[water_rects]]
+min = [31, 38]
+max = [34, 38]
+
+[[water_rects]]
+min = [31, 39]
+max = [35, 39]
+
+[[water_rects]]
+min = [32, 40]
+max = [36, 40]
+
+[[water_rects]]
+min = [33, 41]
+max = [36, 41]
+
+[[water_rects]]
+min = [34, 42]
+max = [37, 42]
+
+[[water_rects]]
+min = [34, 43]
+max = [38, 43]
+
+[[water_rects]]
+min = [35, 44]
+max = [39, 44]
+
+[[water_rects]]
+min = [36, 45]
+max = [39, 45]
+
+[[water_rects]]
+min = [37, 46]
+max = [40, 46]
+
+[[water_rects]]
+min = [42, 48]
+max = [42, 49]
+
+[[water_rects]]
+min = [42, 50]
+max = [43, 50]
+
+[[water_rects]]
+min = [42, 51]
+max = [44, 51]
+
+[[water_rects]]
+min = [41, 52]
+max = [45, 52]
+
+[[water_rects]]
+min = [39, 53]
+max = [45, 53]
+
+[[water_rects]]
+min = [38, 54]
+max = [46, 54]
+
+[[water_rects]]
+min = [36, 55]
+max = [47, 55]
+
+[[water_rects]]
+min = [35, 56]
+max = [40, 56]
+
+[[water_rects]]
+min = [44, 56]
+max = [48, 56]
+
+[[water_rects]]
+min = [35, 57]
+max = [39, 57]
+
+[[water_rects]]
+min = [45, 57]
+max = [48, 57]
+
+[[water_rects]]
+min = [35, 58]
+max = [37, 58]
+
+[[water_rects]]
+min = [46, 58]
+max = [49, 58]
+
+[[water_rects]]
+min = [31, 59]
+max = [36, 59]
+
+[[water_rects]]
+min = [46, 59]
+max = [52, 59]
+
+[[water_rects]]
+min = [29, 60]
+max = [35, 60]
+
+[[water_rects]]
+min = [47, 60]
+max = [52, 60]
+
+[[water_rects]]
+min = [28, 61]
+max = [33, 61]
+
+[[water_rects]]
+min = [48, 61]
+max = [52, 63]
+
+[[water_rects]]
+min = [26, 62]
+max = [32, 62]
+
+[[water_rects]]
+min = [25, 63]
+max = [30, 63]
+
+[[water_rects]]
+min = [25, 64]
+max = [29, 67]
+
+[[bridge_rects]]
+min = [20, 23]
+max = [23, 25]
+
+[[bridge_rects]]
+min = [20, 26]
+max = [21, 26]
+
+[[elevation_rects]]
+min = [8, 45]
+max = [13, 50]
+
+[[elevation_rects]]
+min = [66, 45]
+max = [71, 50]
+
+[[ramp_rects]]
+min = [7, 46]
+max = [8, 48]
+
+[[ramp_rects]]
+min = [13, 46]
+max = [14, 48]
+
+[[ramp_rects]]
+min = [65, 46]
+max = [66, 48]
+
+[[ramp_rects]]
+min = [71, 46]
+max = [72, 48]
+
+[[obstacles]]
+min = [56, 26]
+max = [57, 27]
+
+[[obstacles]]
+min = [53, 62]
+max = [53, 63]
+
+[[props]]
+kind = "tree"
+tile_pos = [44, 47]
+
+[[props]]
+kind = "tree"
+tile_pos = [34, 58]
+
+[[props]]
+kind = "tree"
+tile_pos = [19, 75]
+
+[[props]]
+kind = "tree"
+tile_pos = [15, 80]
+
+[[props]]
+kind = "tree"
+tile_pos = [75, 57]
+
+[[props]]
+kind = "tree"
+tile_pos = [77, 45]
+
+[[props]]
+kind = "tree"
+tile_pos = [11, 52]
+
+[[props]]
+kind = "tree"
+tile_pos = [58, 19]
+
+[[props]]
+kind = "tree"
+tile_pos = [65, 16]
+
+[[props]]
+kind = "tree"
+tile_pos = [75, 10]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [30, 66]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [58, 26]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [9, 4]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [75, 8]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [69, 9]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [75, 9]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [77, 9]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [67, 14]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [71, 14]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [73, 15]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [34, 18]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [73, 18]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [38, 19]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [40, 19]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [59, 19]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [38, 20]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [63, 20]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [69, 20]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [59, 34]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [75, 42]
 
 [[preplaced_entities]]
-player_id = 2
+player_id = 0
 building_id = "tech_airport"
 tile_pos = [35, 49]
 
 [[preplaced_entities]]
-player_id = 2
+player_id = 0
 building_id = "tech_machine_shop"
 tile_pos = [43, 44]
 
 [[preplaced_entities]]
-player_id = 2
+player_id = 0
 building_id = "tech_oil_derrick"
 tile_pos = [31, 55]
 
 [[preplaced_entities]]
-player_id = 2
-building_id = "tech_oil_derrick"
-tile_pos = [32, 55]
-
-[[preplaced_entities]]
-player_id = 2
+player_id = 0
 building_id = "tech_oil_derrick"
 tile_pos = [46, 40]
 
 [[preplaced_entities]]
-player_id = 2
+player_id = 0
 building_id = "tech_oil_derrick"
-tile_pos = [47, 40]
+tile_pos = [40, 22]
+
+[[preplaced_entities]]
+player_id = 0
+building_id = "tech_oil_derrick"
+tile_pos = [40, 74]
+
+[[preplaced_entities]]
+player_id = 0
+building_id = "tech_secret_lab"
+tile_pos = [38, 48]
 
 [[spawns]]
 player_id = 1
 faction = "allies"
-base_tile = [41, 29]
+sub_faction = "usa"
+base_tile = [11, 13]
+team_id = 0
 
 [[spawns.initial_buildings]]
 building_id = "allied_conyard"
-tile_pos = [41, 29]
+tile_pos = [11, 13]
 
 [[spawns.initial_buildings]]
 building_id = "allied_power_plant"
-tile_pos = [38, 29]
+tile_pos = [8, 13]
 
 [[spawns.initial_buildings]]
 building_id = "allied_refinery"
-tile_pos = [41, 32]
+tile_pos = [15, 13]
 
 [[spawns.initial_buildings]]
 building_id = "allied_barracks"
-tile_pos = [38, 32]
+tile_pos = [11, 17]
 
 [[spawns.initial_buildings]]
 building_id = "allied_war_factory"
-tile_pos = [35, 29]
-
-[[spawns.initial_units]]
-unit_id = "allied_gi"
-tile_pos = [39, 34]
-
-[[spawns.initial_units]]
-unit_id = "allied_gi"
-tile_pos = [37, 34]
-
-[[spawns.initial_units]]
-unit_id = "grizzly_tank"
-tile_pos = [35, 33]
+tile_pos = [15, 17]
 
 [[spawns.initial_units]]
 unit_id = "chrono_miner"
-tile_pos = [39, 33]
+tile_pos = [18, 13]
+
+[[spawns.initial_units]]
+unit_id = "grizzly_tank"
+tile_pos = [18, 17]
+
+[[spawns.initial_units]]
+unit_id = "allied_gi"
+tile_pos = [13, 18]
+
+[[spawns.initial_units]]
+unit_id = "allied_gi"
+tile_pos = [14, 18]
 
 [[spawns]]
 player_id = 2
+faction = "soviets"
+sub_faction = "russia"
+base_tile = [59, 73]
+team_id = 0
+
+[[spawns.initial_buildings]]
+building_id = "soviet_conyard"
+tile_pos = [59, 73]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_tesla_reactor"
+tile_pos = [63, 73]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_refinery"
+tile_pos = [55, 73]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_barracks"
+tile_pos = [59, 69]
+
+[[spawns.initial_buildings]]
+building_id = "soviet_war_factory"
+tile_pos = [55, 69]
+
+[[spawns.initial_units]]
+unit_id = "war_miner"
+tile_pos = [53, 72]
+
+[[spawns.initial_units]]
+unit_id = "rhino_tank"
+tile_pos = [53, 68]
+
+[[spawns.initial_units]]
+unit_id = "soviet_conscript"
+tile_pos = [57, 68]
+
+[[spawns.initial_units]]
+unit_id = "soviet_conscript"
+tile_pos = [56, 68]
+
+[[spawns]]
+player_id = 3
 faction = "yuri"
-base_tile = [40, 66]
+sub_faction = "yuri"
+base_tile = [59, 13]
+team_id = 0
 
 [[spawns.initial_buildings]]
 building_id = "yuri_conyard"
-tile_pos = [40, 66]
+tile_pos = [59, 13]
 
 [[spawns.initial_buildings]]
 building_id = "yuri_bio_reactor"
-tile_pos = [37, 66]
+tile_pos = [63, 13]
 
 [[spawns.initial_buildings]]
 building_id = "yuri_slave_refinery"
-tile_pos = [40, 63]
+tile_pos = [55, 13]
 
 [[spawns.initial_buildings]]
 building_id = "yuri_barracks"
-tile_pos = [37, 63]
+tile_pos = [59, 17]
 
 [[spawns.initial_buildings]]
 building_id = "yuri_war_factory"
-tile_pos = [34, 66]
-
-[[spawns.initial_units]]
-unit_id = "yuri_initiate"
-tile_pos = [38, 61]
-
-[[spawns.initial_units]]
-unit_id = "yuri_initiate"
-tile_pos = [36, 61]
-
-[[spawns.initial_units]]
-unit_id = "lasher_tank"
-tile_pos = [34, 62]
+tile_pos = [55, 17]
 
 [[spawns.initial_units]]
 unit_id = "yuri_slave_miner"
-tile_pos = [38, 62]
+tile_pos = [53, 14]
+
+[[spawns.initial_units]]
+unit_id = "lasher_tank"
+tile_pos = [53, 18]
+
+[[spawns.initial_units]]
+unit_id = "yuri_initiate"
+tile_pos = [58, 17]
+
+[[spawns.initial_units]]
+unit_id = "yuri_initiate"
+tile_pos = [54, 16]
+
+[[spawns]]
+player_id = 4
+faction = "allies"
+sub_faction = "france"
+base_tile = [11, 73]
+team_id = 0
+
+[[spawns.initial_buildings]]
+building_id = "allied_conyard"
+tile_pos = [11, 73]
+
+[[spawns.initial_buildings]]
+building_id = "allied_power_plant"
+tile_pos = [8, 73]
+
+[[spawns.initial_buildings]]
+building_id = "allied_refinery"
+tile_pos = [15, 73]
+
+[[spawns.initial_buildings]]
+building_id = "allied_barracks"
+tile_pos = [11, 69]
+
+[[spawns.initial_buildings]]
+building_id = "allied_war_factory"
+tile_pos = [15, 69]
+
+[[spawns.initial_units]]
+unit_id = "chrono_miner"
+tile_pos = [17, 72]
+
+[[spawns.initial_units]]
+unit_id = "grizzly_tank"
+tile_pos = [17, 68]
+
+[[spawns.initial_units]]
+unit_id = "allied_gi"
+tile_pos = [13, 68]
+
+[[spawns.initial_units]]
+unit_id = "allied_gi"
+tile_pos = [14, 68]

@@ -1,38 +1,384 @@
 id = "ra2_allied_03_hail_to_the_chief"
-name = "RA2 Allied 03: Hail to the Chief (Washington D.C.)"
+name = "Op. 03: Hail to the Chief (Washington D.C.)"
 width = 77
 height = 96
 tile_size = 2.0
 ore_regen_per_sec = 4.0
-mission_objective = "The Soviets have invaded Washington DC and have used their evil psychic technology to mind control our leaders. You must rescue them by destroying the Psychic Beacon near the White House. \n \n Objective 1: Destroy the Psychic Beacon."
+mission_objective = "Destroy the Soviet Psychic Beacon outside the White House to free President Dugan and liberate Washington D.C."
 
 [[ore_patches]]
-position = [35, 8]
+position = [29, 74]
 radius = 3
-amount_per_tile = 1400
+amount_per_tile = 1600
 
 [[ore_patches]]
-position = [41, 29]
+position = [42, 24]
 radius = 3
-amount_per_tile = 1400
+amount_per_tile = 1550
 
-[[ore_patches]]
+[[gem_patches]]
 position = [38, 48]
-radius = 4
-amount_per_tile = 2000
+radius = 2
+amount_per_tile = 2300
 
-[[ore_patches]]
-position = [47, 76]
-radius = 3
-amount_per_tile = 1500
+[[water_rects]]
+min = [15, 31]
+max = [17, 31]
 
-[[ore_patches]]
-position = [32, 10]
-radius = 3
-amount_per_tile = 1500
+[[water_rects]]
+min = [20, 31]
+max = [22, 31]
+
+[[water_rects]]
+min = [15, 32]
+max = [22, 32]
+
+[[water_rects]]
+min = [15, 33]
+max = [16, 33]
+
+[[water_rects]]
+min = [19, 33]
+max = [21, 33]
+
+[[water_rects]]
+min = [26, 52]
+max = [29, 52]
+
+[[water_rects]]
+min = [26, 53]
+max = [31, 53]
+
+[[water_rects]]
+min = [26, 54]
+max = [32, 63]
+
+[[water_rects]]
+min = [25, 64]
+max = [33, 64]
+
+[[water_rects]]
+min = [53, 64]
+max = [64, 64]
+
+[[water_rects]]
+min = [25, 65]
+max = [35, 65]
+
+[[water_rects]]
+min = [50, 65]
+max = [65, 65]
+
+[[water_rects]]
+min = [24, 66]
+max = [37, 66]
+
+[[water_rects]]
+min = [49, 66]
+max = [67, 66]
+
+[[water_rects]]
+min = [23, 67]
+max = [38, 67]
+
+[[water_rects]]
+min = [48, 67]
+max = [68, 67]
+
+[[water_rects]]
+min = [29, 68]
+max = [44, 68]
+
+[[water_rects]]
+min = [48, 68]
+max = [75, 68]
+
+[[water_rects]]
+min = [32, 69]
+max = [75, 70]
+
+[[water_rects]]
+min = [32, 71]
+max = [37, 72]
+
+[[water_rects]]
+min = [45, 71]
+max = [75, 73]
+
+[[water_rects]]
+min = [32, 73]
+max = [32, 82]
+
+[[water_rects]]
+min = [48, 74]
+max = [50, 74]
+
+[[water_rects]]
+min = [53, 74]
+max = [75, 74]
+
+[[water_rects]]
+min = [62, 75]
+max = [75, 75]
+
+[[water_rects]]
+min = [64, 76]
+max = [75, 76]
+
+[[water_rects]]
+min = [66, 77]
+max = [75, 77]
+
+[[water_rects]]
+min = [67, 78]
+max = [75, 78]
+
+[[water_rects]]
+min = [69, 79]
+max = [75, 79]
+
+[[water_rects]]
+min = [70, 80]
+max = [75, 80]
+
+[[water_rects]]
+min = [72, 81]
+max = [75, 81]
+
+[[water_rects]]
+min = [73, 82]
+max = [74, 82]
+
+[[water_rects]]
+min = [32, 83]
+max = [36, 87]
+
+[[water_rects]]
+min = [74, 83]
+max = [74, 83]
+
+[[water_rects]]
+min = [30, 88]
+max = [36, 88]
+
+[[water_rects]]
+min = [31, 89]
+max = [36, 89]
+
+[[water_rects]]
+min = [32, 90]
+max = [36, 91]
+
+[[water_rects]]
+min = [33, 92]
+max = [36, 92]
+
+[[water_rects]]
+min = [34, 93]
+max = [36, 94]
+
+[[bridge_rects]]
+min = [25, 55]
+max = [33, 57]
+
+[[bridge_rects]]
+min = [53, 63]
+max = [55, 75]
+
+[[bridge_rects]]
+min = [45, 68]
+max = [47, 73]
+
+[[bridge_rects]]
+min = [45, 74]
+max = [51, 74]
+
+[[bridge_rects]]
+min = [47, 75]
+max = [51, 76]
+
+[[elevation_rects]]
+min = [8, 45]
+max = [13, 50]
+
+[[elevation_rects]]
+min = [63, 45]
+max = [68, 50]
+
+[[ramp_rects]]
+min = [7, 46]
+max = [8, 48]
+
+[[ramp_rects]]
+min = [13, 46]
+max = [14, 48]
+
+[[ramp_rects]]
+min = [62, 46]
+max = [63, 48]
+
+[[ramp_rects]]
+min = [68, 46]
+max = [69, 48]
+
+[[obstacles]]
+min = [25, 25]
+max = [26, 26]
+
+[[obstacles]]
+min = [28, 33]
+max = [29, 33]
+
+[[obstacles]]
+min = [33, 40]
+max = [34, 41]
+
+[[obstacles]]
+min = [50, 40]
+max = [51, 41]
+
+[[obstacles]]
+min = [40, 41]
+max = [41, 42]
+
+[[obstacles]]
+min = [48, 51]
+max = [49, 52]
+
+[[obstacles]]
+min = [15, 54]
+max = [16, 55]
+
+[[obstacles]]
+min = [59, 57]
+max = [60, 58]
+
+[[obstacles]]
+min = [68, 57]
+max = [69, 58]
+
+[[obstacles]]
+min = [44, 78]
+max = [45, 79]
+
+[[obstacles]]
+min = [53, 81]
+max = [54, 82]
+
+[[props]]
+kind = "tree"
+tile_pos = [14, 37]
+
+[[props]]
+kind = "tree"
+tile_pos = [20, 46]
+
+[[props]]
+kind = "tree"
+tile_pos = [42, 14]
+
+[[props]]
+kind = "tree"
+tile_pos = [28, 20]
+
+[[props]]
+kind = "tree"
+tile_pos = [37, 75]
+
+[[props]]
+kind = "tree"
+tile_pos = [56, 46]
+
+[[props]]
+kind = "tree"
+tile_pos = [48, 35]
+
+[[props]]
+kind = "tree"
+tile_pos = [44, 53]
+
+[[props]]
+kind = "tree"
+tile_pos = [36, 30]
+
+[[props]]
+kind = "tree"
+tile_pos = [34, 62]
+
+[[props]]
+kind = "tree"
+tile_pos = [54, 83]
+
+[[props]]
+kind = "tree"
+tile_pos = [68, 53]
+
+[[props]]
+kind = "tree"
+tile_pos = [10, 40]
+
+[[props]]
+kind = "tree"
+tile_pos = [62, 45]
+
+[[props]]
+kind = "tree"
+tile_pos = [47, 27]
+
+[[props]]
+kind = "tree"
+tile_pos = [67, 64]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [42, 41]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [46, 78]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [27, 25]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [61, 57]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [69, 51]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [70, 57]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [35, 40]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [33, 18]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [29, 18]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [35, 18]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [27, 18]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [33, 26]
 
 [[preplaced_entities]]
-player_id = 2
+player_id = 0
 building_id = "white_house"
 tile_pos = [32, 6]
 
@@ -69,7 +415,7 @@ tile_pos = [34, 26]
 [[preplaced_entities]]
 player_id = 2
 building_id = "soviet_refinery"
-tile_pos = [29, 33]
+tile_pos = [30, 32]
 
 [[preplaced_entities]]
 player_id = 2
@@ -94,7 +440,7 @@ tile_pos = [36, 25]
 [[preplaced_entities]]
 player_id = 2
 building_id = "soviet_war_factory"
-tile_pos = [31, 31]
+tile_pos = [29, 29]
 
 [[preplaced_entities]]
 player_id = 2
@@ -109,7 +455,7 @@ tile_pos = [40, 34]
 [[preplaced_entities]]
 player_id = 2
 building_id = "soviet_tesla_reactor"
-tile_pos = [40, 33]
+tile_pos = [39, 32]
 
 [[preplaced_entities]]
 player_id = 2
@@ -129,12 +475,12 @@ tile_pos = [37, 18]
 [[preplaced_entities]]
 player_id = 2
 building_id = "soviet_tesla_reactor"
-tile_pos = [37, 19]
+tile_pos = [36, 20]
 
 [[preplaced_entities]]
-player_id = 2
+player_id = 0
 building_id = "tech_hospital"
-tile_pos = [51, 70]
+tile_pos = [56, 75]
 
 [[preplaced_entities]]
 player_id = 2
@@ -149,7 +495,7 @@ tile_pos = [32, 30]
 [[preplaced_entities]]
 player_id = 2
 building_id = "soviet_tesla_reactor"
-tile_pos = [30, 30]
+tile_pos = [32, 28]
 
 [[preplaced_entities]]
 player_id = 2
@@ -174,7 +520,7 @@ tile_pos = [32, 21]
 [[preplaced_entities]]
 player_id = 2
 unit_id = "rhino_tank"
-tile_pos = [36, 20]
+tile_pos = [35, 19]
 
 [[preplaced_entities]]
 player_id = 2
@@ -231,121 +577,220 @@ player_id = 2
 unit_id = "rhino_tank"
 tile_pos = [12, 38]
 
+[[preplaced_entities]]
+player_id = 0
+building_id = "bridge_repair_hut"
+tile_pos = [24, 55]
+
+[[objectives]]
+id = "obj_primary_main"
+tier = "primary"
+title = "Destroy the Soviet Psychic Beacon outside the White House to free President Dugan and..."
+marker_tile = [36, 24]
+
+[[objectives]]
+id = "obj_secondary_strike"
+tier = "secondary"
+title = "Neutralize or Capture Enemy Strategic Facility"
+marker_tile = [36, 24]
+
+[[objectives]]
+id = "obj_bonus_tech"
+tier = "bonus"
+title = "Capture Neutral Tech Hospital with an Engineer"
+marker_tile = [56, 75]
+
+[[cutscenes]]
+id = "intro_flyover"
+skippable = true
+letterbox = true
+
+[[cutscenes.keyframes]]
+time_secs = 0.0
+focus = [73.0, 0.0, 49.0]
+distance = 46.0
+pitch_deg = 52.0
+yaw_deg = -22.0
+
+[[cutscenes.keyframes]]
+time_secs = 2.2
+focus = [57.0, 0.0, 101.0]
+distance = 42.0
+pitch_deg = 55.0
+yaw_deg = -10.0
+
+[[cutscenes.keyframes]]
+time_secs = 4.5
+focus = [41.0, 0.0, 153.0]
+distance = 36.0
+pitch_deg = 58.0
+yaw_deg = 0.0
+
 [[spawns]]
 player_id = 1
 faction = "allies"
-base_tile = [27, 8]
+sub_faction = "usa"
+base_tile = [20, 76]
+team_id = 1
 
 [[spawns.initial_buildings]]
 building_id = "allied_conyard"
-tile_pos = [27, 8]
+tile_pos = [20, 76]
 
 [[spawns.initial_buildings]]
 building_id = "allied_power_plant"
-tile_pos = [30, 8]
+tile_pos = [17, 76]
 
 [[spawns.initial_buildings]]
 building_id = "allied_refinery"
-tile_pos = [27, 11]
+tile_pos = [24, 76]
 
 [[spawns.initial_buildings]]
 building_id = "allied_barracks"
-tile_pos = [30, 11]
+tile_pos = [20, 72]
 
 [[spawns.initial_buildings]]
 building_id = "allied_war_factory"
-tile_pos = [33, 8]
-
-[[spawns.initial_units]]
-unit_id = "allied_gi"
-tile_pos = [29, 13]
-
-[[spawns.initial_units]]
-unit_id = "allied_gi"
-tile_pos = [31, 13]
-
-[[spawns.initial_units]]
-unit_id = "grizzly_tank"
-tile_pos = [33, 12]
+tile_pos = [24, 72]
 
 [[spawns.initial_units]]
 unit_id = "chrono_miner"
-tile_pos = [29, 12]
+tile_pos = [26, 75]
+
+[[spawns.initial_units]]
+unit_id = "allied_gi"
+tile_pos = [20, 70]
+
+[[spawns.initial_units]]
+unit_id = "allied_gi"
+tile_pos = [22, 70]
+
+[[spawns.initial_units]]
+unit_id = "guardian_gi"
+tile_pos = [24, 70]
+
+[[spawns.initial_units]]
+unit_id = "grizzly_tank"
+tile_pos = [26, 70]
+
+[[spawns.initial_units]]
+unit_id = "grizzly_tank"
+tile_pos = [20, 69]
 
 [[spawns]]
 player_id = 2
 faction = "soviets"
-base_tile = [49, 29]
-
-[[spawns.initial_buildings]]
-building_id = "soviet_conyard"
-tile_pos = [49, 29]
-
-[[spawns.initial_buildings]]
-building_id = "soviet_tesla_reactor"
-tile_pos = [46, 29]
-
-[[spawns.initial_buildings]]
-building_id = "soviet_refinery"
-tile_pos = [49, 32]
-
-[[spawns.initial_buildings]]
-building_id = "soviet_barracks"
-tile_pos = [46, 32]
-
-[[spawns.initial_buildings]]
-building_id = "soviet_war_factory"
-tile_pos = [43, 29]
-
-[[spawns.initial_units]]
-unit_id = "soviet_conscript"
-tile_pos = [47, 34]
-
-[[spawns.initial_units]]
-unit_id = "soviet_conscript"
-tile_pos = [45, 34]
-
-[[spawns.initial_units]]
-unit_id = "rhino_tank"
-tile_pos = [43, 33]
-
-[[spawns.initial_units]]
-unit_id = "war_miner"
-tile_pos = [47, 33]
+sub_faction = "russia"
+base_tile = [36, 24]
+team_id = 2
 
 [[trigger_zones]]
-id = "mission_stage_init"
-min = [6, 6]
-max = [12, 12]
+id = "ra2_allied_03_hail_to_the_chief_init"
+min = [0, 0]
+max = [3, 3]
 once = true
 condition = { type = "timer_elapsed", secs = 1.0 }
 actions = [
+    { type = "play_cutscene", cutscene_id = "intro_flyover" },
+    { type = "set_objective_status", objective_id = "obj_primary_main", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_secondary_strike", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_bonus_tech", status = "active" },
+    { type = "start_countdown", timer_id = "beacon_overcharge", label = "Psychic Beacon Overcharge", duration_secs = 240 },
     { type = "set_variable", name = "mission_stage", value = 1 },
-    { type = "eva_transmission", speaker = "EVA", text = "Battle Control Online. Primary tactical objectives initialized." },
-    { type = "reveal_area", tile = [27, 8], radius = 14 }
+    { type = "reveal_area", tile = [36, 24], radius = 9 },
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Destroy the Soviet Psychic Beacon outside the White House to free President Dugan and liberate Washington D.C.", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "battle_control_online" },
 ]
 
 [[trigger_zones]]
-id = "tactical_reinforcement_wave"
-min = [26, 6]
-max = [30, 10]
+id = "ra2_allied_03_hail_to_the_chief_reinforcements"
+min = [0, 0]
+max = [3, 3]
 once = true
-condition = { type = "all", conditions = [{ type = "timer_elapsed", secs = 45.0 }, { type = "variable_equals", name = "mission_stage", value = 1 }] }
+condition = { type = "all", conditions = [{ type = "timer_elapsed", secs = 55.0 }, { type = "variable_equals", name = "mission_stage", value = 1 }] }
 actions = [
     { type = "set_variable", name = "mission_stage", value = 2 },
-    { type = "spawn_reinforcements", player_id = 1, unit_id = "grizzly_tank", count = 2, tile = [26, 6] },
-    { type = "grant_credits", player_id = 1, amount = 1500 },
-    { type = "eva_transmission", speaker = "EVA", text = "Reinforcements have arrived. Forward command has authorized 1500 bonus credits." }
+    { type = "grant_credits", player_id = 1, amount = 2000 },
+    { type = "spawn_reinforcements", player_id = 1, unit_id = "grizzly_tank", count = 3, tile = [23, 77] },
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Command reserves and emergency war funds have arrived at your base!", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "reinforcements_have_arrived" },
 ]
 
 [[trigger_zones]]
-id = "decisive_campaign_victory"
-min = [2, 2]
-max = [6, 6]
+id = "ra2_allied_03_hail_to_the_chief_key_target_down"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "building_destroyed", building_id = "psychic_beacon", player_id = 2 }
+actions = [
+    { type = "set_objective_status", objective_id = "obj_secondary_strike", status = "completed" },
+    { type = "stop_countdown", timer_id = "beacon_overcharge" },
+    { type = "grant_credits", player_id = 1, amount = 2000 },
+    { type = "set_variable", name = "primary_target_destroyed", value = 1 },
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Primary enemy strategic structure destroyed! Sweep the remaining enemy forces from the sector.", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "battle_control_online" },
+]
+
+[[trigger_zones]]
+id = "ra2_allied_03_hail_to_the_chief_protect_fail"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "building_destroyed", building_id = "white_house" }
+actions = [
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Critical structure lost! Mission failed.", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "unit_lost" },
+    { type = "declare_winner", player_id = 2 },
+]
+
+[[trigger_zones]]
+id = "ra2_allied_03_hail_to_the_chief_victory"
+min = [0, 0]
+max = [3, 3]
 once = true
 condition = { type = "all_buildings_destroyed", player_id = 2 }
 actions = [
+    { type = "set_objective_status", objective_id = "obj_primary_main", status = "completed" },
     { type = "set_variable", name = "mission_stage", value = 3 },
-    { type = "eva_transmission", speaker = "EVA", text = "Mission Accomplished. All primary hostile command structures neutralized." },
-    { type = "declare_winner", player_id = 1 }
+    { type = "eva_transmission", speaker = "LT. EVA", text = "All enemy structures neutralized. Mission accomplished, Commander!", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "primary_objective_achieved" },
+    { type = "declare_winner", player_id = 1 },
+]
+
+[[trigger_zones]]
+id = "p22_crisis_countdown_expired"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "countdown_expired", timer_id = "beacon_overcharge" }
+actions = [
+    { type = "spawn_reinforcements", player_id = 2, unit_id = "rhino_tank", count = 4, tile = [34, 22] },
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Warning: Psychic Beacon Overcharge reached zero! Enemy heavy armor strike group deployed!", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "base_under_attack" },
+]
+
+[[trigger_zones]]
+id = "p22_crisis_target_neutralized"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "building_destroyed", building_id = "psychic_beacon", player_id = 2 }
+actions = [
+    { type = "stop_countdown", timer_id = "beacon_overcharge" },
+]
+
+[[trigger_zones]]
+id = "p22_bonus_tech_captured"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "building_captured", building_id = "tech_hospital", by_player_id = 1 }
+actions = [
+    { type = "set_objective_status", objective_id = "obj_bonus_tech", status = "completed" },
+    { type = "grant_credits", player_id = 1, amount = 750 },
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Bonus objective achieved: Neutral tech structure secured!", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "building_captured" },
+]
+
+[[trigger_zones]]
+id = "p22_periodic_skirmish_wave"
+min = [0, 0]
+max = [3, 3]
+once = false
+condition = { type = "periodic_timer", start_secs = 75, interval_secs = 75, max_repeats = 3 }
+actions = [
+    { type = "spawn_reinforcements", player_id = 2, unit_id = "soviet_conscript", count = 3, tile = [35, 23] },
 ]

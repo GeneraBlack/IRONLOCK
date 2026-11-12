@@ -1,5 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
   "properties": {
     "authors": {
       "items": {
@@ -8,6 +9,7 @@
       "type": "array"
     },
     "catalogs": {
+      "additionalProperties": false,
       "properties": {
         "buildings": {
           "type": "string"
@@ -22,12 +24,6 @@
           "type": "string"
         }
       },
-      "required": [
-        "factions",
-        "weapons",
-        "buildings",
-        "units"
-      ],
       "type": "object"
     },
     "description": {
@@ -37,6 +33,7 @@
       "type": "string"
     },
     "entry_map": {
+      "description": "Default map relative to mod root (optional when extends is set)",
       "type": "string"
     },
     "extends": {
@@ -52,6 +49,68 @@
       "type": "string"
     },
     "rules": {
+      "additionalProperties": false,
+      "properties": {
+        "building_repair_credits_per_cycle": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "building_repair_hp_per_sec": {
+          "type": "number"
+        },
+        "commander_rank_xp_thresholds": {
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 4,
+          "minItems": 4,
+          "type": "array"
+        },
+        "crate_max_active": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "crate_spawn_interval_ticks": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "default_infantry_by_faction": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "default_liberated_worker_unit": {
+          "type": "string"
+        },
+        "default_mutant_unit": {
+          "type": "string"
+        },
+        "elite_xp_threshold": {
+          "type": "number"
+        },
+        "free_unit_by_faction": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "low_power_speed_factor": {
+          "type": "number"
+        },
+        "sell_refund_ratio": {
+          "type": "number"
+        },
+        "stolen_tech_commando_by_pair": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "veteran_xp_threshold": {
+          "type": "number"
+        }
+      },
       "type": "object"
     },
     "scripts": {
@@ -69,9 +128,7 @@
     "id",
     "name",
     "version",
-    "engine_version",
-    "entry_map",
-    "catalogs"
+    "engine_version"
   ],
   "title": "ModManifest",
   "type": "object"

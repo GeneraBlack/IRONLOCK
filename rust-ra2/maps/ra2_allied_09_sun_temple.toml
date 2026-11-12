@@ -1,50 +1,396 @@
 id = "ra2_allied_09_sun_temple"
-name = "RA2 Allied 09: Sun Temple (Tulum Mexico)"
+name = "Op. 09: Sun Temple (Tulum, Mexico)"
 width = 85
 height = 90
 tile_size = 2.0
 ore_regen_per_sec = 4.0
-mission_objective = "The Soviets captured one of our west coast bases and with it one of our Prism Towers. We believe they may be trying to replicate that technology at a secret Soviet research facility in the Yucatan. A SEAL strike team is standing by, Commander, awaiting your orders. \n \n Objective 1: Capture or Destroy any Soviet attempts to replicate our Prism Technology. \n \n Objective 2: Eradicate the Soviet base defending their research site."
+mission_objective = "Assault the Yucatan jungle compound, neutralize the captured Mayan Prism Pyramids, and destroy the Soviet Battle Lab reverse-engineering Prism tech."
 
 [[ore_patches]]
-position = [37, 56]
+position = [27, 66]
 radius = 3
-amount_per_tile = 1400
+amount_per_tile = 1600
 
 [[ore_patches]]
-position = [45, 59]
+position = [46, 66]
 radius = 3
-amount_per_tile = 1400
+amount_per_tile = 1550
 
-[[ore_patches]]
+[[gem_patches]]
 position = [42, 45]
-radius = 4
-amount_per_tile = 2000
+radius = 2
+amount_per_tile = 2300
 
-[[ore_patches]]
-position = [49, 48]
-radius = 3
-amount_per_tile = 1500
+[[water_rects]]
+min = [46, 1]
+max = [50, 1]
 
-[[ore_patches]]
-position = [47, 39]
-radius = 3
-amount_per_tile = 1500
+[[water_rects]]
+min = [45, 2]
+max = [51, 2]
+
+[[water_rects]]
+min = [43, 3]
+max = [52, 3]
+
+[[water_rects]]
+min = [42, 4]
+max = [54, 4]
+
+[[water_rects]]
+min = [42, 5]
+max = [51, 5]
+
+[[water_rects]]
+min = [54, 5]
+max = [54, 5]
+
+[[water_rects]]
+min = [40, 6]
+max = [51, 6]
+
+[[water_rects]]
+min = [55, 6]
+max = [56, 6]
+
+[[water_rects]]
+min = [39, 7]
+max = [51, 7]
+
+[[water_rects]]
+min = [55, 7]
+max = [57, 7]
+
+[[water_rects]]
+min = [39, 8]
+max = [58, 8]
+
+[[water_rects]]
+min = [40, 9]
+max = [59, 9]
+
+[[water_rects]]
+min = [40, 10]
+max = [61, 10]
+
+[[water_rects]]
+min = [41, 11]
+max = [62, 11]
+
+[[water_rects]]
+min = [41, 12]
+max = [63, 12]
+
+[[water_rects]]
+min = [41, 13]
+max = [64, 13]
+
+[[water_rects]]
+min = [41, 14]
+max = [65, 14]
+
+[[water_rects]]
+min = [41, 15]
+max = [67, 15]
+
+[[water_rects]]
+min = [40, 16]
+max = [68, 16]
+
+[[water_rects]]
+min = [40, 17]
+max = [69, 17]
+
+[[water_rects]]
+min = [40, 18]
+max = [70, 18]
+
+[[water_rects]]
+min = [40, 19]
+max = [71, 19]
+
+[[water_rects]]
+min = [40, 20]
+max = [72, 20]
+
+[[water_rects]]
+min = [43, 21]
+max = [74, 21]
+
+[[water_rects]]
+min = [44, 22]
+max = [75, 22]
+
+[[water_rects]]
+min = [44, 23]
+max = [76, 23]
+
+[[water_rects]]
+min = [43, 24]
+max = [77, 24]
+
+[[water_rects]]
+min = [43, 25]
+max = [78, 25]
+
+[[water_rects]]
+min = [40, 26]
+max = [40, 26]
+
+[[water_rects]]
+min = [43, 26]
+max = [79, 26]
+
+[[water_rects]]
+min = [40, 27]
+max = [81, 27]
+
+[[water_rects]]
+min = [39, 28]
+max = [82, 28]
+
+[[water_rects]]
+min = [39, 29]
+max = [83, 30]
+
+[[water_rects]]
+min = [45, 31]
+max = [83, 32]
+
+[[water_rects]]
+min = [44, 33]
+max = [83, 35]
+
+[[water_rects]]
+min = [45, 36]
+max = [46, 36]
+
+[[water_rects]]
+min = [50, 36]
+max = [83, 36]
+
+[[water_rects]]
+min = [51, 37]
+max = [83, 43]
+
+[[water_rects]]
+min = [50, 44]
+max = [83, 45]
+
+[[water_rects]]
+min = [51, 46]
+max = [83, 46]
+
+[[water_rects]]
+min = [57, 47]
+max = [83, 49]
+
+[[water_rects]]
+min = [56, 50]
+max = [83, 51]
+
+[[water_rects]]
+min = [54, 52]
+max = [83, 52]
+
+[[water_rects]]
+min = [54, 53]
+max = [72, 53]
+
+[[water_rects]]
+min = [76, 53]
+max = [83, 53]
+
+[[water_rects]]
+min = [54, 54]
+max = [70, 54]
+
+[[water_rects]]
+min = [78, 54]
+max = [83, 54]
+
+[[water_rects]]
+min = [58, 55]
+max = [69, 55]
+
+[[water_rects]]
+min = [80, 55]
+max = [83, 55]
+
+[[water_rects]]
+min = [63, 56]
+max = [69, 56]
+
+[[water_rects]]
+min = [81, 56]
+max = [83, 59]
+
+[[water_rects]]
+min = [64, 57]
+max = [69, 57]
+
+[[water_rects]]
+min = [64, 58]
+max = [64, 58]
+
+[[elevation_rects]]
+min = [4, 11]
+max = [18, 25]
+
+[[ramp_rects]]
+min = [3, 17]
+max = [4, 19]
+
+[[ramp_rects]]
+min = [18, 17]
+max = [19, 19]
+
+[[obstacles]]
+min = [26, 39]
+max = [27, 40]
+
+[[obstacles]]
+min = [21, 46]
+max = [22, 47]
+
+[[obstacles]]
+min = [36, 47]
+max = [37, 48]
+
+[[obstacles]]
+min = [42, 57]
+max = [43, 58]
+
+[[obstacles]]
+min = [49, 75]
+max = [50, 76]
+
+[[props]]
+kind = "tree"
+tile_pos = [69, 73]
+
+[[props]]
+kind = "tree"
+tile_pos = [72, 74]
+
+[[props]]
+kind = "tree"
+tile_pos = [38, 48]
+
+[[props]]
+kind = "tree"
+tile_pos = [22, 33]
+
+[[props]]
+kind = "tree"
+tile_pos = [28, 43]
+
+[[props]]
+kind = "tree"
+tile_pos = [43, 40]
+
+[[props]]
+kind = "tree"
+tile_pos = [11, 52]
+
+[[props]]
+kind = "tree"
+tile_pos = [8, 48]
+
+[[props]]
+kind = "tree"
+tile_pos = [28, 56]
+
+[[props]]
+kind = "tree"
+tile_pos = [27, 62]
+
+[[props]]
+kind = "tree"
+tile_pos = [31, 51]
+
+[[props]]
+kind = "tree"
+tile_pos = [32, 21]
+
+[[props]]
+kind = "tree"
+tile_pos = [17, 36]
+
+[[props]]
+kind = "tree"
+tile_pos = [79, 56]
+
+[[props]]
+kind = "tree"
+tile_pos = [36, 17]
+
+[[props]]
+kind = "tree"
+tile_pos = [62, 57]
+
+[[props]]
+kind = "tree"
+tile_pos = [45, 80]
+
+[[props]]
+kind = "tree"
+tile_pos = [42, 80]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [44, 57]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [55, 56]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [67, 60]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [59, 63]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [53, 76]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [35, 15]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [34, 17]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [36, 22]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [32, 24]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [34, 24]
 
 [[preplaced_entities]]
-player_id = 2
+player_id = 0
 building_id = "tech_airport"
 tile_pos = [5, 47]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "allied_power_plant"
-tile_pos = [51, 5]
+tile_pos = [52, 5]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "allied_power_plant"
-tile_pos = [52, 6]
+tile_pos = [55, 3]
 
 [[preplaced_entities]]
 player_id = 2
@@ -119,7 +465,7 @@ tile_pos = [46, 70]
 [[preplaced_entities]]
 player_id = 2
 building_id = "soviet_flak_cannon"
-tile_pos = [50, 65]
+tile_pos = [51, 64]
 
 [[preplaced_entities]]
 player_id = 2
@@ -224,128 +570,223 @@ tile_pos = [52, 62]
 [[preplaced_entities]]
 player_id = 2
 unit_id = "flak_track"
-tile_pos = [42, 57]
+tile_pos = [41, 56]
 
 [[preplaced_entities]]
 player_id = 2
 unit_id = "grizzly_tank"
 tile_pos = [30, 46]
 
+[[preplaced_entities]]
+player_id = 2
+building_id = "maya_prism_pyramid"
+tile_pos = [47, 61]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "maya_prism_pyramid"
+tile_pos = [56, 62]
+
+[[preplaced_entities]]
+player_id = 0
+building_id = "tech_communications_center"
+tile_pos = [29, 67]
+
+[[objectives]]
+id = "obj_primary_main"
+tier = "primary"
+title = "Assault the Yucatan jungle compound, neutralize the captured Mayan Prism Pyramids, an..."
+marker_tile = [52, 66]
+
+[[objectives]]
+id = "obj_secondary_strike"
+tier = "secondary"
+title = "Neutralize or Capture Enemy Strategic Facility"
+marker_tile = [52, 66]
+
+[[objectives]]
+id = "obj_capture_comms"
+tier = "secondary"
+title = "Capture Neutral Tech Communications Center for Tactical Radar"
+marker_tile = [29, 67]
+
+[[objectives]]
+id = "obj_bonus_tech"
+tier = "bonus"
+title = "Capture Neutral Tech Airport with an Engineer"
+marker_tile = [5, 47]
+
+[[cutscenes]]
+id = "intro_flyover"
+skippable = true
+letterbox = true
+
+[[cutscenes.keyframes]]
+time_secs = 0.0
+focus = [105.0, 0.0, 133.0]
+distance = 46.0
+pitch_deg = 52.0
+yaw_deg = -22.0
+
+[[cutscenes.keyframes]]
+time_secs = 2.2
+focus = [71.0, 0.0, 135.0]
+distance = 42.0
+pitch_deg = 55.0
+yaw_deg = -10.0
+
+[[cutscenes.keyframes]]
+time_secs = 4.5
+focus = [37.0, 0.0, 137.0]
+distance = 36.0
+pitch_deg = 58.0
+yaw_deg = 0.0
+
 [[spawns]]
 player_id = 1
 faction = "allies"
-base_tile = [45, 56]
+sub_faction = "usa"
+base_tile = [18, 68]
+team_id = 1
 
 [[spawns.initial_buildings]]
 building_id = "allied_conyard"
-tile_pos = [45, 56]
+tile_pos = [18, 68]
 
 [[spawns.initial_buildings]]
 building_id = "allied_power_plant"
-tile_pos = [42, 56]
+tile_pos = [15, 68]
 
 [[spawns.initial_buildings]]
 building_id = "allied_refinery"
-tile_pos = [45, 53]
+tile_pos = [22, 68]
 
 [[spawns.initial_buildings]]
 building_id = "allied_barracks"
-tile_pos = [42, 53]
+tile_pos = [18, 64]
 
 [[spawns.initial_buildings]]
 building_id = "allied_war_factory"
-tile_pos = [39, 56]
-
-[[spawns.initial_units]]
-unit_id = "allied_gi"
-tile_pos = [43, 51]
-
-[[spawns.initial_units]]
-unit_id = "allied_gi"
-tile_pos = [41, 51]
-
-[[spawns.initial_units]]
-unit_id = "grizzly_tank"
-tile_pos = [39, 52]
+tile_pos = [22, 64]
 
 [[spawns.initial_units]]
 unit_id = "chrono_miner"
-tile_pos = [43, 52]
+tile_pos = [24, 67]
+
+[[spawns.initial_units]]
+unit_id = "navy_seal"
+tile_pos = [18, 62]
+
+[[spawns.initial_units]]
+unit_id = "navy_seal"
+tile_pos = [20, 62]
+
+[[spawns.initial_units]]
+unit_id = "allied_gi"
+tile_pos = [22, 62]
+
+[[spawns.initial_units]]
+unit_id = "mirage_tank"
+tile_pos = [24, 62]
+
+[[spawns.initial_units]]
+unit_id = "prism_tank"
+tile_pos = [18, 61]
 
 [[spawns]]
 player_id = 2
 faction = "soviets"
-base_tile = [37, 59]
-
-[[spawns.initial_buildings]]
-building_id = "soviet_conyard"
-tile_pos = [37, 59]
-
-[[spawns.initial_buildings]]
-building_id = "soviet_tesla_reactor"
-tile_pos = [40, 59]
-
-[[spawns.initial_buildings]]
-building_id = "soviet_refinery"
-tile_pos = [37, 56]
-
-[[spawns.initial_buildings]]
-building_id = "soviet_barracks"
-tile_pos = [40, 56]
-
-[[spawns.initial_buildings]]
-building_id = "soviet_war_factory"
-tile_pos = [43, 59]
-
-[[spawns.initial_units]]
-unit_id = "soviet_conscript"
-tile_pos = [39, 54]
-
-[[spawns.initial_units]]
-unit_id = "soviet_conscript"
-tile_pos = [41, 54]
-
-[[spawns.initial_units]]
-unit_id = "rhino_tank"
-tile_pos = [43, 55]
-
-[[spawns.initial_units]]
-unit_id = "war_miner"
-tile_pos = [39, 55]
+sub_faction = "russia"
+base_tile = [52, 66]
+team_id = 2
 
 [[trigger_zones]]
-id = "mission_stage_init"
-min = [6, 6]
-max = [12, 12]
+id = "ra2_allied_09_sun_temple_init"
+min = [0, 0]
+max = [3, 3]
 once = true
 condition = { type = "timer_elapsed", secs = 1.0 }
 actions = [
+    { type = "play_cutscene", cutscene_id = "intro_flyover" },
+    { type = "set_objective_status", objective_id = "obj_primary_main", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_secondary_strike", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_capture_comms", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_bonus_tech", status = "active" },
     { type = "set_variable", name = "mission_stage", value = 1 },
-    { type = "eva_transmission", speaker = "EVA", text = "Battle Control Online. Primary tactical objectives initialized." },
-    { type = "reveal_area", tile = [45, 56], radius = 14 }
+    { type = "reveal_area", tile = [52, 66], radius = 9 },
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Assault the Yucatan jungle compound, neutralize the captured Mayan Prism Pyramids, and destroy the Soviet Battle Lab reverse-engineering Prism tech.", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "battle_control_online" },
 ]
 
 [[trigger_zones]]
-id = "tactical_reinforcement_wave"
-min = [44, 54]
-max = [48, 58]
+id = "ra2_allied_09_sun_temple_reinforcements"
+min = [0, 0]
+max = [3, 3]
 once = true
-condition = { type = "all", conditions = [{ type = "timer_elapsed", secs = 45.0 }, { type = "variable_equals", name = "mission_stage", value = 1 }] }
+condition = { type = "all", conditions = [{ type = "timer_elapsed", secs = 55.0 }, { type = "variable_equals", name = "mission_stage", value = 1 }] }
 actions = [
     { type = "set_variable", name = "mission_stage", value = 2 },
-    { type = "spawn_reinforcements", player_id = 1, unit_id = "prism_tank", count = 2, tile = [44, 54] },
-    { type = "grant_credits", player_id = 1, amount = 1500 },
-    { type = "eva_transmission", speaker = "EVA", text = "Reinforcements have arrived. Forward command has authorized 1500 bonus credits." }
+    { type = "grant_credits", player_id = 1, amount = 2000 },
+    { type = "spawn_reinforcements", player_id = 1, unit_id = "prism_tank", count = 3, tile = [21, 69] },
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Command reserves and emergency war funds have arrived at your base!", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "reinforcements_have_arrived" },
 ]
 
 [[trigger_zones]]
-id = "decisive_campaign_victory"
-min = [2, 2]
-max = [6, 6]
+id = "ra2_allied_09_sun_temple_key_target_down"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "building_destroyed", building_id = "soviet_battle_lab", player_id = 2 }
+actions = [
+    { type = "set_objective_status", objective_id = "obj_secondary_strike", status = "completed" },
+    { type = "grant_credits", player_id = 1, amount = 2000 },
+    { type = "set_variable", name = "primary_target_destroyed", value = 1 },
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Primary enemy strategic structure destroyed! Sweep the remaining enemy forces from the sector.", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "battle_control_online" },
+]
+
+[[trigger_zones]]
+id = "ra2_allied_09_sun_temple_victory"
+min = [0, 0]
+max = [3, 3]
 once = true
 condition = { type = "all_buildings_destroyed", player_id = 2 }
 actions = [
+    { type = "set_objective_status", objective_id = "obj_primary_main", status = "completed" },
     { type = "set_variable", name = "mission_stage", value = 3 },
-    { type = "eva_transmission", speaker = "EVA", text = "Mission Accomplished. All primary hostile command structures neutralized." },
-    { type = "declare_winner", player_id = 1 }
+    { type = "eva_transmission", speaker = "LT. EVA", text = "All enemy structures neutralized. Mission accomplished, Commander!", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "primary_objective_achieved" },
+    { type = "declare_winner", player_id = 1 },
+]
+
+[[trigger_zones]]
+id = "p22_tech_comms_captured"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "building_captured", building_id = "tech_communications_center", by_player_id = 1 }
+actions = [
+    { type = "set_objective_status", objective_id = "obj_capture_comms", status = "completed" },
+    { type = "grant_credits", player_id = 1, amount = 1000 },
+    { type = "reveal_area_for_player", player_id = 1, center = [105.0, 0.0, 133.0], radius = 24.0, duration_secs = 45 },
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Tech Communications Center online! Satellite radar sweep active.", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "building_captured" },
+]
+
+[[trigger_zones]]
+id = "p22_bonus_tech_captured"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "building_captured", building_id = "tech_airport", by_player_id = 1 }
+actions = [
+    { type = "set_objective_status", objective_id = "obj_bonus_tech", status = "completed" },
+    { type = "grant_credits", player_id = 1, amount = 750 },
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Bonus objective achieved: Neutral tech structure secured!", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "building_captured" },
+]
+
+[[trigger_zones]]
+id = "p22_periodic_skirmish_wave"
+min = [0, 0]
+max = [3, 3]
+once = false
+condition = { type = "periodic_timer", start_secs = 75, interval_secs = 75, max_repeats = 3 }
+actions = [
+    { type = "spawn_reinforcements", player_id = 2, unit_id = "soviet_conscript", count = 3, tile = [51, 67] },
 ]

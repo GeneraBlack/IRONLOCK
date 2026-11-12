@@ -107,8 +107,8 @@ impl SimWorld {
                         for dx in -2i32..=2i32 {
                             let cand = [base_tile[0] + dx, base_tile[1] + dz];
                             if self.grid.is_walkable_for_gate_owners(cand, &allowed_gates) {
-                                let d_sq = (cand[0] - raw_drop[0]).pow(2)
-                                    + (cand[1] - raw_drop[1]).pow(2);
+                                let d_sq =
+                                    (cand[0] - raw_drop[0]).pow(2) + (cand[1] - raw_drop[1]).pow(2);
                                 if coastal_land.map(|(_, d)| d_sq < d).unwrap_or(true) {
                                     coastal_land = Some((cand, d_sq));
                                 }
@@ -121,11 +121,10 @@ impl SimWorld {
                     };
                     land_tile
                 } else if is_airborne_aircraft_drop {
-                    self.grid
-                        .find_nearest_walkable([
-                            raw_drop[0].clamp(0, (self.grid.width - 1).max(0)),
-                            raw_drop[1].clamp(0, (self.grid.height - 1).max(0)),
-                        ])
+                    self.grid.find_nearest_walkable([
+                        raw_drop[0].clamp(0, (self.grid.width - 1).max(0)),
+                        raw_drop[1].clamp(0, (self.grid.height - 1).max(0)),
+                    ])
                 } else {
                     self.grid.find_nearest_tile_for_domain(
                         base_tile,
@@ -135,13 +134,14 @@ impl SimWorld {
                     )
                 };
 
-                let mut drop_world = self.grid.tile_to_world(drop_tile);
-                drop_world[1] = self.grid.tile_elevation(drop_tile);
+                let drop_world = self.grid.tile_to_world_for_domain(drop_tile, p_domain);
                 if let Some(p_ent) = self.entities.get_mut(&pid) {
                     p_ent.transported_by = None;
-                    p_ent.boarding_carrier_id = None;
+                    self.trait_stores.set_boarding_carrier_id_on(p_ent, None);
+                    p_ent.clear_flow_steering();
                     p_ent.tile_origin = drop_tile;
                     p_ent.position = drop_world;
+                    p_ent.teleport_epoch = p_ent.teleport_epoch.wrapping_add(1);
                     if is_airborne_aircraft_drop {
                         p_ent.parachute_timer = 3.0;
                         p_ent.position[1] = carrier_snap.position[1].max(drop_world[1] + 5.5);
@@ -159,6 +159,7 @@ impl SimWorld {
                 }
             }
         }
+        self.power_dirty = true;
         self.recalculate_power(loaded);
     }
 
@@ -198,15 +199,19 @@ impl SimWorld {
                 p_ent.position = c_pos;
                 p_ent.tile_origin = c_tile;
             }
-            Self::clear_entity_orders_on_boarding(p_ent);
+            Self::clear_entity_orders_on_boarding(p_ent, &mut self.trait_stores);
         }
     }
 
-    pub(crate) fn clear_entity_orders_on_boarding(ent: &mut SimEntity) {
-        ent.boarding_carrier_id = None;
+    pub(crate) fn clear_entity_orders_on_boarding(
+        ent: &mut SimEntity,
+        trait_stores: &mut EntityTraitStores,
+    ) {
+        trait_stores.clear_order_carrier_targets_on(ent);
+        ent.clear_flow_steering();
+        ent.desired_arrival_facing = None;
         ent.target_entity_id = None;
         ent.infiltrate_target_id = None;
-        ent.service_depot_target_id = None;
         ent.attack_ground_pos = None;
         ent.attack_move_dest = None;
         ent.patrol_route = None;
@@ -218,11 +223,18 @@ impl SimWorld {
         }
     }
 
-    pub(crate) fn clear_entity_orders_on_owner_change(ent: &mut SimEntity) {
-        Self::clear_entity_orders_on_boarding(ent);
+    pub(crate) fn clear_entity_orders_on_owner_change(
+        ent: &mut SimEntity,
+        trait_stores: &mut EntityTraitStores,
+    ) {
+        Self::clear_entity_orders_on_boarding(ent, trait_stores);
+        ent.command_queue.clear();
         ent.is_repairing = false;
         ent.rally_point = None;
         ent.rally_waypoints.clear();
+        if let Some(pf) = trait_stores.production.get_mut(&ent.id) {
+            pf.rally_flow_handle = None;
+        }
     }
 
     pub(crate) fn refund_building_queues_and_upgrades(
@@ -249,11 +261,8 @@ impl SimWorld {
         }
         for q_item in &ent.production_queue {
             if let Some(u_def) = loaded.units.get(&q_item.unit_id) {
-                refund = refund.saturating_add(self.effective_unit_cost(
-                    ent.player_id,
-                    u_def,
-                    loaded,
-                ));
+                refund =
+                    refund.saturating_add(self.effective_unit_cost(ent.player_id, u_def, loaded));
             }
         }
         if refund > 0 {
@@ -263,11 +272,7 @@ impl SimWorld {
         }
     }
 
-    pub(crate) fn clear_building_footprint_on_grid(
-        &mut self,
-        ent: &SimEntity,
-        loaded: &LoadedMod,
-    ) {
+    pub(crate) fn clear_building_footprint_on_grid(&mut self, ent: &SimEntity, loaded: &LoadedMod) {
         let EntityKind::Building { ref building_id } = ent.kind else {
             return;
         };
@@ -280,6 +285,16 @@ impl SimWorld {
         match role {
             BuildingRole::Gate => {
                 self.grid.set_footprint_gate(ent.tile_origin, fp, None);
+                for dx in 0..(fp[0] as i32) {
+                    for dz in 0..(fp[1] as i32) {
+                        self.gate_states
+                            .remove(&[ent.tile_origin[0] + dx, ent.tile_origin[1] + dz]);
+                    }
+                }
+            }
+            BuildingRole::Wall => {
+                self.grid.set_footprint_wall(ent.tile_origin, fp, false);
+                self.grid.set_footprint_blocked(ent.tile_origin, fp, false);
             }
             BuildingRole::Bridge => {
                 self.grid.set_footprint_bridge(ent.tile_origin, fp, false);
@@ -290,11 +305,7 @@ impl SimWorld {
         }
     }
 
-    pub(crate) fn cancel_conyard_queue_if_no_conyard(
-        &mut self,
-        player_id: u8,
-        loaded: &LoadedMod,
-    ) {
+    pub(crate) fn cancel_conyard_queue_if_no_conyard(&mut self, player_id: u8, loaded: &LoadedMod) {
         if player_id == 0 {
             return;
         }
@@ -348,8 +359,8 @@ impl SimWorld {
             if let Some(ent) = self.entities.get_mut(&eid) {
                 previous_owners.insert(ent.player_id);
                 ent.player_id = to_player_id;
-                ent.mind_controlled_by = None;
-                Self::clear_entity_orders_on_owner_change(ent);
+                self.trait_stores.set_mind_controlled_by_on(ent, None);
+                Self::clear_entity_orders_on_owner_change(ent, &mut self.trait_stores);
                 passenger_ids_to_sync.extend(ent.passenger_ids.iter().copied());
                 if let EntityKind::Building { building_id: bid } = &ent.kind {
                     if let Some(b_def) = loaded.buildings.get(bid) {
@@ -365,8 +376,8 @@ impl SimWorld {
         for pid in passenger_ids_to_sync {
             if let Some(p_ent) = self.entities.get_mut(&pid) {
                 p_ent.player_id = to_player_id;
-                p_ent.mind_controlled_by = None;
-                Self::clear_entity_orders_on_owner_change(p_ent);
+                self.trait_stores.set_mind_controlled_by_on(p_ent, None);
+                Self::clear_entity_orders_on_owner_change(p_ent, &mut self.trait_stores);
             }
         }
 
@@ -378,27 +389,32 @@ impl SimWorld {
             .collect();
 
         for ent in self.entities.values_mut() {
-            if ent
-                .parent_carrier_id
+            if self
+                .trait_stores
+                .parent_carrier_id(ent)
                 .is_some_and(|pcid| changed_set.contains(&pcid))
             {
                 ent.player_id = to_player_id;
                 ent.target_entity_id = None;
             }
-            if ent
-                .boarding_carrier_id
+            if self
+                .trait_stores
+                .boarding_carrier_id(ent)
                 .is_some_and(|bcid| changed_set.contains(&bcid))
                 && ent.player_id != to_player_id
             {
-                ent.boarding_carrier_id = None;
+                self.trait_stores.set_boarding_carrier_id_on(ent, None);
+                ent.clear_flow_steering();
                 ent.path_waypoints.clear();
             }
-            if ent
-                .service_depot_target_id
+            if self
+                .trait_stores
+                .service_depot_target_id(ent)
                 .is_some_and(|sdid| changed_set.contains(&sdid))
                 && ent.player_id != to_player_id
             {
-                ent.service_depot_target_id = None;
+                self.trait_stores.set_service_depot_target_id_on(ent, None);
+                ent.clear_flow_steering();
                 ent.path_waypoints.clear();
             }
             if ent
@@ -414,19 +430,21 @@ impl SimWorld {
                 && ent.player_id == to_player_id
             {
                 ent.infiltrate_target_id = None;
+                ent.clear_flow_steering();
                 ent.path_waypoints.clear();
             }
-            if ent
-                .home_airfield_id
+            if self
+                .trait_stores
+                .home_airfield_id(ent)
                 .is_some_and(|afid| changed_set.contains(&afid))
                 && ent.player_id != to_player_id
             {
-                ent.home_airfield_id = None;
+                self.trait_stores.set_home_airfield_id_on(ent, None);
             }
             if changed_set.contains(&ent.id) {
-                if let Some(afid) = ent.home_airfield_id {
+                if let Some(afid) = self.trait_stores.home_airfield_id(ent) {
                     if !valid_airfield_ids.contains(&afid) {
-                        ent.home_airfield_id = None;
+                        self.trait_stores.set_home_airfield_id_on(ent, None);
                     }
                 }
             }
@@ -434,10 +452,24 @@ impl SimWorld {
 
         for (origin, fp, owner) in gate_updates {
             self.grid.set_footprint_gate(origin, fp, Some(owner));
+            for dx in 0..(fp[0] as i32) {
+                for dz in 0..(fp[1] as i32) {
+                    let t = [origin[0] + dx, origin[1] + dz];
+                    self.gate_states
+                        .entry(t)
+                        .and_modify(|gs| gs.owner_player_id = owner)
+                        .or_insert(GateSimState {
+                            owner_player_id: owner,
+                            openness_01: 0.0,
+                            occupied: false,
+                        });
+                }
+            }
         }
         for prev_pid in previous_owners {
             self.cancel_conyard_queue_if_no_conyard(prev_pid, loaded);
         }
+        self.power_dirty = true;
         self.recalculate_power(loaded);
     }
 
@@ -451,15 +483,17 @@ impl SimWorld {
         let mut passenger_ids = Vec::new();
         let mut target_home_airfield = None;
         if let Some(target) = self.entities.get_mut(&target_id) {
-            let orig_owner = target
-                .mind_controlled_by
+            let orig_owner = self
+                .trait_stores
+                .mind_controlled_by(target)
                 .map(|(_, orig)| orig)
                 .unwrap_or(target.player_id);
             target.player_id = new_owner;
-            target.mind_controlled_by = controller_id.map(|cid| (cid, orig_owner));
-            Self::clear_entity_orders_on_owner_change(target);
+            self.trait_stores
+                .set_mind_controlled_by_on(target, controller_id.map(|cid| (cid, orig_owner)));
+            Self::clear_entity_orders_on_owner_change(target, &mut self.trait_stores);
             passenger_ids = target.passenger_ids.clone();
-            target_home_airfield = target.home_airfield_id;
+            target_home_airfield = self.trait_stores.home_airfield_id(target);
         }
         if let Some(af_id) = target_home_airfield {
             let af_matches = self
@@ -468,32 +502,40 @@ impl SimWorld {
                 .is_some_and(|af| af.player_id == new_owner && af.health > 0.0);
             if !af_matches {
                 if let Some(target) = self.entities.get_mut(&target_id) {
-                    target.home_airfield_id = None;
+                    self.trait_stores.set_home_airfield_id_on(target, None);
                 }
             }
         }
         for pid in passenger_ids {
             if let Some(p_ent) = self.entities.get_mut(&pid) {
-                let p_orig = p_ent
-                    .mind_controlled_by
+                let p_orig = self
+                    .trait_stores
+                    .mind_controlled_by(p_ent)
                     .map(|(_, orig)| orig)
                     .unwrap_or(p_ent.player_id);
                 p_ent.player_id = new_owner;
-                p_ent.mind_controlled_by = controller_id.map(|cid| (cid, p_orig));
-                Self::clear_entity_orders_on_owner_change(p_ent);
+                self.trait_stores
+                    .set_mind_controlled_by_on(p_ent, controller_id.map(|cid| (cid, p_orig)));
+                Self::clear_entity_orders_on_owner_change(p_ent, &mut self.trait_stores);
             }
         }
         for ent in self.entities.values_mut() {
-            if ent.parent_carrier_id == Some(target_id) {
+            if self.trait_stores.parent_carrier_id(ent) == Some(target_id) {
                 ent.player_id = new_owner;
                 ent.target_entity_id = None;
             }
-            if ent.boarding_carrier_id == Some(target_id) && ent.player_id != new_owner {
-                ent.boarding_carrier_id = None;
+            if self.trait_stores.boarding_carrier_id(ent) == Some(target_id)
+                && ent.player_id != new_owner
+            {
+                self.trait_stores.set_boarding_carrier_id_on(ent, None);
+                ent.clear_flow_steering();
                 ent.path_waypoints.clear();
             }
-            if ent.service_depot_target_id == Some(target_id) && ent.player_id != new_owner {
-                ent.service_depot_target_id = None;
+            if self.trait_stores.service_depot_target_id(ent) == Some(target_id)
+                && ent.player_id != new_owner
+            {
+                self.trait_stores.set_service_depot_target_id_on(ent, None);
+                ent.clear_flow_steering();
                 ent.path_waypoints.clear();
             }
             if ent.guard_target_id == Some(target_id) && ent.player_id != new_owner {
@@ -501,10 +543,13 @@ impl SimWorld {
             }
             if ent.infiltrate_target_id == Some(target_id) && ent.player_id == new_owner {
                 ent.infiltrate_target_id = None;
+                ent.clear_flow_steering();
                 ent.path_waypoints.clear();
             }
-            if ent.home_airfield_id == Some(target_id) && ent.player_id != new_owner {
-                ent.home_airfield_id = None;
+            if self.trait_stores.home_airfield_id(ent) == Some(target_id)
+                && ent.player_id != new_owner
+            {
+                self.trait_stores.set_home_airfield_id_on(ent, None);
             }
         }
     }
@@ -512,14 +557,14 @@ impl SimWorld {
     pub(crate) fn release_single_mind_controlled_entity(&mut self, target_id: u64) {
         let mut released_info: Option<(u8, Vec<u64>, Option<u64>)> = None;
         if let Some(ent) = self.entities.get_mut(&target_id) {
-            if let Some((_, orig_owner)) = ent.mind_controlled_by {
+            if let Some((_, orig_owner)) = self.trait_stores.mind_controlled_by(ent) {
                 ent.player_id = orig_owner;
-                ent.mind_controlled_by = None;
-                Self::clear_entity_orders_on_owner_change(ent);
+                self.trait_stores.set_mind_controlled_by_on(ent, None);
+                Self::clear_entity_orders_on_owner_change(ent, &mut self.trait_stores);
                 released_info = Some((
                     orig_owner,
                     ent.passenger_ids.clone(),
-                    ent.home_airfield_id,
+                    self.trait_stores.home_airfield_id(ent),
                 ));
             }
         }
@@ -531,32 +576,39 @@ impl SimWorld {
                     .is_some_and(|af| af.player_id == orig_owner && af.health > 0.0);
                 if !af_matches {
                     if let Some(target) = self.entities.get_mut(&target_id) {
-                        target.home_airfield_id = None;
+                        self.trait_stores.set_home_airfield_id_on(target, None);
                     }
                 }
             }
             for pid in passenger_ids {
                 if let Some(p_ent) = self.entities.get_mut(&pid) {
-                    let p_orig = p_ent
-                        .mind_controlled_by
+                    let p_orig = self
+                        .trait_stores
+                        .mind_controlled_by(p_ent)
                         .map(|(_, orig)| orig)
                         .unwrap_or(orig_owner);
                     p_ent.player_id = p_orig;
-                    p_ent.mind_controlled_by = None;
-                    Self::clear_entity_orders_on_owner_change(p_ent);
+                    self.trait_stores.set_mind_controlled_by_on(p_ent, None);
+                    Self::clear_entity_orders_on_owner_change(p_ent, &mut self.trait_stores);
                 }
             }
             for ent in self.entities.values_mut() {
-                if ent.parent_carrier_id == Some(target_id) {
+                if self.trait_stores.parent_carrier_id(ent) == Some(target_id) {
                     ent.player_id = orig_owner;
                     ent.target_entity_id = None;
                 }
-                if ent.boarding_carrier_id == Some(target_id) && ent.player_id != orig_owner {
-                    ent.boarding_carrier_id = None;
+                if self.trait_stores.boarding_carrier_id(ent) == Some(target_id)
+                    && ent.player_id != orig_owner
+                {
+                    self.trait_stores.set_boarding_carrier_id_on(ent, None);
+                    ent.clear_flow_steering();
                     ent.path_waypoints.clear();
                 }
-                if ent.service_depot_target_id == Some(target_id) && ent.player_id != orig_owner {
-                    ent.service_depot_target_id = None;
+                if self.trait_stores.service_depot_target_id(ent) == Some(target_id)
+                    && ent.player_id != orig_owner
+                {
+                    self.trait_stores.set_service_depot_target_id_on(ent, None);
+                    ent.clear_flow_steering();
                     ent.path_waypoints.clear();
                 }
                 if ent.guard_target_id == Some(target_id) && ent.player_id != orig_owner {
@@ -564,10 +616,13 @@ impl SimWorld {
                 }
                 if ent.infiltrate_target_id == Some(target_id) && ent.player_id == orig_owner {
                     ent.infiltrate_target_id = None;
+                    ent.clear_flow_steering();
                     ent.path_waypoints.clear();
                 }
-                if ent.home_airfield_id == Some(target_id) && ent.player_id != orig_owner {
-                    ent.home_airfield_id = None;
+                if self.trait_stores.home_airfield_id(ent) == Some(target_id)
+                    && ent.player_id != orig_owner
+                {
+                    self.trait_stores.set_home_airfield_id_on(ent, None);
                 }
             }
         }
@@ -578,7 +633,7 @@ impl SimWorld {
             .entities
             .values()
             .filter_map(|e| {
-                let (cid, _) = e.mind_controlled_by?;
+                let (cid, _) = self.trait_stores.mind_controlled_by(e)?;
                 (cid == controller_id).then_some(e.id)
             })
             .collect();
@@ -588,22 +643,34 @@ impl SimWorld {
     }
 
     pub(crate) fn cleanup_references_to_removed_entity(&mut self, removed_id: u64) {
+        if let Some(tag) = self.entity_tags.remove(&removed_id) {
+            self.destroyed_entity_tags.insert(tag);
+        }
         self.release_mind_controlled_by(removed_id);
+        self.trait_stores.remove_entity(removed_id);
         for ent in self.entities.values_mut() {
-            if ent.parent_carrier_id == Some(removed_id) {
+            if ent.repair_hut_target_id == Some(removed_id) {
+                ent.repair_hut_target_id = None;
+                ent.clear_flow_steering();
+                ent.path_waypoints.clear();
+            }
+            if self.trait_stores.parent_carrier_id(ent) == Some(removed_id) {
                 ent.health = 0.0;
                 ent.script_ctx.health = 0.0;
             }
-            if ent.boarding_carrier_id == Some(removed_id) {
-                ent.boarding_carrier_id = None;
+            if self.trait_stores.boarding_carrier_id(ent) == Some(removed_id) {
+                self.trait_stores.set_boarding_carrier_id_on(ent, None);
+                ent.clear_flow_steering();
                 ent.path_waypoints.clear();
             }
-            if ent.service_depot_target_id == Some(removed_id) {
-                ent.service_depot_target_id = None;
+            if self.trait_stores.service_depot_target_id(ent) == Some(removed_id) {
+                self.trait_stores.set_service_depot_target_id_on(ent, None);
+                ent.clear_flow_steering();
                 ent.path_waypoints.clear();
             }
             if ent.infiltrate_target_id == Some(removed_id) {
                 ent.infiltrate_target_id = None;
+                ent.clear_flow_steering();
                 ent.path_waypoints.clear();
             }
             if ent.guard_target_id == Some(removed_id) {
@@ -611,6 +678,10 @@ impl SimWorld {
             }
             if ent.target_entity_id == Some(removed_id) {
                 ent.target_entity_id = None;
+            }
+            if self.trait_stores.carryall_pickup_target_id(ent) == Some(removed_id) {
+                self.trait_stores
+                    .set_carryall_pickup_target_id_on(ent, None);
             }
             if ent.grappled_by_id() == Some(removed_id) {
                 ent.clear_grappled();
@@ -632,7 +703,7 @@ impl SimWorld {
         let mut total_refund = 0u32;
         for rid in to_recycle {
             if let Some(removed) = self.entities.remove(&rid) {
-                let is_mc = removed.mind_controlled_by.is_some();
+                let is_mc = self.trait_stores.mind_controlled_by(&removed).is_some();
                 let refund = match &removed.kind {
                     EntityKind::Unit { unit_id: uid_str } => loaded
                         .units

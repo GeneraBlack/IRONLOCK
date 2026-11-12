@@ -73,3 +73,300 @@ damage_bonus_mult = 1.05
 armor_bonus_mult = 1.15
 speed_bonus_mult = 1.0
 range_bonus = 0.0
+
+[[upgrades]]
+id = "psionic_amplifiers"
+name = "Psionic Wave Amplifiers (+15% Armor, +10% DMG, +1 Range)"
+faction = "yuri"
+cost = 1000
+research_time_secs = 8.0
+prerequisites = ["yuri_war_factory"]
+damage_bonus_mult = 1.10
+armor_bonus_mult = 1.15
+speed_bonus_mult = 1.05
+range_bonus = 1.0
+
+[[upgrades]]
+id = "neuro_toxin_synthesis"
+name = "Neuro-Toxin Synthesis (+20% DMG, +2 Range)"
+faction = "yuri"
+cost = 1200
+research_time_secs = 10.0
+prerequisites = ["yuri_battle_lab"]
+damage_bonus_mult = 1.20
+armor_bonus_mult = 1.0
+speed_bonus_mult = 1.05
+range_bonus = 2.0
+
+[[upgrades]]
+id = "yuri_doctrine_bounty"
+name = "★ Doctrine: Psychic Tithe (+25% Kill Bounty, +10% DMG & Armor)"
+faction = "yuri"
+cost = 0
+research_time_secs = 2.0
+prerequisites = ["yuri_conyard"]
+requires_promotion_point = true
+cash_bounty_ratio = 0.25
+damage_bonus_mult = 1.10
+armor_bonus_mult = 1.10
+speed_bonus_mult = 1.05
+range_bonus = 0.0
+
+# === Commander Power & General's Promotion Trees (1★–5★) ===
+
+[[commander_trees]]
+id = "allies_commander_tree"
+faction = "allies"
+display_name = "Allied High Command Doctrine"
+
+[[commander_trees.nodes]]
+id = "allies_spy_plane_recon"
+display_name = "1★ Aerial Recon Sweep"
+icon = "assets/ui/cameos/spypicon.png"
+required_rank = 1
+cost_points = 1
+prerequisites = []
+grants_support_power = "allied_spy_plane_scan"
+description = "Authorizes Spy Plane reconnaissance flights to uncover enemy base layouts and stealth staging zones."
+
+[[commander_trees.nodes]]
+id = "allies_war_spoils"
+display_name = "1★ War Spoils Logistics"
+icon = "assets/ui/cameos/mcvicon.png"
+required_rank = 1
+cost_points = 1
+prerequisites = []
+grants_upgrade = "allied_doctrine_bounty"
+description = "Grants 25% credit bounties on enemy kills and +15% weapon firepower across Allied strike groups."
+
+[[commander_trees.nodes]]
+id = "allies_airborne_drop"
+display_name = "2★ 101st Airborne Paradrop"
+icon = "assets/ui/cameos/paraicon.png"
+required_rank = 2
+cost_points = 1
+prerequisites = ["allies_spy_plane_recon"]
+grants_support_power = "allied_airborne_paradrop"
+description = "Deploys a veteran 5-squad Allied GI paratrooper insertion anywhere with line-of-sight."
+
+[[commander_trees.nodes]]
+id = "allies_composite_plating"
+display_name = "2★ Chobham Composite Plating"
+icon = "assets/ui/cameos/mtnkicon.png"
+required_rank = 2
+cost_points = 1
+prerequisites = ["allies_war_spoils"]
+grants_upgrade = "composite_armor"
+description = "Reinforces Allied armored divisions with +20% damage resistance immediately."
+
+[[commander_trees.nodes]]
+id = "allies_prism_optics"
+display_name = "3★ Spectrum Target Optics"
+icon = "assets/ui/cameos/rtnkicon.png"
+required_rank = 3
+cost_points = 1
+prerequisites = ["allies_airborne_drop"]
+grants_upgrade = "laser_target_optics"
+unlocks_def_id = "prism_tank"
+description = "Calibrates Einstein spectrum lenses (+15% damage, +2 range) and authorizes Prism Tank deployment."
+
+[[commander_trees.nodes]]
+id = "allies_force_shield_protocol"
+display_name = "3★ Emergency Force Shield"
+icon = "assets/ui/cameos/forcicon.png"
+required_rank = 3
+cost_points = 1
+prerequisites = ["allies_composite_plating"]
+grants_support_power = "allied_force_shield"
+description = "Unlocks tactical Force Shield projection to make key Allied structures invulnerable during sieges."
+
+[[commander_trees.nodes]]
+id = "allies_chrono_command"
+display_name = "4★ Chronosphere Vanguard"
+icon = "assets/ui/cameos/csphicon.png"
+required_rank = 4
+cost_points = 2
+prerequisites = ["allies_prism_optics", "allies_force_shield_protocol"]
+grants_support_power = "chronosphere_shift"
+unlocks_def_id = "chrono_legionnaire"
+description = "Enables Chrono Shift armoured teleportation and Chrono Legionnaire temporal erasure teams."
+
+[[commander_trees.nodes]]
+id = "allies_weather_control"
+display_name = "5★ Weather Control Superstorm"
+icon = "assets/ui/cameos/wethicon.png"
+required_rank = 5
+cost_points = 2
+prerequisites = ["allies_chrono_command"]
+grants_support_power = "weather_lightning_storm"
+unlocks_def_id = "battle_fortress"
+description = "Summons catastrophic Lightning Storms and authorizes heavy Battle Fortress mobile bunkers."
+
+[[commander_trees]]
+id = "soviet_commander_tree"
+faction = "soviets"
+display_name = "Soviet Supreme Command Doctrine"
+
+[[commander_trees.nodes]]
+id = "soviet_conscript_drop"
+display_name = "1★ Red Banner Paratroopers"
+icon = "assets/ui/cameos/aparicon.png"
+required_rank = 1
+cost_points = 1
+prerequisites = []
+grants_support_power = "soviet_conscript_paradrop"
+description = "Drops a 6-squad Soviet Conscript airborne detachment behind enemy fortifications."
+
+[[commander_trees.nodes]]
+id = "soviet_iron_mobilization"
+display_name = "1★ Iron Mobilization"
+icon = "assets/ui/cameos/smcvicon.png"
+required_rank = 1
+cost_points = 1
+prerequisites = []
+grants_upgrade = "soviet_doctrine_bounty"
+description = "Awards 25% salvage bounties on combat kills and +15% hull armor across Soviet forces."
+
+[[commander_trees.nodes]]
+id = "soviet_emp_warfare"
+display_name = "2★ Electromagnetic Shockwave"
+icon = "assets/ui/cameos/tslaicon.png"
+required_rank = 2
+cost_points = 1
+prerequisites = ["soviet_conscript_drop"]
+grants_support_power = "soviet_emp_pulse"
+description = "Fires a high-altitude EMP Shockwave Pulse that immobilizes enemy vehicles and base defenses."
+
+[[commander_trees.nodes]]
+id = "soviet_reactive_armor"
+display_name = "2★ Heavy Reactive Plating"
+icon = "assets/ui/cameos/htnkicon.png"
+required_rank = 2
+cost_points = 1
+prerequisites = ["soviet_iron_mobilization"]
+grants_upgrade = "heavy_reactive_plating"
+description = "Equips Rhino and heavy tank divisions with +20% armor and +10% cannon firepower."
+
+[[commander_trees.nodes]]
+id = "soviet_mig_strike_wing"
+display_name = "3★ MiG Precision Strike & Boris"
+icon = "assets/ui/cameos/brisicon.png"
+required_rank = 3
+cost_points = 1
+prerequisites = ["soviet_emp_warfare"]
+grants_support_power = "soviet_mig_airstrike"
+unlocks_def_id = "boris"
+description = "Deploys MiG tactical airstrike squadrons and Hero of the Soviet Union Boris."
+
+[[commander_trees.nodes]]
+id = "soviet_tesla_capacitors"
+display_name = "3★ Overcharged Tesla Coils"
+icon = "assets/ui/cameos/ttnkicon.png"
+required_rank = 3
+cost_points = 1
+prerequisites = ["soviet_reactive_armor"]
+grants_upgrade = "overcharged_capacitors"
+unlocks_def_id = "tesla_tank"
+description = "Boosts weapon output by +20% (+1.5 range) and authorizes mobile Tesla Tank battalions."
+
+[[commander_trees.nodes]]
+id = "soviet_iron_curtain_directive"
+display_name = "4★ Iron Curtain & Apocalypse"
+icon = "assets/ui/cameos/ironicon.png"
+required_rank = 4
+cost_points = 2
+prerequisites = ["soviet_mig_strike_wing", "soviet_tesla_capacitors"]
+grants_support_power = "iron_curtain_shield"
+unlocks_def_id = "apocalypse_tank"
+description = "Grants Iron Curtain invulnerability shields and unlocks twin-120mm Apocalypse Tanks."
+
+[[commander_trees.nodes]]
+id = "soviet_nuclear_arsenal"
+display_name = "5★ Strategic Nuclear Arsenal"
+icon = "assets/ui/cameos/nukeicon.png"
+required_rank = 5
+cost_points = 2
+prerequisites = ["soviet_iron_curtain_directive"]
+grants_support_power = "soviet_nuclear_strike"
+unlocks_def_id = "kirov_airship"
+description = "Authorizes Tactical Nuclear Missile launches and heavy Kirov Airship bombardment fleets."
+
+[[commander_trees]]
+id = "yuri_commander_tree"
+faction = "yuri"
+display_name = "Psi-Corps Mastermind Doctrine"
+
+[[commander_trees.nodes]]
+id = "yuri_psychic_tithe"
+display_name = "1★ Psychic Tithe"
+icon = "assets/ui/cameos/ypcvicon.png"
+required_rank = 1
+cost_points = 1
+prerequisites = []
+grants_upgrade = "yuri_doctrine_bounty"
+description = "Extracts 25% credit tithes from fallen foes while granting +10% damage and armor."
+
+[[commander_trees.nodes]]
+id = "yuri_psionic_shielding"
+display_name = "1★ Psionic Wave Amplifiers"
+icon = "assets/ui/cameos/ltnkicon.png"
+required_rank = 1
+cost_points = 1
+prerequisites = []
+grants_upgrade = "psionic_amplifiers"
+unlocks_def_id = "lasher_tank"
+description = "Amplifies Psi-Corps armor by +15%, damage by +10%, and deploys Lasher Light Tanks."
+
+[[commander_trees.nodes]]
+id = "yuri_neuro_toxin_ops"
+display_name = "2★ Neuro-Toxin Synthesis"
+icon = "assets/ui/cameos/vrusicon.png"
+required_rank = 2
+cost_points = 1
+prerequisites = ["yuri_psychic_tithe"]
+grants_upgrade = "neuro_toxin_synthesis"
+unlocks_def_id = "yuri_virus"
+description = "Enhances weapon lethality by +20% (+2 range) and deploys Virus long-range bio-snipers."
+
+[[commander_trees.nodes]]
+id = "yuri_telekinetic_siege"
+display_name = "2★ Telekinetic Magnetron Division"
+icon = "assets/ui/cameos/teleicon.png"
+required_rank = 2
+cost_points = 1
+prerequisites = ["yuri_psionic_shielding"]
+unlocks_def_id = "magnetron"
+description = "Unlocks Magnetron telekinetic siege emitters capable of levitating enemy armor."
+
+[[commander_trees.nodes]]
+id = "yuri_beacon_subversion"
+display_name = "3★ Mind Control Wave"
+icon = "assets/ui/cameos/mindicon.png"
+required_rank = 3
+cost_points = 1
+prerequisites = ["yuri_neuro_toxin_ops", "yuri_telekinetic_siege"]
+grants_support_power = "psychic_beacon_control"
+unlocks_def_id = "mastermind"
+description = "Projects a Psychic Beacon mind-control wave and deploys heavy Mastermind command vehicles."
+
+[[commander_trees.nodes]]
+id = "yuri_genetic_ascension"
+display_name = "4★ Genetic Mutator & Saucer Wing"
+icon = "assets/ui/cameos/muteicon.png"
+required_rank = 4
+cost_points = 2
+prerequisites = ["yuri_beacon_subversion"]
+grants_support_power = "genetic_mutator_blast"
+unlocks_def_id = "floating_disc"
+description = "Mutates enemy infantry squads into Brutes and unlocks power-draining Floating Discs."
+
+[[commander_trees.nodes]]
+id = "yuri_total_domination"
+display_name = "5★ Psychic Dominator & Yuri Prime"
+icon = "assets/ui/cameos/pdomicon.png"
+required_rank = 5
+cost_points = 2
+prerequisites = ["yuri_genetic_ascension"]
+grants_support_power = "psychic_dominator_blast"
+unlocks_def_id = "yuri_prime"
+description = "Unleashes the Psychic Dominator superweapon and Yuri Prime himself onto the battlefield."

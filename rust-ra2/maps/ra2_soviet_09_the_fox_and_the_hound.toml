@@ -1,35 +1,211 @@
 id = "ra2_soviet_09_the_fox_and_the_hound"
-name = "RA2 Soviet 09: The Fox and the Hound (San Antonio)"
+name = "Op. 09: The Fox and the Hound (San Antonio)"
 width = 60
 height = 60
 tile_size = 2.0
-ore_regen_per_sec = 4.0
-mission_objective = "Our victory is near at hand. The President has successfully eluded us, but we have tracked him to a dirty little fort called 'The Alamo' in San Antonio, Texas. You must use our Psi-Corp Troopers to mind control the President and force him to surrender the United States. \n \n Objective 1: Use Mind-Control to capture the President."
+ore_regen_per_sec = 3.0
+mission_objective = "Lead your Psi-Corps & Engineer covert detachment through San Antonio's SEAL perimeter and capture the Alamo Presidential Command Post intact."
 
 [[ore_patches]]
-position = [16, 8]
-radius = 3
+position = [16, 52]
+radius = 2
 amount_per_tile = 1400
 
 [[ore_patches]]
-position = [42, 50]
-radius = 3
-amount_per_tile = 1400
-
-[[ore_patches]]
-position = [30, 30]
-radius = 4
-amount_per_tile = 2000
-
-[[ore_patches]]
-position = [28, 33]
+position = [48, 46]
 radius = 3
 amount_per_tile = 1500
 
-[[ore_patches]]
-position = [37, 33]
-radius = 3
-amount_per_tile = 1500
+[[elevation_rects]]
+min = [8, 27]
+max = [12, 29]
+
+[[elevation_rects]]
+min = [46, 27]
+max = [51, 32]
+
+[[elevation_rects]]
+min = [8, 30]
+max = [13, 32]
+
+[[ramp_rects]]
+min = [7, 27]
+max = [8, 32]
+
+[[ramp_rects]]
+min = [12, 27]
+max = [13, 29]
+
+[[ramp_rects]]
+min = [45, 28]
+max = [46, 30]
+
+[[ramp_rects]]
+min = [51, 28]
+max = [52, 30]
+
+[[ramp_rects]]
+min = [13, 30]
+max = [14, 32]
+
+[[obstacles]]
+min = [27, 12]
+max = [28, 13]
+
+[[obstacles]]
+min = [18, 17]
+max = [19, 18]
+
+[[obstacles]]
+min = [45, 20]
+max = [46, 21]
+
+[[obstacles]]
+min = [41, 22]
+max = [41, 23]
+
+[[obstacles]]
+min = [19, 34]
+max = [20, 35]
+
+[[obstacles]]
+min = [14, 38]
+max = [15, 39]
+
+[[obstacles]]
+min = [25, 38]
+max = [26, 39]
+
+[[obstacles]]
+min = [40, 39]
+max = [41, 40]
+
+[[obstacles]]
+min = [34, 40]
+max = [35, 41]
+
+[[obstacles]]
+min = [28, 45]
+max = [29, 46]
+
+[[props]]
+kind = "tree"
+tile_pos = [33, 28]
+
+[[props]]
+kind = "tree"
+tile_pos = [26, 28]
+
+[[props]]
+kind = "tree"
+tile_pos = [31, 28]
+
+[[props]]
+kind = "tree"
+tile_pos = [32, 40]
+
+[[props]]
+kind = "tree"
+tile_pos = [32, 43]
+
+[[props]]
+kind = "tree"
+tile_pos = [18, 24]
+
+[[props]]
+kind = "tree"
+tile_pos = [22, 24]
+
+[[props]]
+kind = "tree"
+tile_pos = [21, 30]
+
+[[props]]
+kind = "tree"
+tile_pos = [36, 18]
+
+[[props]]
+kind = "tree"
+tile_pos = [12, 31]
+
+[[props]]
+kind = "tree"
+tile_pos = [27, 15]
+
+[[props]]
+kind = "tree"
+tile_pos = [31, 9]
+
+[[props]]
+kind = "tree"
+tile_pos = [21, 12]
+
+[[props]]
+kind = "tree"
+tile_pos = [44, 24]
+
+[[props]]
+kind = "tree"
+tile_pos = [49, 21]
+
+[[props]]
+kind = "tree"
+tile_pos = [43, 39]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [32, 30]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [45, 25]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [47, 28]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [36, 40]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [8, 34]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [29, 22]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [33, 29]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [32, 31]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [28, 54]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [51, 25]
+
+[[preplaced_entities]]
+player_id = 0
+building_id = "white_house"
+tile_pos = [32, 24]
+
+[[preplaced_entities]]
+player_id = 0
+building_id = "tech_airport"
+tile_pos = [44, 14]
+
+[[preplaced_entities]]
+player_id = 0
+building_id = "tech_hospital"
+tile_pos = [14, 24]
 
 [[preplaced_entities]]
 player_id = 2
@@ -39,7 +215,7 @@ tile_pos = [28, 26]
 [[preplaced_entities]]
 player_id = 2
 building_id = "allied_power_plant"
-tile_pos = [32, 24]
+tile_pos = [30, 22]
 
 [[preplaced_entities]]
 player_id = 2
@@ -47,44 +223,9 @@ building_id = "allied_power_plant"
 tile_pos = [34, 29]
 
 [[preplaced_entities]]
-player_id = 1
-building_id = "allied_barracks"
-tile_pos = [16, 22]
-
-[[preplaced_entities]]
 player_id = 2
 building_id = "allied_power_plant"
-tile_pos = [34, 30]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "allied_power_plant"
-tile_pos = [40, 15]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "tech_airport"
-tile_pos = [40, 17]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "allied_pillbox"
-tile_pos = [42, 19]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "allied_pillbox"
-tile_pos = [43, 19]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "allied_patriot_missile"
-tile_pos = [44, 18]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "allied_battle_lab"
-tile_pos = [15, 20]
+tile_pos = [33, 31]
 
 [[preplaced_entities]]
 player_id = 2
@@ -98,43 +239,23 @@ tile_pos = [32, 28]
 
 [[preplaced_entities]]
 player_id = 2
-building_id = "tech_hospital"
-tile_pos = [14, 27]
-
-[[preplaced_entities]]
-player_id = 2
-building_id = "allied_battle_lab"
-tile_pos = [34, 24]
-
-[[preplaced_entities]]
-player_id = 2
 building_id = "allied_service_depot"
-tile_pos = [48, 29]
+tile_pos = [52, 25]
 
 [[preplaced_entities]]
 player_id = 2
 unit_id = "grizzly_tank"
-tile_pos = [35, 27]
+tile_pos = [36, 26]
 
 [[preplaced_entities]]
 player_id = 2
 unit_id = "grizzly_tank"
-tile_pos = [35, 26]
+tile_pos = [36, 25]
 
 [[preplaced_entities]]
 player_id = 2
 unit_id = "ifv"
 tile_pos = [38, 26]
-
-[[preplaced_entities]]
-player_id = 1
-unit_id = "nighthawk_transport"
-tile_pos = [43, 16]
-
-[[preplaced_entities]]
-player_id = 1
-unit_id = "grizzly_tank"
-tile_pos = [42, 16]
 
 [[preplaced_entities]]
 player_id = 2
@@ -144,7 +265,7 @@ tile_pos = [30, 28]
 [[preplaced_entities]]
 player_id = 2
 unit_id = "navy_seal"
-tile_pos = [32, 26]
+tile_pos = [31, 25]
 
 [[preplaced_entities]]
 player_id = 2
@@ -159,12 +280,12 @@ tile_pos = [36, 27]
 [[preplaced_entities]]
 player_id = 2
 unit_id = "navy_seal"
-tile_pos = [36, 26]
+tile_pos = [37, 25]
 
 [[preplaced_entities]]
 player_id = 2
 unit_id = "navy_seal"
-tile_pos = [28, 27]
+tile_pos = [27, 26]
 
 [[preplaced_entities]]
 player_id = 2
@@ -177,29 +298,9 @@ unit_id = "soviet_attack_dog"
 tile_pos = [37, 27]
 
 [[preplaced_entities]]
-player_id = 1
-unit_id = "allied_gi"
-tile_pos = [16, 23]
-
-[[preplaced_entities]]
-player_id = 1
-unit_id = "allied_gi"
-tile_pos = [15, 23]
-
-[[preplaced_entities]]
 player_id = 2
 unit_id = "allied_engineer"
 tile_pos = [14, 21]
-
-[[preplaced_entities]]
-player_id = 1
-unit_id = "allied_gi"
-tile_pos = [42, 18]
-
-[[preplaced_entities]]
-player_id = 1
-unit_id = "allied_gi"
-tile_pos = [43, 18]
 
 [[preplaced_entities]]
 player_id = 2
@@ -207,135 +308,213 @@ unit_id = "sniper"
 tile_pos = [41, 14]
 
 [[preplaced_entities]]
-player_id = 1
-unit_id = "allied_gi"
-tile_pos = [43, 17]
-
-[[preplaced_entities]]
-player_id = 1
-unit_id = "allied_gi"
-tile_pos = [42, 17]
-
-[[preplaced_entities]]
 player_id = 2
 unit_id = "navy_seal"
 tile_pos = [32, 29]
 
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_conyard"
+tile_pos = [42, 42]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_prism_tower"
+tile_pos = [29, 28]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_prism_tower"
+tile_pos = [37, 28]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "sniper"
+tile_pos = [30, 29]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "sniper"
+tile_pos = [36, 29]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "nighthawk_chopper"
+tile_pos = [44, 40]
+
+[[objectives]]
+id = "obj_primary_main"
+tier = "primary"
+title = "Lead your Psi-Corps & Engineer covert detachment through San Antonio's SEAL perimeter..."
+marker_tile = [42, 42]
+
+[[objectives]]
+id = "obj_bonus_tech"
+tier = "bonus"
+title = "Capture Neutral Tech Airport with an Engineer"
+marker_tile = [44, 14]
+
+[[cutscenes]]
+id = "intro_flyover"
+skippable = true
+letterbox = true
+
+[[cutscenes.keyframes]]
+time_secs = 0.0
+focus = [85.0, 0.0, 85.0]
+distance = 46.0
+pitch_deg = 52.0
+yaw_deg = -22.0
+
+[[cutscenes.keyframes]]
+time_secs = 2.2
+focus = [51.0, 0.0, 93.0]
+distance = 42.0
+pitch_deg = 55.0
+yaw_deg = -10.0
+
+[[cutscenes.keyframes]]
+time_secs = 4.5
+focus = [19.0, 0.0, 101.0]
+distance = 36.0
+pitch_deg = 58.0
+yaw_deg = 0.0
+
 [[spawns]]
 player_id = 1
 faction = "soviets"
-base_tile = [8, 8]
-
-[[spawns.initial_buildings]]
-building_id = "soviet_conyard"
-tile_pos = [8, 8]
-
-[[spawns.initial_buildings]]
-building_id = "soviet_tesla_reactor"
-tile_pos = [11, 8]
-
-[[spawns.initial_buildings]]
-building_id = "soviet_refinery"
-tile_pos = [8, 11]
-
-[[spawns.initial_buildings]]
-building_id = "soviet_barracks"
-tile_pos = [11, 11]
-
-[[spawns.initial_buildings]]
-building_id = "soviet_war_factory"
-tile_pos = [14, 8]
+sub_faction = "russia"
+base_tile = [9, 50]
+team_id = 1
 
 [[spawns.initial_units]]
-unit_id = "soviet_conscript"
-tile_pos = [10, 13]
+unit_id = "psi_commando"
+tile_pos = [9, 50]
 
 [[spawns.initial_units]]
-unit_id = "soviet_conscript"
-tile_pos = [12, 13]
+unit_id = "psi_commando"
+tile_pos = [11, 50]
 
 [[spawns.initial_units]]
-unit_id = "rhino_tank"
-tile_pos = [14, 12]
+unit_id = "yuri_clone"
+tile_pos = [9, 52]
 
 [[spawns.initial_units]]
-unit_id = "war_miner"
-tile_pos = [10, 12]
+unit_id = "yuri_clone"
+tile_pos = [11, 52]
+
+[[spawns.initial_units]]
+unit_id = "soviet_engineer"
+tile_pos = [13, 50]
+
+[[spawns.initial_units]]
+unit_id = "soviet_engineer"
+tile_pos = [13, 52]
+
+[[spawns.initial_units]]
+unit_id = "crazy_ivan"
+tile_pos = [8, 51]
+
+[[spawns.initial_units]]
+unit_id = "tesla_trooper"
+tile_pos = [10, 48]
+
+[[spawns.initial_units]]
+unit_id = "tesla_trooper"
+tile_pos = [12, 48]
+
+[[spawns.initial_units]]
+unit_id = "flak_trooper"
+tile_pos = [14, 49]
 
 [[spawns]]
 player_id = 2
 faction = "allies"
-base_tile = [50, 50]
-
-[[spawns.initial_buildings]]
-building_id = "allied_conyard"
-tile_pos = [50, 50]
-
-[[spawns.initial_buildings]]
-building_id = "allied_power_plant"
-tile_pos = [47, 50]
-
-[[spawns.initial_buildings]]
-building_id = "allied_refinery"
-tile_pos = [50, 47]
-
-[[spawns.initial_buildings]]
-building_id = "allied_barracks"
-tile_pos = [47, 47]
-
-[[spawns.initial_buildings]]
-building_id = "allied_war_factory"
-tile_pos = [44, 50]
-
-[[spawns.initial_units]]
-unit_id = "allied_gi"
-tile_pos = [48, 45]
-
-[[spawns.initial_units]]
-unit_id = "allied_gi"
-tile_pos = [46, 45]
-
-[[spawns.initial_units]]
-unit_id = "grizzly_tank"
-tile_pos = [44, 46]
-
-[[spawns.initial_units]]
-unit_id = "chrono_miner"
-tile_pos = [48, 46]
+sub_faction = "usa"
+base_tile = [42, 42]
+team_id = 2
 
 [[trigger_zones]]
-id = "mission_stage_init"
-min = [6, 6]
-max = [12, 12]
+id = "fox_hound_init"
+min = [0, 0]
+max = [3, 3]
 once = true
 condition = { type = "timer_elapsed", secs = 1.0 }
 actions = [
+    { type = "play_cutscene", cutscene_id = "intro_flyover" },
+    { type = "set_objective_status", objective_id = "obj_primary_main", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_bonus_tech", status = "active" },
     { type = "set_variable", name = "mission_stage", value = 1 },
-    { type = "eva_transmission", speaker = "ZOFIA", text = "Battle Control Online. Primary tactical objectives initialized." },
-    { type = "reveal_area", tile = [8, 8], radius = 14 }
+    { type = "reveal_area", tile = [32, 24], radius = 8 },
+    { type = "eva_transmission", speaker = "LT. ZOFIA", text = "President Dugan is inside the Alamo Command Post! Watch out for Navy SEALs and Snipers — mind-control Allied patrols and capture the Alamo intact!", portrait = "assets/ui/cameos/nradicon.png", audio_cue = "battle_control_online" },
 ]
 
 [[trigger_zones]]
-id = "tactical_reinforcement_wave"
-min = [7, 6]
-max = [11, 10]
+id = "san_antonio_airport_bonus"
+min = [0, 0]
+max = [3, 3]
 once = true
-condition = { type = "all", conditions = [{ type = "timer_elapsed", secs = 45.0 }, { type = "variable_equals", name = "mission_stage", value = 1 }] }
+condition = { type = "building_captured", building_id = "tech_airport", by_player_id = 1 }
 actions = [
-    { type = "set_variable", name = "mission_stage", value = 2 },
-    { type = "spawn_reinforcements", player_id = 1, unit_id = "rhino_tank", count = 2, tile = [7, 6] },
     { type = "grant_credits", player_id = 1, amount = 1500 },
-    { type = "eva_transmission", speaker = "ZOFIA", text = "Reinforcements have arrived. Forward command has authorized 1500 bonus credits." }
+    { type = "spawn_reinforcements", player_id = 1, unit_id = "soviet_engineer", count = 2, tile = [42, 18] },
+    { type = "spawn_reinforcements", player_id = 1, unit_id = "tesla_trooper", count = 4, tile = [44, 18] },
+    { type = "eva_transmission", speaker = "LT. ZOFIA", text = "San Antonio Airfield captured! Paratrooper Engineers and Shock Troopers have landed!", portrait = "assets/ui/cameos/nradicon.png", audio_cue = "building_captured" },
 ]
 
 [[trigger_zones]]
-id = "decisive_campaign_victory"
-min = [2, 2]
-max = [6, 6]
+id = "psi_team_eliminated_defeat"
+min = [0, 0]
+max = [3, 3]
 once = true
-condition = { type = "all_buildings_destroyed", player_id = 2 }
+condition = { type = "player_units_below", player_id = 1, max_count = 0 }
 actions = [
+    { type = "eva_transmission", speaker = "LT. ZOFIA", text = "All Psi-Corps operatives have been neutralized! The President has escaped.", portrait = "assets/ui/cameos/nradicon.png", audio_cue = "unit_lost" },
+    { type = "declare_winner", player_id = 2 },
+]
+
+[[trigger_zones]]
+id = "alamo_destroyed_defeat"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "building_destroyed", building_id = "white_house" }
+actions = [
+    { type = "eva_transmission", speaker = "LT. ZOFIA", text = "Fool! The Alamo Command Post was destroyed — we needed the President alive!", portrait = "assets/ui/cameos/nradicon.png", audio_cue = "unit_lost" },
+    { type = "declare_winner", player_id = 2 },
+]
+
+[[trigger_zones]]
+id = "president_captured_victory"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "building_captured", building_id = "white_house", by_player_id = 1 }
+actions = [
+    { type = "set_objective_status", objective_id = "obj_primary_main", status = "completed" },
     { type = "set_variable", name = "mission_stage", value = 3 },
-    { type = "eva_transmission", speaker = "ZOFIA", text = "Mission Accomplished. All primary hostile command structures neutralized." },
-    { type = "declare_winner", player_id = 1 }
+    { type = "eva_transmission", speaker = "YURI", text = "The American President's mind is now ours, Comrade General. America kneels before the Union!", portrait = "assets/ui/cameos/yuriicon.png", audio_cue = "primary_objective_achieved" },
+    { type = "declare_winner", player_id = 1 },
+]
+
+[[trigger_zones]]
+id = "p22_bonus_tech_captured"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "building_captured", building_id = "tech_airport", by_player_id = 1 }
+actions = [
+    { type = "set_objective_status", objective_id = "obj_bonus_tech", status = "completed" },
+    { type = "grant_credits", player_id = 1, amount = 750 },
+    { type = "eva_transmission", speaker = "LT. ZOFIA", text = "Bonus objective achieved: Neutral tech structure secured!", portrait = "assets/ui/cameos/nradicon.png", audio_cue = "building_captured" },
+]
+
+[[trigger_zones]]
+id = "p22_periodic_skirmish_wave"
+min = [0, 0]
+max = [3, 3]
+once = false
+condition = { type = "periodic_timer", start_secs = 75, interval_secs = 75, max_repeats = 3 }
+actions = [
+    { type = "spawn_reinforcements", player_id = 2, unit_id = "allied_gi", count = 3, tile = [42, 40] },
 ]

@@ -1,0 +1,292 @@
+# ==============================================================================
+# AI Profiles & Acyclic Visual Behavior Trees (`AiProfileCatalog`)
+# ==============================================================================
+
+[[profiles]]
+id = "solar_order_archon_bt"
+faction = "solar_order"
+personality = "balanced"
+personality_id = "balanced"
+min_attack_wave_size = 5
+expand_at_credits = 1800
+superweapon_doctrine = "balanced"
+amphibious_assault_enabled = false
+build_order = [
+    "aether_extractor",
+    "vanguard_barracks",
+    "arcane_smithy",
+    "sunbeam_spire",
+    "grand_archive",
+    "construct_foundry",
+]
+
+[profiles.unit_role_quotas]
+infantry = 0.60
+vehicle = 0.40
+
+[profiles.target_priority_weights]
+economy = 1.5
+production = 1.4
+tech = 1.3
+
+[profiles.unit_weights]
+acolyte_worker = 25
+crystal_harvester = 35
+legion_sentinel = 65
+pyre_warden = 80
+astral_colossus = 95
+archon_commander = 100
+
+[profiles.behavior_tree]
+id = "bt_solar_order_commander"
+name = "Solar Order Era & Control-Point Behavior Tree"
+root_node = "root_selector"
+
+[[profiles.behavior_tree.nodes]]
+id = "root_selector"
+label = "Strategic Priority Selector"
+comment = "Evaluates emergency defense, hero micro, era progression, control points, and macro build order."
+canvas_pos = [80.0, 220.0]
+base_utility = 1.0
+node_kind = { kind = "selector", children = [
+    "seq_emergency_defense",
+    "seq_hero_skills",
+    "seq_advance_age_2",
+    "seq_advance_age_3",
+    "seq_capture_and_push",
+    "act_macro_build_order",
+] }
+
+[[profiles.behavior_tree.nodes]]
+id = "seq_emergency_defense"
+label = "Base Defense Sequence"
+canvas_pos = [340.0, 40.0]
+node_kind = { kind = "sequence", children = ["cond_under_attack", "act_defend_base"] }
+
+[[profiles.behavior_tree.nodes]]
+id = "cond_under_attack"
+label = "Citadel Under Attack?"
+canvas_pos = [600.0, 20.0]
+node_kind = { kind = "blackboard_condition", condition = { check = "under_attack" } }
+
+[[profiles.behavior_tree.nodes]]
+id = "act_defend_base"
+label = "Rally Forces to Defend"
+canvas_pos = [600.0, 70.0]
+node_kind = { kind = "ai_action", action = { action = "defend_base" } }
+
+[[profiles.behavior_tree.nodes]]
+id = "seq_hero_skills"
+label = "Archon Skill Execution"
+canvas_pos = [340.0, 130.0]
+node_kind = { kind = "sequence", children = ["cond_hero_alive", "act_use_hero_skills"] }
+
+[[profiles.behavior_tree.nodes]]
+id = "cond_hero_alive"
+label = "Archon Alive?"
+canvas_pos = [600.0, 115.0]
+node_kind = { kind = "blackboard_condition", condition = { check = "hero_alive" } }
+
+[[profiles.behavior_tree.nodes]]
+id = "act_use_hero_skills"
+label = "Cast Solar Nova & Bulwark"
+canvas_pos = [600.0, 165.0]
+node_kind = { kind = "ai_action", action = { action = "use_hero_skills" } }
+
+[[profiles.behavior_tree.nodes]]
+id = "seq_advance_age_2"
+label = "Ascend to Age II"
+canvas_pos = [340.0, 220.0]
+node_kind = { kind = "sequence", children = ["cond_has_smithy", "cond_aether_for_age2", "act_advance_age_2"] }
+
+[[profiles.behavior_tree.nodes]]
+id = "cond_has_smithy"
+label = "Has Arcane Smithy?"
+canvas_pos = [600.0, 205.0]
+node_kind = { kind = "blackboard_condition", condition = { check = "has_building", building_id = "arcane_smithy" } }
+
+[[profiles.behavior_tree.nodes]]
+id = "cond_aether_for_age2"
+label = "Aether >= 150?"
+canvas_pos = [600.0, 245.0]
+node_kind = { kind = "blackboard_condition", condition = { check = "resource_above", resource_id = "aether", amount = 150 } }
+
+[[profiles.behavior_tree.nodes]]
+id = "act_advance_age_2"
+label = "Advance to Age II"
+canvas_pos = [840.0, 225.0]
+node_kind = { kind = "ai_action", action = { action = "advance_era", era_id = "age_2" } }
+
+[[profiles.behavior_tree.nodes]]
+id = "seq_advance_age_3"
+label = "Ascend to Age III"
+canvas_pos = [340.0, 310.0]
+node_kind = { kind = "sequence", children = ["cond_in_age_2", "cond_has_archive", "act_advance_age_3"] }
+
+[[profiles.behavior_tree.nodes]]
+id = "cond_in_age_2"
+label = "Era >= 2?"
+canvas_pos = [600.0, 295.0]
+node_kind = { kind = "blackboard_condition", condition = { check = "era_at_least", era_order = 2 } }
+
+[[profiles.behavior_tree.nodes]]
+id = "cond_has_archive"
+label = "Has Grand Archive?"
+canvas_pos = [600.0, 335.0]
+node_kind = { kind = "blackboard_condition", condition = { check = "has_building", building_id = "grand_archive" } }
+
+[[profiles.behavior_tree.nodes]]
+id = "act_advance_age_3"
+label = "Advance to Age III"
+canvas_pos = [840.0, 315.0]
+node_kind = { kind = "ai_action", action = { action = "advance_era", era_id = "age_3" } }
+
+[[profiles.behavior_tree.nodes]]
+id = "seq_capture_and_push"
+label = "Control-Point & Assault Wave"
+canvas_pos = [340.0, 400.0]
+node_kind = { kind = "sequence", children = ["cond_army_ready", "act_capture_zone", "act_launch_wave"] }
+
+[[profiles.behavior_tree.nodes]]
+id = "cond_army_ready"
+label = "Army >= 5?"
+canvas_pos = [600.0, 385.0]
+node_kind = { kind = "blackboard_condition", condition = { check = "army_count_at_least", count = 5 } }
+
+[[profiles.behavior_tree.nodes]]
+id = "act_capture_zone"
+label = "Capture Control Obelisk"
+canvas_pos = [840.0, 385.0]
+node_kind = { kind = "ai_action", action = { action = "capture_control_point" } }
+
+[[profiles.behavior_tree.nodes]]
+id = "act_launch_wave"
+label = "Launch Siege Wave"
+canvas_pos = [840.0, 430.0]
+node_kind = { kind = "ai_action", action = { action = "launch_attack_wave", min_units = 6 } }
+
+[[profiles.behavior_tree.nodes]]
+id = "act_macro_build_order"
+label = "Execute Streaming Build Order"
+canvas_pos = [340.0, 490.0]
+node_kind = { kind = "ai_action", action = { action = "execute_build_order" } }
+
+# ==============================================================================
+# Obsidian Pact Aggressive Rusher / Control-Point AI Profile
+# ==============================================================================
+[[profiles]]
+id = "obsidian_pact_warlord_bt"
+faction = "obsidian_pact"
+personality = "rusher"
+personality_id = "rusher"
+min_attack_wave_size = 4
+expand_at_credits = 1600
+superweapon_doctrine = "aggressive"
+amphibious_assault_enabled = false
+build_order = [
+    "vanguard_barracks",
+    "aether_extractor",
+    "arcane_smithy",
+    "construct_foundry",
+    "grand_archive",
+    "sunbeam_spire",
+]
+
+[profiles.unit_role_quotas]
+infantry = 0.65
+vehicle = 0.35
+
+[profiles.target_priority_weights]
+economy = 1.7
+production = 1.5
+tech = 1.2
+
+[profiles.unit_weights]
+acolyte_worker = 25
+crystal_harvester = 30
+legion_sentinel = 75
+pyre_warden = 90
+astral_colossus = 85
+archon_commander = 100
+
+[profiles.behavior_tree]
+id = "bt_obsidian_pact_warlord"
+name = "Obsidian Pact Aggressive Pyre & Control-Point Tree"
+root_node = "pact_root"
+
+[[profiles.behavior_tree.nodes]]
+id = "pact_root"
+label = "Pact Warlord Selector"
+canvas_pos = [80.0, 180.0]
+node_kind = { kind = "selector", children = [
+    "pact_defend_seq",
+    "pact_capture_seq",
+    "pact_forge_upgrade_seq",
+    "pact_macro",
+] }
+
+[[profiles.behavior_tree.nodes]]
+id = "pact_defend_seq"
+label = "Emergency Defense"
+canvas_pos = [340.0, 60.0]
+node_kind = { kind = "sequence", children = ["pact_under_attack", "pact_defend"] }
+
+[[profiles.behavior_tree.nodes]]
+id = "pact_under_attack"
+label = "Under Attack?"
+canvas_pos = [580.0, 45.0]
+node_kind = { kind = "blackboard_condition", condition = { check = "under_attack" } }
+
+[[profiles.behavior_tree.nodes]]
+id = "pact_defend"
+label = "Defend Base"
+canvas_pos = [580.0, 90.0]
+node_kind = { kind = "ai_action", action = { action = "defend_base" } }
+
+[[profiles.behavior_tree.nodes]]
+id = "pact_capture_seq"
+label = "Control-Point Blitz"
+canvas_pos = [340.0, 150.0]
+node_kind = { kind = "sequence", children = ["pact_army_4", "pact_capture", "pact_hero_skills"] }
+
+[[profiles.behavior_tree.nodes]]
+id = "pact_army_4"
+label = "Army >= 4?"
+canvas_pos = [580.0, 135.0]
+node_kind = { kind = "blackboard_condition", condition = { check = "army_count_at_least", count = 4 } }
+
+[[profiles.behavior_tree.nodes]]
+id = "pact_capture"
+label = "Seize Capture Zone"
+canvas_pos = [820.0, 135.0]
+node_kind = { kind = "ai_action", action = { action = "capture_control_point" } }
+
+[[profiles.behavior_tree.nodes]]
+id = "pact_hero_skills"
+label = "Unleash Hero Skills"
+canvas_pos = [820.0, 180.0]
+node_kind = { kind = "ai_action", action = { action = "use_hero_skills" } }
+
+[[profiles.behavior_tree.nodes]]
+id = "pact_forge_upgrade_seq"
+label = "Forge Weapons Research"
+canvas_pos = [340.0, 250.0]
+node_kind = { kind = "sequence", children = ["pact_credits_400", "pact_research_sunforged"] }
+
+[[profiles.behavior_tree.nodes]]
+id = "pact_credits_400"
+label = "Credits >= 400?"
+canvas_pos = [580.0, 240.0]
+node_kind = { kind = "blackboard_condition", condition = { check = "credits_above", amount = 400 } }
+
+[[profiles.behavior_tree.nodes]]
+id = "pact_research_sunforged"
+label = "Research Sunforged Weapons"
+canvas_pos = [820.0, 240.0]
+node_kind = { kind = "ai_action", action = { action = "research_upgrade", upgrade_id = "sunforged_weapons" } }
+
+[[profiles.behavior_tree.nodes]]
+id = "pact_macro"
+label = "Execute Build Order"
+canvas_pos = [340.0, 330.0]
+node_kind = { kind = "ai_action", action = { action = "execute_build_order" } }

@@ -4,9 +4,9 @@
 Bereitstellung des daten- und skriptgetriebenen Modding-Fundaments der Engine ([`engine/crates/rts-sdk`](file:///d:/projekt/rust-rts/engine/crates/rts-sdk/src/lib.rs)). Dieses Crate lädt Mods aus dem Dateisystem, validiert alle Referenzen (Fraktionen, Einheiten, Gebäude, Waffen, Superwaffen, Kampagnen, Tech-Tree-Voraussetzungen, `.glb`-3D-Modelle, Karten) und stellt eine einheitliche Sandbox-Skript-Schnittstelle für **Rhai** (`.rhai`) und **Lua** (`.lua`) bereit.
 
 ## Tech Stack
-- `serde`, `toml`, `thiserror`, `anyhow`
-- `rhai` `1.21` (`.rhai` Skript-Backend)
-- Deterministisches Lua-Backend ([`lua_runtime.rs`](file:///d:/projekt/rust-rts/engine/crates/rts-sdk/src/scripting/lua_runtime.rs)) für `.lua`-Skripte hinter derselben `ScriptBackend`-Abstraktion
+- `serde`, `serde_json`, `toml`, `thiserror`, `anyhow`
+- `rhai` `1.27` (`Engine::new_raw()` deterministische Sandbox ohne Host-Wall-Clock)
+- Deterministisches Lua-Backend ([`lua_runtime.rs`](file:///d:/projekt/rust-rts/engine/crates/rts-sdk/src/scripting/lua_runtime.rs)) mit lexikalischem `local`-Scope, `elseif`, Schleifen-Budgets und exakter `i64`-Arithmetik hinter derselben `ScriptBackend`-Abstraktion
 
 ## Commands
 ```powershell

@@ -1,0 +1,104 @@
+name: IRONLOCK // RUST-RTS CI
+
+on:
+  push:
+    branches:
+      - "**"
+  pull_request:
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  rust-workspace:
+    name: Rust Engine (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Linux system libraries for Bevy (ALSA / udev / X11 / Wayland)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            pkg-config \
+            libx11-dev \
+            libxi-dev \
+            libxcursor-dev \
+            libxrandr-dev \
+            libxinerama-dev \
+            libasound2-dev \
+            libudev-dev \
+            libxkbcommon-dev \
+            libxkbcommon-x11-0 \
+            libwayland-dev
+
+      - name: Install stable Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+
+      - name: Cache Cargo dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: engine
+
+      - name: Cargo Format Check (rustfmt)
+        if: matrix.os == 'ubuntu-latest'
+        run: cargo fmt --manifest-path engine/Cargo.toml --all -- --check
+
+      - name: Cargo Clippy (-D warnings)
+        run: cargo clippy --manifest-path engine/Cargo.toml --workspace --all-targets -- -D warnings
+
+      - name: Cargo Test (workspace)
+        run: cargo test --manifest-path engine/Cargo.toml --workspace
+
+      - name: Cargo Test rts-simulation (--release determinism & 1,200-unit scale gate)
+        run: cargo test --manifest-path engine/Cargo.toml -p rts-simulation --release
+
+      - name: Deep Binary & Schema Validate Mods (rust-ra2 & sdk-showcase-workers-squads)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          cargo run --manifest-path engine/Cargo.toml -p rts-asset-pipeline -- validate --mod-path rust-ra2
+          cargo run --manifest-path engine/Cargo.toml -p rts-asset-pipeline -- validate --mod-path mods/sdk-showcase-workers-squads
+
+      - name: Run Declarative Gameplay Scenario Suites (test-mod)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          cargo run --manifest-path engine/Cargo.toml -p rts-asset-pipeline -- test-mod --mod-path rust-ra2
+          cargo run --manifest-path engine/Cargo.toml -p rts-asset-pipeline -- test-mod --mod-path mods/sdk-showcase-workers-squads
+
+  centralwebserver:
+    name: Central Webserver & NS8 Module
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: centralwebserver
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Build server & browser TypeScript bundles
+        run: npm run build
+
+      - name: Run unit & integration tests
+        run: npm test
+
+      - name: Validate NethServer 8 module & SemVer rules
+        run: python3 scripts/validate_ns8_module.py

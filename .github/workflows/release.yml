@@ -1,0 +1,92 @@
+name: IRONLOCK // Standalone Release Cooker
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build-and-cook:
+    name: Build & Cook Standalone (${{ matrix.platform }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            platform: linux-x86_64
+          - os: windows-latest
+            platform: windows-x86_64
+          - os: macos-latest
+            platform: macos-arm64
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Linux system libraries for Bevy
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            pkg-config \
+            libx11-dev \
+            libxi-dev \
+            libxcursor-dev \
+            libxrandr-dev \
+            libxinerama-dev \
+            libasound2-dev \
+            libudev-dev \
+            libxkbcommon-dev \
+            libxkbcommon-x11-0 \
+            libwayland-dev
+
+      - name: Install stable Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Cargo dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: engine
+
+      - name: Build Release Engine & SDK Binaries
+        run: cargo build --manifest-path engine/Cargo.toml --workspace --release
+
+      - name: Cook Standalone Distributions (RTSMOD03 VFS Bundles)
+        run: |
+          cargo run --manifest-path engine/Cargo.toml --release -p rts-asset-pipeline -- cook-standalone --mod-path rust-ra2 --output-dir dist/ironlock-rust-ra2-${{ matrix.platform }} --lock-player-mode
+          cargo run --manifest-path engine/Cargo.toml --release -p rts-asset-pipeline -- cook-standalone --mod-path mods/sdk-showcase-workers-squads --output-dir dist/ironlock-sdk-showcase-${{ matrix.platform }} --lock-player-mode
+
+      - name: Package ZIP Archives (POSIX)
+        if: runner.os != 'Windows'
+        run: |
+          mkdir -p release_zips
+          (cd dist && zip -r "../release_zips/ironlock-rust-ra2-${{ matrix.platform }}.zip" "ironlock-rust-ra2-${{ matrix.platform }}")
+          (cd dist && zip -r "../release_zips/ironlock-sdk-showcase-${{ matrix.platform }}.zip" "ironlock-sdk-showcase-${{ matrix.platform }}")
+
+      - name: Package ZIP Archives (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path release_zips | Out-Null
+          Compress-Archive -Path "dist/ironlock-rust-ra2-${{ matrix.platform }}" -DestinationPath "release_zips/ironlock-rust-ra2-${{ matrix.platform }}.zip" -Force
+          Compress-Archive -Path "dist/ironlock-sdk-showcase-${{ matrix.platform }}" -DestinationPath "release_zips/ironlock-sdk-showcase-${{ matrix.platform }}.zip" -Force
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ironlock-standalone-${{ matrix.platform }}
+          path: release_zips/*.zip
+
+      - name: Attach Cooked Standalone ZIPs to GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release_zips/*.zip
+          generate_release_notes: true

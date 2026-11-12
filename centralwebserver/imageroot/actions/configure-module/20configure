@@ -10,7 +10,7 @@ request = json.load(sys.stdin)
 
 host = request["host"].strip()
 lets_encrypt = bool(request.get("lets_encrypt", False))
-http2https = bool(request.get("http2https", True))
+http2https = bool(request.get("http2https", False))
 ttl_secs = int(request.get("ttl_secs", 45))
 rts_node_id = (
     request.get("rts_node_id")
@@ -20,6 +20,9 @@ rts_node_id = (
 relay_port_start = int(request.get("relay_port_start", 30100))
 relay_port_end = int(request.get("relay_port_end", 30139))
 
+if relay_port_start < 1024 or relay_port_end < relay_port_start + 1 or relay_port_end > 65535:
+    sys.exit(2)
+
 # Self-heal NODE_ID if a previous version overwrote NS8's integer cluster node ID
 cur_node_id = os.environ.get("NODE_ID", "1")
 if not cur_node_id.isdigit():
@@ -28,7 +31,8 @@ if not cur_node_id.isdigit():
         real_node_id = rdb.hget("cluster/module_node", os.environ["MODULE_ID"]) or "1"
     except Exception:
         real_node_id = "1"
-    agent.set_env("NODE_ID", str(real_node_id))
+    cur_node_id = str(real_node_id)
+    agent.set_env("NODE_ID", cur_node_id)
 
 agent.set_env("TRAEFIK_HOST", host)
 agent.set_env("HOST", host)
@@ -44,18 +48,19 @@ agent.set_env("RELAY_PORT_END", str(relay_port_end))
 # CRITICAL: Flush environment to disk before 80start_services restarts systemd unit!
 agent.dump_env()
 
-# Register HTTP route in NS8 node Traefik instance
+# Register HTTP route in NS8 node Traefik instance using allocated TCP_PORT
 default_traefik_id = agent.resolve_agent_id("traefik@node")
 if default_traefik_id is None:
     sys.exit(2)
 
 tcp_port = os.environ["TCP_PORT"]
+module_id = os.environ["MODULE_ID"]
 
 response = agent.tasks.run(
     agent_id=default_traefik_id,
     action="set-route",
     data={
-        "instance": os.environ["MODULE_ID"],
+        "instance": module_id,
         "url": f"http://127.0.0.1:{tcp_port}",
         "host": host,
         "lets_encrypt": lets_encrypt,
@@ -63,3 +68,21 @@ response = agent.tasks.run(
     },
 )
 agent.assert_exp(response["exit_code"] == 0)
+
+# Open Reverse-TCP NAT Relay port pool in NS8 host firewall (node:fwadm)
+fw_service = f"{module_id}-relay"
+fw_ports = [f"{relay_port_start}-{relay_port_end}/tcp"]
+if hasattr(agent, "add_public_service"):
+    fw_ok = agent.add_public_service(fw_service, fw_ports)
+    agent.assert_exp(fw_ok, "Firewall relay service configuration failed")
+else:
+    fw_resp = agent.tasks.run(
+        agent_id=f"node/{cur_node_id}",
+        action="add-public-service",
+        data={
+            "service": fw_service,
+            "ports": fw_ports,
+            "replaces": [fw_service],
+        },
+    )
+    agent.assert_exp(fw_resp["exit_code"] == 0)

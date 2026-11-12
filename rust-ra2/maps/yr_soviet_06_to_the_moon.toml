@@ -1,351 +1,574 @@
 id = "yr_soviet_06_to_the_moon"
-name = "YR Soviet 06: To the Moon (Lunar Surface)"
+name = "YR Op. 06: To the Moon (Lunar Surface)"
 width = 48
 height = 96
 tile_size = 2.0
-ore_regen_per_sec = 4.0
-mission_objective = "Yuri plans to launch himself to the moon after initiating his Psychic Dominator wave over earth. We need to install a base on the moon so we can build an attack force capable of destroying Yuri's moon bases and his Lunar Command Center. \n \n Objective 1: Find a location to build a base. \n Objective 2: Locate and Destroy Yuri's Lunar Command Center. \n Objective 3: Destroy Yuri's remaining base."
+ore_regen_per_sec = 4.5
+mission_objective = "Establish a Soviet Lunar Expeditionary Base with Conscripts, Tesla Troopers, Flak Troopers, Desolators, and Rhino Tanks, and destroy Yuri's Lunar Command centers."
 
 [[ore_patches]]
-position = [16, 8]
+position = [23, 76]
 radius = 3
-amount_per_tile = 1400
+amount_per_tile = 1600
 
 [[ore_patches]]
-position = [30, 86]
+position = [10, 54]
 radius = 3
-amount_per_tile = 1400
+amount_per_tile = 1700
 
 [[ore_patches]]
-position = [24, 48]
-radius = 4
-amount_per_tile = 2000
-
-[[ore_patches]]
-position = [16, 10]
+position = [34, 20]
 radius = 3
-amount_per_tile = 1500
+amount_per_tile = 1700
 
-[[ore_patches]]
-position = [31, 68]
-radius = 3
-amount_per_tile = 1500
+[[gem_patches]]
+position = [34, 68]
+radius = 2
+amount_per_tile = 2600
 
-[[preplaced_entities]]
-player_id = 2
-building_id = "yuri_psychic_tower"
-tile_pos = [24, 61]
+[[gem_patches]]
+position = [10, 38]
+radius = 2
+amount_per_tile = 2600
 
-[[preplaced_entities]]
-player_id = 2
-building_id = "yuri_psychic_tower"
-tile_pos = [25, 58]
+[[elevation_rects]]
+min = [17, 43]
+max = [24, 46]
 
-[[preplaced_entities]]
-player_id = 2
-building_id = "yuri_psychic_tower"
-tile_pos = [23, 52]
+[[elevation_rects]]
+min = [33, 54]
+max = [40, 65]
 
-[[preplaced_entities]]
-player_id = 2
-building_id = "yuri_psychic_tower"
-tile_pos = [21, 54]
+[[elevation_rects]]
+min = [37, 66]
+max = [40, 68]
+
+[[ramp_rects]]
+min = [16, 43]
+max = [17, 45]
+
+[[ramp_rects]]
+min = [24, 43]
+max = [25, 45]
+
+[[ramp_rects]]
+min = [32, 58]
+max = [33, 60]
+
+[[ramp_rects]]
+min = [40, 58]
+max = [41, 60]
+
+[[ramp_rects]]
+min = [36, 66]
+max = [37, 68]
+
+[[ramp_rects]]
+min = [40, 66]
+max = [41, 68]
+
+[[obstacles]]
+min = [26, 32]
+max = [27, 33]
+
+[[obstacles]]
+min = [16, 37]
+max = [17, 38]
+
+[[obstacles]]
+min = [29, 46]
+max = [30, 46]
+
+[[obstacles]]
+min = [30, 47]
+max = [30, 47]
+
+[[obstacles]]
+min = [25, 65]
+max = [26, 66]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [42, 70]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [43, 68]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [14, 7]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [11, 11]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [5, 20]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [11, 25]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [11, 26]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [13, 28]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [24, 29]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [18, 29]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [18, 30]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [10, 33]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [27, 35]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [13, 41]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [32, 41]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [28, 42]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [21, 46]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [24, 46]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [31, 47]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [29, 52]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "yuri_conyard"
-tile_pos = [21, 57]
-
-[[preplaced_entities]]
-player_id = 2
-building_id = "yuri_bio_reactor"
-tile_pos = [21, 52]
-
-[[preplaced_entities]]
-player_id = 2
-building_id = "yuri_bio_reactor"
-tile_pos = [22, 52]
-
-[[preplaced_entities]]
-player_id = 2
-building_id = "yuri_bio_reactor"
-tile_pos = [20, 56]
-
-[[preplaced_entities]]
-player_id = 2
-building_id = "yuri_barracks"
-tile_pos = [22, 60]
-
-[[preplaced_entities]]
-player_id = 2
-building_id = "yuri_war_factory"
-tile_pos = [23, 57]
+tile_pos = [14, 14]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "yuri_battle_lab"
-tile_pos = [22, 55]
+tile_pos = [19, 14]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_psychic_dominator"
+tile_pos = [24, 14]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_bio_reactor"
+tile_pos = [10, 14]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_bio_reactor"
+tile_pos = [10, 17]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_bio_reactor"
+tile_pos = [28, 15]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_barracks"
+tile_pos = [14, 19]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_war_factory"
+tile_pos = [19, 19]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_psychic_tower"
+tile_pos = [14, 24]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_psychic_tower"
+tile_pos = [24, 24]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "yuri_gatling_cannon"
+tile_pos = [11, 23]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_gatling_cannon"
+tile_pos = [27, 23]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_conyard"
+tile_pos = [22, 54]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_bio_reactor"
+tile_pos = [26, 54]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_barracks"
 tile_pos = [22, 58]
 
 [[preplaced_entities]]
 player_id = 2
-building_id = "yuri_conyard"
-tile_pos = [9, 13]
+building_id = "yuri_war_factory"
+tile_pos = [26, 58]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_gatling_cannon"
+tile_pos = [19, 59]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "yuri_psychic_tower"
-tile_pos = [9, 30]
+tile_pos = [29, 59]
 
 [[preplaced_entities]]
 player_id = 2
-building_id = "yuri_psychic_tower"
+building_id = "yuri_slave_refinery"
+tile_pos = [16, 54]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "floating_disc"
+tile_pos = [16, 22]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "floating_disc"
+tile_pos = [22, 22]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "floating_disc"
+tile_pos = [24, 52]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "magnetron"
+tile_pos = [18, 25]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "magnetron"
+tile_pos = [22, 50]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "mastermind"
+tile_pos = [20, 17]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "mastermind"
+tile_pos = [25, 55]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "lasher_tank"
+tile_pos = [16, 26]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "lasher_tank"
+tile_pos = [22, 26]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "lasher_tank"
+tile_pos = [20, 61]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "lasher_tank"
+tile_pos = [25, 61]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "gattling_tank"
 tile_pos = [13, 26]
 
 [[preplaced_entities]]
 player_id = 2
-building_id = "yuri_psychic_tower"
-tile_pos = [13, 18]
-
-[[preplaced_entities]]
-player_id = 2
-building_id = "yuri_psychic_tower"
-tile_pos = [16, 14]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "yuri_war_factory"
-tile_pos = [23, 27]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "yuri_barracks"
-tile_pos = [26, 31]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "yuri_bio_reactor"
-tile_pos = [24, 26]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "yuri_bio_reactor"
-tile_pos = [26, 34]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "yuri_bio_reactor"
-tile_pos = [25, 34]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "yuri_bio_reactor"
-tile_pos = [23, 32]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "yuri_bio_reactor"
-tile_pos = [23, 28]
-
-[[preplaced_entities]]
-player_id = 2
-unit_id = "mastermind"
-tile_pos = [14, 10]
-
-[[preplaced_entities]]
-player_id = 2
-unit_id = "mastermind"
-tile_pos = [9, 27]
-
-[[preplaced_entities]]
-player_id = 2
-unit_id = "mastermind"
-tile_pos = [16, 10]
-
-[[preplaced_entities]]
-player_id = 2
-unit_id = "floating_disc"
-tile_pos = [8, 21]
-
-[[preplaced_entities]]
-player_id = 2
-unit_id = "floating_disc"
-tile_pos = [10, 23]
-
-[[preplaced_entities]]
-player_id = 2
-unit_id = "floating_disc"
-tile_pos = [15, 15]
-
-[[preplaced_entities]]
-player_id = 2
-unit_id = "floating_disc"
-tile_pos = [6, 28]
-
-[[preplaced_entities]]
-player_id = 2
-unit_id = "floating_disc"
-tile_pos = [12, 16]
+unit_id = "gattling_tank"
+tile_pos = [26, 26]
 
 [[preplaced_entities]]
 player_id = 2
 unit_id = "gattling_tank"
-tile_pos = [14, 13]
+tile_pos = [28, 61]
 
 [[preplaced_entities]]
 player_id = 2
-unit_id = "gattling_tank"
-tile_pos = [11, 16]
+unit_id = "yuri_initiate"
+tile_pos = [18, 60]
 
 [[preplaced_entities]]
 player_id = 2
-unit_id = "gattling_tank"
-tile_pos = [9, 18]
+unit_id = "yuri_initiate"
+tile_pos = [22, 60]
 
 [[preplaced_entities]]
 player_id = 2
-unit_id = "lasher_tank"
-tile_pos = [13, 22]
+unit_id = "yuri_slave_miner"
+tile_pos = [14, 56]
 
-[[preplaced_entities]]
-player_id = 2
-unit_id = "lasher_tank"
-tile_pos = [11, 24]
+[[objectives]]
+id = "obj_primary_main"
+tier = "primary"
+title = "Establish a Soviet Lunar Expeditionary Base with Conscripts, Tesla Troopers, Flak Tro..."
+marker_tile = [14, 14]
 
-[[preplaced_entities]]
-player_id = 2
-unit_id = "lasher_tank"
-tile_pos = [9, 31]
+[[objectives]]
+id = "obj_bonus_waves"
+tier = "bonus"
+title = "Weather Enemy Tactical Counterattack Waves"
+target_count = 2
+marker_tile = [14, 78]
 
-[[preplaced_entities]]
-player_id = 2
-unit_id = "lasher_tank"
-tile_pos = [7, 24]
+[[cutscenes]]
+id = "intro_flyover"
+skippable = true
+letterbox = true
 
-[[preplaced_entities]]
-player_id = 2
-unit_id = "lasher_tank"
-tile_pos = [8, 17]
+[[cutscenes.keyframes]]
+time_secs = 0.0
+focus = [29.0, 0.0, 29.0]
+distance = 46.0
+pitch_deg = 52.0
+yaw_deg = -22.0
+
+[[cutscenes.keyframes]]
+time_secs = 2.2
+focus = [29.0, 0.0, 93.0]
+distance = 42.0
+pitch_deg = 55.0
+yaw_deg = -10.0
+
+[[cutscenes.keyframes]]
+time_secs = 4.5
+focus = [29.0, 0.0, 157.0]
+distance = 36.0
+pitch_deg = 58.0
+yaw_deg = 0.0
 
 [[spawns]]
 player_id = 1
 faction = "soviets"
-base_tile = [8, 8]
+sub_faction = "russia"
+base_tile = [14, 78]
+team_id = 1
 
 [[spawns.initial_buildings]]
 building_id = "soviet_conyard"
-tile_pos = [8, 8]
+tile_pos = [14, 78]
 
 [[spawns.initial_buildings]]
 building_id = "soviet_tesla_reactor"
-tile_pos = [11, 8]
+tile_pos = [11, 78]
 
 [[spawns.initial_buildings]]
 building_id = "soviet_refinery"
-tile_pos = [8, 11]
+tile_pos = [18, 78]
 
 [[spawns.initial_buildings]]
 building_id = "soviet_barracks"
-tile_pos = [11, 11]
+tile_pos = [14, 74]
 
 [[spawns.initial_buildings]]
 building_id = "soviet_war_factory"
-tile_pos = [14, 8]
+tile_pos = [18, 74]
 
-[[spawns.initial_units]]
-unit_id = "soviet_conscript"
-tile_pos = [10, 13]
+[[spawns.initial_buildings]]
+building_id = "soviet_tesla_reactor"
+tile_pos = [12, 71]
 
-[[spawns.initial_units]]
-unit_id = "soviet_conscript"
-tile_pos = [12, 13]
+[[spawns.initial_buildings]]
+building_id = "soviet_radar_tower"
+tile_pos = [15, 71]
 
-[[spawns.initial_units]]
-unit_id = "rhino_tank"
-tile_pos = [14, 12]
+[[spawns.initial_buildings]]
+building_id = "soviet_flak_cannon"
+tile_pos = [18, 71]
 
 [[spawns.initial_units]]
 unit_id = "war_miner"
-tile_pos = [10, 12]
+tile_pos = [20, 77]
+
+[[spawns.initial_units]]
+unit_id = "soviet_conscript"
+tile_pos = [14, 72]
+
+[[spawns.initial_units]]
+unit_id = "soviet_conscript"
+tile_pos = [17, 71]
+
+[[spawns.initial_units]]
+unit_id = "soviet_conscript"
+tile_pos = [18, 72]
+
+[[spawns.initial_units]]
+unit_id = "soviet_conscript"
+tile_pos = [20, 72]
+
+[[spawns.initial_units]]
+unit_id = "tesla_trooper"
+tile_pos = [14, 71]
+
+[[spawns.initial_units]]
+unit_id = "tesla_trooper"
+tile_pos = [15, 70]
+
+[[spawns.initial_units]]
+unit_id = "tesla_trooper"
+tile_pos = [17, 70]
+
+[[spawns.initial_units]]
+unit_id = "flak_trooper"
+tile_pos = [20, 71]
+
+[[spawns.initial_units]]
+unit_id = "flak_trooper"
+tile_pos = [14, 70]
+
+[[spawns.initial_units]]
+unit_id = "flak_trooper"
+tile_pos = [16, 70]
+
+[[spawns.initial_units]]
+unit_id = "desolator"
+tile_pos = [18, 70]
+
+[[spawns.initial_units]]
+unit_id = "desolator"
+tile_pos = [20, 70]
+
+[[spawns.initial_units]]
+unit_id = "rhino_tank"
+tile_pos = [14, 69]
+
+[[spawns.initial_units]]
+unit_id = "rhino_tank"
+tile_pos = [16, 69]
+
+[[spawns.initial_units]]
+unit_id = "rhino_tank"
+tile_pos = [18, 69]
+
+[[spawns.initial_units]]
+unit_id = "siege_chopper"
+tile_pos = [20, 69]
+
+[[spawns.initial_units]]
+unit_id = "siege_chopper"
+tile_pos = [14, 68]
 
 [[spawns]]
 player_id = 2
 faction = "yuri"
-base_tile = [38, 86]
-
-[[spawns.initial_buildings]]
-building_id = "yuri_conyard"
-tile_pos = [38, 86]
-
-[[spawns.initial_buildings]]
-building_id = "yuri_bio_reactor"
-tile_pos = [35, 86]
-
-[[spawns.initial_buildings]]
-building_id = "yuri_slave_refinery"
-tile_pos = [38, 83]
-
-[[spawns.initial_buildings]]
-building_id = "yuri_barracks"
-tile_pos = [35, 83]
-
-[[spawns.initial_buildings]]
-building_id = "yuri_war_factory"
-tile_pos = [32, 86]
-
-[[spawns.initial_units]]
-unit_id = "yuri_initiate"
-tile_pos = [36, 81]
-
-[[spawns.initial_units]]
-unit_id = "yuri_initiate"
-tile_pos = [34, 81]
-
-[[spawns.initial_units]]
-unit_id = "lasher_tank"
-tile_pos = [32, 82]
-
-[[spawns.initial_units]]
-unit_id = "yuri_slave_miner"
-tile_pos = [36, 82]
+sub_faction = "yuri"
+base_tile = [14, 14]
+team_id = 2
 
 [[trigger_zones]]
-id = "mission_stage_init"
-min = [6, 6]
-max = [12, 12]
+id = "lunar_landing_init"
+min = [0, 0]
+max = [3, 3]
 once = true
 condition = { type = "timer_elapsed", secs = 1.0 }
 actions = [
+    { type = "play_cutscene", cutscene_id = "intro_flyover" },
+    { type = "set_objective_status", objective_id = "obj_primary_main", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_bonus_waves", status = "active" },
+    { type = "set_weather", preset = "night" },
     { type = "set_variable", name = "mission_stage", value = 1 },
-    { type = "eva_transmission", speaker = "ZOFIA", text = "Battle Control Online. Primary tactical objectives initialized." },
-    { type = "reveal_area", tile = [8, 8], radius = 14 }
+    { type = "reveal_area", tile = [19, 14], radius = 9 },
+    { type = "eva_transmission", speaker = "LT. ZOFIA", text = "Lunar landing successful, Comrade General! Expand our Soviet moonbase with Tesla Troopers, Flak Troopers, Desolators, and Rhino Heavy Tanks, and raze Yuri's Lunar Command!", portrait = "assets/ui/cameos/nradicon.png", audio_cue = "battle_control_online" },
 ]
 
 [[trigger_zones]]
-id = "tactical_reinforcement_wave"
-min = [7, 6]
-max = [11, 10]
+id = "baikonur_lunar_drop"
+min = [0, 0]
+max = [3, 3]
 once = true
-condition = { type = "all", conditions = [{ type = "timer_elapsed", secs = 45.0 }, { type = "variable_equals", name = "mission_stage", value = 1 }] }
+condition = { type = "all", conditions = [{ type = "timer_elapsed", secs = 50.0 }, { type = "variable_equals", name = "mission_stage", value = 1 }] }
 actions = [
+    { type = "play_radar_video", video_path = "assets/videos/radar_pip/yr_soviet_06_pip_02.mp4" },
     { type = "set_variable", name = "mission_stage", value = 2 },
-    { type = "spawn_reinforcements", player_id = 1, unit_id = "apocalypse_tank", count = 2, tile = [7, 6] },
-    { type = "grant_credits", player_id = 1, amount = 1500 },
-    { type = "eva_transmission", speaker = "ZOFIA", text = "Reinforcements have arrived. Forward command has authorized 1500 bonus credits." }
+    { type = "grant_credits", player_id = 1, amount = 2500 },
+    { type = "spawn_reinforcements", player_id = 1, unit_id = "tesla_trooper", count = 4, tile = [16, 82] },
+    { type = "spawn_reinforcements", player_id = 1, unit_id = "flak_trooper", count = 3, tile = [18, 82] },
+    { type = "spawn_reinforcements", player_id = 1, unit_id = "desolator", count = 2, tile = [20, 82] },
+    { type = "spawn_reinforcements", player_id = 1, unit_id = "rhino_tank", count = 3, tile = [22, 82] },
+    { type = "eva_transmission", speaker = "LT. ZOFIA", text = "Baikonur supply lander has touched down with Tesla Troopers, Flak Troopers, Desolators, and Rhino Tanks!", portrait = "assets/ui/cameos/nradicon.png", audio_cue = "battle_control_online", radar_video = "assets/videos/radar_pip/yr_soviet_06_pip_02.mp4" },
 ]
 
 [[trigger_zones]]
-id = "decisive_campaign_victory"
-min = [2, 2]
-max = [6, 6]
+id = "yuri_lunar_lab_destroyed"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "building_destroyed", building_id = "yuri_battle_lab", player_id = 2 }
+actions = [
+    { type = "grant_credits", player_id = 1, amount = 2000 },
+    { type = "set_objective", text = "Yuri's Lunar Research Lab is destroyed! Wipe out his remaining Lunar Command structures." },
+    { type = "eva_transmission", speaker = "LT. ZOFIA", text = "Yuri's primary Lunar Command Center has depressurized! Crush his remaining moon structures!", portrait = "assets/ui/cameos/nradicon.png", audio_cue = "battle_control_online" },
+]
+
+[[trigger_zones]]
+id = "lunar_total_victory"
+min = [0, 0]
+max = [3, 3]
 once = true
 condition = { type = "all_buildings_destroyed", player_id = 2 }
 actions = [
+    { type = "set_objective_status", objective_id = "obj_primary_main", status = "completed" },
     { type = "set_variable", name = "mission_stage", value = 3 },
-    { type = "eva_transmission", speaker = "ZOFIA", text = "Mission Accomplished. All primary hostile command structures neutralized." },
-    { type = "declare_winner", player_id = 1 }
+    { type = "eva_transmission", speaker = "PREMIER ROMANOV", text = "The red banner flies over the Sea of Tranquility! Now let us finish Yuri back on Earth!", portrait = "assets/ui/cameos/soviet_conyard.png", audio_cue = "primary_objective_achieved" },
+    { type = "declare_winner", player_id = 1 },
+]
+
+[[trigger_zones]]
+id = "p22_periodic_skirmish_wave"
+min = [0, 0]
+max = [3, 3]
+once = false
+condition = { type = "periodic_timer", start_secs = 75, interval_secs = 75, max_repeats = 3 }
+actions = [
+    { type = "spawn_reinforcements", player_id = 2, unit_id = "yuri_initiate", count = 3, tile = [12, 12] },
+    { type = "add_objective_progress", objective_id = "obj_bonus_waves", delta = 1 },
 ]

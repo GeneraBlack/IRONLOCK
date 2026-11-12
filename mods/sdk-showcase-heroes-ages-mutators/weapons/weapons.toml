@@ -1,0 +1,206 @@
+# ==============================================================================
+# Weapons Catalog — Covering Instant, Cone, Beam, Ballistic & Finite-Turn Missile
+# Every weapon has a custom `warhead_tag` matching `mod.toml` `damage_matrix`
+# and is referenced by at least one unit or building (0 orphaned weapons).
+# ==============================================================================
+
+[[weapons]]
+id = "worker_arc_cutter"
+name = "Acolyte Arc Cutter"
+damage = 12.0
+range = 5.5
+cooldown_secs = 1.1
+projectile_speed = 45.0
+delivery = "instant"
+warhead_tag = "sunlance_pierce"
+targets_ground = true
+targets_air = false
+projectile_style = "tesla"
+muzzle_vfx_id = "vfx_sunlance_muzzle"
+impact_vfx_id = "vfx_sunlance_hit"
+
+[weapons.armor_multipliers]
+none = 1.0
+light = 1.0
+medium = 0.85
+heavy = 0.70
+structure = 0.60
+
+[[weapons]]
+id = "sunlance_rifle"
+name = "Sunlance Radiant Carbine"
+damage = 26.0
+range = 10.5
+cooldown_secs = 1.0
+projectile_speed = 55.0
+delivery = "instant"
+warhead_tag = "sunlance_pierce"
+targets_ground = true
+targets_air = true
+burst = 1
+projectile_style = "laser"
+muzzle_vfx_id = "vfx_sunlance_muzzle"
+impact_vfx_id = "vfx_sunlance_hit"
+
+[weapons.armor_multipliers]
+none = 1.2
+light = 1.25
+medium = 1.0
+heavy = 0.75
+structure = 0.55
+
+[[weapons]]
+id = "pyre_cone_projector"
+name = "Sanctified Pyre Cone Projector"
+damage = 38.0
+range = 7.5
+cooldown_secs = 1.25
+projectile_speed = 28.0
+delivery = "cone"
+cone_angle_deg = 42.0
+warhead_tag = "pyre_breath"
+targets_ground = true
+targets_air = false
+splash_radius = 2.0
+projectile_style = "radiation"
+muzzle_vfx_id = "vfx_pyre_cone_flame"
+impact_vfx_id = "vfx_solar_nova_blast"
+
+[weapons.ballistics]
+cone_half_angle_deg = 21.0
+penetrating = true
+collides_with_terrain = true
+collides_with_structures = false
+
+[weapons.on_hit_status]
+id = "pyre_scorch"
+duration_secs = 3.5
+dps = 6.0
+speed_multiplier = 0.88
+armor_multiplier = 0.92
+damage_multiplier = 1.0
+stack_policy = "refresh"
+max_stacks = 1
+dispel_category = "fire"
+
+[weapons.armor_multipliers]
+none = 1.4
+light = 1.45
+medium = 1.10
+heavy = 0.75
+structure = 1.15
+
+[[weapons]]
+id = "sunbeam_prism_lance"
+name = "Sunbeam Coherent Prism Lance"
+damage = 68.0
+range = 15.0
+cooldown_secs = 1.6
+projectile_speed = 90.0
+delivery = "beam"
+warhead_tag = "prism_lance_beam"
+targets_ground = true
+targets_air = true
+projectile_style = "laser"
+muzzle_vfx_id = "vfx_sunbeam_lance"
+impact_vfx_id = "vfx_sunlance_hit"
+
+[weapons.ballistics]
+penetrating = true
+collides_with_terrain = true
+collides_with_structures = false
+
+[weapons.armor_multipliers]
+none = 1.1
+light = 1.15
+medium = 1.20
+heavy = 1.45
+structure = 1.10
+
+[[weapons]]
+id = "meteor_siege_cannon"
+name = "Astral Meteor Siege Cannon"
+damage = 96.0
+range = 18.0
+min_range = 3.5
+cooldown_secs = 2.6
+projectile_speed = 24.0
+delivery = "ballistic"
+arc_height = 6.5
+warhead_tag = "meteor_siege"
+targets_ground = true
+targets_air = false
+splash_radius = 2.8
+projectile_style = "sonic"
+muzzle_vfx_id = "vfx_sunlance_muzzle"
+projectile_vfx_id = "vfx_meteor_trail"
+impact_vfx_id = "vfx_meteor_crater"
+
+[weapons.ballistics]
+gravity = 14.0
+scatter_radius = 0.65
+moving_scatter_multiplier = 1.35
+lead_factor = 0.90
+collides_with_terrain = true
+collides_with_structures = true
+suppression_amount = 18.0
+
+[weapons.armor_multipliers]
+none = 1.15
+light = 1.15
+medium = 1.25
+heavy = 1.35
+structure = 1.70
+
+[[weapons]]
+id = "aether_seeker_pod"
+name = "Aether Seeker Guided Pod"
+damage = 44.0
+range = 15.5
+cooldown_secs = 1.8
+projectile_speed = 26.0
+delivery = "missile"
+turn_rate_deg_per_sec = 165.0
+warhead_tag = "aether_seeker"
+targets_ground = true
+targets_air = true
+burst = 2
+projectile_style = "missile"
+projectile_vfx_id = "vfx_aether_missile_trail"
+impact_vfx_id = "vfx_sunlance_hit"
+
+[weapons.ballistics]
+turn_rate_deg_per_sec = 165.0
+lead_factor = 1.0
+collides_with_terrain = true
+collides_with_structures = false
+
+[weapons.armor_multipliers]
+none = 0.95
+light = 0.95
+medium = 1.25
+heavy = 1.40
+structure = 0.85
+
+[[weapons]]
+id = "archon_sunblade"
+name = "Archon Sunforged Halberd"
+damage = 52.0
+range = 7.0
+cooldown_secs = 0.95
+projectile_speed = 65.0
+delivery = "instant"
+warhead_tag = "archon_blade"
+targets_ground = true
+targets_air = true
+splash_radius = 1.2
+projectile_style = "laser"
+muzzle_vfx_id = "vfx_sunlance_muzzle"
+impact_vfx_id = "vfx_sunlance_hit"
+
+[weapons.armor_multipliers]
+none = 1.25
+light = 1.25
+medium = 1.20
+heavy = 1.15
+structure = 1.00

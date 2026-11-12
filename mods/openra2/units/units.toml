@@ -40,6 +40,7 @@ primary_color = [
     0.8199999928474426,
 ]
 team_color_tint = true
+spin_speed_deg_per_sec = 720.0
 
 [[units]]
 id = "zep"
@@ -445,7 +446,7 @@ team_color_tint = true
 [[units]]
 id = "ptroop"
 name = "Psi Commando"
-faction = "yuri"
+faction = "allies"
 role = "infantry"
 cost = 1000
 build_time_secs = 10.0
@@ -1502,7 +1503,7 @@ team_color_tint = true
 [[units]]
 id = "civan"
 name = "Chrono Ivan"
-faction = "allies"
+faction = "soviets"
 role = "infantry"
 cost = 1000
 build_time_secs = 10.0
@@ -1547,7 +1548,7 @@ team_color_tint = true
 [[units]]
 id = "yuri"
 name = "Yuri"
-faction = "yuri"
+faction = "soviets"
 role = "infantry"
 cost = 1200
 build_time_secs = 12.0
@@ -1593,7 +1594,7 @@ team_color_tint = true
 [[units]]
 id = "yuripr"
 name = "Yuri Prime"
-faction = "yuri"
+faction = "soviets"
 role = "infantry"
 cost = 2000
 build_time_secs = 20.0

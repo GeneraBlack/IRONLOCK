@@ -1,0 +1,128 @@
+[[weapons]]
+id = "squad_carbine"
+name = "M27 Tactical Carbine"
+damage = 18.0
+range = 11.0
+cooldown_secs = 0.85
+projectile_speed = 42.0
+delivery = "ballistic"
+vfx_profile = "bullet"
+
+[weapons.armor_multipliers]
+none = 1.25
+light = 1.0
+heavy = 0.35
+structure = 0.4
+
+[weapons.ballistics]
+gravity = 4.5
+scatter_radius = 0.35
+moving_scatter_multiplier = 1.45
+lead_factor = 0.85
+collides_with_terrain = true
+collides_with_structures = true
+suppression_amount = 18.0
+
+[[weapons]]
+id = "heavy_mg_nest"
+name = "Twin .50 Cal Emplacement"
+damage = 28.0
+range = 14.0
+cooldown_secs = 0.65
+projectile_speed = 48.0
+delivery = "ballistic"
+vfx_profile = "bullet"
+
+[weapons.armor_multipliers]
+none = 1.5
+light = 1.15
+heavy = 0.45
+structure = 0.5
+
+[weapons.ballistics]
+gravity = 3.0
+scatter_radius = 0.55
+moving_scatter_multiplier = 1.0
+lead_factor = 0.9
+collides_with_terrain = true
+collides_with_structures = true
+suppression_amount = 34.0
+
+[[weapons]]
+id = "siege_mortar_81mm"
+name = "81mm High-Angle Siege Mortar"
+damage = 75.0
+range = 20.0
+min_range = 4.0
+cooldown_secs = 3.2
+projectile_speed = 22.0
+splash_radius = 2.4
+delivery = "ballistic"
+arc_height = 6.5
+vfx_profile = "cannon_shell"
+
+[weapons.armor_multipliers]
+none = 1.35
+light = 1.1
+heavy = 0.85
+structure = 1.4
+
+[weapons.ballistics]
+gravity = 16.0
+scatter_radius = 1.35
+moving_scatter_multiplier = 2.0
+lead_factor = 1.0
+collides_with_terrain = true
+collides_with_structures = false
+suppression_amount = 45.0
+
+[[weapons]]
+id = "squad_lmg"
+name = "M249 Squad Automatic LMG"
+damage = 25.0
+range = 13.0
+cooldown_secs = 0.60
+projectile_speed = 46.0
+delivery = "ballistic"
+vfx_profile = "bullet"
+
+[weapons.armor_multipliers]
+none = 1.55
+light = 1.15
+heavy = 0.45
+structure = 0.45
+
+[weapons.ballistics]
+gravity = 3.5
+scatter_radius = 0.40
+moving_scatter_multiplier = 1.60
+lead_factor = 0.90
+collides_with_terrain = true
+collides_with_structures = true
+suppression_amount = 30.0
+
+[[weapons]]
+id = "squad_at_rocket"
+name = "Carl-Gustaf 84mm Squad AT Launcher"
+damage = 64.0
+range = 14.0
+cooldown_secs = 2.10
+projectile_speed = 32.0
+splash_radius = 1.2
+delivery = "missile"
+vfx_profile = "missile"
+
+[weapons.armor_multipliers]
+none = 0.75
+light = 1.35
+heavy = 1.65
+structure = 1.45
+
+[weapons.ballistics]
+gravity = 1.5
+scatter_radius = 0.25
+moving_scatter_multiplier = 1.25
+lead_factor = 1.0
+collides_with_terrain = true
+collides_with_structures = true
+suppression_amount = 22.0

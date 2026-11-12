@@ -1,35 +1,445 @@
 id = "ra2_soviet_12_polar_storm"
-name = "RA2 Soviet 12: Polar Storm (Point Hope Alaska)"
+name = "Op. 12: Polar Storm (Point Hope, Alaska Finale)"
 width = 78
 height = 96
 tile_size = 2.0
 ore_regen_per_sec = 4.0
-mission_objective = "We have found the last feeble Allied stronghold. Their Chronosphere, now fully operational, can move soldiers anywhere in the world. They can strike at us in New York, in Prague, even in Moscow. Yuri's files show the device is located near Point Hope, Alaska. You must take what few forces we have in the area and lead an attack, before the Allies make use of their cowardly technology. This is the final hour, commander. Glory awaits. \n \n Objective 1: Destroy the Chronosphere."
+mission_objective = "Storm Point Hope in Alaska, shatter the final Allied defense ring, and destroy the last Allied Chronosphere to secure global Soviet victory!"
 
 [[ore_patches]]
-position = [16, 8]
+position = [25, 20]
 radius = 3
-amount_per_tile = 1400
+amount_per_tile = 1600
 
 [[ore_patches]]
-position = [60, 86]
+position = [38, 62]
 radius = 3
-amount_per_tile = 1400
+amount_per_tile = 1550
 
-[[ore_patches]]
+[[gem_patches]]
 position = [39, 48]
-radius = 4
-amount_per_tile = 2000
+radius = 2
+amount_per_tile = 2300
 
-[[ore_patches]]
-position = [28, 11]
-radius = 3
-amount_per_tile = 1500
+[[water_rects]]
+min = [34, 1]
+max = [42, 1]
 
-[[ore_patches]]
-position = [15, 42]
-radius = 3
-amount_per_tile = 1500
+[[water_rects]]
+min = [34, 2]
+max = [43, 2]
+
+[[water_rects]]
+min = [35, 3]
+max = [43, 3]
+
+[[water_rects]]
+min = [36, 4]
+max = [44, 5]
+
+[[water_rects]]
+min = [36, 6]
+max = [45, 6]
+
+[[water_rects]]
+min = [34, 7]
+max = [46, 7]
+
+[[water_rects]]
+min = [32, 8]
+max = [47, 8]
+
+[[water_rects]]
+min = [31, 9]
+max = [47, 9]
+
+[[water_rects]]
+min = [31, 10]
+max = [35, 13]
+
+[[water_rects]]
+min = [39, 10]
+max = [48, 10]
+
+[[water_rects]]
+min = [40, 11]
+max = [48, 11]
+
+[[water_rects]]
+min = [41, 12]
+max = [49, 13]
+
+[[water_rects]]
+min = [42, 14]
+max = [50, 14]
+
+[[water_rects]]
+min = [42, 15]
+max = [51, 15]
+
+[[water_rects]]
+min = [42, 16]
+max = [52, 17]
+
+[[water_rects]]
+min = [42, 18]
+max = [53, 18]
+
+[[water_rects]]
+min = [42, 19]
+max = [54, 20]
+
+[[water_rects]]
+min = [42, 21]
+max = [55, 21]
+
+[[water_rects]]
+min = [43, 22]
+max = [55, 22]
+
+[[water_rects]]
+min = [43, 23]
+max = [56, 23]
+
+[[water_rects]]
+min = [44, 24]
+max = [57, 25]
+
+[[water_rects]]
+min = [45, 26]
+max = [58, 26]
+
+[[water_rects]]
+min = [45, 27]
+max = [59, 27]
+
+[[water_rects]]
+min = [47, 28]
+max = [59, 28]
+
+[[water_rects]]
+min = [47, 29]
+max = [60, 30]
+
+[[water_rects]]
+min = [48, 31]
+max = [61, 31]
+
+[[water_rects]]
+min = [48, 32]
+max = [62, 32]
+
+[[water_rects]]
+min = [48, 33]
+max = [63, 34]
+
+[[water_rects]]
+min = [49, 35]
+max = [64, 36]
+
+[[water_rects]]
+min = [50, 37]
+max = [65, 37]
+
+[[water_rects]]
+min = [50, 38]
+max = [64, 39]
+
+[[water_rects]]
+min = [51, 40]
+max = [63, 41]
+
+[[water_rects]]
+min = [52, 42]
+max = [63, 43]
+
+[[water_rects]]
+min = [53, 44]
+max = [63, 47]
+
+[[water_rects]]
+min = [53, 48]
+max = [62, 48]
+
+[[water_rects]]
+min = [52, 49]
+max = [62, 51]
+
+[[water_rects]]
+min = [52, 52]
+max = [63, 53]
+
+[[water_rects]]
+min = [53, 54]
+max = [63, 56]
+
+[[water_rects]]
+min = [53, 57]
+max = [64, 61]
+
+[[water_rects]]
+min = [53, 62]
+max = [65, 65]
+
+[[water_rects]]
+min = [54, 66]
+max = [66, 66]
+
+[[water_rects]]
+min = [54, 67]
+max = [69, 67]
+
+[[water_rects]]
+min = [54, 68]
+max = [70, 68]
+
+[[water_rects]]
+min = [55, 69]
+max = [71, 69]
+
+[[water_rects]]
+min = [55, 70]
+max = [72, 70]
+
+[[water_rects]]
+min = [55, 71]
+max = [76, 71]
+
+[[water_rects]]
+min = [55, 72]
+max = [75, 73]
+
+[[water_rects]]
+min = [54, 74]
+max = [74, 74]
+
+[[water_rects]]
+min = [54, 75]
+max = [73, 76]
+
+[[water_rects]]
+min = [53, 77]
+max = [72, 77]
+
+[[water_rects]]
+min = [52, 78]
+max = [71, 79]
+
+[[water_rects]]
+min = [52, 80]
+max = [70, 80]
+
+[[water_rects]]
+min = [52, 81]
+max = [69, 82]
+
+[[water_rects]]
+min = [53, 83]
+max = [68, 84]
+
+[[water_rects]]
+min = [33, 85]
+max = [37, 85]
+
+[[water_rects]]
+min = [53, 85]
+max = [67, 85]
+
+[[water_rects]]
+min = [32, 86]
+max = [38, 87]
+
+[[water_rects]]
+min = [54, 86]
+max = [66, 86]
+
+[[water_rects]]
+min = [54, 87]
+max = [65, 87]
+
+[[water_rects]]
+min = [33, 88]
+max = [38, 88]
+
+[[water_rects]]
+min = [55, 88]
+max = [65, 88]
+
+[[water_rects]]
+min = [34, 89]
+max = [39, 89]
+
+[[water_rects]]
+min = [55, 89]
+max = [64, 90]
+
+[[water_rects]]
+min = [34, 90]
+max = [40, 90]
+
+[[water_rects]]
+min = [35, 91]
+max = [41, 91]
+
+[[water_rects]]
+min = [55, 91]
+max = [63, 92]
+
+[[water_rects]]
+min = [35, 92]
+max = [42, 92]
+
+[[water_rects]]
+min = [36, 93]
+max = [42, 93]
+
+[[water_rects]]
+min = [54, 93]
+max = [62, 93]
+
+[[water_rects]]
+min = [36, 94]
+max = [43, 94]
+
+[[water_rects]]
+min = [54, 94]
+max = [61, 94]
+
+[[elevation_rects]]
+min = [5, 11]
+max = [7, 25]
+
+[[ramp_rects]]
+min = [4, 17]
+max = [5, 19]
+
+[[ramp_rects]]
+min = [7, 17]
+max = [8, 19]
+
+[[obstacles]]
+min = [39, 28]
+max = [40, 29]
+
+[[obstacles]]
+min = [27, 33]
+max = [28, 34]
+
+[[obstacles]]
+min = [27, 62]
+max = [28, 63]
+
+[[props]]
+kind = "tree"
+tile_pos = [49, 81]
+
+[[props]]
+kind = "tree"
+tile_pos = [41, 71]
+
+[[props]]
+kind = "tree"
+tile_pos = [49, 54]
+
+[[props]]
+kind = "tree"
+tile_pos = [44, 43]
+
+[[props]]
+kind = "tree"
+tile_pos = [45, 50]
+
+[[props]]
+kind = "tree"
+tile_pos = [44, 36]
+
+[[props]]
+kind = "tree"
+tile_pos = [41, 82]
+
+[[props]]
+kind = "tree"
+tile_pos = [50, 88]
+
+[[props]]
+kind = "tree"
+tile_pos = [36, 26]
+
+[[props]]
+kind = "tree"
+tile_pos = [25, 44]
+
+[[props]]
+kind = "tree"
+tile_pos = [44, 86]
+
+[[props]]
+kind = "tree"
+tile_pos = [37, 38]
+
+[[props]]
+kind = "tree"
+tile_pos = [12, 47]
+
+[[props]]
+kind = "tree"
+tile_pos = [45, 90]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [31, 2]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [31, 16]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [34, 17]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [15, 17]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [31, 17]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [39, 17]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [12, 22]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [38, 22]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [42, 24]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [10, 26]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [21, 27]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [29, 27]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [33, 27]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [8, 28]
 
 [[preplaced_entities]]
 player_id = 2
@@ -44,12 +454,12 @@ tile_pos = [44, 70]
 [[preplaced_entities]]
 player_id = 2
 building_id = "allied_power_plant"
-tile_pos = [45, 70]
+tile_pos = [46, 69]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "allied_power_plant"
-tile_pos = [44, 72]
+tile_pos = [43, 72]
 
 [[preplaced_entities]]
 player_id = 2
@@ -129,12 +539,12 @@ tile_pos = [43, 67]
 [[preplaced_entities]]
 player_id = 2
 building_id = "allied_pillbox"
-tile_pos = [45, 67]
+tile_pos = [44, 66]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "allied_pillbox"
-tile_pos = [41, 57]
+tile_pos = [40, 56]
 
 [[preplaced_entities]]
 player_id = 2
@@ -189,7 +599,7 @@ tile_pos = [21, 60]
 [[preplaced_entities]]
 player_id = 2
 unit_id = "chrono_miner"
-tile_pos = [40, 67]
+tile_pos = [39, 66]
 
 [[preplaced_entities]]
 player_id = 2
@@ -231,121 +641,204 @@ player_id = 2
 unit_id = "aegis_cruiser"
 tile_pos = [54, 65]
 
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_chronosphere"
+tile_pos = [47, 71]
+
+[[objectives]]
+id = "obj_primary_main"
+tier = "primary"
+title = "Storm Point Hope in Alaska, shatter the final Allied defense ring, and destroy the la..."
+marker_tile = [44, 62]
+
+[[objectives]]
+id = "obj_secondary_strike"
+tier = "secondary"
+title = "Neutralize or Capture Enemy Strategic Facility"
+marker_tile = [44, 62]
+
+[[objectives]]
+id = "obj_bonus_waves"
+tier = "bonus"
+title = "Weather Enemy Tactical Counterattack Waves"
+target_count = 2
+marker_tile = [16, 18]
+
+[[cutscenes]]
+id = "intro_flyover"
+skippable = true
+letterbox = true
+
+[[cutscenes.keyframes]]
+time_secs = 0.0
+focus = [89.0, 0.0, 125.0]
+distance = 46.0
+pitch_deg = 52.0
+yaw_deg = -22.0
+
+[[cutscenes.keyframes]]
+time_secs = 2.2
+focus = [61.0, 0.0, 81.0]
+distance = 42.0
+pitch_deg = 55.0
+yaw_deg = -10.0
+
+[[cutscenes.keyframes]]
+time_secs = 4.5
+focus = [33.0, 0.0, 37.0]
+distance = 36.0
+pitch_deg = 58.0
+yaw_deg = 0.0
+
 [[spawns]]
 player_id = 1
 faction = "soviets"
-base_tile = [8, 8]
+sub_faction = "russia"
+base_tile = [16, 18]
+team_id = 1
 
 [[spawns.initial_buildings]]
 building_id = "soviet_conyard"
-tile_pos = [8, 8]
+tile_pos = [16, 18]
 
 [[spawns.initial_buildings]]
 building_id = "soviet_tesla_reactor"
-tile_pos = [11, 8]
+tile_pos = [13, 18]
 
 [[spawns.initial_buildings]]
 building_id = "soviet_refinery"
-tile_pos = [8, 11]
+tile_pos = [20, 18]
 
 [[spawns.initial_buildings]]
 building_id = "soviet_barracks"
-tile_pos = [11, 11]
+tile_pos = [16, 22]
 
 [[spawns.initial_buildings]]
 building_id = "soviet_war_factory"
-tile_pos = [14, 8]
+tile_pos = [20, 22]
 
-[[spawns.initial_units]]
-unit_id = "soviet_conscript"
-tile_pos = [10, 13]
-
-[[spawns.initial_units]]
-unit_id = "soviet_conscript"
-tile_pos = [12, 13]
-
-[[spawns.initial_units]]
-unit_id = "rhino_tank"
-tile_pos = [14, 12]
+[[spawns.initial_buildings]]
+building_id = "soviet_radar_tower"
+tile_pos = [14, 25]
 
 [[spawns.initial_units]]
 unit_id = "war_miner"
-tile_pos = [10, 12]
+tile_pos = [23, 18]
+
+[[spawns.initial_units]]
+unit_id = "tesla_trooper"
+tile_pos = [16, 24]
+
+[[spawns.initial_units]]
+unit_id = "flak_trooper"
+tile_pos = [18, 24]
+
+[[spawns.initial_units]]
+unit_id = "rhino_tank"
+tile_pos = [19, 23]
+
+[[spawns.initial_units]]
+unit_id = "apocalypse_tank"
+tile_pos = [23, 23]
+
+[[spawns.initial_units]]
+unit_id = "kirov_airship"
+tile_pos = [16, 25]
 
 [[spawns]]
 player_id = 2
 faction = "allies"
-base_tile = [68, 86]
-
-[[spawns.initial_buildings]]
-building_id = "allied_conyard"
-tile_pos = [68, 86]
-
-[[spawns.initial_buildings]]
-building_id = "allied_power_plant"
-tile_pos = [65, 86]
-
-[[spawns.initial_buildings]]
-building_id = "allied_refinery"
-tile_pos = [68, 83]
-
-[[spawns.initial_buildings]]
-building_id = "allied_barracks"
-tile_pos = [65, 83]
-
-[[spawns.initial_buildings]]
-building_id = "allied_war_factory"
-tile_pos = [62, 86]
-
-[[spawns.initial_units]]
-unit_id = "allied_gi"
-tile_pos = [66, 81]
-
-[[spawns.initial_units]]
-unit_id = "allied_gi"
-tile_pos = [64, 81]
-
-[[spawns.initial_units]]
-unit_id = "grizzly_tank"
-tile_pos = [62, 82]
-
-[[spawns.initial_units]]
-unit_id = "chrono_miner"
-tile_pos = [66, 82]
+sub_faction = "usa"
+base_tile = [44, 62]
+team_id = 2
 
 [[trigger_zones]]
-id = "mission_stage_init"
-min = [6, 6]
-max = [12, 12]
+id = "ra2_soviet_12_polar_storm_init"
+min = [0, 0]
+max = [3, 3]
 once = true
 condition = { type = "timer_elapsed", secs = 1.0 }
 actions = [
+    { type = "play_cutscene", cutscene_id = "intro_flyover" },
+    { type = "set_objective_status", objective_id = "obj_primary_main", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_secondary_strike", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_bonus_waves", status = "active" },
+    { type = "start_countdown", timer_id = "chrono_escape_timer", label = "Chronosphere Activation Window", duration_secs = 240 },
+    { type = "set_weather", preset = "ion_storm" },
     { type = "set_variable", name = "mission_stage", value = 1 },
-    { type = "eva_transmission", speaker = "ZOFIA", text = "Battle Control Online. Primary tactical objectives initialized." },
-    { type = "reveal_area", tile = [8, 8], radius = 14 }
+    { type = "reveal_area", tile = [44, 62], radius = 9 },
+    { type = "eva_transmission", speaker = "LT. ZOFIA", text = "Storm Point Hope in Alaska, shatter the final Allied defense ring, and destroy the last Allied Chronosphere to secure global Soviet victory!", portrait = "assets/ui/cameos/nradicon.png", audio_cue = "primary_objective_achieved" },
 ]
 
 [[trigger_zones]]
-id = "tactical_reinforcement_wave"
-min = [7, 6]
-max = [11, 10]
+id = "ra2_soviet_12_polar_storm_reinforcements"
+min = [0, 0]
+max = [3, 3]
 once = true
-condition = { type = "all", conditions = [{ type = "timer_elapsed", secs = 45.0 }, { type = "variable_equals", name = "mission_stage", value = 1 }] }
+condition = { type = "all", conditions = [{ type = "timer_elapsed", secs = 55.0 }, { type = "variable_equals", name = "mission_stage", value = 1 }] }
 actions = [
     { type = "set_variable", name = "mission_stage", value = 2 },
-    { type = "spawn_reinforcements", player_id = 1, unit_id = "apocalypse_tank", count = 2, tile = [7, 6] },
-    { type = "grant_credits", player_id = 1, amount = 1500 },
-    { type = "eva_transmission", speaker = "ZOFIA", text = "Reinforcements have arrived. Forward command has authorized 1500 bonus credits." }
+    { type = "grant_credits", player_id = 1, amount = 2000 },
+    { type = "spawn_reinforcements", player_id = 1, unit_id = "apocalypse_tank", count = 3, tile = [19, 19] },
+    { type = "eva_transmission", speaker = "LT. ZOFIA", text = "Command reserves and emergency war funds have arrived at your base!", portrait = "assets/ui/cameos/nradicon.png", audio_cue = "reinforcements_have_arrived" },
 ]
 
 [[trigger_zones]]
-id = "decisive_campaign_victory"
-min = [2, 2]
-max = [6, 6]
+id = "ra2_soviet_12_polar_storm_key_target_down"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "building_destroyed", building_id = "allied_chronosphere", player_id = 2 }
+actions = [
+    { type = "set_objective_status", objective_id = "obj_secondary_strike", status = "completed" },
+    { type = "stop_countdown", timer_id = "chrono_escape_timer" },
+    { type = "grant_credits", player_id = 1, amount = 2000 },
+    { type = "set_variable", name = "primary_target_destroyed", value = 1 },
+    { type = "eva_transmission", speaker = "LT. ZOFIA", text = "Primary enemy strategic structure destroyed! Sweep the remaining enemy forces from the sector.", portrait = "assets/ui/cameos/nradicon.png", audio_cue = "battle_control_online" },
+]
+
+[[trigger_zones]]
+id = "ra2_soviet_12_polar_storm_victory"
+min = [0, 0]
+max = [3, 3]
 once = true
 condition = { type = "all_buildings_destroyed", player_id = 2 }
 actions = [
+    { type = "set_objective_status", objective_id = "obj_primary_main", status = "completed" },
     { type = "set_variable", name = "mission_stage", value = 3 },
-    { type = "eva_transmission", speaker = "ZOFIA", text = "Mission Accomplished. All primary hostile command structures neutralized." },
-    { type = "declare_winner", player_id = 1 }
+    { type = "eva_transmission", speaker = "LT. ZOFIA", text = "All enemy structures neutralized. Mission accomplished, Commander!", portrait = "assets/ui/cameos/nradicon.png", audio_cue = "primary_objective_achieved" },
+    { type = "declare_winner", player_id = 1 },
+]
+
+[[trigger_zones]]
+id = "p22_crisis_countdown_expired"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "countdown_expired", timer_id = "chrono_escape_timer" }
+actions = [
+    { type = "spawn_reinforcements", player_id = 2, unit_id = "grizzly_tank", count = 4, tile = [43, 59] },
+    { type = "eva_transmission", speaker = "LT. ZOFIA", text = "Warning: Chronosphere Activation Window reached zero! Enemy heavy armor strike group deployed!", portrait = "assets/ui/cameos/nradicon.png", audio_cue = "base_under_attack" },
+]
+
+[[trigger_zones]]
+id = "p22_crisis_target_neutralized"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "building_destroyed", building_id = "allied_chronosphere", player_id = 2 }
+actions = [
+    { type = "stop_countdown", timer_id = "chrono_escape_timer" },
+]
+
+[[trigger_zones]]
+id = "p22_periodic_skirmish_wave"
+min = [0, 0]
+max = [3, 3]
+once = false
+condition = { type = "periodic_timer", start_secs = 75, interval_secs = 75, max_repeats = 3 }
+actions = [
+    { type = "spawn_reinforcements", player_id = 2, unit_id = "allied_gi", count = 3, tile = [43, 61] },
+    { type = "add_objective_progress", objective_id = "obj_bonus_waves", delta = 1 },
 ]

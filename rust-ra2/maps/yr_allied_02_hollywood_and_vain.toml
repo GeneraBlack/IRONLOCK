@@ -1,35 +1,925 @@
 id = "yr_allied_02_hollywood_and_vain"
-name = "YR Allied 02: Hollywood and Vain (Los Angeles)"
+name = "YR Op. 02: Hollywood and Vain (Los Angeles)"
 width = 96
 height = 96
 tile_size = 2.0
 ore_regen_per_sec = 4.0
-mission_objective = "Yuri has mind controlled the population of Los Angeles and is feeding the civilians into his Grinders to fund his Psychic Dominator project. If we can eliminate the Grinders, Yuri will have lost a significant source of funds. \n \n Objective 1: Destroy all Grinders in the city \n Objective 2: Destroy all Yuri buildings \n \n Hint: Not all civilians have been mind controlled. Some of them may even be able to help us in the coming battle"
+mission_objective = "Team up with Los Angeles defenders, destroy all three of Yuri's Grinders across Hollywood, and wipe out Yuri's studio command base."
 
 [[ore_patches]]
-position = [16, 8]
+position = [25, 74]
 radius = 3
-amount_per_tile = 1400
+amount_per_tile = 1600
 
 [[ore_patches]]
-position = [78, 86]
+position = [66, 24]
 radius = 3
-amount_per_tile = 1400
+amount_per_tile = 1550
 
-[[ore_patches]]
+[[gem_patches]]
 position = [48, 48]
-radius = 4
-amount_per_tile = 2000
+radius = 2
+amount_per_tile = 2500
 
-[[ore_patches]]
-position = [38, 48]
-radius = 3
-amount_per_tile = 1500
+[[water_rects]]
+min = [60, 4]
+max = [61, 4]
 
-[[ore_patches]]
-position = [38, 56]
-radius = 3
-amount_per_tile = 1500
+[[water_rects]]
+min = [63, 4]
+max = [64, 5]
+
+[[water_rects]]
+min = [58, 5]
+max = [61, 6]
+
+[[water_rects]]
+min = [63, 6]
+max = [65, 7]
+
+[[water_rects]]
+min = [60, 8]
+max = [61, 8]
+
+[[water_rects]]
+min = [63, 8]
+max = [67, 8]
+
+[[water_rects]]
+min = [59, 9]
+max = [61, 11]
+
+[[water_rects]]
+min = [64, 9]
+max = [67, 10]
+
+[[water_rects]]
+min = [60, 20]
+max = [60, 20]
+
+[[water_rects]]
+min = [57, 21]
+max = [60, 21]
+
+[[water_rects]]
+min = [58, 22]
+max = [60, 22]
+
+[[water_rects]]
+min = [58, 23]
+max = [59, 24]
+
+[[water_rects]]
+min = [81, 24]
+max = [83, 24]
+
+[[water_rects]]
+min = [58, 25]
+max = [58, 25]
+
+[[water_rects]]
+min = [81, 25]
+max = [84, 26]
+
+[[water_rects]]
+min = [82, 27]
+max = [84, 28]
+
+[[water_rects]]
+min = [82, 29]
+max = [87, 29]
+
+[[water_rects]]
+min = [60, 30]
+max = [63, 31]
+
+[[water_rects]]
+min = [82, 30]
+max = [88, 30]
+
+[[water_rects]]
+min = [81, 31]
+max = [81, 31]
+
+[[water_rects]]
+min = [84, 31]
+max = [89, 31]
+
+[[water_rects]]
+min = [81, 32]
+max = [90, 34]
+
+[[water_rects]]
+min = [69, 33]
+max = [71, 33]
+
+[[water_rects]]
+min = [69, 34]
+max = [69, 34]
+
+[[water_rects]]
+min = [73, 34]
+max = [73, 34]
+
+[[water_rects]]
+min = [72, 35]
+max = [73, 35]
+
+[[water_rects]]
+min = [82, 35]
+max = [87, 35]
+
+[[water_rects]]
+min = [71, 36]
+max = [75, 36]
+
+[[water_rects]]
+min = [79, 36]
+max = [79, 36]
+
+[[water_rects]]
+min = [82, 36]
+max = [85, 36]
+
+[[water_rects]]
+min = [71, 37]
+max = [71, 37]
+
+[[water_rects]]
+min = [75, 37]
+max = [75, 39]
+
+[[water_rects]]
+min = [78, 37]
+max = [80, 38]
+
+[[water_rects]]
+min = [83, 37]
+max = [86, 37]
+
+[[water_rects]]
+min = [84, 38]
+max = [85, 38]
+
+[[water_rects]]
+min = [79, 39]
+max = [80, 39]
+
+[[water_rects]]
+min = [84, 39]
+max = [84, 39]
+
+[[water_rects]]
+min = [65, 40]
+max = [67, 40]
+
+[[water_rects]]
+min = [64, 41]
+max = [68, 41]
+
+[[water_rects]]
+min = [76, 41]
+max = [77, 41]
+
+[[water_rects]]
+min = [1, 42]
+max = [1, 42]
+
+[[water_rects]]
+min = [58, 42]
+max = [58, 42]
+
+[[water_rects]]
+min = [64, 42]
+max = [67, 42]
+
+[[water_rects]]
+min = [76, 42]
+max = [78, 42]
+
+[[water_rects]]
+min = [1, 43]
+max = [3, 43]
+
+[[water_rects]]
+min = [58, 43]
+max = [59, 43]
+
+[[water_rects]]
+min = [67, 43]
+max = [67, 44]
+
+[[water_rects]]
+min = [74, 43]
+max = [74, 43]
+
+[[water_rects]]
+min = [76, 43]
+max = [76, 43]
+
+[[water_rects]]
+min = [78, 43]
+max = [78, 43]
+
+[[water_rects]]
+min = [1, 44]
+max = [6, 45]
+
+[[water_rects]]
+min = [58, 44]
+max = [61, 44]
+
+[[water_rects]]
+min = [73, 44]
+max = [78, 44]
+
+[[water_rects]]
+min = [8, 45]
+max = [8, 45]
+
+[[water_rects]]
+min = [57, 45]
+max = [61, 45]
+
+[[water_rects]]
+min = [67, 45]
+max = [68, 45]
+
+[[water_rects]]
+min = [73, 45]
+max = [77, 45]
+
+[[water_rects]]
+min = [86, 45]
+max = [86, 45]
+
+[[water_rects]]
+min = [1, 46]
+max = [8, 47]
+
+[[water_rects]]
+min = [56, 46]
+max = [61, 46]
+
+[[water_rects]]
+min = [63, 46]
+max = [64, 46]
+
+[[water_rects]]
+min = [67, 46]
+max = [67, 46]
+
+[[water_rects]]
+min = [75, 46]
+max = [75, 47]
+
+[[water_rects]]
+min = [85, 46]
+max = [88, 47]
+
+[[water_rects]]
+min = [55, 47]
+max = [60, 47]
+
+[[water_rects]]
+min = [63, 47]
+max = [67, 47]
+
+[[water_rects]]
+min = [1, 48]
+max = [9, 48]
+
+[[water_rects]]
+min = [53, 48]
+max = [60, 48]
+
+[[water_rects]]
+min = [65, 48]
+max = [67, 48]
+
+[[water_rects]]
+min = [85, 48]
+max = [86, 48]
+
+[[water_rects]]
+min = [88, 48]
+max = [88, 49]
+
+[[water_rects]]
+min = [1, 49]
+max = [10, 49]
+
+[[water_rects]]
+min = [53, 49]
+max = [57, 49]
+
+[[water_rects]]
+min = [60, 49]
+max = [60, 49]
+
+[[water_rects]]
+min = [66, 49]
+max = [66, 49]
+
+[[water_rects]]
+min = [82, 49]
+max = [82, 49]
+
+[[water_rects]]
+min = [86, 49]
+max = [86, 49]
+
+[[water_rects]]
+min = [1, 50]
+max = [11, 50]
+
+[[water_rects]]
+min = [80, 50]
+max = [83, 50]
+
+[[water_rects]]
+min = [86, 50]
+max = [88, 51]
+
+[[water_rects]]
+min = [1, 51]
+max = [7, 52]
+
+[[water_rects]]
+min = [10, 51]
+max = [11, 51]
+
+[[water_rects]]
+min = [81, 51]
+max = [84, 51]
+
+[[water_rects]]
+min = [82, 52]
+max = [83, 52]
+
+[[water_rects]]
+min = [2, 53]
+max = [9, 53]
+
+[[water_rects]]
+min = [56, 53]
+max = [64, 56]
+
+[[water_rects]]
+min = [85, 53]
+max = [85, 53]
+
+[[water_rects]]
+min = [3, 54]
+max = [9, 54]
+
+[[water_rects]]
+min = [84, 54]
+max = [86, 54]
+
+[[water_rects]]
+min = [4, 55]
+max = [9, 55]
+
+[[water_rects]]
+min = [13, 55]
+max = [13, 55]
+
+[[water_rects]]
+min = [54, 55]
+max = [54, 55]
+
+[[water_rects]]
+min = [85, 55]
+max = [87, 55]
+
+[[water_rects]]
+min = [5, 56]
+max = [15, 56]
+
+[[water_rects]]
+min = [27, 56]
+max = [29, 56]
+
+[[water_rects]]
+min = [53, 56]
+max = [54, 56]
+
+[[water_rects]]
+min = [85, 56]
+max = [88, 56]
+
+[[water_rects]]
+min = [5, 57]
+max = [10, 57]
+
+[[water_rects]]
+min = [15, 57]
+max = [16, 57]
+
+[[water_rects]]
+min = [26, 57]
+max = [29, 57]
+
+[[water_rects]]
+min = [52, 57]
+max = [53, 57]
+
+[[water_rects]]
+min = [56, 57]
+max = [60, 57]
+
+[[water_rects]]
+min = [64, 57]
+max = [64, 60]
+
+[[water_rects]]
+min = [86, 57]
+max = [88, 57]
+
+[[water_rects]]
+min = [29, 58]
+max = [29, 59]
+
+[[water_rects]]
+min = [51, 58]
+max = [53, 58]
+
+[[water_rects]]
+min = [55, 58]
+max = [60, 58]
+
+[[water_rects]]
+min = [74, 58]
+max = [74, 58]
+
+[[water_rects]]
+min = [87, 58]
+max = [87, 58]
+
+[[water_rects]]
+min = [50, 59]
+max = [52, 59]
+
+[[water_rects]]
+min = [55, 59]
+max = [59, 59]
+
+[[water_rects]]
+min = [74, 59]
+max = [76, 59]
+
+[[water_rects]]
+min = [28, 60]
+max = [29, 60]
+
+[[water_rects]]
+min = [51, 60]
+max = [52, 60]
+
+[[water_rects]]
+min = [56, 60]
+max = [59, 60]
+
+[[water_rects]]
+min = [73, 60]
+max = [76, 60]
+
+[[water_rects]]
+min = [56, 61]
+max = [60, 61]
+
+[[water_rects]]
+min = [62, 61]
+max = [64, 61]
+
+[[water_rects]]
+min = [10, 62]
+max = [17, 62]
+
+[[water_rects]]
+min = [11, 63]
+max = [19, 63]
+
+[[water_rects]]
+min = [12, 64]
+max = [22, 65]
+
+[[water_rects]]
+min = [13, 66]
+max = [23, 66]
+
+[[water_rects]]
+min = [14, 67]
+max = [23, 67]
+
+[[water_rects]]
+min = [27, 67]
+max = [30, 67]
+
+[[water_rects]]
+min = [25, 68]
+max = [30, 68]
+
+[[water_rects]]
+min = [28, 69]
+max = [33, 70]
+
+[[water_rects]]
+min = [28, 71]
+max = [34, 71]
+
+[[water_rects]]
+min = [28, 72]
+max = [35, 76]
+
+[[water_rects]]
+min = [60, 72]
+max = [61, 72]
+
+[[water_rects]]
+min = [66, 72]
+max = [69, 75]
+
+[[water_rects]]
+min = [57, 73]
+max = [58, 73]
+
+[[water_rects]]
+min = [60, 73]
+max = [62, 73]
+
+[[water_rects]]
+min = [56, 74]
+max = [61, 74]
+
+[[water_rects]]
+min = [50, 75]
+max = [54, 75]
+
+[[water_rects]]
+min = [56, 75]
+max = [59, 75]
+
+[[water_rects]]
+min = [43, 76]
+max = [45, 76]
+
+[[water_rects]]
+min = [52, 76]
+max = [54, 76]
+
+[[water_rects]]
+min = [56, 76]
+max = [58, 76]
+
+[[water_rects]]
+min = [67, 76]
+max = [69, 76]
+
+[[water_rects]]
+min = [28, 77]
+max = [37, 80]
+
+[[water_rects]]
+min = [43, 77]
+max = [46, 77]
+
+[[water_rects]]
+min = [43, 78]
+max = [47, 78]
+
+[[water_rects]]
+min = [61, 78]
+max = [67, 78]
+
+[[water_rects]]
+min = [45, 79]
+max = [46, 80]
+
+[[water_rects]]
+min = [60, 79]
+max = [67, 80]
+
+[[water_rects]]
+min = [28, 81]
+max = [38, 83]
+
+[[water_rects]]
+min = [45, 81]
+max = [54, 81]
+
+[[water_rects]]
+min = [62, 81]
+max = [67, 81]
+
+[[water_rects]]
+min = [45, 82]
+max = [48, 82]
+
+[[water_rects]]
+min = [53, 82]
+max = [56, 82]
+
+[[water_rects]]
+min = [62, 82]
+max = [63, 82]
+
+[[water_rects]]
+min = [46, 83]
+max = [48, 83]
+
+[[water_rects]]
+min = [53, 83]
+max = [55, 83]
+
+[[water_rects]]
+min = [60, 83]
+max = [63, 83]
+
+[[water_rects]]
+min = [28, 84]
+max = [40, 84]
+
+[[water_rects]]
+min = [47, 84]
+max = [48, 84]
+
+[[water_rects]]
+min = [53, 84]
+max = [54, 84]
+
+[[water_rects]]
+min = [57, 84]
+max = [63, 84]
+
+[[water_rects]]
+min = [29, 85]
+max = [41, 85]
+
+[[water_rects]]
+min = [53, 85]
+max = [53, 85]
+
+[[water_rects]]
+min = [59, 85]
+max = [63, 85]
+
+[[water_rects]]
+min = [30, 86]
+max = [41, 87]
+
+[[water_rects]]
+min = [31, 88]
+max = [41, 88]
+
+[[water_rects]]
+min = [32, 89]
+max = [42, 89]
+
+[[water_rects]]
+min = [33, 90]
+max = [42, 90]
+
+[[water_rects]]
+min = [49, 90]
+max = [49, 91]
+
+[[water_rects]]
+min = [34, 91]
+max = [42, 92]
+
+[[water_rects]]
+min = [47, 92]
+max = [49, 92]
+
+[[water_rects]]
+min = [35, 93]
+max = [54, 93]
+
+[[water_rects]]
+min = [57, 93]
+max = [58, 93]
+
+[[water_rects]]
+min = [36, 94]
+max = [58, 94]
+
+[[bridge_rects]]
+min = [60, 7]
+max = [62, 12]
+
+[[bridge_rects]]
+min = [59, 52]
+max = [61, 62]
+
+[[bridge_rects]]
+min = [64, 52]
+max = [66, 62]
+
+[[bridge_rects]]
+min = [60, 71]
+max = [63, 75]
+
+[[bridge_rects]]
+min = [69, 71]
+max = [71, 71]
+
+[[bridge_rects]]
+min = [65, 72]
+max = [71, 74]
+
+[[bridge_rects]]
+min = [52, 74]
+max = [54, 77]
+
+[[bridge_rects]]
+min = [69, 75]
+max = [71, 77]
+
+[[elevation_rects]]
+min = [4, 4]
+max = [18, 18]
+
+[[elevation_rects]]
+min = [60, 13]
+max = [74, 15]
+
+[[elevation_rects]]
+min = [60, 16]
+max = [63, 19]
+
+[[elevation_rects]]
+min = [53, 65]
+max = [58, 71]
+
+[[elevation_rects]]
+min = [71, 65]
+max = [76, 70]
+
+[[ramp_rects]]
+min = [3, 10]
+max = [4, 12]
+
+[[ramp_rects]]
+min = [18, 10]
+max = [19, 12]
+
+[[ramp_rects]]
+min = [59, 13]
+max = [60, 18]
+
+[[ramp_rects]]
+min = [74, 13]
+max = [75, 15]
+
+[[ramp_rects]]
+min = [63, 16]
+max = [64, 18]
+
+[[ramp_rects]]
+min = [70, 66]
+max = [71, 68]
+
+[[ramp_rects]]
+min = [76, 66]
+max = [77, 68]
+
+[[ramp_rects]]
+min = [52, 67]
+max = [53, 69]
+
+[[ramp_rects]]
+min = [58, 67]
+max = [59, 69]
+
+[[obstacles]]
+min = [48, 28]
+max = [49, 29]
+
+[[obstacles]]
+min = [33, 33]
+max = [34, 34]
+
+[[obstacles]]
+min = [36, 49]
+max = [37, 50]
+
+[[obstacles]]
+min = [33, 62]
+max = [34, 63]
+
+[[props]]
+kind = "tree"
+tile_pos = [21, 55]
+
+[[props]]
+kind = "tree"
+tile_pos = [57, 62]
+
+[[props]]
+kind = "tree"
+tile_pos = [47, 3]
+
+[[props]]
+kind = "tree"
+tile_pos = [77, 62]
+
+[[props]]
+kind = "tree"
+tile_pos = [21, 49]
+
+[[props]]
+kind = "tree"
+tile_pos = [13, 42]
+
+[[props]]
+kind = "tree"
+tile_pos = [51, 23]
+
+[[props]]
+kind = "tree"
+tile_pos = [54, 21]
+
+[[props]]
+kind = "tree"
+tile_pos = [53, 26]
+
+[[props]]
+kind = "tree"
+tile_pos = [89, 39]
+
+[[props]]
+kind = "tree"
+tile_pos = [27, 44]
+
+[[props]]
+kind = "tree"
+tile_pos = [23, 61]
+
+[[props]]
+kind = "tree"
+tile_pos = [39, 40]
+
+[[props]]
+kind = "tree"
+tile_pos = [55, 6]
+
+[[props]]
+kind = "tree"
+tile_pos = [35, 63]
+
+[[props]]
+kind = "tree"
+tile_pos = [16, 52]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [52, 83]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [45, 61]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [81, 38]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [68, 57]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [55, 43]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [64, 15]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [43, 4]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [42, 7]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [41, 7]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [46, 7]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [42, 8]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [43, 8]
 
 [[preplaced_entities]]
 player_id = 2
@@ -54,7 +944,7 @@ tile_pos = [59, 35]
 [[preplaced_entities]]
 player_id = 2
 building_id = "yuri_grinder"
-tile_pos = [86, 44]
+tile_pos = [85, 43]
 
 [[preplaced_entities]]
 player_id = 2
@@ -64,7 +954,7 @@ tile_pos = [39, 49]
 [[preplaced_entities]]
 player_id = 2
 building_id = "yuri_gatling_cannon"
-tile_pos = [36, 49]
+tile_pos = [35, 48]
 
 [[preplaced_entities]]
 player_id = 2
@@ -124,7 +1014,7 @@ tile_pos = [18, 56]
 [[preplaced_entities]]
 player_id = 2
 building_id = "yuri_gatling_cannon"
-tile_pos = [15, 56]
+tile_pos = [14, 55]
 
 [[preplaced_entities]]
 player_id = 2
@@ -137,14 +1027,14 @@ building_id = "yuri_gatling_cannon"
 tile_pos = [19, 45]
 
 [[preplaced_entities]]
-player_id = 2
+player_id = 0
 building_id = "tech_hospital"
-tile_pos = [26, 57]
+tile_pos = [24, 58]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "yuri_barracks"
-tile_pos = [69, 32]
+tile_pos = [68, 31]
 
 [[preplaced_entities]]
 player_id = 2
@@ -231,121 +1121,232 @@ player_id = 2
 unit_id = "lasher_tank"
 tile_pos = [85, 41]
 
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_conyard"
+tile_pos = [72, 24]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_bio_reactor"
+tile_pos = [76, 24]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_barracks"
+tile_pos = [72, 28]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_war_factory"
+tile_pos = [76, 28]
+
+[[preplaced_entities]]
+player_id = 1
+unit_id = "tanya"
+tile_pos = [18, 69]
+tag = "tanya"
+
+[[preplaced_entities]]
+player_id = 0
+building_id = "bridge_repair_hut"
+tile_pos = [51, 74]
+
+[[objectives]]
+id = "obj_primary_main"
+tier = "primary"
+title = "Team up with Los Angeles defenders, destroy all three of Yuri's Grinders across Holly..."
+marker_tile = [72, 24]
+
+[[objectives]]
+id = "obj_vip_tanya"
+tier = "secondary"
+title = "Keep Agent Tanya Alive Throughout the Operation"
+marker_tile = [18, 69]
+
+[[objectives]]
+id = "obj_secondary_strike"
+tier = "secondary"
+title = "Neutralize or Capture Enemy Strategic Facility"
+marker_tile = [72, 24]
+
+[[objectives]]
+id = "obj_bonus_tech"
+tier = "bonus"
+title = "Capture Neutral Tech Hospital with an Engineer"
+marker_tile = [24, 58]
+
+[[cutscenes]]
+id = "intro_flyover"
+skippable = true
+letterbox = true
+
+[[cutscenes.keyframes]]
+time_secs = 0.0
+focus = [145.0, 0.0, 49.0]
+distance = 46.0
+pitch_deg = 52.0
+yaw_deg = -22.0
+
+[[cutscenes.keyframes]]
+time_secs = 2.2
+focus = [91.0, 0.0, 93.0]
+distance = 42.0
+pitch_deg = 55.0
+yaw_deg = -10.0
+
+[[cutscenes.keyframes]]
+time_secs = 4.5
+focus = [37.0, 0.0, 139.0]
+distance = 36.0
+pitch_deg = 58.0
+yaw_deg = 0.0
+
 [[spawns]]
 player_id = 1
 faction = "allies"
-base_tile = [8, 8]
+sub_faction = "usa"
+base_tile = [16, 76]
+team_id = 1
 
 [[spawns.initial_buildings]]
 building_id = "allied_conyard"
-tile_pos = [8, 8]
+tile_pos = [16, 76]
 
 [[spawns.initial_buildings]]
 building_id = "allied_power_plant"
-tile_pos = [11, 8]
+tile_pos = [13, 76]
 
 [[spawns.initial_buildings]]
 building_id = "allied_refinery"
-tile_pos = [8, 11]
+tile_pos = [20, 76]
 
 [[spawns.initial_buildings]]
 building_id = "allied_barracks"
-tile_pos = [11, 11]
+tile_pos = [16, 72]
 
 [[spawns.initial_buildings]]
 building_id = "allied_war_factory"
-tile_pos = [14, 8]
-
-[[spawns.initial_units]]
-unit_id = "allied_gi"
-tile_pos = [10, 13]
-
-[[spawns.initial_units]]
-unit_id = "allied_gi"
-tile_pos = [12, 13]
-
-[[spawns.initial_units]]
-unit_id = "grizzly_tank"
-tile_pos = [14, 12]
+tile_pos = [20, 72]
 
 [[spawns.initial_units]]
 unit_id = "chrono_miner"
-tile_pos = [10, 12]
+tile_pos = [22, 75]
+
+[[spawns.initial_units]]
+unit_id = "guardian_gi"
+tile_pos = [16, 70]
+
+[[spawns.initial_units]]
+unit_id = "guardian_gi"
+tile_pos = [18, 70]
+
+[[spawns.initial_units]]
+unit_id = "grizzly_tank"
+tile_pos = [20, 70]
+
+[[spawns.initial_units]]
+unit_id = "prism_tank"
+tile_pos = [22, 70]
+
+[[spawns.initial_units]]
+unit_id = "battle_fortress"
+tile_pos = [16, 69]
 
 [[spawns]]
 player_id = 2
 faction = "yuri"
-base_tile = [86, 86]
-
-[[spawns.initial_buildings]]
-building_id = "yuri_conyard"
-tile_pos = [86, 86]
-
-[[spawns.initial_buildings]]
-building_id = "yuri_bio_reactor"
-tile_pos = [83, 86]
-
-[[spawns.initial_buildings]]
-building_id = "yuri_slave_refinery"
-tile_pos = [86, 83]
-
-[[spawns.initial_buildings]]
-building_id = "yuri_barracks"
-tile_pos = [83, 83]
-
-[[spawns.initial_buildings]]
-building_id = "yuri_war_factory"
-tile_pos = [80, 86]
-
-[[spawns.initial_units]]
-unit_id = "yuri_initiate"
-tile_pos = [84, 81]
-
-[[spawns.initial_units]]
-unit_id = "yuri_initiate"
-tile_pos = [82, 81]
-
-[[spawns.initial_units]]
-unit_id = "lasher_tank"
-tile_pos = [80, 82]
-
-[[spawns.initial_units]]
-unit_id = "yuri_slave_miner"
-tile_pos = [84, 82]
+sub_faction = "yuri"
+base_tile = [72, 24]
+team_id = 2
 
 [[trigger_zones]]
-id = "mission_stage_init"
-min = [6, 6]
-max = [12, 12]
+id = "yr_allied_02_hollywood_and_vain_init"
+min = [0, 0]
+max = [3, 3]
 once = true
 condition = { type = "timer_elapsed", secs = 1.0 }
 actions = [
+    { type = "play_cutscene", cutscene_id = "intro_flyover" },
+    { type = "set_objective_status", objective_id = "obj_primary_main", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_vip_tanya", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_secondary_strike", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_bonus_tech", status = "active" },
     { type = "set_variable", name = "mission_stage", value = 1 },
-    { type = "eva_transmission", speaker = "EVA", text = "Battle Control Online. Primary tactical objectives initialized." },
-    { type = "reveal_area", tile = [8, 8], radius = 14 }
+    { type = "reveal_area", tile = [72, 24], radius = 9 },
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Team up with Los Angeles defenders, destroy all three of Yuri's Grinders across Hollywood, and wipe out Yuri's studio command base.", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "battle_control_online" },
 ]
 
 [[trigger_zones]]
-id = "tactical_reinforcement_wave"
-min = [7, 6]
-max = [11, 10]
+id = "yr_allied_02_hollywood_and_vain_stage2_reinf"
+min = [0, 0]
+max = [3, 3]
 once = true
-condition = { type = "all", conditions = [{ type = "timer_elapsed", secs = 45.0 }, { type = "variable_equals", name = "mission_stage", value = 1 }] }
+condition = { type = "timer_elapsed", secs = 60.0 }
 actions = [
+    { type = "play_radar_video", video_path = "assets/videos/radar_pip/yr_allied_02_pip_02.mp4" },
     { type = "set_variable", name = "mission_stage", value = 2 },
-    { type = "spawn_reinforcements", player_id = 1, unit_id = "tanya", count = 1, tile = [7, 6] },
-    { type = "grant_credits", player_id = 1, amount = 1500 },
-    { type = "eva_transmission", speaker = "EVA", text = "Reinforcements have arrived. Forward command has authorized 1500 bonus credits." }
+    { type = "grant_credits", player_id = 1, amount = 2000 },
+    { type = "spawn_reinforcements", player_id = 1, unit_id = "battle_fortress", count = 2, tile = [19, 77] },
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Heavy armored reinforcements have arrived at the staging area!", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "reinforcements_have_arrived", radar_video = "assets/videos/radar_pip/yr_allied_02_pip_02.mp4" },
 ]
 
 [[trigger_zones]]
-id = "decisive_campaign_victory"
-min = [2, 2]
-max = [6, 6]
+id = "yr_allied_02_hollywood_and_vain_target_down"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "building_destroyed", building_id = "yuri_grinder", player_id = 2 }
+actions = [
+    { type = "set_objective_status", objective_id = "obj_secondary_strike", status = "completed" },
+    { type = "play_radar_video", video_path = "assets/videos/radar_pip/yr_allied_02_pip_03.mp4" },
+    { type = "grant_credits", player_id = 1, amount = 2000 },
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Key Psi-Corps structure destroyed! Press the assault and wipe out the rest of Yuri's base!", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "battle_control_online", radar_video = "assets/videos/radar_pip/yr_allied_02_pip_03.mp4" },
+]
+
+[[trigger_zones]]
+id = "yr_allied_02_hollywood_and_vain_victory"
+min = [0, 0]
+max = [3, 3]
 once = true
 condition = { type = "all_buildings_destroyed", player_id = 2 }
 actions = [
+    { type = "set_objective_status", objective_id = "obj_primary_main", status = "completed" },
+    { type = "set_objective_status", objective_id = "obj_vip_tanya", status = "completed" },
     { type = "set_variable", name = "mission_stage", value = 3 },
-    { type = "eva_transmission", speaker = "EVA", text = "Mission Accomplished. All primary hostile command structures neutralized." },
-    { type = "declare_winner", player_id = 1 }
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Yuri's forces in this sector have been completely eradicated! Victory is ours!", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "primary_objective_achieved" },
+    { type = "declare_winner", player_id = 1 },
+]
+
+[[trigger_zones]]
+id = "p22_vip_tanya_lost"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "tagged_entity_destroyed", tag = "tanya" }
+actions = [
+    { type = "set_objective_status", objective_id = "obj_vip_tanya", status = "failed" },
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Agent Tanya has fallen in combat!", portrait = "assets/ui/cameos/tanyicon.png", audio_cue = "unit_lost" },
+]
+
+[[trigger_zones]]
+id = "p22_bonus_tech_captured"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "building_captured", building_id = "tech_hospital", by_player_id = 1 }
+actions = [
+    { type = "set_objective_status", objective_id = "obj_bonus_tech", status = "completed" },
+    { type = "grant_credits", player_id = 1, amount = 750 },
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Bonus objective achieved: Neutral tech structure secured!", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "building_captured" },
+]
+
+[[trigger_zones]]
+id = "p22_periodic_skirmish_wave"
+min = [0, 0]
+max = [3, 3]
+once = false
+condition = { type = "periodic_timer", start_secs = 75, interval_secs = 75, max_repeats = 3 }
+actions = [
+    { type = "spawn_reinforcements", player_id = 2, unit_id = "yuri_initiate", count = 3, tile = [70, 22] },
 ]

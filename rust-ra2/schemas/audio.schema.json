@@ -1,0 +1,138 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "MusicMood": {
+      "enum": [
+        "peace",
+        "combat",
+        "menu",
+        "score"
+      ],
+      "type": "string"
+    },
+    "MusicTrackDef": {
+      "properties": {
+        "display_name": {
+          "type": "string"
+        },
+        "duration_hint_secs": {
+          "default": null,
+          "format": "float",
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "faction_tags": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "factions": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "id": {
+          "type": "string"
+        },
+        "mood": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/MusicMood"
+            }
+          ],
+          "default": "peace"
+        },
+        "path": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "display_name",
+        "id",
+        "path"
+      ],
+      "type": "object"
+    },
+    "UnitVoiceSpec": {
+      "properties": {
+        "attack_order": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "death": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "move_order": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "select": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    }
+  },
+  "properties": {
+    "eva_cues": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "default": {},
+      "type": "object"
+    },
+    "faction_eva_cues": {
+      "additionalProperties": {
+        "additionalProperties": {
+          "type": "string"
+        },
+        "type": "object"
+      },
+      "default": {},
+      "type": "object"
+    },
+    "music_tracks": {
+      "default": [],
+      "items": {
+        "$ref": "#/definitions/MusicTrackDef"
+      },
+      "type": "array"
+    },
+    "unit_voices": {
+      "additionalProperties": {
+        "$ref": "#/definitions/UnitVoiceSpec"
+      },
+      "default": {},
+      "type": "object"
+    },
+    "weapon_sfx": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "default": {},
+      "type": "object"
+    }
+  },
+  "title": "AudioCatalog",
+  "type": "object"
+}

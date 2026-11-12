@@ -1,28 +1,111 @@
-use crate::input::{MenuScreen, ProductionSidebarTab};
+use crate::input::{
+    HotkeySlot, MenuScreen, ProductionSidebarTab, UiInputBlocker, VehicleDomainFilter,
+};
 use rts_simulation::ai::AiDifficulty;
+
 mod actions;
-mod actions_studio;
+mod actions_campaign;
+mod actions_hero_era;
+mod actions_match;
+mod actions_net;
+mod actions_net_tasks;
+mod actions_phase21;
+mod actions_saves;
+mod actions_staging;
+mod actions_tactical;
+mod actions_workshop;
+pub mod control_groups_bar;
+pub mod cursors;
+pub mod cutscene_director;
+pub mod global_production_bar;
+pub mod hero_inventory_bar;
+pub mod hud_layouts;
+mod hud_setup;
 mod hud_update;
 mod inspector;
-mod menu_screens;
+pub mod lag_shield_modal;
+pub mod locale;
 mod minimap;
+mod minimap_render;
+pub mod objectives_hud;
+pub mod player_windows;
+pub mod replay_hud;
+pub mod screens;
 mod sidebar;
-mod studio_layout;
+mod sidebar_cameos;
+mod sidebar_drawers;
+pub mod studio_layout;
+mod tactical_command_bar;
+pub mod tutorial_coach;
+pub mod widgets;
 
 pub use actions::handle_sidebar_buttons;
-pub use hud_update::update_rts_hud;
-pub use minimap::update_and_interact_radar_minimap;
+pub use actions_net::{poll_async_lobby_tasks, AsyncLobbyTasks};
+pub use control_groups_bar::update_control_groups_bar;
+pub use cursors::{update_rts_cursor, RtsCursorKind, RtsCursorState};
+pub use cutscene_director::{update_cutscene_and_transmissions, CutsceneDirectorState};
+pub use global_production_bar::update_global_production_bar;
+pub use hero_inventory_bar::update_hero_inventory_bar;
+pub use hud_layouts::sync_hud_layout_preset_and_computed_rects;
+pub use hud_setup::setup_rts_hud;
+pub use hud_update::{update_cameo_tooltip_ui, update_rts_hud};
+pub use lag_shield_modal::update_lag_shield_modal;
+pub use minimap::{is_radar_provider_building, update_and_interact_radar_minimap};
+pub use objectives_hud::update_objectives_hud;
+pub use player_windows::{sync_player_subwindows, PlayerSubWindowKind, PlayerSubWindowStack};
+pub use replay_hud::{setup_replay_observer_hud, update_replay_observer_hud};
 pub use studio_layout::{
-    spawn_icon_styled_button, spawn_styled_button, update_button_hover_styles,
-    update_selection_drag_box_ui,
+    apply_utf8_font_and_ui_scale, spawn_icon_styled_button, spawn_styled_button,
+    update_button_hover_styles, update_selection_drag_box_ui, UiFontResource,
 };
-use studio_layout::spawn_studio_modal;
+pub use tutorial_coach::{update_tutorial_coach, TutorialCoachState};
+pub use widgets::update_ui_widgets;
 
 use bevy::prelude::*;
-use bevy::render::render_asset::RenderAssetUsages;
-use bevy::render::render_resource::{Extent3d, TextureDimension, TextureFormat};
-use bevy::ui::RelativeCursorPosition;
 use std::path::PathBuf;
+
+/// Unified enum component replacing the legacy 10-way `Without<...>` text marker queries.
+#[derive(Component, Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum HudTextRole {
+    TopBarStatus,
+    SidebarQueue,
+    BottomInspector,
+    StudioStatus,
+    BattleFeed,
+    StudioHeaderTitle,
+    SidebarCredits,
+    PlayerBottomStance,
+    CameoTooltip,
+    DevConsoleBody,
+}
+
+/// Unified enum component for conflict-free HUD layout & visibility queries.
+#[derive(Component, Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum HudLayoutRole {
+    TopBarRoot,
+    RightSidebarRoot,
+    RadarPanelRoot,
+    ClassicRadarSlotSpacer,
+    GlobalProductionStripRoot,
+    HeroInventoryBarRoot,
+    BottomCommandBarRoot,
+    PlayerBottomStancePill,
+    SidebarTelemetryStrip,
+    ProductionProgressFill,
+    BattleFeedRoot,
+    CameoTooltipBanner,
+    StudioTopDeck,
+    DevConsoleOverlay,
+    SmokeTestEguiOverlay,
+}
+
+/// Marker placed on every active in-game HUD panel root so `sync_hud_layout_preset_and_computed_rects`
+/// blocks 3D world clicks over real Bevy `ComputedNode` bounds across all 3 `HudLayoutPreset`s.
+#[derive(Component)]
+pub struct HudPanelBlocker;
+
+#[derive(Component)]
+pub struct SmokeTestEguiTarget;
 
 #[derive(Resource, Clone)]
 pub struct RadarMinimapImage(pub Handle<Image>);
@@ -31,22 +114,7 @@ pub struct RadarMinimapImage(pub Handle<Image>);
 pub struct RadarMinimapNode;
 
 #[derive(Component)]
-pub struct ProductionProgressBarFill;
-
-#[derive(Component)]
-pub struct BattleFeedRoot;
-
-#[derive(Component)]
-pub struct BattleFeedText;
-
-#[derive(Component)]
-pub struct TopBarStatusText;
-
-#[derive(Component)]
-pub struct SidebarQueueText;
-
-#[derive(Component)]
-pub struct BottomInspectorText;
+pub struct RadarPipVideoNode;
 
 #[derive(Component)]
 pub struct DynamicButtonsContainer;
@@ -55,37 +123,16 @@ pub struct DynamicButtonsContainer;
 pub struct StudioModalRoot;
 
 #[derive(Component)]
-pub struct StudioStatusText;
-
-#[derive(Component)]
 pub struct StudioModListContainer;
 
 #[derive(Component)]
 pub struct SelectionDragBoxNode;
 
 #[derive(Component)]
-pub struct InGameHudNode;
+pub struct PlayerAbilityButtonsContainer;
 
-#[derive(Component)]
-pub struct TopBarRootNode;
-
-#[derive(Component)]
-pub struct DevToolbarNode;
-
-#[derive(Component)]
-pub struct RightSidebarRootNode;
-
-#[derive(Component)]
-pub struct BottomCommandBarRootNode;
-
-#[derive(Component)]
-pub struct PlayerBottomStancePillNode;
-
-#[derive(Component)]
-pub struct PlayerBottomStanceText;
-
-#[derive(Component)]
-pub struct SidebarCreditsText;
+#[derive(Component, Clone)]
+pub struct CameoTooltip(pub String);
 
 #[derive(Component)]
 pub struct SidebarCreditsBgNode;
@@ -102,31 +149,31 @@ pub struct SidebarDiploBtnNode;
 #[derive(Component)]
 pub struct SidebarRadarFrameBgNode;
 
-#[derive(Component)]
-pub struct SidebarTelemetryStripNode;
-
-#[derive(Component)]
-pub struct StudioTopDeckNode;
-
-#[derive(Component)]
-pub struct StudioHeaderTitleText;
-
-#[derive(Component)]
-pub struct StudioTab6ButtonText;
+// Marker shims used by `studio_layout.rs` spawn helpers (mapped directly onto `HudTextRole` / `HudLayoutRole`)
+#[allow(non_upper_case_globals)]
+pub const StudioTopDeckNode: HudLayoutRole = HudLayoutRole::StudioTopDeck;
+#[allow(non_upper_case_globals)]
+pub const StudioHeaderTitleText: HudTextRole = HudTextRole::StudioHeaderTitle;
+#[allow(non_upper_case_globals)]
+pub const StudioStatusText: HudTextRole = HudTextRole::StudioStatus;
 
 #[derive(Component, Clone)]
 pub struct ButtonVisualStyle {
     pub normal: Color,
     pub hovered: Color,
     pub pressed: Color,
+    pub default_border: Color,
 }
 
-#[derive(Component, Clone)]
+#[derive(Component, Clone, Debug)]
 pub enum SidebarAction {
     StartPlaceBuilding(String),
+    OrderWorkerBuild(String),
     ProduceUnit(String),
     ResearchUpgrade(String),
+    ReinforceSelectedSquads,
     TriggerAbility,
+    TriggerAbilityIndex(usize),
     ToggleAttackMove,
     CycleSelectedStance,
     TogglePatrolMode,
@@ -136,8 +183,6 @@ pub enum SidebarAction {
     CenterCameraOnSelected,
     CenterCameraOnBase,
     SelectControlGroup(usize),
-    SwitchFaction,
-    SelectPlayerFaction(u8),
     ToggleSkirmishAi,
     CycleAiDifficulty,
     SetAiDifficulty(AiDifficulty),
@@ -146,28 +191,22 @@ pub enum SidebarAction {
     TogglePause,
     RepairSelectedBuildings,
     SellSelectedBuildings,
+    ToggleRepairCursor,
+    ToggleSellCursor,
     UpgradeSelectedBuilding,
     SetPrimaryBuilding,
     UnloadSelectedCarriers,
     CycleAiPersonality,
-    CycleGameMode,
     CycleEnvironmentPreset,
     QuickSaveMatch,
     QuickLoadMatch,
-    CycleMapEditorBrush,
-    ExportEditedMap,
     SwitchActiveMap(String),
-    ToggleScoreboard,
-    StartReplayPlayback,
-    ToggleStudio,
     RestartMatch,
     LoadModFromPath(PathBuf),
-    ValidateActiveMod,
-    RegenerateActiveModGlb,
-    ConvertDemoPacks,
-    AutoScanLegacyImportsDir,
     HostLocalMultiplayer,
     JoinLocalMultiplayer,
+    JoinSpectatorMatch,
+    TriggerHotReconnect,
     CycleHostPlayerSlots,
     BroadcastWorldSync,
     LoadSaveFile(PathBuf),
@@ -180,739 +219,169 @@ pub enum SidebarAction {
     AdvanceNextCampaignMission,
     ToggleAllianceWithPlayer(u8),
     TransferCreditsToPlayer(u8, i32),
-    TransferSelectedUnitsToPlayer(u8),
-    ToggleIpInputEditing,
+    SendQuickTaunt(usize),
     SeekReplayRelative(i64),
     CycleReplayObserverPov,
     FilterSelectionToUnitType(String),
-    CycleMasterVolume,
-    CycleCameraPanSpeed,
     TriggerSupportPower(String),
-    ToggleTechTree,
     RefreshOnlineLobbies,
     JoinOnlineLobby(String),
     NavigateMenu(MenuScreen),
     EnterLoadingScreen(String),
     FinishLoadingEnterGame,
     ReturnToMainMenu,
-    SelectCampaignTab(String),
+    SelectSkirmishCountryIndex(usize),
     CycleSkirmishCountry,
     SelectEncyclopediaFaction(String),
     InspectEncyclopediaEntry(String),
+    InspectTechNode(String),
     ToggleLobbyServerEndpoint,
     HotReloadMod,
-    CycleEditorBrushSize,
-    CycleEditorSymmetry,
-    ValidateMapPlayability,
-    RunBalanceBenchmark,
     SelectCampaignById(String),
-    CycleCampaignMissionPage(i32),
-    CycleSkirmishMapPage(i32),
     ToggleSkirmishMapFilter,
     GenerateProceduralSkirmishMap,
     PlayModVideo(String),
+    VideoTogglePause,
+    VideoStopSkip,
     PlayModMusicTrack(String),
-    ToggleDevMode,
+    StopModMusic,
     OpenInGamePauseMenu,
+    OpenCreatorWorkbench,
+    OpenPlayerWindow(PlayerSubWindowKind),
+    TogglePlayerWindow(PlayerSubWindowKind),
+    ClosePlayerWindow(PlayerSubWindowKind),
+    OpenPlayerWindowFromMenu(PlayerSubWindowKind),
+    SetOptionsTab(u8),
+    SetUiScalePercent(u32),
     SelectProductionTab(ProductionSidebarTab),
+    CycleSidebarPage(i32),
+    SetVehicleDomainFilter(VehicleDomainFilter),
+    CycleSupportPowerPage(i32),
+    CycleUpgradePage(i32),
+    ToggleEncyclopediaCategory,
+    ToggleAudioMute,
+    ToggleEdgeScroll,
+    StartRebindHotkey(HotkeySlot),
+    ResetHotkeysToDefaults,
+    ToggleGridHotkeys,
+    ToggleWasdPan,
+    SetSsaoQuality(String),
+    SetLanguage(String),
+    CycleAutosaveInterval,
+    ToggleHoldProduction(String),
+    SaveNamedSlot,
+    LoadSaveSlot(PathBuf),
+    DeleteSaveSlot(PathBuf),
+    StagingCycleSlotOccupant(u8),
+    StagingCycleSlotFaction(u8),
+    StagingCycleSlotSubFaction(u8),
+    StagingCycleSlotColor(u8),
+    StagingCycleSlotTeam(u8),
+    StagingSelectSpawn(u8),
+    StagingCycleSlotHandicap(u8),
+    StagingToggleReady,
+    StagingLaunchMatch,
+    StagingSendChat(bool),
+    StagingCycleRuleMap,
+    StagingCycleRuleCredits,
+    StagingCycleRuleSpeed,
+    StagingToggleSuperweapons,
+    StagingToggleCrates,
+    StagingToggleFogOfWar,
+    StagingCycleGameMode,
+    StagingPublishCustomMap,
+    LeaveStagingRoom,
+    StartRankedAutomatch1v1,
+    StartRankedAutomatch2v2,
+    CancelRankedAutomatch,
+    RefreshLeaderboard,
+    SetPostGameTab(u8),
+    ContinueViewingBattlefield,
+    OpenPostGameScoreScreen,
+    SaveMatchReplayNow,
+    SetReplaySpeedTenths(u32),
+    SeekReplayAbsoluteTick(u64),
+    SetReplayObserverPov(u8),
+    TogglePingCursor,
+    CycleIdleWorker,
+    JukeboxPlayTrack(usize),
+    JukeboxTogglePause,
+    JukeboxNextTrack,
+    JukeboxPrevTrack,
+    JukeboxToggleShuffle,
+    JukeboxToggleRepeat,
+    JukeboxToggleDynamicCombat,
+    JukeboxCycleFactionFilter,
+    JukeboxCyclePage(i32),
+    CycleWindowMode,
+    CycleResolution(bool),
+    ToggleVsync,
+    SetShadowQuality(String),
+    CycleFpsCap,
+    ToggleObjectivesHudCollapse,
+    JumpCameraToTile([i32; 2]),
+    SkipActiveCutscene,
+    LaunchBootcampTutorial,
+    DismissTutorialCoach,
+    AdvanceTutorialStep,
+    UnlockCommanderNode(String),
+    RetreatSelectedSquads,
+    ToggleSelectedSquadAutoReinforce,
+    UpgradeSelectedSquadWeapon(String),
+    ToggleSelectedBurrow,
+    UpgradeSelectedBuildingTo(String),
+    CastLagStallVoteDrop(u8),
+    CastLagStallVoteAi(u8),
+    StagingCycleResumeSavePage(i32),
+    StagingSelectResumeSave(PathBuf),
+    StagingClearResumeSave,
+    StagingToggleAllowSpectators,
+    StagingCycleSpectatorDelay,
+    SpectateOnlineLobby(String),
+    RefreshWorkshopItems,
+    SetWorkshopKindFilter(Option<rts_network::lobby_registry::WorkshopItemKind>),
+    CycleWorkshopSort,
+    CycleWorkshopPage(i32),
+    DownloadWorkshopItem {
+        item_id: String,
+        sha256: Option<String>,
+        auto_join_addr: Option<String>,
+    },
+    DismissMissingModPrompt,
+    ToggleHarvestCursor,
+    AdvancePlayerEra(String),
+    CancelLocalResearch {
+        building_id: u64,
+        upgrade_id: String,
+    },
+    LearnHeroSkill {
+        hero_id: u64,
+        ability_id: String,
+    },
+    ReviveFallenHero(String),
+    UseHeroInventorySlot {
+        hero_id: u64,
+        slot_index: usize,
+    },
+    CycleHudLayoutPreset,
+    CycleColorblindMode,
+    ToggleSmartCast,
+    ToggleAutoResyncOnDesync,
+    ToggleMutatorOverlay(String),
+    StagingToggleMutator(String),
+    StagingToggleHybridRollback,
+    RejoinSavedMatch,
+    DismissSavedReconnect,
+    ApplyAuthoritativeResync,
+    ExitApplication,
 }
+
+#[derive(Resource, Clone)]
+pub struct PostGameGraphImage(pub Handle<Image>);
 
 #[derive(Resource, Default)]
 pub struct LastSidebarSignature {
     pub sidebar_sig: String,
     pub studio_sig: String,
-}
-
-pub fn setup_rts_hud(mut commands: Commands, mut images: ResMut<Assets<Image>>) {
-    let radar_size = 144u32;
-    let radar_pixels = vec![24u8; (radar_size * radar_size * 4) as usize];
-    let radar_img = Image::new(
-        Extent3d {
-            width: radar_size,
-            height: radar_size,
-            depth_or_array_layers: 1,
-        },
-        TextureDimension::D2,
-        radar_pixels,
-        TextureFormat::Rgba8UnormSrgb,
-        RenderAssetUsages::default(),
-    );
-    let radar_handle = images.add(radar_img);
-    commands.insert_resource(RadarMinimapImage(radar_handle.clone()));
-    // 1. 2D Selection Drag Box overlay
-    commands.spawn((
-        SelectionDragBoxNode,
-        Node {
-            position_type: PositionType::Absolute,
-            left: Val::Px(0.0),
-            top: Val::Px(0.0),
-            width: Val::Px(0.0),
-            height: Val::Px(0.0),
-            display: Display::None,
-            border: UiRect::all(Val::Px(1.5)),
-            ..default()
-        },
-        BackgroundColor(Color::srgba(0.2, 0.95, 0.35, 0.18)),
-        BorderColor(Color::srgb(0.2, 0.95, 0.35)),
-    ));
-
-    // 2. Top Tactical Command Bar (Row 1: Clean Player HUD Bar; Row 2: Optional Developer Sandbox Toolbar)
-    commands
-        .spawn((
-            InGameHudNode,
-            TopBarRootNode,
-            Node {
-                width: Val::Percent(100.0),
-                height: Val::Px(38.0),
-                position_type: PositionType::Absolute,
-                left: Val::Px(0.0),
-                top: Val::Px(0.0),
-                flex_direction: FlexDirection::Column,
-                justify_content: JustifyContent::SpaceBetween,
-                align_items: AlignItems::Stretch,
-                padding: UiRect::axes(Val::Px(14.0), Val::Px(4.0)),
-                border: UiRect::bottom(Val::Px(2.0)),
-                ..default()
-            },
-            BackgroundColor(Color::srgba(0.06, 0.08, 0.12, 0.96)),
-            BorderColor(Color::srgb(0.24, 0.36, 0.54)),
-        ))
-        .with_children(|top| {
-            // Row 1: Player Game Mode Status & Match Controls
-            top.spawn(Node {
-                width: Val::Percent(100.0),
-                flex_direction: FlexDirection::Row,
-                justify_content: JustifyContent::SpaceBetween,
-                align_items: AlignItems::Center,
-                ..default()
-            })
-            .with_children(|player_row| {
-                player_row.spawn((
-                    TopBarStatusText,
-                    Text::new("COMMAND & CONQUER: RED ALERT 2"),
-                    TextFont {
-                        font_size: 11.5,
-                        ..default()
-                    },
-                    TextColor(Color::srgb(0.95, 0.90, 0.65)),
-                ));
-
-                player_row
-                    .spawn(Node {
-                        flex_direction: FlexDirection::Row,
-                        column_gap: Val::Px(5.0),
-                        align_items: AlignItems::Center,
-                        ..default()
-                    })
-                    .with_children(|p_btns| {
-                        spawn_styled_button(
-                            p_btns,
-                            "MENU [ESC]",
-                            SidebarAction::OpenInGamePauseMenu,
-                            Color::srgb(0.18, 0.36, 0.58),
-                            Val::Auto,
-                        );
-                        spawn_styled_button(
-                            p_btns,
-                            "PAUSE [P]",
-                            SidebarAction::TogglePause,
-                            Color::srgb(0.42, 0.28, 0.16),
-                            Val::Auto,
-                        );
-                        spawn_styled_button(
-                            p_btns,
-                            "SPEED [F6]",
-                            SidebarAction::CycleGameSpeed,
-                            Color::srgb(0.24, 0.34, 0.22),
-                            Val::Auto,
-                        );
-                        spawn_styled_button(
-                            p_btns,
-                            "SAVE [F7]",
-                            SidebarAction::QuickSaveMatch,
-                            Color::srgb(0.18, 0.36, 0.28),
-                            Val::Auto,
-                        );
-                        spawn_styled_button(
-                            p_btns,
-                            "LOAD [F8]",
-                            SidebarAction::QuickLoadMatch,
-                            Color::srgb(0.22, 0.34, 0.44),
-                            Val::Auto,
-                        );
-                        spawn_styled_button(
-                            p_btns,
-                            "TECH [F9]",
-                            SidebarAction::ToggleTechTree,
-                            Color::srgb(0.20, 0.38, 0.46),
-                            Val::Auto,
-                        );
-                        spawn_styled_button(
-                            p_btns,
-                            "DIPLOMACY [TAB]",
-                            SidebarAction::ToggleScoreboard,
-                            Color::srgb(0.32, 0.36, 0.18),
-                            Val::Auto,
-                        );
-                        spawn_styled_button(
-                            p_btns,
-                            "DEV [F12]",
-                            SidebarAction::ToggleDevMode,
-                            Color::srgb(0.28, 0.22, 0.38),
-                            Val::Auto,
-                        );
-                    });
-            });
-
-            // Row 2: Engine / Developer Sandbox Toolbar (hidden in Player Game Mode)
-            top.spawn((
-                DevToolbarNode,
-                Node {
-                    width: Val::Percent(100.0),
-                    display: Display::None,
-                    flex_direction: FlexDirection::Row,
-                    column_gap: Val::Px(5.0),
-                    align_items: AlignItems::Center,
-                    ..default()
-                },
-            ))
-            .with_children(|toolbar| {
-                spawn_styled_button(
-                    toolbar,
-                    "DEV-STUDIO",
-                    SidebarAction::ToggleStudio,
-                    Color::srgb(0.18, 0.38, 0.62),
-                    Val::Auto,
-                );
-                spawn_styled_button(
-                    toolbar,
-                    "HOT-RELOAD",
-                    SidebarAction::HotReloadMod,
-                    Color::srgb(0.18, 0.44, 0.32),
-                    Val::Auto,
-                );
-                spawn_styled_button(
-                    toolbar,
-                    "RESTART",
-                    SidebarAction::RestartMatch,
-                    Color::srgb(0.36, 0.24, 0.18),
-                    Val::Auto,
-                );
-                spawn_styled_button(
-                    toolbar,
-                    "FACTION [F1/F2]",
-                    SidebarAction::SwitchFaction,
-                    Color::srgb(0.22, 0.26, 0.34),
-                    Val::Auto,
-                );
-                spawn_styled_button(
-                    toolbar,
-                    "AI ON/OFF",
-                    SidebarAction::ToggleSkirmishAi,
-                    Color::srgb(0.28, 0.20, 0.38),
-                    Val::Auto,
-                );
-                spawn_styled_button(
-                    toolbar,
-                    "AI DIFF [F4]",
-                    SidebarAction::CycleAiDifficulty,
-                    Color::srgb(0.36, 0.20, 0.42),
-                    Val::Auto,
-                );
-                spawn_styled_button(
-                    toolbar,
-                    "FOG CHEAT [F5]",
-                    SidebarAction::ToggleFogOfWar,
-                    Color::srgb(0.16, 0.34, 0.36),
-                    Val::Auto,
-                );
-                spawn_styled_button(
-                    toolbar,
-                    "MAP BRUSH [F10]",
-                    SidebarAction::CycleMapEditorBrush,
-                    Color::srgb(0.38, 0.26, 0.44),
-                    Val::Auto,
-                );
-                spawn_styled_button(
-                    toolbar,
-                    "EXPORT TOML [F11]",
-                    SidebarAction::ExportEditedMap,
-                    Color::srgb(0.26, 0.38, 0.30),
-                    Val::Auto,
-                );
-            });
-        });
-
-    // 2b. Top-Left EVA Tactical Battle Feed Banner
-    commands
-        .spawn((
-            BattleFeedRoot,
-            Node {
-                position_type: PositionType::Absolute,
-                left: Val::Px(14.0),
-                top: Val::Px(46.0),
-                max_width: Val::Px(940.0),
-                padding: UiRect::axes(Val::Px(10.0), Val::Px(6.0)),
-                border: UiRect::all(Val::Px(1.5)),
-                ..default()
-            },
-            BackgroundColor(Color::srgba(0.06, 0.09, 0.14, 0.88)),
-            BorderColor(Color::srgb(0.26, 0.48, 0.72)),
-        ))
-        .with_children(|feed| {
-            feed.spawn((
-                BattleFeedText,
-                Text::new("EVA ONLINE"),
-                TextFont {
-                    font_size: 11.0,
-                    ..default()
-                },
-                TextColor(Color::srgb(0.55, 0.95, 0.72)),
-            ));
-        });
-
-    // 3. Right Tactical Production & Construction Sidebar (Authentic RA2 268px Vertical Stack)
-    commands
-        .spawn((
-            InGameHudNode,
-            RightSidebarRootNode,
-            Node {
-                width: Val::Px(268.0),
-                position_type: PositionType::Absolute,
-                right: Val::Px(0.0),
-                top: Val::Px(0.0),
-                bottom: Val::Px(0.0),
-                flex_direction: FlexDirection::Column,
-                padding: UiRect::all(Val::Px(0.0)),
-                row_gap: Val::Px(0.0),
-                border: UiRect::left(Val::Px(2.0)),
-                ..default()
-            },
-            BackgroundColor(Color::srgba(0.05, 0.07, 0.11, 0.98)),
-            BorderColor(Color::srgb(0.28, 0.42, 0.62)),
-        ))
-        .with_children(|sidebar| {
-            // 3.1 RA2 Credits Digital Readout Header (`credits.png`)
-            sidebar
-                .spawn((
-                    SidebarCreditsBgNode,
-                    ImageNode::default(),
-                    Node {
-                        width: Val::Percent(100.0),
-                        height: Val::Px(26.0),
-                        justify_content: JustifyContent::Center,
-                        align_items: AlignItems::Center,
-                        border: UiRect::bottom(Val::Px(1.0)),
-                        ..default()
-                    },
-                    BorderColor(Color::srgb(0.32, 0.48, 0.68)),
-                ))
-                .with_children(|cred| {
-                    cred.spawn((
-                        SidebarCreditsText,
-                        Text::new("$ 10000"),
-                        TextFont {
-                            font_size: 13.5,
-                            ..default()
-                        },
-                        TextColor(Color::srgb(1.0, 0.92, 0.36)),
-                    ));
-                });
-
-            // 3.2 RA2 Top Control Arch (`top.png` housing `optbtn.png` & `diplobtn.png`)
-            sidebar
-                .spawn((
-                    SidebarTopBgNode,
-                    ImageNode::default(),
-                    Node {
-                        width: Val::Percent(100.0),
-                        height: Val::Px(42.0),
-                        flex_direction: FlexDirection::Row,
-                        justify_content: JustifyContent::SpaceEvenly,
-                        align_items: AlignItems::Center,
-                        padding: UiRect::axes(Val::Px(8.0), Val::Px(3.0)),
-                        ..default()
-                    },
-                ))
-                .with_children(|top_arch| {
-                    top_arch.spawn((
-                        SidebarOptBtnNode,
-                        Button,
-                        SidebarAction::OpenInGamePauseMenu,
-                        ImageNode::default(),
-                        ButtonVisualStyle {
-                            normal: Color::WHITE,
-                            hovered: Color::srgb(0.85, 0.95, 1.0),
-                            pressed: Color::srgb(0.65, 0.78, 0.95),
-                        },
-                        Node {
-                            width: Val::Px(112.0),
-                            height: Val::Px(28.0),
-                            justify_content: JustifyContent::Center,
-                            align_items: AlignItems::Center,
-                            ..default()
-                        },
-                        BackgroundColor(Color::WHITE),
-                    ));
-
-                    top_arch.spawn((
-                        SidebarDiploBtnNode,
-                        Button,
-                        SidebarAction::ToggleScoreboard,
-                        ImageNode::default(),
-                        ButtonVisualStyle {
-                            normal: Color::WHITE,
-                            hovered: Color::srgb(0.85, 0.95, 1.0),
-                            pressed: Color::srgb(0.65, 0.78, 0.95),
-                        },
-                        Node {
-                            width: Val::Px(112.0),
-                            height: Val::Px(28.0),
-                            justify_content: JustifyContent::Center,
-                            align_items: AlignItems::Center,
-                            ..default()
-                        },
-                        BackgroundColor(Color::WHITE),
-                    ));
-                });
-
-            // 3.3 RA2 Faction Emblem Radar Frame (`radar.png` / `radary.png` + interactive `RadarMinimapNode`)
-            sidebar
-                .spawn((
-                    SidebarRadarFrameBgNode,
-                    ImageNode::default(),
-                    Node {
-                        width: Val::Percent(100.0),
-                        height: Val::Px(162.0),
-                        justify_content: JustifyContent::Center,
-                        align_items: AlignItems::Center,
-                        border: UiRect::axes(Val::Px(0.0), Val::Px(1.0)),
-                        ..default()
-                    },
-                    BorderColor(Color::srgb(0.28, 0.44, 0.66)),
-                ))
-                .with_children(|radar_frame| {
-                    radar_frame.spawn((
-                        RadarMinimapNode,
-                        Button,
-                        RelativeCursorPosition::default(),
-                        ImageNode::new(radar_handle),
-                        Node {
-                            width: Val::Px(192.0),
-                            height: Val::Px(138.0),
-                            border: UiRect::all(Val::Px(1.5)),
-                            ..default()
-                        },
-                        BorderColor(Color::srgba(0.38, 0.78, 1.0, 0.75)),
-                    ));
-                });
-
-            // 3.4 Compact Telemetry & Build Progress Strip (shown in Dev Mode; hidden in Player Mode so `side1.png` connects directly to `radar.png`)
-            sidebar
-                .spawn((
-                    InGameHudNode,
-                    SidebarTelemetryStripNode,
-                    Node {
-                        width: Val::Percent(100.0),
-                        padding: UiRect::axes(Val::Px(6.0), Val::Px(2.0)),
-                        flex_direction: FlexDirection::Column,
-                        row_gap: Val::Px(2.0),
-                        ..default()
-                    },
-                    BackgroundColor(Color::srgba(0.04, 0.06, 0.10, 0.96)),
-                ))
-                .with_children(|status_box| {
-                    status_box.spawn((
-                        SidebarQueueText,
-                        Text::new("Status: Ready"),
-                        TextFont {
-                            font_size: 9.5,
-                            ..default()
-                        },
-                        TextColor(Color::srgb(0.75, 0.90, 1.0)),
-                    ));
-
-                    status_box
-                        .spawn((
-                            Node {
-                                width: Val::Percent(100.0),
-                                height: Val::Px(5.0),
-                                border: UiRect::all(Val::Px(1.0)),
-                                ..default()
-                            },
-                            BackgroundColor(Color::srgb(0.10, 0.14, 0.20)),
-                            BorderColor(Color::srgb(0.24, 0.36, 0.52)),
-                        ))
-                        .with_children(|track| {
-                            track.spawn((
-                                ProductionProgressBarFill,
-                                Node {
-                                    width: Val::Percent(0.0),
-                                    height: Val::Percent(100.0),
-                                    ..default()
-                                },
-                                BackgroundColor(Color::srgb(0.22, 0.92, 0.46)),
-                            ));
-                        });
-                });
-
-            // 3.5 Dynamic RA2 `side1.png` (Repair/Sell + 4 Icon Tabs), `side2.png` (Power Bar + 2-Col Full Cameos) & `side3.png`
-            sidebar.spawn((
-                DynamicButtonsContainer,
-                Node {
-                    width: Val::Percent(100.0),
-                    flex_grow: 1.0,
-                    flex_direction: FlexDirection::Column,
-                    row_gap: Val::Px(0.0),
-                    overflow: Overflow::clip_y(),
-                    ..default()
-                },
-            ));
-        });
-
-    // 3b. Compact Bottom-Left RA2 Tactical Selection & Stance Strip (Player Game Mode)
-    commands
-        .spawn((
-            PlayerBottomStancePillNode,
-            Node {
-                position_type: PositionType::Absolute,
-                left: Val::Px(10.0),
-                bottom: Val::Px(8.0),
-                display: Display::None,
-                flex_direction: FlexDirection::Row,
-                align_items: AlignItems::Center,
-                column_gap: Val::Px(6.0),
-                padding: UiRect::axes(Val::Px(8.0), Val::Px(4.0)),
-                border: UiRect::all(Val::Px(1.5)),
-                ..default()
-            },
-            BackgroundColor(Color::srgba(0.04, 0.07, 0.12, 0.84)),
-            BorderColor(Color::srgba(0.32, 0.62, 0.92, 0.75)),
-        ))
-        .with_children(|pill| {
-            pill.spawn((
-                PlayerBottomStanceText,
-                Text::new(""),
-                TextFont {
-                    font_size: 10.5,
-                    ..default()
-                },
-                TextColor(Color::srgb(0.88, 0.95, 1.0)),
-            ));
-            spawn_styled_button(
-                pill,
-                "DEPLOY [G]",
-                SidebarAction::TriggerAbility,
-                Color::srgb(0.42, 0.30, 0.12),
-                Val::Auto,
-            );
-            spawn_styled_button(
-                pill,
-                "STANCE [T]",
-                SidebarAction::CycleSelectedStance,
-                Color::srgb(0.24, 0.28, 0.42),
-                Val::Auto,
-            );
-            spawn_styled_button(
-                pill,
-                "ATK-MOVE [X]",
-                SidebarAction::ToggleAttackMove,
-                Color::srgb(0.44, 0.22, 0.14),
-                Val::Auto,
-            );
-            spawn_styled_button(
-                pill,
-                "STOP [H]",
-                SidebarAction::StopSelectedUnits,
-                Color::srgb(0.36, 0.18, 0.20),
-                Val::Auto,
-            );
-        });
-
-    // 4. Bottom Selection Inspector & Tactical Command Bar (86px height — visible in Engine Developer Mode [F12])
-    commands
-        .spawn((
-            InGameHudNode,
-            BottomCommandBarRootNode,
-            Node {
-                position_type: PositionType::Absolute,
-                left: Val::Px(0.0),
-                right: Val::Px(268.0),
-                bottom: Val::Px(0.0),
-                height: Val::Px(86.0),
-                flex_direction: FlexDirection::Row,
-                justify_content: JustifyContent::SpaceBetween,
-                align_items: AlignItems::Center,
-                padding: UiRect::axes(Val::Px(14.0), Val::Px(6.0)),
-                column_gap: Val::Px(14.0),
-                border: UiRect::top(Val::Px(2.0)),
-                ..default()
-            },
-            BackgroundColor(Color::srgba(0.07, 0.09, 0.13, 0.95)),
-            BorderColor(Color::srgb(0.22, 0.30, 0.44)),
-        ))
-        .with_children(|bottom| {
-            bottom
-                .spawn(Node {
-                    max_width: Val::Px(365.0),
-                    overflow: Overflow::clip(),
-                    ..default()
-                })
-                .with_children(|insp_wrap| {
-                    insp_wrap.spawn((
-                        BottomInspectorText,
-                        Text::new("No unit selected."),
-                        TextFont {
-                            font_size: 11.0,
-                            ..default()
-                        },
-                        TextColor(Color::srgb(0.86, 0.91, 0.96)),
-                    ));
-                });
-
-            // Right-side Tactical Order & Control Group Toolbar
-            bottom
-                .spawn(Node {
-                    flex_direction: FlexDirection::Column,
-                    row_gap: Val::Px(5.0),
-                    align_items: AlignItems::FlexEnd,
-                    ..default()
-                })
-                .with_children(|orders_col| {
-                    orders_col
-                        .spawn(Node {
-                            flex_direction: FlexDirection::Row,
-                            column_gap: Val::Px(4.0),
-                            ..default()
-                        })
-                        .with_children(|row1| {
-                            spawn_styled_button(
-                                row1,
-                                "STANCE [T]",
-                                SidebarAction::CycleSelectedStance,
-                                Color::srgb(0.32, 0.28, 0.44),
-                                Val::Auto,
-                            );
-                            spawn_styled_button(
-                                row1,
-                                "PATROL [Z]",
-                                SidebarAction::TogglePatrolMode,
-                                Color::srgb(0.18, 0.36, 0.48),
-                                Val::Auto,
-                            );
-                            spawn_styled_button(
-                                row1,
-                                "GUARD [F]",
-                                SidebarAction::ToggleGuardMode,
-                                Color::srgb(0.16, 0.40, 0.36),
-                                Val::Auto,
-                            );
-                            spawn_styled_button(
-                                row1,
-                                "ATK [X]",
-                                SidebarAction::ToggleAttackMove,
-                                Color::srgb(0.48, 0.24, 0.14),
-                                Val::Auto,
-                            );
-                            spawn_styled_button(
-                                row1,
-                                "STOP [H]",
-                                SidebarAction::StopSelectedUnits,
-                                Color::srgb(0.38, 0.18, 0.20),
-                                Val::Auto,
-                            );
-                            spawn_styled_button(
-                                row1,
-                                "SCATTER [V]",
-                                SidebarAction::ScatterSelectedUnits,
-                                Color::srgb(0.26, 0.32, 0.18),
-                                Val::Auto,
-                            );
-                            spawn_styled_button(
-                                row1,
-                                "ABIL [G]",
-                                SidebarAction::TriggerAbility,
-                                Color::srgb(0.44, 0.32, 0.12),
-                                Val::Auto,
-                            );
-                            spawn_styled_button(
-                                row1,
-                                "UNIT [C]",
-                                SidebarAction::CenterCameraOnSelected,
-                                Color::srgb(0.18, 0.32, 0.46),
-                                Val::Auto,
-                            );
-                            spawn_styled_button(
-                                row1,
-                                "BASE",
-                                SidebarAction::CenterCameraOnBase,
-                                Color::srgb(0.18, 0.28, 0.40),
-                                Val::Auto,
-                            );
-                        });
-
-                    orders_col
-                        .spawn(Node {
-                            flex_direction: FlexDirection::Row,
-                            column_gap: Val::Px(5.0),
-                            ..default()
-                        })
-                        .with_children(|row2| {
-                            spawn_styled_button(
-                                row2,
-                                "UNLOAD [U]",
-                                SidebarAction::UnloadSelectedCarriers,
-                                Color::srgb(0.16, 0.38, 0.46),
-                                Val::Auto,
-                            );
-                            spawn_styled_button(
-                                row2,
-                                "REPAIR [R]",
-                                SidebarAction::RepairSelectedBuildings,
-                                Color::srgb(0.18, 0.42, 0.24),
-                                Val::Auto,
-                            );
-                            spawn_styled_button(
-                                row2,
-                                "SELL [DEL]",
-                                SidebarAction::SellSelectedBuildings,
-                                Color::srgb(0.46, 0.26, 0.14),
-                                Val::Auto,
-                            );
-                            spawn_styled_button(
-                                row2,
-                                "UPGRADE [Y]",
-                                SidebarAction::UpgradeSelectedBuilding,
-                                Color::srgb(0.48, 0.36, 0.12),
-                                Val::Auto,
-                            );
-                            spawn_styled_button(
-                                row2,
-                                "PRIMARY [B]",
-                                SidebarAction::SetPrimaryBuilding,
-                                Color::srgb(0.42, 0.36, 0.14),
-                                Val::Auto,
-                            );
-                            spawn_styled_button(
-                                row2,
-                                "MINE [M]",
-                                SidebarAction::PlaceLandmine,
-                                Color::srgb(0.46, 0.22, 0.18),
-                                Val::Auto,
-                            );
-                            for g in 0..5 {
-                                let lbl = format!("GRP {}", g + 1);
-                                spawn_styled_button(
-                                    row2,
-                                    &lbl,
-                                    SidebarAction::SelectControlGroup(g),
-                                    Color::srgb(0.20, 0.24, 0.34),
-                                    Val::Auto,
-                                );
-                            }
-                        });
-                });
-        });
-
-    spawn_studio_modal(&mut commands);
+    pub ability_sig: String,
 }

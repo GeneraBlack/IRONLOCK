@@ -10,10 +10,13 @@ npm-debug.log*
 
 # Raw legacy ISO / MIX import staging
 /legacy-imports/
+/rust-ra2/assets/raw/
 
 # Runtime logs and local saves
 *.log
 /saves/
+**/saves/
+/dist/
 
 # OS metadata
 .DS_Store

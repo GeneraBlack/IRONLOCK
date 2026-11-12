@@ -13,8 +13,12 @@ export interface LobbyAnnouncement {
   max_players: number;
   game_mode: string;
   password_protected?: boolean;
+  password?: string | null;
   allocate_relay?: boolean;
+  prefer_mux_relay?: boolean;
   upnp_external_addr?: string | null;
+  host_token?: string | null;
+  hostToken?: string | null;
 }
 
 export interface LobbyEntry {
@@ -25,6 +29,10 @@ export interface LobbyEntry {
   external_addr?: string | null;
   relay_addr?: string | null;
   relay_uplink_addr?: string | null;
+  relay_room_token?: string | null;
+  relay_mux_port?: number | null;
+  udp_rendezvous_port?: number | null;
+  udp_rendezvous_addr?: string | null;
   nat_mode: string;
   mod_id: string;
   mod_name: string;
@@ -40,12 +48,19 @@ export interface LobbyEntry {
   last_heartbeat_unix_ms: number;
 }
 
+export interface RegisteredLobbyResponse extends LobbyEntry {
+  hostToken: string;
+  host_token: string;
+}
+
 export interface LobbyHeartbeatRequest {
   current_players: number;
   max_players: number;
   status?: LobbyStatus | null;
   map_id?: string | null;
   map_name?: string | null;
+  host_token?: string | null;
+  hostToken?: string | null;
 }
 
 export interface LobbyListResponse {
@@ -55,11 +70,14 @@ export interface LobbyListResponse {
 export interface MatchPlayerRecord {
   name: string;
   faction: string;
+  team?: number;
   is_winner: boolean;
+  player_id?: string | null;
 }
 
 export interface MatchRecord {
   match_id: string;
+  lobby_id?: string | null;
   lobby_name: string;
   mod_id: string;
   mod_name: string;
@@ -75,27 +93,32 @@ export interface MatchRecord {
   final_state_hash: string;
   total_commands: number;
   desync_detected: boolean;
-  replay_file?: string;
+  replay_file?: string | null;
+  replay_url?: string | null;
+  replayUrl?: string | null;
   completed_at_unix_ms: number;
 }
 
 export interface CreateMatchRequest {
-  lobby_name: string;
-  mod_id: string;
+  lobby_id?: string | null;
+  lobby_name?: string;
+  mod_id?: string;
   mod_name?: string;
   mod_version?: string;
-  map_id: string;
+  map_id?: string;
   map_name?: string;
   game_mode?: string;
   players?: MatchPlayerRecord[];
-  winner_player: string;
-  winner_faction: string;
+  winner_player?: string;
+  winner_faction?: string;
   duration_secs?: number;
-  final_tick: number;
-  final_state_hash: string | number;
+  final_tick?: number;
+  final_state_hash?: string | number;
   total_commands?: number;
   desync_detected?: boolean;
   replay_file?: string;
+  replay_url?: string | null;
+  replayUrl?: string | null;
 }
 
 export interface MatchListResponse {
@@ -105,18 +128,207 @@ export interface MatchListResponse {
 export interface CommanderRankEntry {
   rank: number;
   player_name: string;
+  player?: string;
   main_faction: string;
+  favorite_faction?: string;
   wins: number;
   losses: number;
   matches_played: number;
+  games?: number;
   win_rate_pct: number;
   total_ticks: number;
   verified_matches: number;
   last_played_unix_ms: number;
+  rating: number;
+  rd: number;
+  streak: number;
+  player_id?: string | null;
 }
 
 export interface LeaderboardResponse {
   leaderboard: CommanderRankEntry[];
+}
+
+export interface StunWhoamiResponse {
+  ip: string;
+  port: number;
+  is_cgnat: boolean;
+}
+
+export interface PlayerRegistrationRequest {
+  player_id: string;
+  display_name: string;
+  public_token: string;
+}
+
+export interface SignedMatchReport extends CreateMatchRequest {
+  player_id: string;
+  submitter_name: string;
+  public_token: string;
+  timestamp_unix_ms: number;
+  signature: string;
+  match_request?: CreateMatchRequest;
+}
+
+export type AutomatchMode = '1v1' | '2v2';
+export type AutomatchPollStatus =
+  | 'searching'
+  | 'matched'
+  | 'cancelled'
+  | 'expired';
+
+export interface AutomatchEnqueueRequest {
+  player_id: string;
+  display_name: string;
+  public_token: string;
+  mod_id?: string;
+  mode: AutomatchMode;
+  preferred_faction?: string;
+  host_addr?: string | null;
+  upnp_external_addr?: string | null;
+}
+
+export interface AutomatchPlayerAssignment {
+  player_id: string;
+  display_name: string;
+  slot_index: number;
+  assigned_player_id: number;
+  team_id: number;
+  preferred_faction: string;
+  rating: number;
+}
+
+export interface AutomatchAssignment {
+  match_token: string;
+  lobby_id: string;
+  mode: AutomatchMode;
+  mod_id: string;
+  map_id: string;
+  random_seed: number;
+  host_player_id: string;
+  is_host: boolean;
+  assigned_player_id: number;
+  relay_addr: string;
+  relay_uplink_addr: string;
+  relay_room_token: string;
+  candidate_addrs: string[];
+  players: AutomatchPlayerAssignment[];
+  authoritative_dedicated?: boolean;
+  dedicated_server_id?: string | null;
+  dedicated_addr?: string | null;
+}
+
+export type DedicatedServerStatus =
+  | 'idle'
+  | 'allocated'
+  | 'staging'
+  | 'in_game'
+  | 'draining';
+
+export interface DedicatedMatchAllocation {
+  match_token: string;
+  lobby_id: string;
+  mode: string;
+  mod_id: string;
+  active_mutators: string[];
+  map_id: string;
+  random_seed: number;
+  expected_players: number;
+  players: AutomatchPlayerAssignment[];
+  allocated_at_unix_ms: number;
+}
+
+export interface DedicatedServerRegisterRequest {
+  server_id?: string;
+  display_name?: string;
+  tcp_addr: string;
+  udp_port?: number | null;
+  region?: string;
+  mod_id: string;
+  mod_version?: string;
+  mod_content_hash?: string;
+  active_mutators?: string[];
+  max_players?: number;
+  current_players?: number;
+  status?: DedicatedServerStatus;
+  allocate_relay?: boolean;
+  fleet_secret?: string | null;
+  server_token?: string | null;
+}
+
+export interface DedicatedServerEntry {
+  server_id: string;
+  display_name: string;
+  tcp_addr: string;
+  udp_port: number | null;
+  region: string;
+  mod_id: string;
+  mod_version: string;
+  mod_content_hash: string;
+  active_mutators: string[];
+  max_players: number;
+  current_players: number;
+  active_tick: number;
+  status: DedicatedServerStatus;
+  allocated_match_token: string | null;
+  allocated_lobby_id: string | null;
+  allocation: DedicatedMatchAllocation | null;
+  relay_addr: string | null;
+  relay_uplink_addr: string | null;
+  relay_room_token: string | null;
+  registered_at_unix_ms: number;
+  last_heartbeat_unix_ms: number;
+  matches_hosted: number;
+}
+
+export interface DedicatedServerRegisterResponse extends DedicatedServerEntry {
+  server_token: string;
+}
+
+export interface DedicatedServerHeartbeatRequest {
+  server_id: string;
+  server_token?: string | null;
+  status?: DedicatedServerStatus;
+  current_players?: number;
+  max_players?: number;
+  active_tick?: number;
+  mod_id?: string;
+  active_mutators?: string[];
+  completed_match_token?: string | null;
+}
+
+export interface DedicatedServerAllocateRequest {
+  mod_id: string;
+  mod_version?: string;
+  active_mutators?: string[];
+  required_players?: number;
+  region?: string;
+  map_id?: string;
+  mode?: string;
+  match_token?: string;
+  lobby_id?: string;
+  random_seed?: number;
+  players?: AutomatchPlayerAssignment[];
+}
+
+export interface DedicatedServerListResponse {
+  servers: DedicatedServerEntry[];
+  total: number;
+  idle: number;
+  active: number;
+}
+
+export interface AutomatchPollResponse {
+  ticket_id: string;
+  status: AutomatchPollStatus;
+  rating: number;
+  search_window: number;
+  assignment?: AutomatchAssignment;
+}
+
+export interface AutomatchCancelRequest {
+  ticket_id: string;
+  player_id: string;
 }
 
 export interface RegistryStats {
@@ -133,7 +345,64 @@ export interface RegistryStats {
   players_online: number;
   total_lobbies_registered: number;
   total_matches_completed: number;
+  relay_mux_port?: number | null;
+  relay_rooms_active?: number;
+  udp_rendezvous_port?: number | null;
+  workshop_items_total?: number;
+  dedicated_servers_online?: number;
+  dedicated_servers_idle?: number;
   mods_active: Record<string, { lobbies: number; players: number }>;
+}
+
+export type WorkshopItemKind = 'mod' | 'map';
+
+export type WorkshopSortOrder =
+  | 'downloads'
+  | 'newest'
+  | 'updated'
+  | 'title';
+
+export interface WorkshopItemMetadata {
+  id: string;
+  title: string;
+  description: string;
+  author_name: string;
+  author_player_id: string;
+  kind: WorkshopItemKind;
+  version: string;
+  tags: string[];
+  sha256: string;
+  mod_content_hash: string;
+  size_bytes: number;
+  file_name: string;
+  downloads: number;
+  created_at_unix_ms: number;
+  updated_at_unix_ms: number;
+}
+
+export interface WorkshopItemListResponse {
+  items: WorkshopItemMetadata[];
+  total: number;
+}
+
+export interface WorkshopPublishMetadataInput {
+  id: string;
+  title: string;
+  description?: string;
+  author_name: string;
+  player_id: string;
+  public_token?: string;
+  timestamp_unix_ms?: number;
+  signature?: string;
+  kind: WorkshopItemKind;
+  version: string;
+  tags?: string[];
+  sha256: string;
+  mod_content_hash: string;
+}
+
+export interface WorkshopPublishJsonRequest extends WorkshopPublishMetadataInput {
+  payload_base64: string;
 }
 
 export interface MapSummary {

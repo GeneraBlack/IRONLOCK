@@ -2,23 +2,33 @@ mod commands_abilities;
 mod commands_construction;
 mod commands_tactical;
 mod commands_unit_orders;
+pub mod economy;
+pub mod entity_traits;
+pub mod heroes_and_items;
 mod initialization;
 mod lifecycle;
+pub mod locomotors;
 mod movement;
 mod queries;
 mod spawning;
+pub mod squads;
 mod step_world;
+mod trigger_graph;
 mod triggers_and_fow;
 
+pub use entity_traits::*;
+pub use squads::CoverLevel;
+
 use crate::combat::{CombatEvent, SimProjectile};
-use crate::command::{FormationKind, GameCommand, UnitStance};
+use crate::command::{FormationKind, GameCommand, QueuedOrder, UnitStance};
 use crate::pathfinding::CollisionGrid;
 use rts_sdk::schema::{
-    ArmorType, CrateKind, PropKind, StatusEffectDef, StatusVfxStyle, TriggerZoneDef,
+    ArmorType, CrateKind, DefId, MissionObjectiveDef, ObjectiveStatus, PropKind, StackPolicy,
+    StatusEffectDef, StatusVfxStyle, TriggerZoneDef,
 };
 use rts_sdk::scripting::ScriptContext;
 use serde::{Deserialize, Serialize};
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::{BTreeMap, BTreeSet, VecDeque};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
 pub enum GameMode {
@@ -174,6 +184,24 @@ pub struct SimProp {
     pub tile: [i32; 2],
     pub position: [f32; 3],
     pub health: f32,
+    #[serde(default)]
+    pub last_damaged_by_player: u8,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct SimCivilianStructure {
+    pub id: u64,
+    pub tile_pos: [i32; 2],
+    pub footprint: [u32; 2],
+    pub position: [f32; 3],
+    pub health: f32,
+    pub max_health: f32,
+    #[serde(default)]
+    pub cover_bonus: f32,
+    #[serde(default)]
+    pub leaves_ruin: bool,
+    #[serde(default)]
+    pub is_ruin: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -220,6 +248,8 @@ pub struct ProductionItem {
     pub unit_id: String,
     pub remaining_secs: f32,
     pub total_secs: f32,
+    #[serde(default)]
+    pub on_hold: bool,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
@@ -313,6 +343,8 @@ pub struct RadiationZone {
     pub remaining_secs: f32,
     #[serde(default)]
     pub is_toxic_cloud: bool,
+    #[serde(default)]
+    pub owner_player_id: u8,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -323,6 +355,14 @@ pub struct RevealZone {
     pub remaining_secs: f32,
 }
 
+fn default_one_buff_f32() -> f32 {
+    1.0
+}
+
+fn default_one_buff_u8() -> u8 {
+    1
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ActiveBuff {
     pub id: String,
@@ -330,6 +370,24 @@ pub struct ActiveBuff {
     pub speed_multiplier: f32,
     pub damage_multiplier: f32,
     pub armor_multiplier: f32,
+    #[serde(default)]
+    pub range_bonus: f32,
+    #[serde(default = "default_one_buff_f32")]
+    pub fire_rate_mult: f32,
+    #[serde(default = "default_one_buff_f32")]
+    pub vision_mult: f32,
+    #[serde(default = "default_one_buff_f32")]
+    pub build_speed_mult: f32,
+    #[serde(default)]
+    pub hp_regen_per_sec: f32,
+    #[serde(default)]
+    pub stack_policy: StackPolicy,
+    #[serde(default = "default_one_buff_u8")]
+    pub max_stacks: u8,
+    #[serde(default = "default_one_buff_u8")]
+    pub stacks: u8,
+    #[serde(default)]
+    pub dispel_category: Option<String>,
     pub invulnerable: bool,
     pub stunned: bool,
     pub dot_dps: f32,
@@ -371,6 +429,15 @@ impl Default for ActiveBuff {
             speed_multiplier: 1.0,
             damage_multiplier: 1.0,
             armor_multiplier: 1.0,
+            range_bonus: 0.0,
+            fire_rate_mult: 1.0,
+            vision_mult: 1.0,
+            build_speed_mult: 1.0,
+            hp_regen_per_sec: 0.0,
+            stack_policy: StackPolicy::Refresh,
+            max_stacks: 1,
+            stacks: 1,
+            dispel_category: None,
             invulnerable: false,
             stunned: false,
             dot_dps: 0.0,
@@ -394,12 +461,22 @@ impl Default for ActiveBuff {
 
 impl ActiveBuff {
     pub fn from_def(def: &StatusEffectDef) -> Self {
+        let m = def.effective_modifier();
         Self {
             id: def.id.clone(),
             remaining_secs: def.duration_secs.max(0.1),
-            speed_multiplier: def.speed_multiplier,
-            damage_multiplier: def.damage_multiplier,
-            armor_multiplier: def.armor_multiplier,
+            speed_multiplier: m.speed_mult,
+            damage_multiplier: m.damage_mult,
+            armor_multiplier: m.armor_mult,
+            range_bonus: m.range_bonus,
+            fire_rate_mult: m.fire_rate_mult,
+            vision_mult: m.vision_mult,
+            build_speed_mult: m.build_speed_mult,
+            hp_regen_per_sec: m.hp_regen_per_sec,
+            stack_policy: m.stack_policy,
+            max_stacks: m.max_stacks.max(1),
+            stacks: 1,
+            dispel_category: m.dispel_category,
             invulnerable: def.invulnerable,
             stunned: def.stunned,
             dot_dps: def.dot_dps,
@@ -426,6 +503,10 @@ pub struct SimEntity {
     pub id: u64,
     pub player_id: u8,
     pub kind: EntityKind,
+    #[serde(default)]
+    pub def_id_interned: DefId,
+    #[serde(default)]
+    pub trait_flags: u8,
     pub tile_origin: [i32; 2],
     pub position: [f32; 3],
     pub facing_radians: f32,
@@ -435,6 +516,10 @@ pub struct SimEntity {
     pub recoil_timer: f32,
     pub health: f32,
     pub max_health: f32,
+    #[serde(default)]
+    pub energy: f32,
+    #[serde(default)]
+    pub max_energy: f32,
     pub armor: ArmorType,
     pub primary_weapon: Option<String>,
     pub weapon_cooldown: f32,
@@ -459,6 +544,10 @@ pub struct SimEntity {
     #[serde(default)]
     pub ability_max_cooldown: f32,
     #[serde(default)]
+    pub ability_cooldowns: Vec<f32>,
+    #[serde(default)]
+    pub auto_cast_abilities: BTreeSet<usize>,
+    #[serde(default)]
     pub active_buffs: Vec<ActiveBuff>,
     pub rally_point: Option<[f32; 3]>,
     #[serde(default)]
@@ -476,23 +565,22 @@ pub struct SimEntity {
     pub is_repairing: bool,
     pub construction_progress: f32,
     #[serde(default)]
+    pub streaming_paid_fraction: f32,
+    #[serde(default)]
     pub passenger_ids: Vec<u64>,
     #[serde(default)]
     pub transported_by: Option<u64>,
-    #[serde(default)]
-    pub boarding_carrier_id: Option<u64>,
     pub path_waypoints: Vec<[f32; 3]>,
+    #[serde(default)]
+    pub active_flow_handle: Option<crate::flow_field::FlowFieldHandle>,
+    #[serde(default)]
+    pub formation_goal_tile: Option<[i32; 2]>,
     pub harvester_state: Option<HarvesterState>,
     pub production_queue: Vec<ProductionItem>,
     pub experience: f32,
     pub veterancy: VeterancyRank,
-    pub mind_controlled_by: Option<(u64, u8)>,
-    #[serde(default)]
-    pub service_depot_target_id: Option<u64>,
     #[serde(default)]
     pub parachute_timer: f32,
-    #[serde(default)]
-    pub home_airfield_id: Option<u64>,
     #[serde(default)]
     pub landed_at_airfield: bool,
     #[serde(default)]
@@ -506,21 +594,11 @@ pub struct SimEntity {
     #[serde(default)]
     pub upgrading_to: Option<(String, f32, f32)>,
     #[serde(default)]
-    pub salvage_upgraded: bool,
-    #[serde(default)]
     pub permanent_cloak: bool,
     #[serde(default)]
     pub burrowed: bool,
     #[serde(default)]
-    pub capture_bonus_claimed: bool,
-    #[serde(default)]
     pub power_disabled: bool,
-    #[serde(default)]
-    pub parent_carrier_id: Option<u64>,
-    #[serde(default)]
-    pub disguised_as: Option<(String, u8)>,
-    #[serde(default)]
-    pub point_defense_timer: f32,
     #[serde(default)]
     pub temporal_progress: f32,
     #[serde(default)]
@@ -528,17 +606,65 @@ pub struct SimEntity {
     #[serde(default)]
     pub spin_decay_timer: f32,
     #[serde(default)]
-    pub pending_airstrike_timer: f32,
-    #[serde(default)]
-    pub pending_airstrike_damage: f32,
-    #[serde(default)]
-    pub pending_airstrike_attacker_player: u8,
-    #[serde(default)]
     pub reveal_timer: f32,
     #[serde(default)]
     pub neutral_garrison: bool,
     #[serde(default)]
     pub formation_speed_cap: Option<f32>,
+    #[serde(default)]
+    pub repath_cooldown_ticks: u8,
+    #[serde(default)]
+    pub current_speed: f32,
+    #[serde(default)]
+    pub teleport_epoch: u32,
+    #[serde(default)]
+    pub suppression: f32,
+    #[serde(default)]
+    pub squad_members_alive: u8,
+    #[serde(default)]
+    pub worker_build_target_id: Option<u64>,
+    #[serde(default)]
+    pub requires_worker_builder: bool,
+    #[serde(default)]
+    pub carried_resource_type: Option<String>,
+    #[serde(default)]
+    pub carried_resource_amount: u32,
+    #[serde(default)]
+    pub command_queue: VecDeque<QueuedOrder>,
+    #[serde(default)]
+    pub desired_arrival_facing: Option<f32>,
+    #[serde(default)]
+    pub last_damaged_by_player: u8,
+    #[serde(default)]
+    pub last_damaged_by_def_id: Option<String>,
+    #[serde(default)]
+    pub patrol_waypoints: Vec<[f32; 3]>,
+    #[serde(default)]
+    pub patrol_waypoint_idx: usize,
+    #[serde(default)]
+    pub manual_burrow_override: Option<bool>,
+    #[serde(default)]
+    pub repair_hut_target_id: Option<u64>,
+    #[serde(default)]
+    pub indestructible: bool,
+    #[serde(default)]
+    pub cover_level: CoverLevel,
+    #[serde(default)]
+    pub is_pinned: bool,
+    #[serde(default)]
+    pub is_retreating: bool,
+    #[serde(default = "default_true_bool")]
+    pub squad_auto_reinforce: bool,
+    #[serde(default)]
+    pub squad_weapon_upgrades: Vec<String>,
+    #[serde(default)]
+    pub leaves_ruin: bool,
+    #[serde(default)]
+    pub ruin_cover_bonus: f32,
+    #[serde(default)]
+    pub linked_civ_structure_id: Option<u64>,
+    #[serde(default)]
+    pub is_support_aircraft: bool,
     pub script_ctx: ScriptContext,
 }
 
@@ -583,9 +709,194 @@ impl SimEntity {
     }
 
     pub fn upsert_status(&mut self, buff: ActiveBuff) {
-        self.active_buffs.retain(|b| b.id != buff.id);
-        if buff.remaining_secs > 0.0 {
-            self.active_buffs.push(buff);
+        self.apply_buff_stack(buff);
+    }
+
+    /// Applies an `ActiveBuff` honoring `StackPolicy::{Refresh, StackIntensity, Independent}` and `max_stacks` (`Task 230`).
+    pub fn apply_buff_stack(&mut self, mut incoming: ActiveBuff) {
+        if incoming.remaining_secs <= 0.0 {
+            return;
+        }
+        let max_s = incoming.max_stacks.max(1);
+        incoming.max_stacks = max_s;
+        incoming.stacks = incoming.stacks.clamp(1, max_s);
+        match incoming.stack_policy {
+            StackPolicy::Refresh => {
+                if let Some(existing) = self.active_buffs.iter_mut().find(|b| b.id == incoming.id) {
+                    let rem = existing.remaining_secs.max(incoming.remaining_secs);
+                    *existing = incoming;
+                    existing.remaining_secs = rem;
+                    existing.stacks = 1;
+                } else {
+                    incoming.stacks = 1;
+                    self.active_buffs.push(incoming);
+                }
+            }
+            StackPolicy::StackIntensity => {
+                if let Some(existing) = self.active_buffs.iter_mut().find(|b| b.id == incoming.id) {
+                    let next_stacks = existing.stacks.saturating_add(1).min(max_s);
+                    let rem = existing.remaining_secs.max(incoming.remaining_secs);
+                    *existing = incoming;
+                    existing.remaining_secs = rem;
+                    existing.stacks = next_stacks;
+                } else {
+                    self.active_buffs.push(incoming);
+                }
+            }
+            StackPolicy::Independent => {
+                let active_count = self
+                    .active_buffs
+                    .iter()
+                    .filter(|b| b.id == incoming.id && b.remaining_secs > 0.0)
+                    .count();
+                incoming.stacks = 1;
+                if active_count < (max_s as usize) {
+                    self.active_buffs.push(incoming);
+                } else if let Some(oldest) = self
+                    .active_buffs
+                    .iter_mut()
+                    .filter(|b| b.id == incoming.id)
+                    .min_by(|a, b| a.remaining_secs.total_cmp(&b.remaining_secs))
+                {
+                    *oldest = incoming;
+                }
+            }
+        }
+    }
+
+    pub fn apply_status_effect(&mut self, def: &StatusEffectDef) {
+        self.apply_buff_stack(ActiveBuff::from_def(def));
+    }
+
+    /// Dispels all active buffs belonging to `category` (`Task 230`), returning the number removed.
+    pub fn dispel_category(&mut self, category: &str) -> usize {
+        let before = self.active_buffs.len();
+        self.active_buffs
+            .retain(|b| b.dispel_category.as_deref() != Some(category));
+        before - self.active_buffs.len()
+    }
+
+    #[inline]
+    pub fn buff_stack_count(&self, id: &str) -> u32 {
+        self.active_buffs
+            .iter()
+            .filter(|b| b.id == id && b.remaining_secs > 0.0)
+            .map(|b| b.stacks.max(1) as u32)
+            .sum()
+    }
+
+    pub fn buff_speed_multiplier(&self) -> f32 {
+        let mut m = 1.0_f32;
+        for b in &self.active_buffs {
+            if b.remaining_secs > 0.0 {
+                let s = b.stacks.max(1) as f32;
+                m *= (1.0 + (b.speed_multiplier - 1.0) * s).max(0.05);
+            }
+        }
+        m
+    }
+
+    pub fn buff_damage_multiplier(&self) -> f32 {
+        let mut m = 1.0_f32;
+        for b in &self.active_buffs {
+            if b.remaining_secs > 0.0 {
+                let s = b.stacks.max(1) as f32;
+                m *= (1.0 + (b.damage_multiplier - 1.0) * s).max(0.05);
+            }
+        }
+        m
+    }
+
+    pub fn buff_armor_multiplier(&self) -> f32 {
+        let mut m = 1.0_f32;
+        for b in &self.active_buffs {
+            if b.remaining_secs > 0.0 {
+                let s = b.stacks.max(1) as f32;
+                m *= (1.0 + (b.armor_multiplier - 1.0) * s).max(0.05);
+            }
+        }
+        m
+    }
+
+    pub fn buff_range_bonus(&self) -> f32 {
+        self.active_buffs
+            .iter()
+            .filter(|b| b.remaining_secs > 0.0)
+            .map(|b| b.range_bonus * (b.stacks.max(1) as f32))
+            .sum()
+    }
+
+    pub fn buff_fire_rate_multiplier(&self) -> f32 {
+        let mut m = 1.0_f32;
+        for b in &self.active_buffs {
+            if b.remaining_secs > 0.0 {
+                let s = b.stacks.max(1) as f32;
+                m *= (1.0 + (b.fire_rate_mult - 1.0) * s).max(0.10);
+            }
+        }
+        m
+    }
+
+    pub fn buff_vision_multiplier(&self) -> f32 {
+        let mut m = 1.0_f32;
+        for b in &self.active_buffs {
+            if b.remaining_secs > 0.0 {
+                let s = b.stacks.max(1) as f32;
+                m *= (1.0 + (b.vision_mult - 1.0) * s).max(0.15);
+            }
+        }
+        m
+    }
+
+    pub fn buff_build_speed_multiplier(&self) -> f32 {
+        let mut m = 1.0_f32;
+        for b in &self.active_buffs {
+            if b.remaining_secs > 0.0 {
+                let s = b.stacks.max(1) as f32;
+                m *= (1.0 + (b.build_speed_mult - 1.0) * s).max(0.10);
+            }
+        }
+        m
+    }
+
+    pub fn buff_hp_regen_per_sec(&self) -> f32 {
+        self.active_buffs
+            .iter()
+            .filter(|b| b.remaining_secs > 0.0)
+            .map(|b| b.hp_regen_per_sec * (b.stacks.max(1) as f32))
+            .sum()
+    }
+
+    #[inline]
+    pub fn clear_flow_steering(&mut self) {
+        self.active_flow_handle = None;
+        self.formation_goal_tile = None;
+    }
+
+    #[inline]
+    pub fn ability_cooldown_at(&self, index: usize) -> f32 {
+        if let Some(&cd) = self.ability_cooldowns.get(index) {
+            cd
+        } else if index == 0 {
+            self.ability_cooldown
+        } else {
+            0.0
+        }
+    }
+
+    pub fn set_ability_cooldown_at(&mut self, index: usize, secs: f32) {
+        let clamped = secs.max(0.0);
+        if self.ability_cooldowns.len() <= index {
+            self.ability_cooldowns.resize(index + 1, 0.0);
+        }
+        self.ability_cooldowns[index] = clamped;
+        self.ability_cooldown = self
+            .ability_cooldowns
+            .iter()
+            .copied()
+            .fold(0.0_f32, f32::max);
+        if clamped > self.ability_max_cooldown {
+            self.ability_max_cooldown = clamped;
         }
     }
 
@@ -889,9 +1200,7 @@ impl SimEntity {
     pub fn c4_bomb_info(&self) -> Option<(f32, f32, f32, u8)> {
         self.active_buffs
             .iter()
-            .find(|b| {
-                (b.id == "c4_bomb" || b.delayed_burst_damage > 0.0) && b.remaining_secs > 0.0
-            })
+            .find(|b| (b.id == "c4_bomb" || b.delayed_burst_damage > 0.0) && b.remaining_secs > 0.0)
             .map(|b| {
                 (
                     b.remaining_secs,
@@ -941,6 +1250,9 @@ impl SimEntity {
         self.active_buffs.retain(|b| !b.cure_at_service_depot);
     }
     pub fn is_airborne(&self, loaded: &rts_sdk::loader::LoadedMod) -> bool {
+        if self.is_support_aircraft {
+            return true;
+        }
         if self.landed_at_airfield {
             return false;
         }
@@ -969,6 +1281,18 @@ fn default_commander_rank() -> u8 {
     1
 }
 
+fn default_handicap_pct() -> u8 {
+    100
+}
+
+fn default_lobby_credits() -> u32 {
+    10_000
+}
+
+fn default_true_bool() -> bool {
+    true
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PlayerEconomy {
     pub player_id: u8,
@@ -978,8 +1302,25 @@ pub struct PlayerEconomy {
     #[serde(default)]
     pub team_id: u8,
     #[serde(default)]
+    pub color_index: u8,
+    #[serde(default = "default_handicap_pct")]
+    pub handicap_pct: u8,
+    #[serde(default)]
     pub allied_players: BTreeSet<u8>,
     pub credits: u32,
+    #[serde(default)]
+    pub resources: BTreeMap<String, u32>,
+    /// Exact fixed-point (`SimScalar::to_bits()`) resource ledger for `EconomyModel::Streaming` (`Task 231`).
+    #[serde(default)]
+    pub fractional_resources: BTreeMap<String, i64>,
+    #[serde(default)]
+    pub income_per_sec: BTreeMap<String, f32>,
+    #[serde(default)]
+    pub expense_per_sec: BTreeMap<String, f32>,
+    #[serde(default = "default_one_buff_f32")]
+    pub stall_efficiency: f32,
+    #[serde(default)]
+    pub current_era: Option<String>,
     pub power_produced: i32,
     pub power_consumed: i32,
     #[serde(default)]
@@ -1038,6 +1379,8 @@ pub struct PlayerEconomy {
     pub buildings_destroyed: u32,
     #[serde(default)]
     pub credits_harvested: u32,
+    #[serde(default)]
+    pub damage_dealt: f32,
 }
 
 impl PlayerEconomy {
@@ -1089,6 +1432,255 @@ pub struct DestroyedBridgeSpan {
     pub tile_origin: [i32; 2],
     pub footprint: [u32; 2],
     pub rotated: bool,
+    #[serde(default)]
+    pub destroyed_by_player_id: u8,
+}
+
+/// Slot occupancy kind in a multiplayer or skirmish staging lobby (`Task 186-Sim`).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
+pub enum LobbySlotKind {
+    #[default]
+    Open,
+    Closed,
+    Human,
+    AiBot {
+        difficulty: crate::ai::AiDifficulty,
+        personality: crate::ai::AiPersonality,
+    },
+}
+
+/// Negotiated per-slot staging configuration passed into `SimWorld::from_lobby_launch`.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct LobbySlotSimSpec {
+    pub player_id: u8,
+    #[serde(default)]
+    pub kind: LobbySlotKind,
+    #[serde(default)]
+    pub faction: String,
+    #[serde(default)]
+    pub sub_faction: Option<String>,
+    #[serde(default)]
+    pub team_id: u8,
+    #[serde(default)]
+    pub color_index: u8,
+    /// Optional 0-based index into `map.spawns` (`None` = deterministic auto-assignment).
+    #[serde(default)]
+    pub spawn_index: Option<usize>,
+    /// Handicap percentage (`50..=150`, default `100`).
+    #[serde(default = "default_handicap_pct")]
+    pub handicap_pct: u8,
+}
+
+impl Default for LobbySlotSimSpec {
+    fn default() -> Self {
+        Self {
+            player_id: 1,
+            kind: LobbySlotKind::Human,
+            faction: "allies".to_string(),
+            sub_faction: None,
+            team_id: 0,
+            color_index: 0,
+            spawn_index: None,
+            handicap_pct: 100,
+        }
+    }
+}
+
+/// Complete match launch rules negotiated in the Pre-Game Multiplayer Staging Room (`Task 186-Sim`).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct LobbyLaunchSimConfig {
+    #[serde(default)]
+    pub slots: Vec<LobbySlotSimSpec>,
+    #[serde(default = "default_lobby_credits")]
+    pub starting_credits: u32,
+    #[serde(default = "default_true_bool")]
+    pub superweapons_enabled: bool,
+    #[serde(default = "default_true_bool")]
+    pub crates_enabled: bool,
+    #[serde(default)]
+    pub game_mode: GameMode,
+    #[serde(default)]
+    pub random_seed: u64,
+}
+
+impl Default for LobbyLaunchSimConfig {
+    fn default() -> Self {
+        Self {
+            slots: Vec::new(),
+            starting_credits: 10_000,
+            superweapons_enabled: true,
+            crates_enabled: true,
+            game_mode: GameMode::Standard,
+            random_seed: 0,
+        }
+    }
+}
+
+/// Time-series snapshot sampled every `200` ticks (`10s`) per player (`Task 190a`).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct PlayerTelemetrySample {
+    pub tick: u64,
+    pub credits: u32,
+    pub income_per_min: u32,
+    pub army_value: u32,
+    pub power_net: i32,
+    pub apm: u32,
+}
+
+/// Per-unit-type / per-building-type combat & production tally (`Task 190a`).
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
+pub struct UnitCombatLedger {
+    pub built: u32,
+    pub killed: u32,
+    pub lost: u32,
+    pub damage_dealt: f32,
+}
+
+/// Chronological build-order / tech milestone entry (`Task 190a`).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct BuildOrderEvent {
+    pub tick: u64,
+    pub player_id: u8,
+    pub item_id: String,
+    pub is_building: bool,
+}
+
+/// Full match telemetry recorded deterministically on `SimWorld` (`Task 190a`).
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
+pub struct MatchTelemetry {
+    #[serde(default)]
+    pub player_samples: BTreeMap<u8, Vec<PlayerTelemetrySample>>,
+    #[serde(default)]
+    pub per_unit_ledger: BTreeMap<u8, BTreeMap<String, UnitCombatLedger>>,
+    #[serde(default)]
+    pub build_order_events: Vec<BuildOrderEvent>,
+    #[serde(default)]
+    pub last_sample_harvested: BTreeMap<u8, u32>,
+    #[serde(default)]
+    pub last_sample_commands: BTreeMap<u8, u32>,
+}
+
+/// Animated state of a defensive `Gate` tile (`Task 198b`).
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct GateSimState {
+    pub owner_player_id: u8,
+    #[serde(default)]
+    pub openness_01: f32,
+    #[serde(default)]
+    pub occupied: bool,
+}
+
+mod gate_states_serde {
+    use super::GateSimState;
+    use serde::{Deserialize, Deserializer, Serialize, Serializer};
+    use std::collections::BTreeMap;
+
+    pub fn serialize<S>(
+        map: &BTreeMap<[i32; 2], GateSimState>,
+        serializer: S,
+    ) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let vec: Vec<([i32; 2], GateSimState)> = map.iter().map(|(&k, v)| (k, v.clone())).collect();
+        vec.serialize(serializer)
+    }
+
+    pub fn deserialize<'de, D>(
+        deserializer: D,
+    ) -> Result<BTreeMap<[i32; 2], GateSimState>, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let vec = Vec::<([i32; 2], GateSimState)>::deserialize(deserializer)?;
+        Ok(vec.into_iter().collect())
+    }
+}
+
+/// Payload carried by a physical support-power delivery aircraft (`Task 198b`).
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub enum SupportAircraftPayload {
+    Paradrop { drop_unit_id: String, count: u32 },
+    Airstrike { damage: f32, radius: f32 },
+}
+
+/// Physical, AA-interceptable airborne sortie delivering a `Paradrop` or `Airstrike` (`Task 198b`).
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct SimSupportAircraft {
+    pub entity_id: u64,
+    pub owner_player_id: u8,
+    pub target_pos: [f32; 3],
+    pub exit_pos: [f32; 3],
+    pub speed: f32,
+    pub initial_health: f32,
+    pub payload: SupportAircraftPayload,
+    #[serde(default)]
+    pub dropped: bool,
+}
+
+/// In-flight ballistic nuclear warhead countdown (`Task 198b`).
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct PendingMissileStrike {
+    pub owner_player_id: u8,
+    pub target_pos: [f32; 3],
+    pub remaining_secs: f32,
+    pub total_secs: f32,
+    pub damage: f32,
+    pub radius: f32,
+    #[serde(default)]
+    pub radiation_duration_secs: f32,
+}
+
+/// Incrementally maintained per-player Fog-of-War & stealth-detector cache (`Task 200`).
+#[derive(Debug, Clone, Default)]
+pub struct PlayerVisibilityGrid {
+    pub width: i32,
+    pub height: i32,
+    pub tile_ref_counts: Vec<u16>,
+    pub air_ref_counts: Vec<u16>,
+    pub visible_tiles: Vec<bool>,
+    /// Friendly stealth-detector circles `([world_x, world_z], detect_radius_sq)`.
+    pub detectors: Vec<([f32; 2], f32)>,
+    /// Candidate entity IDs capable of detecting cloak / disguise when online.
+    pub cloak_detector_ids: Vec<u64>,
+    pub disguise_detector_ids: Vec<u64>,
+    /// Per-observer cached stamp `(obs_tile, vision_tiles, quant_elev_cm)`.
+    pub observer_stamps: BTreeMap<u64, ([i32; 2], i32, i32)>,
+    pub last_topology_epoch: u64,
+    pub last_env_preset: EnvironmentPreset,
+    pub last_reveal_fingerprint: u64,
+    pub synced_entity_count: usize,
+    pub synced_next_entity_id: u64,
+    pub initialized: bool,
+}
+
+impl PlayerVisibilityGrid {
+    #[inline]
+    pub fn is_tile_visible(&self, tile: [i32; 2]) -> bool {
+        if tile[0] < 0 || tile[0] >= self.width || tile[1] < 0 || tile[1] >= self.height {
+            return false;
+        }
+        let idx = (tile[1] as usize) * (self.width as usize) + (tile[0] as usize);
+        self.visible_tiles.get(idx).copied().unwrap_or(false)
+    }
+
+    #[inline]
+    pub fn is_air_tile_visible(&self, tile: [i32; 2]) -> bool {
+        if tile[0] < 0 || tile[0] >= self.width || tile[1] < 0 || tile[1] >= self.height {
+            return false;
+        }
+        let idx = (tile[1] as usize) * (self.width as usize) + (tile[0] as usize);
+        self.air_ref_counts.get(idx).copied().unwrap_or(0) > 0
+    }
+
+    #[inline]
+    pub fn is_pos_detected(&self, pos: [f32; 3]) -> bool {
+        self.detectors.iter().any(|&(center, r_sq)| {
+            let dx = pos[0] - center[0];
+            let dz = pos[2] - center[1];
+            dx * dx + dz * dz <= r_sq
+        })
+    }
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
@@ -1099,6 +1691,32 @@ pub struct SubsystemHashes {
     pub resources_and_mines: u64,
     pub projectiles: u64,
     pub triggers: u64,
+    #[serde(default)]
+    pub explored_tiles: u64,
+}
+
+impl SubsystemHashes {
+    pub const DOMAIN_NAMES: [&'static str; 7] = [
+        "economy",
+        "entities_transform",
+        "entities_combat",
+        "resources_and_mines",
+        "projectiles",
+        "triggers",
+        "explored_tiles",
+    ];
+
+    pub fn to_array7(&self) -> [u64; 7] {
+        [
+            self.economy,
+            self.entities_transform,
+            self.entities_combat,
+            self.resources_and_mines,
+            self.projectiles,
+            self.triggers,
+            self.explored_tiles,
+        ]
+    }
 }
 
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
@@ -1112,6 +1730,86 @@ pub struct SimTickProfile {
     pub entity_count: usize,
     pub projectile_count: usize,
     pub path_cache_hits: u64,
+}
+
+/// Runtime state of a structured primary/secondary/bonus mission objective (`Task 211`).
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct SimObjectiveState {
+    pub def: MissionObjectiveDef,
+    #[serde(default)]
+    pub status: ObjectiveStatus,
+    #[serde(default)]
+    pub current_count: u32,
+}
+
+/// Deterministic tick-driven mission countdown timer (`Task 211`).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct SimCountdownTimer {
+    pub timer_id: String,
+    pub label: String,
+    pub remaining_ticks: u32,
+    pub total_ticks: u32,
+}
+
+impl SimCountdownTimer {
+    pub fn remaining_secs(&self, dt: f32) -> f32 {
+        (self.remaining_ticks as f32) * dt.max(0.001)
+    }
+
+    pub fn format_mm_ss(&self, dt: f32) -> String {
+        let total_secs = self.remaining_secs(dt).ceil().max(0.0) as u32;
+        format!("{:02}:{:02}", total_secs / 60, total_secs % 60)
+    }
+}
+
+/// Rich EVA / character transmission preserving portrait, audio cue, and radar PIP video (`Task 211`).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct SimEvaTransmission {
+    pub speaker: String,
+    pub text: String,
+    #[serde(default)]
+    pub portrait: Option<String>,
+    #[serde(default)]
+    pub audio_cue: Option<String>,
+    #[serde(default)]
+    pub radar_video: Option<String>,
+}
+
+/// Runtime state of a strategic capture point (`GamemodeRulesDef::multi_capture_points` / `TriggerAction::SpawnCaptureZone`).
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct SimCaptureZone {
+    pub id: String,
+    pub tile_pos: [i32; 2],
+    pub radius: f32,
+    pub capture_time_secs: f32,
+    pub owner_player_id: Option<u8>,
+    pub contesting_player_id: Option<u8>,
+    pub capture_progress: f32,
+}
+
+/// Delayed node activation queued by a `TriggerGraphNodeKind::Delay` node (`Task 242-Sim`).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct PendingGraphDelay {
+    pub graph_id: String,
+    pub from_node_id: String,
+    pub to_node_id: String,
+    pub fire_at_tick: u64,
+    pub trigger_player_id: u8,
+    #[serde(default)]
+    pub remaining_repeats: u32,
+    #[serde(default)]
+    pub repeat_interval_ticks: u64,
+}
+
+/// Collectible hero relic / item drop lying on the ground (`Task 232`).
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct SimGroundItem {
+    pub id: u64,
+    pub item_id: String,
+    pub tile_pos: [i32; 2],
+    pub position: [f32; 3],
+    #[serde(default)]
+    pub remaining_charges: Option<u32>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -1176,8 +1874,93 @@ pub struct SimWorld {
     pub camera_focus_event: Option<[i32; 2]>,
     #[serde(default)]
     pub eva_transmissions: Vec<(String, String)>,
+    #[serde(default)]
+    pub rng_state: u64,
+    #[serde(default)]
+    pub multiplayer_mode: bool,
+    #[serde(default)]
+    pub civilian_structures: Vec<SimCivilianStructure>,
+    #[serde(default)]
+    pub resource_nodes: BTreeMap<String, BTreeMap<[i32; 2], u32>>,
+    #[serde(default)]
+    pub ai_commanders: BTreeMap<u8, crate::ai::AiCommanderState>,
+    #[serde(default)]
+    pub telemetry: MatchTelemetry,
+    #[serde(default, with = "gate_states_serde")]
+    pub gate_states: BTreeMap<[i32; 2], GateSimState>,
+    #[serde(default)]
+    pub active_support_aircraft: Vec<SimSupportAircraft>,
+    #[serde(default)]
+    pub pending_missile_strikes: Vec<PendingMissileStrike>,
+    #[serde(default = "default_true_bool")]
+    pub superweapons_enabled: bool,
+    #[serde(default = "default_true_bool")]
+    pub crates_enabled: bool,
+    #[serde(default)]
+    pub mission_objectives: Vec<SimObjectiveState>,
+    #[serde(default)]
+    pub countdown_timers: Vec<SimCountdownTimer>,
+    #[serde(default)]
+    pub periodic_timer_counts: BTreeMap<String, u32>,
+    #[serde(default)]
+    pub entity_tags: BTreeMap<u64, String>,
+    #[serde(default)]
+    pub destroyed_entity_tags: BTreeSet<String>,
+    #[serde(default)]
+    pub playable_bounds: Option<([i32; 2], [i32; 2])>,
+    #[serde(default)]
+    pub pending_radar_videos: Vec<String>,
+    #[serde(default)]
+    pub pending_cutscenes: Vec<String>,
+    #[serde(default)]
+    pub rich_eva_transmissions: Vec<SimEvaTransmission>,
+    #[serde(default)]
+    pub world_custom_flags: BTreeMap<String, bool>,
+    #[serde(default)]
+    pub unlocked_commander_nodes: BTreeMap<u8, BTreeSet<String>>,
+    #[serde(default)]
+    pub ai_takeover_players: BTreeMap<u8, crate::ai::AiDifficulty>,
+    #[serde(default)]
+    pub bridge_repair_hut_tiles: BTreeSet<[i32; 2]>,
+    #[serde(default)]
+    pub capture_zones: Vec<SimCaptureZone>,
+    #[serde(default)]
+    pub victory_tickets: BTreeMap<u8, f32>,
+    #[serde(default)]
+    pub spawned_survival_waves: BTreeSet<usize>,
+    #[serde(default)]
+    pub trigger_graphs: Vec<rts_sdk::schema::TriggerGraphDef>,
+    #[serde(default)]
+    pub trigger_graph_fired_nodes: BTreeSet<String>,
+    #[serde(default)]
+    pub trigger_graph_delays: Vec<PendingGraphDelay>,
+    #[serde(default)]
+    pub trigger_graph_counters: BTreeMap<String, u32>,
+    #[serde(default)]
+    pub pending_graph_destroyed: Vec<(Option<String>, String, Vec<String>, u8)>,
+    #[serde(default)]
+    pub pending_graph_captured: Vec<(String, u8)>,
+    #[serde(default)]
+    pub last_fired_wires: Vec<(String, String, u64)>,
+    #[serde(default)]
+    pub ground_items: Vec<SimGroundItem>,
+    #[serde(default = "default_next_proj_id")]
+    pub next_ground_item_id: u64,
+    #[serde(default)]
+    pub trait_stores: EntityTraitStores,
+    #[serde(skip, default)]
+    pub intern_table: SimInternTable,
+    #[serde(skip, default)]
+    pub flow_field_cache: crate::flow_field::FlowFieldCache,
+    #[serde(skip, default)]
+    pub hpa_cache: crate::flow_field::HpaGraphCache,
+    #[serde(skip, default)]
+    pub spatial_index: crate::pathfinding::WorldSpatialIndex,
+    #[serde(skip, default)]
+    pub visibility_grids: BTreeMap<u8, PlayerVisibilityGrid>,
+    #[serde(skip, default = "default_true_bool")]
+    pub power_dirty: bool,
     #[serde(skip)]
     pub last_tick_profile: SimTickProfile,
     pub winner_player_id: Option<u8>,
 }
-

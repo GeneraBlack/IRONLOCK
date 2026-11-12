@@ -165,7 +165,7 @@ export default {
       toggleAccordion: [false],
       host: "",
       isLetsEncryptEnabled: false,
-      isHttpToHttpsEnabled: true,
+      isHttpToHttpsEnabled: false,
       ttlSecs: "45",
       rtsNodeId: "bls-isp-eu-central-01",
       relayPortStart: "30100",
@@ -197,6 +197,9 @@ export default {
   beforeRouteLeave(to, from, next) {
     clearInterval(this.urlCheckInterval);
     next();
+  },
+  beforeDestroy() {
+    clearInterval(this.urlCheckInterval);
   },
   created() {
     this.getConfiguration();

@@ -3750,3 +3750,353 @@ Architektur- und Begründungsdokument: [`tasks/engine_dev_mod_kit_plan.md`](file
 - [x] `rts-mod-tools validate --mod-path rust-ra2` liefert `0 error(s), 0 warning(s)`
 - [x] `cargo test --manifest-path engine/Cargo.toml --workspace --all-targets` und `cargo clippy --manifest-path engine/Cargo.toml --workspace --all-targets -- -D warnings` bestehen mit `0` Fehlern und `0` Warnungen
 
+
+---
+
+# Phases 12–16: Dual-UI-Architektur, Creator Workbench & Next-Gen Engine-Kernsysteme (Tasks 157–180)
+
+## Task 157: `rts-client` — UTF-8 Font-Pipeline, UI-Skalierung & Hardware-RTS-Cursors
+- [x] Vollwertige UTF-8-Schriften ohne ASCII-Ersatz (`sanitize_ui_text` erhält UTF-8 nativ), DPI-/UI-Skalierung (`75 %`–`150 %`) in `saves/settings.toml` & kontextsensitive RTS-Mauszeiger (`cursors.rs`).
+
+## Task 158: `rts-client` — Modulare `bevy_ui`-Widgets & Aufgeräumte Spieler-Menüs
+- [x] Aufteilung von `menu_screens.rs` in `ui/screens/*.rs` (alle `< 600` Zeilen), echte Scroll-Container/Slider/Dropdowns/Textfelder (`widgets.rs`), zentraler `HudTextRole`, Multi-Ressourcen-Top-Bar, Worker-/Squad-HUD & Ausblendung aller Entwickler-Steuerelemente im reinen Spieler-Modus.
+
+## Task 159: `rts-client` — Schwebende In-Game-Spieler-Subfenster (Briefing/FMV, Diplomatie, Tech-Tree, Logbuch, Optionen)
+- [x] `PlayerSubWindowStack` mit Pointer-Capture & `[ESC]`-Schließreihenfolge für Briefing + In-Engine-FMV, Diplomatie & Tribut (`[D]`), visuellen Tech-Tree (`[T]`), Missionsziele/EVA-Archiv (`[Tab]`) & 4-Tab-Optionen-Fenster.
+
+## Task 160: `rts-client` — `IRONLOCK Creator Workbench` Multi-Window Docking-Shell & Undo/Redo-Kern
+- [x] `bevy_egui` + `egui_dock` Studio-IDE (`--studio` / `[F12]`) mit Top-Menüleiste, speicherbaren Arbeitsbereich-Layouts (`saves/studio_layout.json`), freiem zentralem 3D-Viewport, striktem `UiInputBlocker` & generischem `EditorHistory` Undo/Redo-Stack (`Ctrl+Z` / `Ctrl+Y`).
+
+## Task 161: `rts-client` & `rts-sdk` — Creator-Subfenster 1, 2 & 3 (Projekt-/Asset-Browser, Szenen-Hierarchie & TOML-Inspektor)
+- [x] Roundtrip-TOML-Writer (`LoadedMod::save_unit_def_toml`, `save_building_def_toml`, `save_weapon_def_toml`) in `rts-sdk`.
+- [x] Projekt-/Asset-Browser, Szenen-Hierarchie & typsicherer Eigenschafts-Inspektor mit Live-Validierung & Hot-Reload in `rts-client`.
+
+## Task 162: `rts-simulation` & `rts-client` — Exakte Sub-Tick-Transform-Interpolation (`Prev -> Curr`)
+- [x] Ruckelfreie `overstep_fraction()`-Interpolation für Einheiten, Türme, Rotoren & Projektile inkl. `teleport_epoch`-Guard.
+
+## Task 163: `rts-client` & `rts-asset-pipeline` — GPU-Instanced World-UI, 3D-Prop-Meshes & GPU-Flipbook-Partikel
+- [x] Ablösung aller Gameplay-CPU-`Gizmos` im Spieler-Modus durch GPU-Overlays, instanzierte `.glb`-Karten-Props & GPU-Flipbook-Partikel.
+
+## Task 164: `rts-sdk` & `rts-client` — Kontinuierliche Heightmaps & Multi-Layer WGSL Terrain-Splatmapping
+- [x] `HeightmapDef`, `TerrainSplatDef` & abwärtskompatible Synthese `MapDef::synthesize_height_and_splat()` inkl. Validator-Prüfungen in `rts-sdk`.
+- [x] `TerrainSplatMaterial` (`terrain_splat.wgsl`) & Chunk-weises Echtzeit-Mesh-Update in `rts-client`.
+
+## Task 165: `rts-client` — Animierter Wasser-Shader & Projizierter Smooth Fog-of-War
+- [x] `water.wgsl` mit Wellen & Uferschaum sowie höhenunabhängige, weich geblendete Fog-of-War-Weltprojektion (`fow_projection.rs`).
+
+## Task 166: `rts-client` — Creator-Subfenster 4 (Interaktiver 3D-World-Builder)
+- [x] Terrain-Sculpting, Textur-Splat-Painting, Symmetrie-Spiegelung, Objekt-Platzierung (`CivilianStructureDef`), Undo/Redo & 1-Klick-Playtest-Snapshot-Restore (`studio/world_builder.rs`).
+
+## Task 167: `rts-sdk`, `rts-asset-pipeline` & `rts-client` — Zustands-Animationen, Bone-Sockets & Gebäude-Schadensmodelle
+- [x] `SocketOffset`, `EntityAnimState`, `AnimClipMap` & `VisualDef.has_damage_states` inkl. Socket-Validierung in `rts-sdk`.
+- [x] Gliedmaßen-/Socket-Rigging in `.glb` sowie `EntityAnimController` & Gebäude-Schadenszustände in `rts-client`.
+
+## Task 168: `rts-sdk` & `rts-client` — 3D-Spatial-Audio, 5-Kanal-Bus-Mixer & Fraktionsspezifische EVA-Queue
+- [x] `AudioBusKind` (`Master`, `Music`, `CombatSfx`, `UnitVoice`, `Eva`), `AudioCatalog.faction_eva_cues` & `resolve_eva_cue()` in `rts-sdk`.
+- [x] Räumliches Panning/Attenuation, Voice-Stealing, 5-Bus-Mixer & serielle Fraktions-EVA-Sprachwarteschlange in `rts-client`.
+
+## Task 169: `rts-client` — Nativer In-Engine Video-/FMV-Decoder (Vollbild-Briefings & Live-Radar-PIP)
+- [x] Asynchroner In-Engine-Video-Frame-Streamer in dynamische Bevy-`Image`-Texturen ohne externen `ffplay`-Prozess.
+
+## Task 170: `rts-client` — Creator-Subfenster 7 (3D-Asset-Turntable, Socket-Editor & Medien-Vorschau)
+- [x] 3D-Asset- & Socket-Studio (`VisualDef.sockets` XYZ-Slider + `.toml`-Save), Animationszustands-Wähler & 1-Klick-Audio-/FMV-Auditioner (`studio/asset_previewer.rs`).
+
+## Task 171: `rts-simulation` — HPA*, Shared Flow-Fields & Multi-Tile-Clearance (`1x1`, `2x2`, `3x3`)
+- [x] Brushfire-Clearance-Maps, Sektor-Portal-HPA* & geteilte Gruppen-Flow-Fields (< 2 ms Budget bei 200 Einheiten).
+
+## Task 172: `rts-sdk` & `rts-simulation` — Deterministisches ORCA Local Steering & Fahrzeug-/Flugzeug-Kinematik
+- [x] `LocomotorKind` & `LocomotorSpec` mit rollen-/domänenabhängiger Default-Auflösung (`UnitDef::locomotor_spec()`) in `rts-sdk`.
+- [x] Chassis-/Turmdrehraten, Brems-/Beschleunigungsrampen, Kampfflugzeug-Attack-Runs & deterministisches ORCA Local Avoidance in `rts-simulation`.
+
+## Task 173: `rts-sdk` & `rts-simulation` — Physikalische 3D-Ballistik, Sichtlinien-Okklusion & Zerstörbare Stadtumgebung
+- [x] `BallisticSpec` (`WeaponDef::resolved_ballistics()`) & `CivilianStructureDef` (`cover_bonus`, `leaves_ruin`) in `rts-sdk`.
+- [x] 3D-Flugbahnintegration mit Schwerkraft/Target-Lead/Scatter, Klippen-/Gebäude-Okklusion & begehbare Ruinen-Deckung in `rts-simulation`.
+
+## Task 174: `rts-simulation` — Hierarchische Strategische KI (Influence-Maps, Scouting, Konter-Bau & Basis-Planer)
+- [x] Deterministischer `AiCommanderState` mit Scouting-Gedächtnis, 2D Threat-/Influence-Maps, dynamischem Konter-Bau & freien Fabrik-Ausfahrtskorridoren.
+
+## Task 175: `rts-client` — Creator-Subfenster 8 (Live-Diagnose, Linter-Sprung, Profiler & KI-/Navigations-Heatmaps)
+- [x] Klickbare Validator-Diagnose (Sprung nach Subfenster 3/5a), `SimTickProfile`-Verlaufsdiagramm, Single-Tick-Debugger & 3D-Heatmaps für Clearance, Flow-Fields & KI-Influence (`studio/diagnostics_window.rs`).
+
+## Task 176: `rts-sdk`, `rts-simulation` & `mods/sdk-showcase-workers-squads` — Komponierbares Trait- & Multi-Ressourcen-SDK
+- [x] `ResourceTypeDef` (`resources.toml`), `BuilderTraitSpec`, `GathererTraitSpec`, `SquadTraitSpec`, deterministische Rhai/Lua World-Query-Snapshots (`query_player_resource`, `query_entities_in_radius`, `queue_grant_resource`), Validator-Regeln & vollständige Showcase-Mod `mods/sdk-showcase-workers-squads/` (`credits`/`timber`/`alloy`, Dozer, Multi-Harvester, 6-Mann Rifle Squad) in `rts-sdk`.
+- [x] Multi-Ressourcen-Wirtschaft, Vor-Ort-Arbeiterbau (`BuilderModule`) & mehrköpfige Squad-Simulation mit Richtungsdeckung/Suppression (`SquadModule`) in `rts-simulation`.
+
+## Task 177: `rts-client` — Creator-Subfenster 5 (Spreadsheet-Balance-Editor & Visueller Tech-Tree-Graph)
+- [x] Tabellarischer Einheiten-/Gebäude-/Waffen-Editor (`studio/data_table_window.rs`), Knoten-Graph für Tech-Abhängigkeiten & 1-Klick-Headless-Kampfsimulator (`studio/tech_graph_window.rs`).
+
+## Task 178: `rts-client` — Creator-Subfenster 6 (Visueller Missions-, Trigger- & Skript-Editor)
+- [x] Zonen-Bounds-Editor, formularbasierter `TriggerCondition`/`TriggerAction`-Baukasten, Kampagnen-Sequenz-Editor & integrierter Lua/Rhai-Skripteditor mit Live-Syntaxprüfung (`studio/trigger_studio_window.rs`).
+
+## Task 179: `rts-simulation` — Deterministischer Fixed-Point-Simulationskern (`SimScalar = I32F32`)
+- [x] Plattform- und optimierungsstufenunabhängige 64-Bit-Festkomma-Arithmetik für `state_hash()`-Bit-Identität.
+
+## Task 180: `rts-network` & `rts-client` — UDP-Lockstep mit Jitter-Buffer, Hot-Reconnect, Delayed Spectator & Dedicated Server
+- [x] Redundanter UDP-Tick-Kanal, komprimierter Snapshot-Catchup für Reconnect, verzögerter Live-Spectator-Stream, Multiplayer-Spectator/Reconnect/Custom-Map-UI & `rts-dedicated-server`.
+
+
+---
+
+# Phases 17–20: Engine-Vollendung, Visuelles & Architektonisches Overhaul & Standalone-SDK (Tasks 181–204)
+
+## Task 181: `rts-sdk` & `rts-simulation` — Kontinuierliches Heightfield im `CollisionGrid` & Mehr-Ebenen-Brückentrennung
+- [x] `CollisionGrid` mit `vertex_heights`, bilinearem `sample_world_height(x, z)` und 2D-Grid-DDA `raycast_heightfield(origin, dir, max_dist)` sowie mehrstufiger Bresenham-Sichtlinie (`has_line_of_sight`).
+- [x] Vertikale Ebenentrennung zwischen `Naval`-Einheiten (`y = -0.35`) und Landeinheiten auf Brücken (`y = +0.55`) in ORCA, Minen und Splash-Schaden.
+
+## Task 182: `rts-client` — Exaktes 3D-Heightmap-Raycasting (Player + Studio) & Gechunktes `16×16`-Terrain-Streaming
+- [x] Echtes 3D-Heightfield-Raycasting in `camera.rs` und `studio/mod.rs` für zentimetergenaues Picking auf Bergen, Rampen und Tälern.
+- [x] `16×16`-Tile-Chunks (`TerrainChunkEntity`) mit `MapTerrainDirtyRects` für verzögerungsfreie Teil-Rebuilds beim Sculpten/Painting.
+
+## Task 183: `rts-client` — Creator Workbench 3D-Viewport-Picking, 3D-Transform-Gizmos & Live-Pinsel-/Ghost-Vorschau
+- [x] Direkt-Selektion im 3D-Viewport (`Shift+Klick` & Box-Drag) unter Beachtung gesperrter `Hierarchy`-Layer.
+- [x] Interaktive 3D-Gizmo-Handles (XYZ-Achsen, Y-Rotationsring, `TriggerZone`-Eckgriffe) mit `EditorHistory`-Undo/Redo sowie höhenkonforme 3D-Pinsel-/Symmetrieringe und Platzier-Ghosts.
+
+## Task 184: `rts-client` — Isolierter Offscreen-3D-Turntable (`RenderTarget::Image`) in Subfenster 7 & Interaktiver Node-Graph in Subfenster 5b
+- [x] Isolierte Offscreen-3D-Vorschaubühne (`RenderLayers::layer(3)` -> `RenderTarget::Image` `512×384`) in `studio/asset_previewer.rs` mit Orbit/Zoom, 3D-Socket-Kreuzen, Clip-Vorschau & Test-Schuss.
+- [x] Interaktiver Drag-&-Drop-Tech-Graph (`studio/tech_graph_window.rs`) mit Port-Verbindungen, Zyklus-Prüfung und `EditorHistory`-Integration.
+
+## Task 185: `rts-client` — Vollständige Hotkey-Umbelegung, QWER-Grid-Modus, WASD-Kamera & UI-Bugfixes
+- [x] Konfliktfreie Tastenbelegung (~30 Aktionen in `saves/settings.toml`, Behebung der `KeyT`-Kollision), QWER/ASDF/ZXCV-Sidebar-Grid-Modus, optionales WASD-Kamera-Panning sowie Fixes für `InspectTechNode` und `QuickLoadMatch`.
+
+## Task 186: `rts-network`, `rts-simulation` & `rts-client` — Synchronisierter Pre-Game Multiplayer Staging Room & In-Game-Chat
+- [x] `LobbyRoomState` (8 Slots: Human / KI-Bot / Open / Closed, Fraktion, Unterfraktion, Farbe, Team, Spawn, Handicap, Ready) & `LobbyMatchRules` in `rts-network` + bit-identischer `LaunchMatch`-Start in `SimWorld`.
+- [x] `ui/screens/mp_staging_room.rs` mit 8-Slot-Tabelle, anklickbaren Minimap-Spawns, Lobby-Chat und In-Game All-/Team-Chat (`[Enter]` / `[Shift+Enter]`).
+
+## Task 187: `rts-network`, `rts-client` & `centralwebserver` — Aktiver UDP-Fast-Path, Automatischer Custom-Map-Transfer, Auto-Reconnect, Desync-Forensik & Multiplex-Relay
+- [x] Aktiver UDP-Fast-Path (`bind_with_udp` + `AdaptiveJitterBuffer` + TCP/UDP-UPnP), Token-gemultiplextes Single-Port-Relay in `centralwebserver` (`relay.ts`), automatischer `MapTransfer`-Download, Auto-Reconnect-Overlay & `desync_tick_<N>.diff.json`-Forensik.
+
+## Task 188: `centralwebserver` & `rts-network` — Kryptografische Spielerprofile, Signierte Match-Reports, Glicko-2/ELO & Ranked Automatch-Queue
+- [x] Lokale Spieler-Identität (`saves/player_identity.toml`), kryptografisch signierte Match-Reports mit Glicko-2/ELO-Wertung und `/api/v1/matchmaking/{enqueue,poll,cancel}` 1v1/2v2-Automatch.
+
+## Task 189: `rts-sdk`, `rts-simulation` & `rts-client` — Versioniertes `SaveGameEnvelope`, Multi-Slot Save/Load-Fenster, Autosaves & Multi-Kampagnen-Profil
+- [x] `SaveGameHeader`, Zlib-komprimiertes `SaveGameEnvelope` (`SaveGameFile` inkl. `read_header_only` & `list_saves_in_dir`) und `MultiCampaignSaveStore` (`"{mod_id}::{campaign_id}"` inkl. Legacy-Migration) in `rts-sdk`.
+- [x] Multi-Slot Save/Load-Subfenster (`ui/player_windows/save_load.rs`), rotierende Autosaves & zuverlässige Kampagnen-Carryover-Anwendung in `rts-simulation` & `rts-client`.
+
+## Task 190: `rts-simulation` & `rts-client` — Lückenlose Kill-/Schadens-Attribution, `MatchTelemetry` & 4-Tab Post-Game-Statistik-Screen
+- [x] Vollständige Kill-/Schadens-Attribution (C4, Minen, Strahlung/DoT, Crush, Fässer, Brücken, Superwaffen) & `MatchTelemetry`-Zeitreihen in `rts-simulation`.
+- [x] 4-Tab Post-Game-Auswertungsbildschirm (`ui/screens/post_game_score.rs`: Übersicht & MVP, Graphen, Einheiten-Bilanz, Build-Order-Zeitstrahl).
+
+## Task 191: `rts-client` — Dediziertes 3D-Replay- & Spectator-HUD (Scrubber, `0.5x..8x`, POV-Wahl & Live-Vergleich)
+- [x] `ui/replay_hud.rs` mit Transportleiste, Keyframe-Timeline-Scrubber, `0.5x..8x` Speed, POV-Umschalter (`Fog AUS` / `Spieler 1..8`) und Live-Wirtschafts-/Produktions-Vergleich.
+
+## Task 192: `rts-client` — HDR-Kamera, Bloom, SSAO, Prozedurale Skybox/IBL & RTS-Getunte Cascaded Shadows
+- [x] HDR-Rendering (`Tonemapping`, `Bloom`, `ScreenSpaceAmbientOcclusion`), prozedurale `EnvironmentMapLight`-IBL und auf RTS-Zoom abgestimmte Cascaded Shadows + Tag/Dämmerung/Nacht/Ionensturm-Lichtstimmung.
+
+## Task 193: `rts-client` — Fein aufgelöstes Terrain (`2×2` Sub-Quads, `4×4` Splat-Texel/Tile), Echte PBR-Normal/Height-Maps, Triplanar-Klippen & Soft-Water
+- [x] Gitterfreies `4×4`-Splat-Terrain mit `2×2` Sub-Quads, 5-Layer Normal+Roughness+Height `Texture2DArray`, Height-Blending, Triplanar-Klippenprojektion und weichem Tiefen-Uferübergang in `water.wgsl`.
+
+## Task 194: `rts-client` — Höhenkonforme Boden-Decals (Krater & Kettenspuren), 3D-Fahrzeugwracks & Echtes GPU-Partikel-Instancing
+- [x] Geländekonforme Krater-/Brand-/Strahlungs- & Panzerkettenspur-Decals (`vfx/decals.rs`), 3D-Fahrzeugwracks, Bereinigung doppelter Projektil-Entities & echtes GPU-Partikel-Instancing.
+
+## Task 195: `rts-client` — Echte Bevy `AnimationPlayer` / `AnimationGraph` glTF-Skelettanimation & Turret-Pitch Socket-Hierarchie
+- [x] Native Bevy `AnimationPlayer` + `AnimationGraph` + `AnimationTransitions` Cross-Fading in `rendering/animation.rs` sowie echte 3D-`GlobalTransform` Turm-/Rohr-Pitch-Vererbung in `rendering/sockets.rs`.
+
+## Task 196: `rts-client` — Synchronisierte Video+Audio-Cutscenes (`ffprobe` + Tonspur), `.ogg`/`.flac`-Support, Dynamisches 3D-Spatial-Audio & Komplette Unit-Voices
+- [x] Reine Rust-Decoder `animation`, `vorbis`, `flac`, `ktx2` & `tonemapping_luts` in `engine/Cargo.toml` aktiviert und verifiziert.
+- [x] A/V-synchrone In-Engine-Cutscenes (`rendering/video_player.rs`), dynamisches Frame-für-Frame 3D-Spatial-Audio ohne Puffer-Duplikation (`audio.rs`) & vollständige Einheiten-Sprachbestätigungen.
+
+## Task 197: `rts-simulation` & `rts-client` — Universelle `Shift`-Befehlswarteschlange (`VecDeque<QueuedOrder>`) & Rechtsklick-Drag-Formationen
+- [x] Universelle `SimEntity.command_queue: VecDeque<QueuedOrder>` für beliebige Befehlsketten sowie Rechtsklick-Drag-Linienformationen (`facing_radians`, `line_spacing`) mit 3D-Vorschau.
+
+## Task 198: `rts-sdk` & `rts-simulation` — Vereinheitlichte Zivil-Garnisonen mit Ruinen, Auto-Connect-Mauern, Animierte Tore, Physische Support-Flugzeuge & Produktions-Pause
+- [x] Abwärtskompatibles Schema (`BuildingDef.leaves_ruin`, `ruin_cover_bonus`, `SupportPowerDef.delivery_speed`, `delivery_aircraft_hp`, `missile_flight_secs`) in `rts-sdk`.
+- [x] Vereinheitlichte Garnisonen + Ruinen, 4-Nachbarn-Mauer-Bitmaske, animierte Tore (`openness_01`), abschießbare Support-Flugzeuge, Raketenflugzeit & `ToggleHoldProduction` in `rts-simulation` & `rts-client`.
+
+## Task 199: `rts-sdk` & `rts-simulation` — Durchgängige `SimScalar`-Zustandsspeicherung & Deterministische Rhai/Lua-Mathe-Sandbox
+- [x] Entfernung von `BasicMathPackage` (`f64`-Host-`libm`) und identische Festkomma-Mathe-Sandbox (`det_sin`/`sin`, `det_cos`/`cos`, `det_atan2`/`atan2`, `det_sqrt`/`sqrt`, `det_dist`, `det_clamp`, `det_abs`) in `RhaiBackend` & `LuaBackend` (`rts-sdk`).
+- [x] Durchgängige `SimScalar`-Zustandsberechnung & ungemaskter `state_hash()` in `rts-simulation`.
+
+## Task 200: `rts-simulation` — Massenschlacht-Skalierung (`1.200+` Einheiten `< 8 ms`): Persistenter Flat Spatial Index, Gecachter FoW & Aktives `HpaSectorGraph`
+- [x] Allokationsfreier `WorldSpatialIndex`, inkrementelles `PlayerVisibilityGrid` (`O(1)` FoW), produktives `HpaSectorGraph`-Langstrecken-Routing & `< 8.0 ms`/Tick Release-Benchmark bei `1.200` Einheiten.
+
+## Task 201: `rts-sdk` & `rts-client` — Durchgängige Lokalisierung (`LocaleCatalog`) & Live-Sprachumschaltung (`English` / `Deutsch`)
+- [x] Vollständige `en.toml`- & `de.toml`-Sprachkataloge (~160+ Schlüssel mit 100 % EN/DE-Schlüsselparität) für `rust-ra2`, `mods/sdk-showcase-workers-squads` sowie eingebaute Engine-Fallback-Tabelle in `LoadedMod::t()` (`rts-sdk`).
+- [x] Zentrale `UiLocale::t(key)`-Verdrahtung über alle Client-Screens/Subfenster/HUDs und sofortige Sprachumschaltung in `Options -> Gameplay` (`rts-client`).
+
+## Task 202: `rts-asset-pipeline` — Vollständige Westwood-Konverter-Suite (`.csf`, `.aud`, `IsoMapPack5`, Multi-Frame-`.hva`, `art.ini`/`sound.ini` & Blowfish-`.mix`)
+- [x] `.csf`-Stringtabellen, `.aud` (`WSADPCM`) -> `.wav`, `[IsoMapPack5]`/`[OverlayPack]`-Kartenkonverter, Multi-Frame-`.hva` -> glTF-Animationen, `Format80` (`LCW`) & Blowfish-`.mix`-Entschlüsselung in `rts-asset-pipeline`.
+
+## Task 203: `rts-sdk`, `rts-asset-pipeline` & `rts-client` — Direktes `.rtsmod`-VFS-Mounting (`AssetReader`) & `cook-standalone` Game-Exporter
+- [x] Zlib-komprimiertes Archivformat `RTSMOD03` (`ModArchive` inkl. `RTSMOD02`-Fallback), direktes In-Memory-Laden von `.rtsmod`-Archiven über `LoadedMod::load_from_path` / `load_from_dir` & `StandaloneBundleConfig` (`game_bundle.toml`) in `rts-sdk`.
+- [x] `cook-standalone`-CLI (`rts-asset-pipeline`), Bevy Custom `AssetReader` (`archive_asset_reader.rs`) & Studio-Exportdialog in `rts-client`.
+
+## Task 204: Dokumentation (`CREATOR_WORKBENCH_GUIDE.md`, `STANDALONE_PUBLISHING.md`) & Vollständiges 8-Stufen-End-to-End-Abnahmegate
+- [x] Handbücher (`CREATOR_WORKBENCH_GUIDE.md`, `MOD_DEV_KIT.md`, `STANDALONE_PUBLISHING.md`) aktualisieren und alle 8 End-to-End-Abnahme-Gates (Clippy, Workspace-Tests, `1.200`-Unit-Benchmark, Validator, `.rtsmod`-Boot, `centralwebserver`-Tests, Live-Vulkan-GPU-Smoke-Screenshots `01..10`, sauberer Workspace) abschließen.
+
+
+
+---
+
+# Phases 21–24: Commercial Engine, `rust-ra2` & Creator Workbench Completion (Tasks 205–228)
+
+## Task 205: `rts-asset-pipeline` & `rts-client` — Pure-Rust `.glb` Mesh-Simplifier (`LOD0`/`LOD1`), `VisibilityRange` & Kamera-Frustum-/FoW-Culling
+- [x] Pure-Rust `.glb` Vertex-Clustering/QEM-Mesh-Optimizer (`glb_optimizer.rs`, CLI `optimize-models --mod-path rust-ra2`) mit `LOD0`/`LOD1`-Nodes unter Beibehaltung von `POSITION`, `NORMAL`, `COLOR_0` und `Hull`/`Turret`/`Barrel`/`Rotor`-Hierarchie.
+- [x] `VisibilityRange`, Epsilon-Transform-Updates, Frustum-/FoW-Animations-Skip und allokationsfreie `FixedEntitySockets` im `rts-client` für `1.200+` aktive Einheiten.
+
+## Task 206: `rts-client` — Shader-Fraktionsfarben auf `.glb`-Modellen, 3D-Baugerüste, Schadens-Verkohlung, Wetter-Partikel & Wolkenschatten
+- [x] Gecachte `TeamDamageMaterialPalette` (`Intact | Yellow50 | Red25`, max. 32 geteilte `StandardMaterial`-Handles), prozedurales 3D-Stahlbaugerüst bei `construction_progress < 1.0`, ziehende Wolkenschatten in `terrain_splat.wgsl` & Wetter-Partikel (`weather_vfx.rs`).
+
+## Task 207: `rts-client` — Opake Top-Down-Terrain-Minimap, Echte Kamera-Perspektiv-Trapezprojektion & Alliierte Team-Ping-Flares
+- [x] Statischer opaker `256×256` Basis-Terrain-Buffer (`alpha = 255`), echte Spielerfarben (`1..8`), 4-Ecken-Heightfield-Kamera-Trapez sowie `GameCommand::PingLocation` (`Alt+Klick` & HUD-Button) mit Radar-Flare, 3D-Leuchtsäule und Ping-Audio.
+
+## Task 208: `rts-client` — Cameo-Layout-Bereinigung, Klickbare Kontrollgruppen-Leiste (`[1..9, 0]`), `[Leertaste]`-Event-Ring & Echter Idle-Worker-Badge
+- [x] Konfliktfreies Cameo-Overlay + korrigiertes `allied_conyard`-Icon, klickbare `[1..9, 0]`-Kontrollgruppenleiste, zyklischer `[Leertaste]`-Radar-Event-Ring (letzte 8 Ereignisse) und präziser `IDLE [N]`-Worker-Filter.
+
+## Task 209: `rts-sdk`, `rts-client` & `rust-ra2` — Interaktive 26-Track Musik-Jukebox (Peace/Combat-Crossfade) & Frame-Exakter Video-Audio-Sync
+- [x] `MusicMood` (`Peace`, `Combat`, `Menu`, `Score`) und erweiterte `MusicTrackDef`-Felder (`mood`, `faction_tags`, `duration_hint_secs`) in `rts-sdk`.
+- [x] Alle 26 `.ogg`-Tracks in `rust-ra2/audio/audio.toml`, Dual-Sink-Crossfader (`1.5s`), In-Game Jukebox-Subfenster (`jukebox.rs`) und synchroner Frame-`0`-Video/Audio-Start mit 4:3-Pillarboxing in `video_player.rs`.
+
+## Task 210: `rts-client` — Vereinheitlichte `saves/settings.toml`-Persistenz & Vollständige Display-/Grafik-Optionen
+- [x] `UnifiedClientSettingsFile` (`settings_store.rs`) für atomares Laden/Speichern aller Audio-, Hotkey-, UI-, Sprach- und Grafik-Optionen (`WindowMode`, Auflösung, VSync, `ShadowQualitySetting`, `SsaoQualitySetting`) mit sofortiger Laufzeit-Anwendung.
+
+## Task 211: `rts-sdk`, `rts-simulation` & `rts-client` — Strukturierte `MissionObjectiveDef`s (`Primary`/`Secondary`/`Bonus`), Countdown-Timer, VIP-Tags & Dynamische Kartengrenzen
+- [x] `ObjectiveTier`, `ObjectiveStatus`, `MissionObjectiveDef`, `PreplacedEntityDef.tag`, `MapDef.{playable_bounds, objectives}` sowie die erweiterten `TriggerCondition`- & `TriggerAction`-Varianten in `rts-sdk`.
+- [x] Deterministische Trigger-/Timer-/Bounds-Auswertung in `rts-simulation` sowie einklappbares Objectives- & Countdown-HUD (`objectives_hud.rs`) in `rts-client`.
+
+## Task 212: `rts-sdk`, `rts-simulation` & `rts-client` — In-Engine Cutscene-Kamera-Splines, Letterbox-Modus & Porträt-Transmissionen
+- [x] `CameraKeyframe`, `CameraCutsceneDef`, `MapDef.{initial_weather, cutscenes}`, `TriggerAction::PlayCutscene` und erweiterte `EvaTransmission`-Felder (`portrait`, `audio_cue`, `radar_video`) in `rts-sdk`.
+- [x] Kubische Hermite-/Smoothstep-Kamerafahrten mit Letterbox-Balken (`[Esc]`-Skip) und Porträt-Transmissionskarte (`cutscene_director.rs`) in `rts-client`.
+
+## Task 213: `rts-client` & `rust-ra2` — Interaktives Geführtes Bootcamp-Tutorial & Mehrstufiges Kampagnen-Missions-Upgrade
+- [x] `TUTORIAL & BOOTCAMP`-Hauptmenü-Einstieg mit 8-Schritte-Coaching (`tutorial_coach.rs`) sowie ausgebaute Kampagnenmissionen mit VIP-Schutz, Verteidigungstimern, Kamera-Intros und mehrstufigen Radar-PIP-Videos in `rust-ra2`.
+
+## Task 214: `rts-sdk`, `rts-simulation` & `rts-client` — `BridgeRepairHut`, `Tech Communications Center`, Generals `CommanderPowerTree` & Erweiterte Einheitenbefehle
+- [x] `BuildingRole::BridgeRepairHut`, `SupportAuraSpec.{grants_radar, periodic_reveal_interval_secs, periodic_reveal_radius}`, `BuildingDef.{upgrade_options, addon_sockets}`, `CommanderPowerNodeDef` & `CommanderPowerTreeDef` (`LoadedMod.commander_trees`) in `rts-sdk`.
+- [x] Uferseitige Brückenreparatur, Radar-/Scan-Tech-Gebäude, `CommanderPowerTree`-Simulation & HUD-Fenster (`commander_tree.rs`), N-Punkte-Patrouillen, aktives `GuardEntity`, Rally-Auto-Board und Subterranean-Pathing in `rts-simulation` & `rts-client`.
+
+## Task 215: `rts-sdk`, `rts-simulation`, `rts-client` & `sdk-showcase-workers-squads` — Taktische Squads 2.0 (`Light`/`Heavy`-Cover, `Pinned`, `Retreat` & Waffen-Upgrades)
+- [x] Erweiterte `SquadTraitSpec`-Felder (`light_cover_damage_mult`, `heavy_cover_damage_mult`, `pin_suppression_threshold`, `auto_reinforce_default`, `weapon_upgrade_slots`, `available_weapon_upgrades`) in `rts-sdk`.
+- [x] 3-stufiges Deckungssystem, `Pinned`-Status, `RetreatSquad` (`[R]`), umschaltbare Verstärkung und Squad-Waffen-Slot-Upgrades in `rts-simulation`, `rts-client` & `mods/sdk-showcase-workers-squads`.
+
+## Task 216: `rts-sdk` & `rts-simulation` — Modbare Strategie-KI 2.0 (Marine-Landungen, Chokepoint-Mauern, Service-Depot-Retreat, MCV-Expansion & Volle Rhai/Lua-KI)
+- [x] Erweiterte `AiProfileDef`-Schemata (`personality_id`, `unit_role_quotas`, `target_priority_weights`, `expand_at_credits`, `superweapon_doctrine`, `amphibious_assault_enabled`) in `rts-sdk`.
+- [x] Mehrwellige amphibische Landungen, Service-Depot-Retreat, Chokepoint-Mauern/Türme, Zweit-MCV-Expansion, Cluster-Superwaffen-Zielwahl & volle Rhai/Lua-`on_ai_tick`-Steuerung in `rts-simulation` & `rust-ra2`.
+
+## Task 217: `rts-sdk` & `rts-client` — Behebung der Kritischen Studio-Speicherpfad- & Splatmap-Stride-Bugs + Universelle CRUD-Assistenten (`+ New` / `Delete`)
+- [x] Disk-gestützte Katalog-CRUD-Methoden (`upsert_*` / `delete_*` / `save_audio_catalog` / `save_locale_catalog` / `save_prefab_def` / `load_prefab_defs`) und `find_id_references(&self, target_id)` auf `LoadedMod` in `rts-sdk`.
+- [x] Universelle `+ New` / `Delete`-Wizards mit Referenzprüfung sowie korrigierter `(width + 1) * (height + 1)` Splatmap-Vertex-Stride in der Creator Workbench (`rts-client`).
+
+## Task 218: `rts-client` — Vollständiger 10-Schema Property Inspector & Zweisprachiger `LocaleCatalog`-Tabelleneditor
+- [x] Komplette Formular-Inspektoren mit Undo/Redo für alle 10 SDK-Schemata (`inspector_extended_schemas.rs`) sowie zweisprachiger Side-by-Side `LocaleCatalog`-Editor (`locale_editor_window.rs`).
+
+## Task 219: `rts-sdk` & `rts-client` — Map Builder Pro: Straßen-/Klippen-/Fluss-Splines, Auto-Ramp-Glättung, `.prefab.toml`-Stempel, Cutscene-Gizmos & Live-Wetter
+- [x] `MapPrefabDef` (`prefabs/*.prefab.toml`) inkl. `save_to_file` / `load_from_file` und `LoadedMod`-Integration in `rts-sdk`.
+- [x] Catmull-Rom-Spline-Tool, echte Auto-Ramp-Höheninterpolation, 3D-Prefab-Stempel, Cutscene-Kamera-Gizmos und Live-Wetter-Vorschau in `rts-client`.
+
+## Task 220: `rts-sdk`, `rts-simulation` & `rts-client` — Script-Studio IDE (Syntax-Highlighting, Fehler-Sprung, API-Browser & Live-Watch) + Save/Load-Fixes
+- [x] Syntax-Highlighting, Zeilennummern, Fehler-Sprung, Script-API-Browser & Playtest-Live-Watch (`script_ide_support.rs`) sowie Behebung aller 5 Save/Load-Randfälle in `rts-simulation` & `rts-client`.
+
+## Task 221: `rts-sdk`, `rts-asset-pipeline` & `rts-client` — Moderner `.glb`/`.png`/`.ogg`-Asset-Importer, Deep-Binary-Validator & Offscreen-Cameo-Generator (`render-cameos`)
+- [x] Tiefe Binär-Header-Validierung (`validate_binary_asset_header` über `ModVfs`-Bytes für `.glb`, `.png`, `.ogg`, `.flac`, `.wav`, `.mp4`) & `(width + 1) * (height + 1) * 4` Splatmap-Prüfung in `rts-sdk/src/validator.rs`.
+- [x] `import-asset` & Studio-Import-Wizard (automatische Bounding-Box-, Clip- & Socket-Erkennung) sowie 1-Klick `96×72` Cameo-Fotostudio (`render-cameos`) in `rts-asset-pipeline` & `rts-client`.
+
+## Task 222: `rts-network`, `centralwebserver` & `rts-client` — MP Lag-Timeout-Detektor, Vote-Drop / KI-Übernahme-Dialog & Echtes UDP-Hole-Punching (`UdpPunchCoordinator`)
+- [x] `PeerStallStatus`-Erkennung (`> 4.0s`) mit `25s` Vote-Drop / KI-Takeover-Overlay (`lag_shield_modal.rs`) sowie bidirektionales UDP-Hole-Punching (`udp_hole_punch.rs` + `relay.ts`) vor TCP-Relay-Fallback.
+
+## Task 223: `rts-network` & `rts-client` — Deterministisches Multiplayer-Save (`.rtssav`) & Synchronisierter Staging-Room-Resume
+- [x] Lockstep-Tick-genaues MP-Speichern (`.rtssav`) und synchronisierter Staging-Room-Resume (`LobbyMatchRules.resume_save_hash`) mit verifiziertem Save-Streaming an alle Peers.
+
+## Task 224: `rts-network` & `rts-client` — Gestufter `120s`-Spectator-Snapshot-Ring, Konfigurierbares Anti-Cheat-Delay & Live-`"Spectate"` im Lobby-Browser
+- [x] Zweistufiger `120s`-Snapshot-Ring auf `LockstepServer` (`< 100 ms` Late-Join bei `0s..60s` Delay) und direkter `[Spectate]`-Beitritt im Lobby-Browser (`SpectatorClient::connect_smart`).
+
+## Task 225: `centralwebserver`, `rts-network` & `rts-client` — Online Mod- & Map-Workshop (Upload, Browser, 1-Klick-Installation & Lobby-Auto-Download)
+- [x] `/api/v1/workshop/{items,publish,download/:id}` in `centralwebserver`, In-Game `MOD WORKSHOP`-Screen (`workshop_screen.rs`), Studio-Publish-Button und automatischer Lobby-Mod-Download.
+
+## Task 226: `rts-simulation`, `rust-ra2` & `sdk-showcase-workers-squads` — Erweiterte `test-mod` Szenario-Assertions & Automatisierte Gameplay-Testsuites
+- [x] Vollständiger Reset in `clear_initial_entities`, erweiterte Assertions (`ObjectiveCompleted`, `BridgeIntact`, `SquadPinned`, `EntityHealthFractionAbove`, `AiBuiltBuildingRole`, `MaxAvgTickMs`) und grüne `test-mod`-Suiten für `rust-ra2` & `mods/sdk-showcase-workers-squads`.
+
+## Task 227: `.github/workflows/` — Cross-OS CI/CD-Matrix (`Linux`, `Windows`, `macOS`), `rustfmt`-Gate & Automatisierter Standalone-Release-Cooker
+- [x] `.github/workflows/ci.yml` mit Cross-OS-Matrix (`ubuntu-latest`, `windows-latest`, `macos-latest`), `cargo fmt --all -- --check`, `cargo clippy -- -D warnings`, Workspace- & `--release`-Sim-Tests, `validate` + `test-mod` sowie `centralwebserver`-Tests.
+- [x] `.github/workflows/release.yml` für `v*`-Tags zum Bauen der Release-Binaries, Ausführen von `cook-standalone` und Anhängen plattformspezifischer Distributions-ZIPs an GitHub Releases.
+
+## Task 228: Dokumentation (`docs/**`, `tasks/**`) & Vollständiges 10-Stufen End-to-End Vulkan-Abnahmegate (`01..12`)
+- [x] Phasen 21–24 (`Tasks 205–228`) in `tasks/plan.md` und `tasks/todo.md` aufgenommen.
+- [x] Handbücher (`CREATOR_WORKBENCH_GUIDE.md`, `MOD_DEV_KIT.md`, `STANDALONE_PUBLISHING.md`) aktualisiert, 600-Zeilen-UI-Limit geprüft und alle 10 End-to-End-Abnahme-Gates inkl. 12 Vulkan-GPU-Screenshots (`01..12`) verifiziert.
+
+
+---
+
+# Phases 25–28: Modular Multi-Genre RTS Engine, Strategic Zoom, Creator Workbench 2.0 & Rollback/Dedicated Fleet (`Tasks 229–252`)
+
+## Task 229: `rts-sdk` & `rts-asset-pipeline` — Multi-Mod Dependency DAG (`depends_on` + SemVer), Geschichtetes Multi-Archiv-`ModVfs`, Array-Patch-Operatoren & `schemars` Auto-JSON-Schemas
+- [x] `ModManifest.depends_on: Vec<ModDependency>` (`id`, SemVer `version_req`, `optional`) mit topologischer Sortierung, Zyklus-Prüfung, `LoadedMod::load_mod_with_overlays` / `load_mod_stack` und deterministischem `stack_content_hash` in `rts-sdk`.
+- [x] Geordneter Multi-Layer-Stack `vfs_layers: Vec<ModLayerSource>` (Ordner & `.rtsmod`-Archive verlustfrei geschichtet), TOML-Patch-Direktiven (`$append`, `$remove`, `$delete = true`), additive Merges (`maps`, `campaigns`, `audio.music_tracks`, `items`, `vfx_effects`) sowie `schemars::JsonSchema` auf allen 12+2 SDK-Wurzelkatalogen.
+- [x] `rts-asset-pipeline gen-docs` erzeugt über `schemars::JsonSchema` typsichere JSON-Schemas + `taplo.toml` für alle 12+2 Katalogdateien.
+
+## Task 230: `rts-sdk` & `rts-simulation` — Sparse-Trait-Komposition, Freie `ArmorTag`×`WarheadTag`-Schadensmatrizen, `BuffModifierStack` & Modulare Gamemode-Regeln
+- [x] `DefId(u16)` / `TagId(u16)` / `StringInterner`, `tags` & `armor_tag` auf `UnitDef`/`BuildingDef`, `warhead_tag` auf `WeaponDef`, `DamageMatrixDef` & `GamemodeRulesDef` in `ModRules`, `target_tags` / `target_def_ids` auf `UpgradeDef`, stapelbare `BuffModifierSpec` / `StackPolicy` sowie neue `TriggerAction`-Varianten (`IssueOrder`, `ApplyStatusEffect`, `TeleportEntity`, `SpawnCaptureZone`) in `rts-sdk`.
+- [x] Auslagerung seltener Spezialzustände aus `SimEntity` in `EntityTraitStores` und deterministische Simulation der freien Schadensmatrix, `BuffModifierStack` und Gamemode-Regeln in `rts-simulation`.
+
+## Task 231: `rts-sdk` & `rts-simulation` — BAR/SupCom Streaming-Ökonomie (`EconomyModel::Streaming`), Upgrade-Prerequisite-Ketten (`Age I–IV`) & Lokale Gebäude-Forschungswarteschlangen
+- [x] `EconomyModel` (`LumpSum`, `Streaming`), `EraDef` & `ModRules.eras`, `required_era` / `prerequisite_upgrades` / `streaming_build_power` auf `UnitDef` & `BuildingDef` sowie `advances_to_era` auf `UpgradeDef` inkl. Validator-Prüfung in `rts-sdk`.
+- [x] Kontinuierliche `EconomyModel::Streaming`-Wirtschaft (`stall_efficiency`, Multi-Worker-Assist), Epochen-/Upgrade-Prerequisite-Prüfung und gebäudelokale Forschungswarteschlangen in `rts-simulation`.
+
+## Task 232: `rts-sdk` & `rts-simulation` — Helden-, Energie-/Mana-, Multi-Cooldown- & Inventar-System (`HeroTraitSpec`) + Zero-Alloc Skript-API 2.0
+- [x] `EnergyPoolSpec`, `AbilityDef.{energy_cost, allow_auto_cast, default_auto_cast, max_rank}`, `HeroTraitSpec`, `ItemDef` / `ItemCatalog` (`items/items.toml`) sowie `ScriptContext` 2.0 (`target_pos`, `target_entity_id`, `attacker_id`, `energy`, `ScriptAction`s & zero-clone `SpatialScriptQuery` / `FlatSpatialScriptGrid`) in Rhai & Lua in `rts-sdk`.
+- [x] Unabhängige Fähigkeiten-Cooldowns, regenerierendes Mana, Helden-Leveling/Skill-Ränge/Altar-Revive/Inventar und `ScriptAction`-Ausführung in `rts-simulation`.
+
+## Task 233: `rts-simulation` — Kontinuierliches `O(1)`-Flow-Field-Steering, Inkrementelles Dirty-Sektor-HPA\*, Echtes Velocity-Space RVO2/ORCA & Präzise 3D-Segment-Ballistik
+- [x] `FlowFieldHandle`-Steering ohne Wegpunkt-Klonen, inkrementelles `16×16`-Dirty-Sektor-HPA\*, `SimScalar`-deterministisches Velocity-Space ORCA (`YieldStepAside`) und 3D-Segment-Ballistik (`has_ballistic_line_of_fire`, `turn_rate_deg_per_sec`, `Beam`/`Cone`) in `rts-simulation`.
+
+## Task 234: `rts-sdk` & `rts-simulation` — Flache Binär-Grids, `< 0,5 ms` Deterministischer Binär-Snapshot-Codec (`RTSB01`) & Modul-Aufspaltung der SDK/Sim-Großdateien
+- [x] Saubere Modul-Zerlegung von `rts-sdk/src/loader.rs` (`src/loader/{mod,vfs_stack,merge_dag,layer_loader,crud,crud_world,references,tests}.rs`) und `rts-sdk/src/validator.rs` (`src/validator/{mod,assets_audio,entities_combat,traits_visuals,tech_rules_ai,maps_check,triggers_check,trigger_graph_check,tests}.rs`), alle Dateien strikt `< 800` Zeilen.
+- [x] Flache `CollisionGrid`-Vektoren, `< 0,5 ms` `RTSB01`-Binär-Snapshot-Codec (`explored_tiles` im 7-Domänen-`SubsystemHashes`) sowie `< 800`-Zeilen-Modularisierung von `pathfinding/` und `combat/` in `rts-simulation`.
+
+## Task 235: `rts-client` — Extraktion von `src/lib.rs`, Saubere Bevy `PluginGroup`s, `States<AppPhase>`, Typisierte `Event`s & Zerlegung der `ClientInteractionState`-God-Resource
+- [x] `RtsEngineClientPlugins` (`PluginGroup`), `#[derive(States)]` für `AppPhase`/`MenuScreen`, typisierte Bevy-`Event`s, Settings-Bereinigung und schlanke `src/main.rs` (`< 450` Zeilen) in `rts-client`.
+
+## Task 236: `rts-client` — Custom WGSL PBR + Team-Color-Mask `ExtendedMaterial` (`unit_pbr_team.wgsl`) & GPU-Instanziierung statischer Karten-Props
+- [x] `ExtendedMaterial<StandardMaterial, TeamDamageMaterialExt>` (`unit_pbr_team.wgsl`) mit vollem Erhalt aller glTF-PBR-Maps und flaches GPU-Instancing für statische Karten-Props in `rts-client`.
+
+## Task 237: `rts-client` — Nahtloser Orbital Strategic Zoom (`12m..550m`) mit GPU-Taktik-Icons & Globaler `Shift`-Pfad-Übersicht
+- [x] Stufenloser Orbital-Zoom (`12m..550m` zum Mauszeiger), GPU-instanziierter Strategic-Icon-Pass und höhenkonforme Befehlspfade inkl. globaler `[Shift]`-Übersicht in `rts-client`.
+
+## Task 238: `rts-client` — Echtes GPU-Terrain-Shader-FoW, Tiefenprojizierte Normal-Map-Decals & GPU-Shader-Partikel
+- [x] Direkte Welt-XZ-FoW-Projektion in `terrain_splat.wgsl`/`water.wgsl`/`unit_pbr_team.wgsl`, gecachte Albedo+Normal-Decal-Atlanten und GPU-Shader-Partikel (`particles_instanced.wgsl`) in `rts-client`.
+
+## Task 239: `rts-client` & `rts-simulation` — Echtes 3D-Listener-Audio + "Smart Command"-UX (Freihand-Kurvenformationen, Kreis-Area-Befehle, Smart-Cast & Auto-Cast)
+- [x] `< 800`-Zeilen-Modularisierung von `src/audio/`, 3D-Kamerapose-Listener, `MoveAlongCustomCurve` Freihand-Frontlinie, Kreis-Area-Befehle sowie Smart-Cast & Rechtsklick-Auto-Cast in `rts-simulation` & `rts-client`.
+
+## Task 240: `rts-sdk` & `rts-client` — Datengetriebene HUD-Layout-Presets, Globale Produktionsleiste, Helden-HUD & Farbenblind-Modi
+- [x] `HudLayoutPreset` (`ClassicRightSidebar`, `ModernBottomCommandCard`, `CompactBarOverlay`) und `ModManifest.default_hud_layout` in `rts-sdk`.
+- [x] Live umschaltbare HUD-Layouts mit echter `ComputedNode`-Klickblockierung, Global Production & Research Strip, Helden-/Inventar-Leiste und Farbenblind-Modi (`< 600` Zeilen pro `ui/**`-Datei) in `rts-client`.
+
+## Task 241: `rts-client` — Modularisierung aller `studio/**`-Großdateien (`< 750` Zeilen/Datei) & Erweiterbare `WorkbenchPanel`-Registry
+- [x] Zerlegung aller `studio/**`-Großdateien auf `< 750` Zeilen pro `.rs`-Datei und saubere `WorkbenchPanel`-Tab-Registry bei vollem Erhalt von Undo/Redo und `SmokeTestEguiTarget`.
+
+## Task 242: `rts-sdk`, `rts-simulation` & `rts-client` — Visueller Trigger- & Missions-Node-Graph-Editor mit Live-Playtest-Tracing
+- [x] `TriggerGraphDef`, `TriggerGraphNode`, `TriggerGraphNodeKind` (`EventStart`, `LogicGate`, `Delay`, `IfElse`, `Action`), `TriggerGraphWire`, `trigger_graphs` auf `MapFileDef` & `MissionDef` sowie Zyklus-/Referenz-Validierung in `rts-sdk`.
+- [x] Deterministische `TriggerGraphDef`-Auswertung in `rts-simulation` und interaktiver 2D-Node-Graph-Editor (`trigger_node_graph.rs`) mit Live-Playtest-Tracing in `rts-client`.
+
+## Task 243: `rts-sdk`, `rts-simulation` & `rts-client` — Datengetriebene KI-Behavior-Trees (`BehaviorTreeDef`) & Visueller KI-Graph-Editor mit Live-Blackboard-Inspector
+- [x] `BehaviorTreeDef`, `BtNode`, `BtNodeKind` (`Selector`, `Sequence`, `UtilitySelector`, `Inverter`, `Cooldown`, `BlackboardCondition`, `AiAction`), `AiProfileDef.behavior_tree` und `BEHAVIOR_TREE_CYCLE`-Validierung in `rts-sdk`.
+- [x] Deterministische Behavior-Tree-Auswertung in `rts-simulation` und visueller `AI Behavior Graph`-Workbench-Tab (`ai_graph_window.rs`) in `rts-client`.
+
+## Task 244: `rts-sdk` & `rts-client` — Datengetriebenes `VfxEmitterDef`-Schema (`vfx/vfx.toml`) & Interaktives 3D-VFX-/Partikel- & Projektil-Studio
+- [x] `VfxCatalog` (`vfx/vfx.toml`), `VfxEffectDef`, `VfxEmitterDef` (3-Stop-Größen- & HDR-Farb-/Alpha-Rampen, Kegel/Kugel, Gravitation/Drag, Beam/Ribbon, Kamera-Shake, Boden-Decal), Multi-Layer-Loader/CRUD und Validator in `rts-sdk`.
+- [x] Datengetriebene 3D-VFX-Wiedergabe (`data_driven_vfx.rs`) und interaktives `VFX & Projectile Studio` (`vfx_studio_window.rs`) in `rts-client`.
+
+## Task 245: `rts-asset-pipeline` & `rts-client` — Interaktives PBR-Material- & Team-Mask-Studio + Mipmap-, Cameo-Atlas- & KTX2-Textur-Cooker
+- [x] Erweiterte PBR-/Team-Mask-Felder auf `VisualDef` (`metallic`, `roughness`, `emissive_boost`, `team_mask_mode`, `team_mask_threshold`, `normal_map_path`, `orm_map_path`) sowie `.ktx2`-Header- & Wertebereich-Validierung in `rts-sdk`.
+- [x] Mipmap-, Cameo-Sprite-Atlas- und `.ktx2`-Textur-Cooker (`texture_cooker.rs`) in `rts-asset-pipeline` sowie interaktives PBR-Material-/Team-Mask-Studio (`material_studio.rs`) in `rts-client`.
+
+## Task 246: `rts-client` — Mod-Mutator- & Delta-Overlay-Wizard (`+ New Overlay / Balance / Addon Mod`) mit Visuellem Override-Diff-Viewer
+- [x] Mod-Overlay-Wizard (`mod_overlay_wizard.rs`) mit Delta-Speicherung & Inheritance-Diff-Tabelle sowie Mutator-Checkboxen in Skirmish & MP Staging Room in `rts-client`.
+
+## Task 247: `rts-simulation` & `rts-network` — Hybrides Rollback- / Zero-Latency-Prediction-Netcode (`RollbackRingBuffer`, `1`-Tick-LAN & Relay-RTT-Messung)
+- [x] Monotone Paket-Zeitstempel für UDP/TCP/`#mux:`-Relay-RTT (`1`-Tick `50 ms` LAN) und `16`-Tick `RollbackSchedule` auf Basis schneller `RTSB01`-Snapshots in `rts-network`.
+
+## Task 248: `rts-simulation`, `rts-network` & `rts-client` — Persistenter Crash-Restart-Rejoin (`saves/reconnect_session.json`) & Reversibler KI-Slot-Reclaim (`GameCommand::ReclaimHumanSlot`)
+- [x] Persistentes `saves/reconnect_session.json`, erhaltene Reconnect-Tokens während `TemporarilyAiControlled` und nahtloser Live-Slot-Reclaim (`GameCommand::ReclaimHumanSlot`) in `rts-simulation`, `rts-network` & `rts-client`.
+
+## Task 249: `rts-network` & `centralwebserver` — Autoritative `rts-dedicated-server`-Flotten-Orchestrierung (Staging-Room, Signierte Match-Reports & Docker/NS8-Image)
+- [x] Staging-Room, Mod-Stacks, Crash-Rejoin, Raum-Recycling und signierte Glicko-2-Reports in `rts-dedicated-server` sowie `/api/v1/servers/{register,heartbeat,allocate}`, Ranked-Automatch-Zuweisung und Multi-Stage `Dockerfile`/`Containerfile.ns8` in `centralwebserver`.
+
+## Task 250: `rts-network` & `rts-client` — Vollautomatische Desync-Forensik (`.replay.json`-Auto-Dump, Komprimierter Host-Entity-Diff & Optionaler Live-Auto-Resync) + `lobby_registry`-Modularisierung
+- [x] Komprimierter Referenz-Snapshot bei Hash-Mismatch, automatischer `desync_tick_<N>.{diff,replay}.json`-Dump, optionaler Live-Resync sowie `< 800`-Zeilen-Modularisierung von `lobby_registry/` und `transport/` in `rts-network` & `rts-client`.
+
+## Task 251: `mods/` — Referenz-Showcase-Mod #2 (`sdk-showcase-heroes-ages-mutators`) + Overlay-Mutator (`mutator-turbo-economy`)
+- [x] Vollständiger zweiter Referenz-Mod `mods/sdk-showcase-heroes-ages-mutators` (Streaming-Ökonomie, Age I–III, Commander-Held mit Mana/Inventar, eigene Schadensmatrix, Behavior-Tree, `vfx.toml`, `ModernBottomCommandCard`) plus gestapelter `mods/mutator-turbo-economy` (`validate` & `test-mod` 100 % grün).
+
+## Task 252: Dokumentation (`ENGINE_MODULAR_ARCHITECTURE.md`, SDK-/Workbench-Guides) & 12-Stufen End-to-End Vulkan-Zertifizierung (`01..14`)
+- [x] `docs/ENGINE_MODULAR_ARCHITECTURE.md` + aktualisierte Mod-/Workbench-/Publishing-Handbücher sowie 14 verifizierte `1440×900` Vulkan-GPU-Screenshots (`01..14`) und grüne 12-Stufen-Abnahmegates.

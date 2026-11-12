@@ -1,40 +1,213 @@
 id = "yr_soviet_04_romanov_on_the_run"
-name = "YR Soviet 04: Romanov on the Run (Morocco)"
+name = "YR Op. 04: Romanov on the Run (Morocco)"
 width = 96
 height = 71
 tile_size = 2.0
 ore_regen_per_sec = 4.0
-mission_objective = "Premier Romanov has been shot down by Yuri's forces. We must locate the Premier and take him to the airport so he can be rescued. Yuri has built a tough defense around the airport that we need to eliminate before the Premier's rescue will be secure. \n \n Objective 1: Locate Premier Romanov and protect him. \n Objective 2: Destroy Yuri's base guarding the airport. \n Objective 3: Take Romanov to the airport once it is safe."
+mission_objective = "Lead Boris and your Soviet rescue detachment to Premier Romanov's Moroccan hideout, then capture Marrakech Airport and eliminate Yuri's pursuers."
 
 [[ore_patches]]
-position = [55, 56]
+position = [34, 56]
 radius = 3
-amount_per_tile = 1400
+amount_per_tile = 1650
 
 [[ore_patches]]
-position = [71, 28]
+position = [68, 16]
 radius = 3
-amount_per_tile = 1400
+amount_per_tile = 1550
 
-[[ore_patches]]
-position = [48, 35]
-radius = 4
-amount_per_tile = 2000
+[[elevation_rects]]
+min = [42, 4]
+max = [48, 15]
 
-[[ore_patches]]
-position = [65, 34]
-radius = 3
-amount_per_tile = 1500
+[[ramp_rects]]
+min = [41, 8]
+max = [42, 10]
 
-[[ore_patches]]
-position = [67, 14]
-radius = 3
-amount_per_tile = 1500
+[[ramp_rects]]
+min = [48, 8]
+max = [49, 10]
+
+[[obstacles]]
+min = [83, 22]
+max = [84, 23]
+
+[[obstacles]]
+min = [82, 27]
+max = [83, 28]
+
+[[obstacles]]
+min = [44, 28]
+max = [45, 29]
+
+[[obstacles]]
+min = [50, 28]
+max = [51, 29]
+
+[[obstacles]]
+min = [61, 28]
+max = [62, 29]
+
+[[obstacles]]
+min = [56, 29]
+max = [57, 30]
+
+[[obstacles]]
+min = [68, 30]
+max = [69, 31]
+
+[[obstacles]]
+min = [75, 30]
+max = [76, 31]
+
+[[obstacles]]
+min = [54, 36]
+max = [55, 37]
+
+[[props]]
+kind = "tree"
+tile_pos = [65, 46]
+
+[[props]]
+kind = "tree"
+tile_pos = [57, 24]
+
+[[props]]
+kind = "tree"
+tile_pos = [51, 26]
+
+[[props]]
+kind = "tree"
+tile_pos = [62, 34]
+
+[[props]]
+kind = "tree"
+tile_pos = [47, 28]
+
+[[props]]
+kind = "tree"
+tile_pos = [63, 26]
+
+[[props]]
+kind = "tree"
+tile_pos = [77, 26]
+
+[[props]]
+kind = "tree"
+tile_pos = [87, 26]
+
+[[props]]
+kind = "tree"
+tile_pos = [57, 19]
+
+[[props]]
+kind = "tree"
+tile_pos = [39, 23]
+
+[[props]]
+kind = "tree"
+tile_pos = [81, 23]
+
+[[props]]
+kind = "tree"
+tile_pos = [82, 30]
+
+[[props]]
+kind = "tree"
+tile_pos = [63, 31]
+
+[[props]]
+kind = "tree"
+tile_pos = [58, 43]
+
+[[props]]
+kind = "tree"
+tile_pos = [75, 28]
+
+[[props]]
+kind = "tree"
+tile_pos = [51, 18]
+
+[[props]]
+kind = "tree"
+tile_pos = [57, 56]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [58, 29]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [56, 25]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [52, 26]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [81, 28]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [46, 16]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [50, 16]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [61, 16]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [44, 24]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [89, 26]
 
 [[preplaced_entities]]
-player_id = 2
+player_id = 0
 building_id = "tech_airport"
 tile_pos = [58, 7]
+
+[[preplaced_entities]]
+player_id = 0
+building_id = "tech_oil_derrick"
+tile_pos = [24, 46]
+
+[[preplaced_entities]]
+player_id = 0
+building_id = "tech_oil_derrick"
+tile_pos = [86, 28]
+
+[[preplaced_entities]]
+player_id = 3
+building_id = "tech_outpost"
+tile_pos = [42, 52]
+
+[[preplaced_entities]]
+player_id = 3
+unit_id = "soviet_mcv"
+tile_pos = [40, 50]
+tag = "romanov"
+
+[[preplaced_entities]]
+player_id = 3
+unit_id = "tesla_trooper"
+tile_pos = [41, 55]
+
+[[preplaced_entities]]
+player_id = 3
+unit_id = "tesla_trooper"
+tile_pos = [44, 55]
+
+[[preplaced_entities]]
+player_id = 3
+unit_id = "war_miner"
+tile_pos = [38, 52]
 
 [[preplaced_entities]]
 player_id = 2
@@ -94,62 +267,7 @@ tile_pos = [62, 7]
 [[preplaced_entities]]
 player_id = 2
 building_id = "yuri_psychic_sensor"
-tile_pos = [54, 11]
-
-[[preplaced_entities]]
-player_id = 2
-building_id = "tech_oil_derrick"
-tile_pos = [90, 28]
-
-[[preplaced_entities]]
-player_id = 2
-building_id = "tech_oil_derrick"
-tile_pos = [25, 46]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "yuri_barracks"
-tile_pos = [22, 38]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "yuri_gatling_cannon"
-tile_pos = [27, 39]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "yuri_gatling_cannon"
-tile_pos = [27, 38]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "yuri_gatling_cannon"
-tile_pos = [27, 43]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "yuri_gatling_cannon"
-tile_pos = [27, 34]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "yuri_gatling_cannon"
-tile_pos = [22, 34]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "yuri_gatling_cannon"
-tile_pos = [22, 43]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "yuri_bio_reactor"
-tile_pos = [20, 41]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "yuri_bio_reactor"
-tile_pos = [25, 42]
+tile_pos = [53, 10]
 
 [[preplaced_entities]]
 player_id = 2
@@ -231,121 +349,250 @@ player_id = 2
 unit_id = "soviet_conscript"
 tile_pos = [46, 61]
 
+[[preplaced_entities]]
+player_id = 1
+unit_id = "boris"
+tile_pos = [16, 56]
+tag = "boris"
+
+[[objectives]]
+id = "obj_stage1_linkup"
+tier = "primary"
+title = "Reach Forward Rendezvous & Assume Base Command"
+marker_tile = [42, 52]
+
+[[objectives]]
+id = "obj_primary_main"
+tier = "primary"
+title = "Lead Boris and your Soviet rescue detachment to Premier Romanov's Moroccan hideout, t..."
+marker_tile = [56, 13]
+
+[[objectives]]
+id = "obj_vip_boris"
+tier = "primary"
+title = "Keep Hero Boris Alive Throughout the Operation"
+marker_tile = [16, 56]
+
+[[objectives]]
+id = "obj_vip_romanov"
+tier = "primary"
+title = "Protect Premier Romanov's Command Transport"
+marker_tile = [40, 50]
+
+[[objectives]]
+id = "obj_romanov_evac"
+tier = "bonus"
+title = "Escort Romanov's Command Vehicle to Marrakech Airport"
+marker_tile = [58, 7]
+
+[[cutscenes]]
+id = "intro_flyover"
+skippable = true
+letterbox = true
+
+[[cutscenes.keyframes]]
+time_secs = 0.0
+focus = [81.0, 0.0, 101.0]
+distance = 46.0
+pitch_deg = 52.0
+yaw_deg = -22.0
+
+[[cutscenes.keyframes]]
+time_secs = 2.2
+focus = [57.0, 0.0, 107.0]
+distance = 42.0
+pitch_deg = 55.0
+yaw_deg = -10.0
+
+[[cutscenes.keyframes]]
+time_secs = 4.5
+focus = [33.0, 0.0, 113.0]
+distance = 36.0
+pitch_deg = 58.0
+yaw_deg = 0.0
+
 [[spawns]]
 player_id = 1
 faction = "soviets"
-base_tile = [47, 56]
-
-[[spawns.initial_buildings]]
-building_id = "soviet_conyard"
-tile_pos = [47, 56]
-
-[[spawns.initial_buildings]]
-building_id = "soviet_tesla_reactor"
-tile_pos = [50, 56]
-
-[[spawns.initial_buildings]]
-building_id = "soviet_refinery"
-tile_pos = [47, 53]
-
-[[spawns.initial_buildings]]
-building_id = "soviet_barracks"
-tile_pos = [50, 53]
-
-[[spawns.initial_buildings]]
-building_id = "soviet_war_factory"
-tile_pos = [53, 56]
+sub_faction = "russia"
+base_tile = [16, 56]
+team_id = 1
 
 [[spawns.initial_units]]
 unit_id = "soviet_conscript"
-tile_pos = [49, 51]
+tile_pos = [14, 55]
 
 [[spawns.initial_units]]
 unit_id = "soviet_conscript"
-tile_pos = [51, 51]
+tile_pos = [18, 55]
+
+[[spawns.initial_units]]
+unit_id = "soviet_conscript"
+tile_pos = [14, 57]
+
+[[spawns.initial_units]]
+unit_id = "soviet_conscript"
+tile_pos = [18, 57]
+
+[[spawns.initial_units]]
+unit_id = "flak_trooper"
+tile_pos = [15, 58]
+
+[[spawns.initial_units]]
+unit_id = "flak_trooper"
+tile_pos = [17, 58]
+
+[[spawns.initial_units]]
+unit_id = "soviet_engineer"
+tile_pos = [13, 56]
+
+[[spawns.initial_units]]
+unit_id = "soviet_engineer"
+tile_pos = [19, 56]
 
 [[spawns.initial_units]]
 unit_id = "rhino_tank"
-tile_pos = [53, 52]
+tile_pos = [20, 55]
 
 [[spawns.initial_units]]
-unit_id = "war_miner"
-tile_pos = [49, 52]
+unit_id = "rhino_tank"
+tile_pos = [20, 57]
+
+[[spawns.initial_units]]
+unit_id = "flak_track"
+tile_pos = [22, 56]
 
 [[spawns]]
 player_id = 2
 faction = "yuri"
-base_tile = [79, 28]
+sub_faction = "yuri"
+base_tile = [56, 13]
+team_id = 2
 
-[[spawns.initial_buildings]]
-building_id = "yuri_conyard"
-tile_pos = [79, 28]
-
-[[spawns.initial_buildings]]
-building_id = "yuri_bio_reactor"
-tile_pos = [76, 28]
-
-[[spawns.initial_buildings]]
-building_id = "yuri_slave_refinery"
-tile_pos = [79, 31]
-
-[[spawns.initial_buildings]]
-building_id = "yuri_barracks"
-tile_pos = [76, 31]
-
-[[spawns.initial_buildings]]
-building_id = "yuri_war_factory"
-tile_pos = [73, 28]
-
-[[spawns.initial_units]]
-unit_id = "yuri_initiate"
-tile_pos = [77, 33]
-
-[[spawns.initial_units]]
-unit_id = "yuri_initiate"
-tile_pos = [75, 33]
-
-[[spawns.initial_units]]
-unit_id = "lasher_tank"
-tile_pos = [73, 32]
-
-[[spawns.initial_units]]
-unit_id = "yuri_slave_miner"
-tile_pos = [77, 32]
+[[spawns]]
+player_id = 3
+faction = "soviets"
+sub_faction = "russia"
+base_tile = [42, 52]
+team_id = 1
 
 [[trigger_zones]]
-id = "mission_stage_init"
-min = [6, 6]
-max = [12, 12]
+id = "romanov_init"
+min = [0, 0]
+max = [3, 3]
 once = true
 condition = { type = "timer_elapsed", secs = 1.0 }
 actions = [
+    { type = "play_cutscene", cutscene_id = "intro_flyover" },
+    { type = "set_objective_status", objective_id = "obj_stage1_linkup", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_primary_main", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_vip_boris", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_vip_romanov", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_romanov_evac", status = "active" },
     { type = "set_variable", name = "mission_stage", value = 1 },
-    { type = "eva_transmission", speaker = "ZOFIA", text = "Battle Control Online. Primary tactical objectives initialized." },
-    { type = "reveal_area", tile = [47, 56], radius = 14 }
+    { type = "reveal_area", tile = [42, 52], radius = 8 },
+    { type = "reveal_area", tile = [58, 7], radius = 8 },
+    { type = "eva_transmission", speaker = "LT. ZOFIA", text = "Premier Romanov is hiding in the eastern Moroccan casbah! Fight through Yuri's patrols with Boris to reach him!", portrait = "assets/ui/cameos/nradicon.png", audio_cue = "battle_control_online" },
 ]
 
 [[trigger_zones]]
-id = "tactical_reinforcement_wave"
-min = [46, 54]
-max = [50, 58]
+id = "romanov_rescued_zone"
+min = [36, 47]
+max = [48, 58]
 once = true
-condition = { type = "all", conditions = [{ type = "timer_elapsed", secs = 45.0 }, { type = "variable_equals", name = "mission_stage", value = 1 }] }
+condition = { type = "entered_zone", player_id = 1 }
 actions = [
-    { type = "set_variable", name = "mission_stage", value = 2 },
-    { type = "spawn_reinforcements", player_id = 1, unit_id = "apocalypse_tank", count = 2, tile = [46, 54] },
-    { type = "grant_credits", player_id = 1, amount = 1500 },
-    { type = "eva_transmission", speaker = "ZOFIA", text = "Reinforcements have arrived. Forward command has authorized 1500 bonus credits." }
+    { type = "set_objective_status", objective_id = "obj_stage1_linkup", status = "completed" },
+    { type = "play_radar_video", video_path = "assets/videos/radar_pip/yr_soviet_04_pip_02.mp4" },
+    { type = "change_owner", from_player_id = 3, to_player_id = 1 },
+    { type = "set_variable", name = "romanov_rescued", value = 1 },
+    { type = "grant_credits", player_id = 1, amount = 3000 },
+    { type = "spawn_reinforcements", player_id = 1, unit_id = "rhino_tank", count = 3, tile = [40, 56] },
+    { type = "set_objective", text = "Premier Romanov rescued! Deploy your MCV, capture Marrakech Airport, and destroy Yuri's airfield stronghold." },
+    { type = "eva_transmission", speaker = "PREMIER ROMANOV", text = "Well done, General! Take my mobile command vehicle and crush Yuri's forces blocking Marrakech Airport!", portrait = "assets/ui/cameos/soviet_conyard.png", audio_cue = "battle_control_online", radar_video = "assets/videos/radar_pip/yr_soviet_04_pip_02.mp4" },
 ]
 
 [[trigger_zones]]
-id = "decisive_campaign_victory"
-min = [2, 2]
-max = [6, 6]
+id = "romanov_squad_lost_defeat"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "player_units_below", player_id = 1, max_count = 0 }
+actions = [
+    { type = "eva_transmission", speaker = "LT. ZOFIA", text = "Our rescue force has been wiped out — Yuri has captured Premier Romanov!", portrait = "assets/ui/cameos/nradicon.png", audio_cue = "unit_lost" },
+    { type = "declare_winner", player_id = 2 },
+]
+
+[[trigger_zones]]
+id = "marrakech_airport_secured"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "building_captured", building_id = "tech_airport", by_player_id = 1 }
+actions = [
+    { type = "play_radar_video", video_path = "assets/videos/radar_pip/yr_soviet_04_pip_03.mp4" },
+    { type = "grant_credits", player_id = 1, amount = 2000 },
+    { type = "spawn_reinforcements", player_id = 1, unit_id = "apocalypse_tank", count = 2, tile = [56, 10] },
+    { type = "eva_transmission", speaker = "LT. ZOFIA", text = "Marrakech Airport secured! Heavy armor airlifted in to finish Yuri's base!", portrait = "assets/ui/cameos/nradicon.png", audio_cue = "primary_objective_achieved", radar_video = "assets/videos/radar_pip/yr_soviet_04_pip_03.mp4" },
+]
+
+[[trigger_zones]]
+id = "romanov_morocco_victory"
+min = [0, 0]
+max = [3, 3]
 once = true
 condition = { type = "all_buildings_destroyed", player_id = 2 }
 actions = [
+    { type = "set_objective_status", objective_id = "obj_primary_main", status = "completed" },
+    { type = "set_objective_status", objective_id = "obj_vip_boris", status = "completed" },
+    { type = "set_objective_status", objective_id = "obj_vip_romanov", status = "completed" },
     { type = "set_variable", name = "mission_stage", value = 3 },
-    { type = "eva_transmission", speaker = "ZOFIA", text = "Mission Accomplished. All primary hostile command structures neutralized." },
-    { type = "declare_winner", player_id = 1 }
+    { type = "eva_transmission", speaker = "PREMIER ROMANOV", text = "The skies are clear! Prepare the presidential transport — we strike Yuri's island fortress next!", portrait = "assets/ui/cameos/soviet_conyard.png", audio_cue = "primary_objective_achieved" },
+    { type = "declare_winner", player_id = 1 },
+]
+
+[[trigger_zones]]
+id = "p22_vip_boris_lost"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "tagged_entity_destroyed", tag = "boris" }
+actions = [
+    { type = "set_objective_status", objective_id = "obj_vip_boris", status = "failed" },
+    { type = "eva_transmission", speaker = "LT. ZOFIA", text = "Hero Boris has fallen in combat!", portrait = "assets/ui/cameos/nradicon.png", audio_cue = "unit_lost" },
+    { type = "declare_winner", player_id = 2 },
+]
+
+[[trigger_zones]]
+id = "p22_vip_romanov_lost"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "tagged_entity_destroyed", tag = "romanov" }
+actions = [
+    { type = "set_objective_status", objective_id = "obj_vip_romanov", status = "failed" },
+    { type = "eva_transmission", speaker = "LT. ZOFIA", text = "Critical protected asset (romanov) has been destroyed!", portrait = "assets/ui/cameos/nradicon.png", audio_cue = "unit_lost" },
+    { type = "declare_winner", player_id = 2 },
+]
+
+[[trigger_zones]]
+id = "p22_romanov_airfield_evac"
+min = [53, 3]
+max = [64, 13]
+once = true
+condition = { type = "tagged_entity_entered_zone", tag = "romanov", zone_id = "p22_romanov_airfield_evac" }
+actions = [
+    { type = "set_objective_status", objective_id = "obj_romanov_evac", status = "completed" },
+    { type = "grant_credits", player_id = 1, amount = 2500 },
+    { type = "eva_transmission", speaker = "PREMIER ROMANOV", text = "My command transport has reached Marrakech Airfield intact! Bonus war chest authorized!", portrait = "assets/ui/cameos/soviet_conyard.png", audio_cue = "primary_objective_achieved" },
+]
+
+[[trigger_zones]]
+id = "p22_periodic_skirmish_wave"
+min = [0, 0]
+max = [3, 3]
+once = false
+condition = { type = "periodic_timer", start_secs = 75, interval_secs = 75, max_repeats = 3 }
+actions = [
+    { type = "spawn_reinforcements", player_id = 2, unit_id = "yuri_initiate", count = 3, tile = [59, 15] },
 ]

@@ -1,0 +1,25 @@
+[[upgrades]]
+id = "squad_lmg"
+name = "M249 Squad Automatic LMG Kit"
+faction = "any"
+cost = 125
+research_time_secs = 3.0
+prerequisites = ["field_barracks"]
+target_role = "infantry"
+damage_bonus_mult = 1.15
+armor_bonus_mult = 1.0
+speed_bonus_mult = 1.0
+range_bonus = 1.0
+
+[[upgrades]]
+id = "squad_at_rocket"
+name = "Carl-Gustaf Anti-Armor Rocket Kit"
+faction = "any"
+cost = 175
+research_time_secs = 4.0
+prerequisites = ["alloy_foundry"]
+target_role = "infantry"
+damage_bonus_mult = 1.20
+armor_bonus_mult = 1.0
+speed_bonus_mult = 1.0
+range_bonus = 1.5

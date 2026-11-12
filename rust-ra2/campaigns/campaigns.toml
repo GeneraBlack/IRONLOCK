@@ -474,7 +474,7 @@ radar_video = "assets/videos/radar_pip/yr_soviet_05_pip_01.mp4"
 id = "yr_soviet_06"
 display_name = "YR Op. 06: To the Moon (Lunar Surface)"
 map_id = "yr_soviet_06_to_the_moon"
-briefing = "Yuri has fled to the Moon! Establish a Soviet lunar base with Cosmonauts and laser units and destroy Yuri's lunar command centers."
+briefing = "Yuri has fled to the Moon! Establish a forward Soviet lunar base with Conscripts, Tesla Troopers, Flak Troopers, Desolators, and Rhino Heavy Tanks, and destroy Yuri's Lunar Command centers."
 next_mission_id = "yr_soviet_07"
 carry_over_credits_ratio = 0.25
 carry_over_max_veteran_units = 6
@@ -500,24 +500,26 @@ radar_video = "assets/videos/radar_pip/yr_soviet_07_pip_01.mp4"
 id = "bootcamp_campaign"
 display_name = "RA2: Bootcamp Tactical Training (2 Missions)"
 faction = "allies"
-description = "Foundational command, garrison warfare, and base construction training for Allied commanders."
+description = "Interactive step-by-step tactical onboarding: camera & box selection, MCV deployment, base power/economy, dynamic sector expansion, bridge engineering, and armored counterattack."
 
 [[campaigns.missions]]
 id = "ra2_bootcamp_01"
 display_name = "Training 01: Basic Command & Control"
 map_id = "ra2_bootcamp_01"
-briefing = "Basic Training Day 1: Learn unit command, urban garrison combat, and establishing your first forward supply base."
+briefing = "Basic Training Day 1: Advance to Waypoint Alpha to assume outpost command, expand into the southern live-fire sector, protect your supply convoy, and clear all OPFOR structures."
 next_mission_id = "ra2_bootcamp_02"
 carry_over_credits_ratio = 0.50
 carry_over_max_veteran_units = 4
 loading_screen = "assets/ui/loading_screens/ra2_bootcamp_01.png"
 intro_video = "assets/videos/ra2_opening_intro.mp4"
+radar_video = "assets/videos/radar_pip/allied_01_pip_01.mp4"
 
 [[campaigns.missions]]
 id = "ra2_bootcamp_02"
 display_name = "Training 02: Base Defense & Counterattack"
 map_id = "ra2_bootcamp_02"
-briefing = "Basic Training Day 2: Defend your outpost against a simulated Soviet assault and lead the armored counterattack with Grizzly Battle Tanks."
+briefing = "Basic Training Day 2: Deploy your MCV, hold the perimeter until the defense countdown completes, capture the Tech Communications Center, and lead Grizzly Battle Tanks against the OPFOR base."
 carry_over_credits_ratio = 0.0
 loading_screen = "assets/ui/loading_screens/ra2_bootcamp_02.png"
 intro_video = "assets/videos/allied_01_cutscene.mp4"
+radar_video = "assets/videos/radar_pip/allied_02_pip_01.mp4"

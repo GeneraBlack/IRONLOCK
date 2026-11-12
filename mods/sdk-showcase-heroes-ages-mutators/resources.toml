@@ -1,0 +1,23 @@
+[[resources]]
+id = "credits"
+display_name = "Solar Credits"
+icon = "assets/ui/cameos/res_credits.png"
+color_rgb = [0.95, 0.78, 0.22]
+starting_amount = 2000
+is_capacity_pool = false
+
+[[resources]]
+id = "aether"
+display_name = "Refined Aether"
+icon = "assets/ui/cameos/res_aether.png"
+color_rgb = [0.28, 0.78, 0.98]
+starting_amount = 600
+is_capacity_pool = false
+
+[[resources]]
+id = "relic_flux"
+display_name = "Relic Flux"
+icon = "assets/ui/cameos/res_flux.png"
+color_rgb = [0.76, 0.38, 0.96]
+starting_amount = 150
+is_capacity_pool = false

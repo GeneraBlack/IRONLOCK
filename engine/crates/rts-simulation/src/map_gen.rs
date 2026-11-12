@@ -76,11 +76,14 @@ fn symmetric_points(
         MapSymmetryMode::MirrorZ => out.push([pt[0], mz]),
         MapSymmetryMode::Rotational4Way => {
             out.push([mx, mz]);
-            out.push([pt[1].clamp(4, w - 5), (w - 1 - pt[0]).clamp(4, h - 5)]);
-            out.push([
-                (w - 1 - pt[1]).clamp(4, w - 5),
-                pt[0].clamp(4, h - 5),
-            ]);
+            let x_max = (w - 1).max(1);
+            let z_max = (h - 1).max(1);
+            let x90 = ((pt[1] as i64 * x_max as i64) / z_max as i64) as i32;
+            let z90 = (((w - 1 - pt[0]) as i64 * z_max as i64) / x_max as i64) as i32;
+            let x270 = (((h - 1 - pt[1]) as i64 * x_max as i64) / z_max as i64) as i32;
+            let z270 = ((pt[0] as i64 * z_max as i64) / x_max as i64) as i32;
+            out.push([x90.clamp(4, (w - 5).max(4)), z90.clamp(4, (h - 5).max(4))]);
+            out.push([x270.clamp(4, (w - 5).max(4)), z270.clamp(4, (h - 5).max(4))]);
         }
         MapSymmetryMode::Rotational2Way | MapSymmetryMode::Off => {
             out.push([mx, mz]);
@@ -238,14 +241,11 @@ pub fn generate_procedural_map(config: &MapGenConfig, loaded: &LoadedMod) -> Map
     // Symmetric tactical obstacles & props (avoiding spawn areas and center corridor)
     let mut obstacles = Vec::new();
     let mut props = Vec::new();
-    let seed_obs = [
-        (mid_x - 7).clamp(14, w - 15),
-        (mid_z - 5).clamp(14, h - 15),
-    ];
+    let seed_obs = [(mid_x - 7).clamp(14, w - 15), (mid_z - 5).clamp(14, h - 15)];
     for pt in symmetric_points(seed_obs, w, h, config.symmetry, config.player_count) {
-        let too_close_to_spawn = spawns.iter().any(|s| {
-            (s.base_tile[0] - pt[0]).abs() <= 9 && (s.base_tile[1] - pt[1]).abs() <= 9
-        });
+        let too_close_to_spawn = spawns
+            .iter()
+            .any(|s| (s.base_tile[0] - pt[0]).abs() <= 9 && (s.base_tile[1] - pt[1]).abs() <= 9);
         if !too_close_to_spawn && ((pt[0] - mid_x).abs() > 4 || (pt[1] - mid_z).abs() > 4) {
             obstacles.push(ObstacleRectDef {
                 min: pt,
@@ -277,5 +277,6 @@ pub fn generate_procedural_map(config: &MapGenConfig, loaded: &LoadedMod) -> Map
         props,
         trigger_zones: Vec::new(),
         spawns,
+        ..MapDef::default()
     }
 }

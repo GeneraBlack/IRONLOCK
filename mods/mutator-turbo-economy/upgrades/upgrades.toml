@@ -1,0 +1,27 @@
+# ==============================================================================
+# Turbo Economy Upgrade Overrides + Inline `{ "$append" = [...] }` Patch Syntax
+# ==============================================================================
+
+[[upgrades]]
+id = "advance_age_2"
+cost = 250
+research_time_secs = 4.0
+
+[upgrades.resource_costs]
+aether = 80
+
+[[upgrades]]
+id = "advance_age_3"
+cost = 500
+research_time_secs = 6.0
+
+[upgrades.resource_costs]
+aether = 180
+relic_flux = 25
+
+[[upgrades]]
+id = "sunforged_weapons"
+cost = 150
+research_time_secs = 3.0
+damage_bonus_mult = 1.30
+target_tags = { "$append" = ["turbo_boosted"] }

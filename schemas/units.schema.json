@@ -1,37 +1,131 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
   "properties": {
     "units": {
       "items": {
+        "additionalProperties": false,
         "properties": {
+          "abilities": {
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "ability_id": {
+            "type": "string"
+          },
           "armor": {
             "enum": [
               "none",
               "light",
+              "medium",
               "heavy",
               "structure"
             ],
             "type": "string"
           },
+          "build_limit": {
+            "minimum": 0,
+            "type": "integer"
+          },
           "build_time_secs": {
-            "minimum": 0.1,
+            "minimum": 0.0,
             "type": "number"
           },
+          "cash_bounty_ratio": {
+            "type": "number"
+          },
+          "chrono_harvester": {
+            "type": "boolean"
+          },
+          "chrono_locomotion": {
+            "type": "boolean"
+          },
           "container": {
+            "additionalProperties": false,
+            "properties": {
+              "accepts_vehicles": {
+                "type": "boolean"
+              },
+              "adapts_weapon_to_passenger": {
+                "type": "boolean"
+              },
+              "capacity": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "engineer_repair_aura_per_sec": {
+                "type": "number"
+              },
+              "passengers_can_fire": {
+                "type": "boolean"
+              },
+              "power_per_occupant": {
+                "type": "integer"
+              },
+              "tunnel_network": {
+                "type": "boolean"
+              }
+            },
             "type": "object"
           },
           "cost": {
             "minimum": 0,
             "type": "integer"
           },
+          "cruise_altitude": {
+            "type": "number"
+          },
+          "crushes_infantry": {
+            "type": "boolean"
+          },
+          "crushes_vehicles": {
+            "type": "boolean"
+          },
           "death_effect": {
+            "additionalProperties": false,
+            "properties": {
+              "drops_salvage": {
+                "type": "boolean"
+              },
+              "explosion_damage": {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              "explosion_radius": {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              "leaves_radiation": {
+                "type": "boolean"
+              },
+              "survivor_chance": {
+                "maximum": 1.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              "survivor_unit": {
+                "type": "string"
+              }
+            },
             "type": "object"
+          },
+          "deploy_weapon": {
+            "type": "string"
           },
           "elite_weapon": {
             "type": "string"
           },
           "faction": {
             "type": "string"
+          },
+          "garrison_damage_multiplier": {
+            "type": "number"
+          },
+          "harvest_capacity": {
+            "minimum": 0,
+            "type": "integer"
           },
           "health": {
             "minimum": 1.0,
@@ -40,10 +134,98 @@
           "id": {
             "type": "string"
           },
+          "immobile_when_deployed": {
+            "type": "boolean"
+          },
+          "immune_to_mind_control": {
+            "type": "boolean"
+          },
+          "immune_to_radiation": {
+            "type": "boolean"
+          },
+          "infiltrates_buildings": {
+            "type": "boolean"
+          },
+          "kamikaze": {
+            "type": "boolean"
+          },
+          "lands_when_deployed": {
+            "type": "boolean"
+          },
+          "lays_mines": {
+            "type": "boolean"
+          },
+          "max_ammo": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "max_drones": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "mind_control_limit": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "mind_control_overload_dps": {
+            "type": "number"
+          },
+          "mine_damage": {
+            "type": "number"
+          },
+          "mine_radius": {
+            "type": "number"
+          },
+          "mobile_refinery": {
+            "type": "boolean"
+          },
+          "movement_domain": {
+            "enum": [
+              "ground",
+              "air",
+              "naval",
+              "amphibious",
+              "jumpjet",
+              "chrono"
+            ],
+            "type": "string"
+          },
           "name": {
             "type": "string"
           },
+          "passenger_mode_labels": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object"
+          },
+          "passenger_weapon_by_role": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object"
+          },
+          "passenger_weapon_by_unit": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object"
+          },
+          "plants_c4": {
+            "type": "boolean"
+          },
           "point_defense": {
+            "additionalProperties": false,
+            "properties": {
+              "cooldown_secs": {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              "intercept_radius": {
+                "minimum": 0.0,
+                "type": "number"
+              }
+            },
             "type": "object"
           },
           "prerequisites": {
@@ -55,50 +237,202 @@
           "primary_weapon": {
             "type": "string"
           },
+          "psi_wave_damage": {
+            "type": "number"
+          },
+          "psi_wave_radius": {
+            "type": "number"
+          },
+          "requires_powered_building": {
+            "type": "string"
+          },
           "role": {
             "enum": [
               "infantry",
-              "harvester",
               "vehicle",
-              "engineer",
-              "air",
-              "naval"
+              "harvester",
+              "engineer"
             ],
             "type": "string"
           },
+          "script_hooks": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object"
+          },
           "secondary_weapon": {
+            "type": "string"
+          },
+          "self_heal_per_sec": {
+            "type": "number"
+          },
+          "spawns_drone_unit": {
             "type": "string"
           },
           "speed": {
             "minimum": 0.0,
             "type": "number"
           },
+          "spy_infiltrator": {
+            "type": "boolean"
+          },
           "stealth": {
+            "additionalProperties": false,
+            "properties": {
+              "can_disguise_as_enemy": {
+                "type": "boolean"
+              },
+              "cloak_field_radius": {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              "cloaked": {
+                "type": "boolean"
+              },
+              "detects_cloak": {
+                "type": "boolean"
+              },
+              "detects_disguise": {
+                "type": "boolean"
+              },
+              "disguises_as_terrain": {
+                "type": "boolean"
+              },
+              "psychic_sensor_radius": {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              "reveal_on_fire_secs": {
+                "minimum": 0.0,
+                "type": "number"
+              }
+            },
             "type": "object"
+          },
+          "sub_factions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "subterranean": {
+            "type": "boolean"
+          },
+          "supply_cost": {
+            "minimum": 0,
+            "type": "integer"
           },
           "support_aura": {
+            "additionalProperties": false,
+            "properties": {
+              "cash_trickle_per_sec": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "heals_infantry_per_sec": {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              "mobile_heal_per_sec": {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              "mobile_heal_radius": {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              "ore_refine_multiplier": {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              "repairs_ships_per_sec": {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              "repairs_vehicles_per_sec": {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              "vehicle_cost_discount": {
+                "maximum": 1.0,
+                "minimum": 0.0,
+                "type": "number"
+              }
+            },
             "type": "object"
           },
+          "transforms_into_building": {
+            "type": "string"
+          },
+          "uncrushable": {
+            "type": "boolean"
+          },
           "vision_range": {
-            "minimum": 1.0,
+            "minimum": 0.0,
             "type": "number"
           },
           "visual": {
+            "additionalProperties": false,
+            "properties": {
+              "archetype": {
+                "enum": [
+                  "infantry",
+                  "tank",
+                  "harvester",
+                  "aircraft",
+                  "ship",
+                  "construction_yard",
+                  "power_plant",
+                  "barracks",
+                  "refinery",
+                  "war_factory",
+                  "turret",
+                  "generic_box"
+                ],
+                "type": "string"
+              },
+              "barrel_recoil_distance": {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              "has_turret": {
+                "type": "boolean"
+              },
+              "icon": {
+                "type": "string"
+              },
+              "model": {
+                "type": "string"
+              },
+              "primary_color": {
+                "items": {
+                  "type": "number"
+                },
+                "maxItems": 3,
+                "minItems": 3,
+                "type": "array"
+              },
+              "scale": {
+                "items": {
+                  "type": "number"
+                },
+                "maxItems": 3,
+                "minItems": 3,
+                "type": "array"
+              },
+              "spin_speed_deg_per_sec": {
+                "type": "number"
+              },
+              "team_color_tint": {
+                "type": "boolean"
+              }
+            },
             "type": "object"
           }
         },
         "required": [
-          "id",
-          "name",
-          "faction",
-          "role",
-          "cost",
-          "build_time_secs",
-          "health",
-          "armor",
-          "speed",
-          "vision_range",
-          "visual"
+          "id"
         ],
         "type": "object"
       },

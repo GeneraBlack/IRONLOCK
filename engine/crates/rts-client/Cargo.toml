@@ -4,11 +4,23 @@ version.workspace = true
 edition.workspace = true
 license.workspace = true
 
+[lib]
+name = "rts_client"
+path = "src/lib.rs"
+
+[[bin]]
+name = "rts-client"
+path = "src/main.rs"
+
 [dependencies]
 rts-sdk = { path = "../rts-sdk" }
 rts-asset-pipeline = { path = "../rts-asset-pipeline" }
 rts-simulation = { path = "../rts-simulation" }
 rts-network = { path = "../rts-network" }
 bevy.workspace = true
+bevy_egui.workspace = true
+egui_dock.workspace = true
+serde.workspace = true
+toml.workspace = true
 clap.workspace = true
 anyhow.workspace = true

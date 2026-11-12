@@ -18,7 +18,7 @@ transforms_into_unit = "allied_mcv"
 
 [buildings.visual]
 model = "assets/models/allied_conyard.glb"
-icon = "assets/ui/cameos/ayaricon.png"
+icon = "assets/ui/cameos/allied_conyard_icon.png"
 archetype = "construction_yard"
 scale = [2.6, 1.8, 2.6]
 primary_color = [0.18, 0.45, 0.88]
@@ -218,7 +218,7 @@ transforms_into_unit = "soviet_mcv"
 
 [buildings.visual]
 model = "assets/models/soviet_conyard.glb"
-icon = "assets/ui/cameos/nwalicon.png"
+icon = "assets/ui/cameos/soviet_conyard.png"
 archetype = "construction_yard"
 scale = [2.6, 1.8, 2.6]
 primary_color = [0.85, 0.16, 0.16]
@@ -428,10 +428,11 @@ duration_secs = 20.0
 
 [buildings.visual]
 model = "assets/models/allied_airforce_command.glb"
-icon = "assets/ui/cameos/asaticon.png"
+icon = "assets/ui/cameos/allied_airforce_command.png"
 archetype = "power_plant"
 scale = [2.2, 1.8, 2.0]
 primary_color = [0.18, 0.45, 0.88]
+spin_speed_deg_per_sec = 90.0
 
 [[buildings]]
 id = "allied_naval_shipyard"
@@ -517,7 +518,7 @@ prerequisites = ["allied_battle_lab"]
 stealth = { cloak_field_radius = 14.0 }
 
 [buildings.visual]
-model = "assets/models/allied_robot_control.glb"
+model = "assets/models/allied_gap_generator.glb"
 icon = "assets/ui/cameos/gapicon.png"
 archetype = "turret"
 scale = [1.4, 2.2, 1.4]
@@ -568,6 +569,8 @@ icon = "assets/ui/cameos/plticon.png"
 archetype = "turret"
 scale = [1.2, 1.4, 1.2]
 primary_color = [0.18, 0.45, 0.88]
+has_turret = true
+barrel_recoil_distance = 0.15
 
 [[buildings]]
 id = "allied_grand_cannon"
@@ -591,6 +594,8 @@ icon = "assets/ui/cameos/gcanicon.png"
 archetype = "turret"
 scale = [1.8, 1.6, 1.8]
 primary_color = [0.18, 0.45, 0.88]
+has_turret = true
+barrel_recoil_distance = 0.40
 
 [[buildings]]
 id = "allied_robot_control"
@@ -714,6 +719,7 @@ icon = "assets/ui/cameos/nradicon.png"
 archetype = "power_plant"
 scale = [2.0, 2.0, 2.0]
 primary_color = [0.85, 0.16, 0.16]
+spin_speed_deg_per_sec = 75.0
 
 [[buildings]]
 id = "soviet_naval_shipyard"
@@ -803,6 +809,8 @@ icon = "assets/ui/cameos/ggunicon.png"
 archetype = "turret"
 scale = [1.2, 1.2, 1.2]
 primary_color = [0.85, 0.16, 0.16]
+has_turret = true
+barrel_recoil_distance = 0.20
 
 [[buildings]]
 id = "soviet_flak_cannon"
@@ -826,6 +834,8 @@ icon = "assets/ui/cameos/flakicon.png"
 archetype = "turret"
 scale = [1.2, 1.5, 1.2]
 primary_color = [0.85, 0.16, 0.16]
+has_turret = true
+barrel_recoil_distance = 0.20
 
 [[buildings]]
 id = "soviet_battle_bunker"
@@ -1092,6 +1102,7 @@ icon = "assets/ui/cameos/psisicon.png"
 archetype = "power_plant"
 scale = [2.0, 2.0, 2.0]
 primary_color = [0.68, 0.22, 0.88]
+spin_speed_deg_per_sec = 80.0
 
 [[buildings]]
 id = "yuri_battle_lab"
@@ -1137,6 +1148,8 @@ icon = "assets/ui/cameos/gtncicon.png"
 archetype = "turret"
 scale = [1.3, 1.6, 1.3]
 primary_color = [0.68, 0.22, 0.88]
+has_turret = true
+barrel_recoil_distance = 0.18
 
 [[buildings]]
 id = "yuri_psychic_tower"
@@ -1502,6 +1515,52 @@ icon = "assets/ui/cameos/tech_power_plant.png"
 archetype = "power_plant"
 scale = [2.0, 1.8, 2.0]
 primary_color = [0.74, 0.74, 0.68]
+
+[[buildings]]
+id = "bridge_repair_hut"
+name = "Bridge Repair Hut"
+faction = "shared"
+role = "bridge_repair_hut"
+cost = 500
+build_time_secs = 5.0
+health = 50000.0
+armor = "structure"
+footprint = [1, 1]
+power_delta = 0
+vision_range = 10.0
+prerequisites = []
+
+[buildings.visual]
+model = "assets/models/props/civilian_building_intact.glb"
+icon = "assets/ui/cameos/bridge_repair_hut_icon.png"
+archetype = "generic_box"
+scale = [0.95, 0.95, 0.95]
+primary_color = [0.68, 0.64, 0.56]
+team_color_tint = false
+
+[[buildings]]
+id = "tech_communications_center"
+name = "Tech Communications Center"
+faction = "shared"
+role = "tech_center"
+cost = 1800
+build_time_secs = 12.0
+health = 1200.0
+armor = "structure"
+footprint = [2, 2]
+power_delta = 0
+vision_range = 22.0
+capture_cash_bonus = 500
+prerequisites = []
+stealth = { detects_cloak = true }
+support_aura = { grants_radar = true, periodic_reveal_interval_secs = 45, periodic_reveal_radius = 22.0 }
+
+[buildings.visual]
+model = "assets/models/soviet_radar_tower.glb"
+icon = "assets/ui/cameos/tech_communications_center_icon.png"
+archetype = "power_plant"
+scale = [2.0, 2.2, 2.0]
+primary_color = [0.64, 0.74, 0.84]
 
 # === Iconic Campaign Landmarks & Monuments (RA2 & Yuri's Revenge) ===
 

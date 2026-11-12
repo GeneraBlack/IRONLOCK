@@ -13,10 +13,7 @@ pub fn format_mod_inspection(loaded: &LoadedMod) -> String {
         loaded.entry_map.height,
         loaded.entry_map.tile_size
     ));
-    out.push_str(&format!(
-        "Factions ({}):\n",
-        loaded.factions.len()
-    ));
+    out.push_str(&format!("Factions ({}):\n", loaded.factions.len()));
     for f in loaded.factions.values() {
         out.push_str(&format!(
             "  - [{}] {} (Start Credits: {})\n",

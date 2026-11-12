@@ -1,12 +1,16 @@
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 
 use super::combat_defs::{BuildingRole, SupportPowerDef};
 use super::common::{
-    default_burst, AbilityDef, ArmorType, MovementDomain, SuperweaponType, VisualDef,
+    default_burst, AbilityDef, ArmorType, LocomotorSpec, MovementDomain, SuperweaponType, VisualDef,
+};
+use super::traits::{
+    BuilderTraitSpec, EnergyPoolSpec, GathererTraitSpec, HeroTraitSpec, SquadTraitSpec, TraitSpecs,
 };
 
-#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize, JsonSchema)]
 pub struct ContainerSpec {
     #[serde(default)]
     pub capacity: u32,
@@ -24,7 +28,7 @@ pub struct ContainerSpec {
     pub engineer_repair_aura_per_sec: f32,
 }
 
-#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize, JsonSchema)]
 pub struct StealthSensorSpec {
     #[serde(default)]
     pub cloaked: bool,
@@ -44,7 +48,7 @@ pub struct StealthSensorSpec {
     pub reveal_on_fire_secs: f32,
 }
 
-#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize, JsonSchema)]
 pub struct DeathPayloadSpec {
     #[serde(default)]
     pub explosion_damage: f32,
@@ -60,7 +64,7 @@ pub struct DeathPayloadSpec {
     pub drops_salvage: bool,
 }
 
-#[derive(Debug, Clone, Copy, Default, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Serialize, Deserialize, JsonSchema)]
 pub struct PointDefenseSpec {
     #[serde(default)]
     pub intercept_radius: f32,
@@ -68,7 +72,7 @@ pub struct PointDefenseSpec {
     pub cooldown_secs: f32,
 }
 
-#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize, JsonSchema)]
 pub struct SupportAuraSpec {
     #[serde(default)]
     pub heals_infantry_per_sec: f32,
@@ -86,9 +90,15 @@ pub struct SupportAuraSpec {
     pub ore_refine_multiplier: f32,
     #[serde(default)]
     pub vehicle_cost_discount: f32,
+    #[serde(default)]
+    pub grants_radar: bool,
+    #[serde(default)]
+    pub periodic_reveal_interval_secs: Option<u32>,
+    #[serde(default)]
+    pub periodic_reveal_radius: f32,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, JsonSchema)]
 pub struct BuildingDef {
     pub id: String,
     pub name: String,
@@ -99,6 +109,10 @@ pub struct BuildingDef {
     pub health: f32,
     #[serde(default)]
     pub armor: ArmorType,
+    #[serde(default)]
+    pub armor_tag: Option<String>,
+    #[serde(default)]
+    pub tags: Vec<String>,
     #[serde(default = "default_footprint")]
     pub footprint: [u32; 2],
     #[serde(default)]
@@ -110,6 +124,12 @@ pub struct BuildingDef {
     #[serde(default)]
     pub prerequisites: Vec<String>,
     #[serde(default)]
+    pub prerequisite_upgrades: Vec<String>,
+    #[serde(default)]
+    pub required_era: Option<String>,
+    #[serde(default)]
+    pub streaming_build_power: Option<f32>,
+    #[serde(default)]
     pub spawns_unit_on_complete: Option<String>,
     #[serde(default)]
     pub sub_factions: Vec<String>,
@@ -119,6 +139,10 @@ pub struct BuildingDef {
     pub transforms_into_unit: Option<String>,
     #[serde(default)]
     pub upgrades_to: Option<String>,
+    #[serde(default)]
+    pub upgrade_options: Vec<String>,
+    #[serde(default)]
+    pub addon_sockets: Vec<String>,
     #[serde(default)]
     pub upgrade_cost: u32,
     #[serde(default)]
@@ -137,6 +161,10 @@ pub struct BuildingDef {
     pub stolen_tech_units: Vec<String>,
     #[serde(default)]
     pub crushable: bool,
+    #[serde(default)]
+    pub leaves_ruin: bool,
+    #[serde(default)]
+    pub ruin_cover_bonus: f32,
     #[serde(default)]
     pub supply_provided: u32,
     #[serde(default)]
@@ -158,6 +186,22 @@ pub struct BuildingDef {
     #[serde(default)]
     pub support_aura: SupportAuraSpec,
     #[serde(default)]
+    pub resource_costs: BTreeMap<String, u32>,
+    #[serde(default)]
+    pub resource_trickle_per_sec: BTreeMap<String, u32>,
+    #[serde(default)]
+    pub builder_trait: Option<BuilderTraitSpec>,
+    #[serde(default)]
+    pub gatherer_trait: Option<GathererTraitSpec>,
+    #[serde(default)]
+    pub squad_trait: Option<SquadTraitSpec>,
+    #[serde(default)]
+    pub energy_pool: Option<EnergyPoolSpec>,
+    #[serde(default)]
+    pub ambient_vfx_id: Option<String>,
+    #[serde(default)]
+    pub death_vfx_id: Option<String>,
+    #[serde(default)]
     pub script_hooks: BTreeMap<String, String>,
     pub visual: VisualDef,
 }
@@ -173,16 +217,23 @@ impl Default for BuildingDef {
             build_time_secs: 5.0,
             health: 800.0,
             armor: ArmorType::Structure,
+            armor_tag: None,
+            tags: Vec::new(),
             footprint: default_footprint(),
             power_delta: 0,
             vision_range: default_vision(),
             primary_weapon: None,
             prerequisites: Vec::new(),
+            prerequisite_upgrades: Vec::new(),
+            required_era: None,
+            streaming_build_power: None,
             spawns_unit_on_complete: None,
             sub_factions: Vec::new(),
             build_limit: 0,
             transforms_into_unit: None,
             upgrades_to: None,
+            upgrade_options: Vec::new(),
+            addon_sockets: Vec::new(),
             upgrade_cost: 0,
             upgrade_time_secs: 0.0,
             water_bound: false,
@@ -192,6 +243,8 @@ impl Default for BuildingDef {
             unlocks_units: Vec::new(),
             stolen_tech_units: Vec::new(),
             crushable: false,
+            leaves_ruin: false,
+            ruin_cover_bonus: 0.0,
             supply_provided: 0,
             abilities: Vec::new(),
             support_powers: Vec::new(),
@@ -202,6 +255,14 @@ impl Default for BuildingDef {
             death_effect: DeathPayloadSpec::default(),
             point_defense: PointDefenseSpec::default(),
             support_aura: SupportAuraSpec::default(),
+            resource_costs: BTreeMap::new(),
+            resource_trickle_per_sec: BTreeMap::new(),
+            builder_trait: None,
+            gatherer_trait: None,
+            squad_trait: None,
+            energy_pool: None,
+            ambient_vfx_id: None,
+            death_vfx_id: None,
             script_hooks: BTreeMap::new(),
             visual: VisualDef::default(),
         }
@@ -209,6 +270,17 @@ impl Default for BuildingDef {
 }
 
 impl BuildingDef {
+    pub fn effective_armor_tag(&self) -> &str {
+        self.armor_tag
+            .as_deref()
+            .filter(|s| !s.is_empty())
+            .unwrap_or_else(|| self.armor.as_tag_str())
+    }
+
+    pub fn has_tag(&self, tag: &str) -> bool {
+        self.tags.iter().any(|t| t == tag)
+    }
+
     pub fn is_available_to_faction(&self, faction_id: &str) -> bool {
         self.faction == faction_id
             || self.faction == "any"
@@ -259,6 +331,26 @@ impl BuildingDef {
         }
         a
     }
+
+    /// Returns merged multi-resource construction costs, including `cost` under `"credits"`
+    /// when not overridden in `resource_costs`.
+    pub fn effective_resource_costs(&self) -> BTreeMap<String, u32> {
+        let mut costs = self.resource_costs.clone();
+        if !costs.contains_key("credits") && self.cost > 0 {
+            costs.insert("credits".to_string(), self.cost);
+        }
+        costs
+    }
+
+    /// Returns merged per-second resource generation rates (`resource_trickle_per_sec` + `support_aura.cash_trickle_per_sec`).
+    pub fn effective_resource_trickle(&self) -> BTreeMap<String, u32> {
+        let mut trickle = self.resource_trickle_per_sec.clone();
+        if self.support_aura.cash_trickle_per_sec > 0 {
+            *trickle.entry("credits".to_string()).or_insert(0) +=
+                self.support_aura.cash_trickle_per_sec;
+        }
+        trickle
+    }
 }
 
 fn default_footprint() -> [u32; 2] {
@@ -269,12 +361,25 @@ pub(crate) fn default_vision() -> f32 {
     16.0
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize, JsonSchema)]
 pub struct BuildingCatalog {
     pub buildings: Vec<BuildingDef>,
 }
 
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[derive(
+    Debug,
+    Clone,
+    Copy,
+    Default,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    Hash,
+    Serialize,
+    Deserialize,
+    JsonSchema,
+)]
 #[serde(rename_all = "snake_case")]
 pub enum UnitRole {
     #[default]
@@ -284,7 +389,7 @@ pub enum UnitRole {
     Engineer,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, JsonSchema)]
 pub struct UnitDef {
     pub id: String,
     pub name: String,
@@ -295,6 +400,10 @@ pub struct UnitDef {
     pub health: f32,
     #[serde(default)]
     pub armor: ArmorType,
+    #[serde(default)]
+    pub armor_tag: Option<String>,
+    #[serde(default)]
+    pub tags: Vec<String>,
     pub speed: f32,
     #[serde(default = "default_vision")]
     pub vision_range: f32,
@@ -311,6 +420,12 @@ pub struct UnitDef {
     #[serde(default)]
     pub prerequisites: Vec<String>,
     #[serde(default)]
+    pub prerequisite_upgrades: Vec<String>,
+    #[serde(default)]
+    pub required_era: Option<String>,
+    #[serde(default)]
+    pub streaming_build_power: Option<f32>,
+    #[serde(default)]
     pub sub_factions: Vec<String>,
     #[serde(default)]
     pub build_limit: u32,
@@ -318,6 +433,8 @@ pub struct UnitDef {
     pub movement_domain: MovementDomain,
     #[serde(default)]
     pub cruise_altitude: f32,
+    #[serde(default)]
+    pub locomotor: LocomotorSpec,
     #[serde(default)]
     pub transforms_into_building: Option<String>,
     #[serde(default)]
@@ -399,6 +516,24 @@ pub struct UnitDef {
     #[serde(default)]
     pub support_aura: SupportAuraSpec,
     #[serde(default)]
+    pub resource_costs: BTreeMap<String, u32>,
+    #[serde(default)]
+    pub resource_trickle_per_sec: BTreeMap<String, u32>,
+    #[serde(default)]
+    pub builder_trait: Option<BuilderTraitSpec>,
+    #[serde(default)]
+    pub gatherer_trait: Option<GathererTraitSpec>,
+    #[serde(default)]
+    pub squad_trait: Option<SquadTraitSpec>,
+    #[serde(default)]
+    pub energy_pool: Option<EnergyPoolSpec>,
+    #[serde(default)]
+    pub hero_trait: Option<HeroTraitSpec>,
+    #[serde(default)]
+    pub ambient_vfx_id: Option<String>,
+    #[serde(default)]
+    pub death_vfx_id: Option<String>,
+    #[serde(default)]
     pub script_hooks: BTreeMap<String, String>,
     pub visual: VisualDef,
 }
@@ -414,6 +549,8 @@ impl Default for UnitDef {
             build_time_secs: 3.0,
             health: 120.0,
             armor: ArmorType::Light,
+            armor_tag: None,
+            tags: Vec::new(),
             speed: 4.5,
             vision_range: default_vision(),
             harvest_capacity: 0,
@@ -422,10 +559,14 @@ impl Default for UnitDef {
             elite_weapon: None,
             deploy_weapon: None,
             prerequisites: Vec::new(),
+            prerequisite_upgrades: Vec::new(),
+            required_era: None,
+            streaming_build_power: None,
             sub_factions: Vec::new(),
             build_limit: 0,
             movement_domain: MovementDomain::Ground,
             cruise_altitude: 0.0,
+            locomotor: LocomotorSpec::default(),
             transforms_into_building: None,
             immobile_when_deployed: false,
             lands_when_deployed: false,
@@ -466,6 +607,15 @@ impl Default for UnitDef {
             death_effect: DeathPayloadSpec::default(),
             point_defense: PointDefenseSpec::default(),
             support_aura: SupportAuraSpec::default(),
+            resource_costs: BTreeMap::new(),
+            resource_trickle_per_sec: BTreeMap::new(),
+            builder_trait: None,
+            gatherer_trait: None,
+            squad_trait: None,
+            energy_pool: None,
+            hero_trait: None,
+            ambient_vfx_id: None,
+            death_vfx_id: None,
             script_hooks: BTreeMap::new(),
             visual: VisualDef::default(),
         }
@@ -473,6 +623,27 @@ impl Default for UnitDef {
 }
 
 impl UnitDef {
+    pub fn effective_armor_tag(&self) -> &str {
+        self.armor_tag
+            .as_deref()
+            .filter(|s| !s.is_empty())
+            .unwrap_or_else(|| self.armor.as_tag_str())
+    }
+
+    pub fn has_tag(&self, tag: &str) -> bool {
+        self.tags.iter().any(|t| t == tag)
+    }
+
+    pub fn trait_specs(&self) -> TraitSpecs {
+        TraitSpecs {
+            builder: self.builder_trait.clone(),
+            gatherer: self.gatherer_trait.clone(),
+            squad: self.squad_trait.clone(),
+            energy_pool: self.energy_pool,
+            hero: self.hero_trait.clone(),
+        }
+    }
+
     pub fn is_available_to_faction(&self, faction_id: &str) -> bool {
         self.faction == faction_id
             || self.faction == "any"
@@ -519,9 +690,42 @@ impl UnitDef {
     pub fn support_aura_spec(&self) -> SupportAuraSpec {
         self.support_aura.clone()
     }
+
+    /// Resolves `self.locomotor` with sensible kinematics defaults for this unit's role and domain.
+    pub fn locomotor_spec(&self) -> LocomotorSpec {
+        self.locomotor.resolved_for(
+            self.role,
+            self.movement_domain,
+            self.armor,
+            self.crushes_infantry,
+            self.visual.spin_speed_deg_per_sec,
+            self.lands_when_deployed,
+            self.max_ammo,
+        )
+    }
+
+    /// Returns merged multi-resource production costs, including `cost` under `"credits"`
+    /// when not overridden in `resource_costs`.
+    pub fn effective_resource_costs(&self) -> BTreeMap<String, u32> {
+        let mut costs = self.resource_costs.clone();
+        if !costs.contains_key("credits") && self.cost > 0 {
+            costs.insert("credits".to_string(), self.cost);
+        }
+        costs
+    }
+
+    /// Returns merged per-second resource generation rates (`resource_trickle_per_sec` + `support_aura.cash_trickle_per_sec`).
+    pub fn effective_resource_trickle(&self) -> BTreeMap<String, u32> {
+        let mut trickle = self.resource_trickle_per_sec.clone();
+        if self.support_aura.cash_trickle_per_sec > 0 {
+            *trickle.entry("credits".to_string()).or_insert(0) +=
+                self.support_aura.cash_trickle_per_sec;
+        }
+        trickle
+    }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize, JsonSchema)]
 pub struct UnitCatalog {
     pub units: Vec<UnitDef>,
 }

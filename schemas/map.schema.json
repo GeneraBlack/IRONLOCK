@@ -1,6 +1,65 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
   "properties": {
+    "bridge_rects": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "max": {
+            "items": {
+              "type": "integer"
+            },
+            "maxItems": 2,
+            "minItems": 2,
+            "type": "array"
+          },
+          "min": {
+            "items": {
+              "type": "integer"
+            },
+            "maxItems": 2,
+            "minItems": 2,
+            "type": "array"
+          }
+        },
+        "required": [
+          "min",
+          "max"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "elevation_rects": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "max": {
+            "items": {
+              "type": "integer"
+            },
+            "maxItems": 2,
+            "minItems": 2,
+            "type": "array"
+          },
+          "min": {
+            "items": {
+              "type": "integer"
+            },
+            "maxItems": 2,
+            "minItems": 2,
+            "type": "array"
+          }
+        },
+        "required": [
+          "min",
+          "max"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
     "gem_patches": {
       "items": {
         "type": "object"
@@ -8,14 +67,46 @@
       "type": "array"
     },
     "height": {
-      "minimum": 16,
+      "minimum": 1,
       "type": "integer"
     },
     "id": {
       "type": "string"
     },
+    "mission_objective": {
+      "type": "string"
+    },
     "name": {
       "type": "string"
+    },
+    "obstacles": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "max": {
+            "items": {
+              "type": "integer"
+            },
+            "maxItems": 2,
+            "minItems": 2,
+            "type": "array"
+          },
+          "min": {
+            "items": {
+              "type": "integer"
+            },
+            "maxItems": 2,
+            "minItems": 2,
+            "type": "array"
+          }
+        },
+        "required": [
+          "min",
+          "max"
+        ],
+        "type": "object"
+      },
+      "type": "array"
     },
     "ore_patches": {
       "items": {
@@ -25,6 +116,47 @@
     },
     "ore_regen_per_sec": {
       "type": "number"
+    },
+    "preplaced_entities": {
+      "items": {
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "props": {
+      "items": {
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "ramp_rects": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "max": {
+            "items": {
+              "type": "integer"
+            },
+            "maxItems": 2,
+            "minItems": 2,
+            "type": "array"
+          },
+          "min": {
+            "items": {
+              "type": "integer"
+            },
+            "maxItems": 2,
+            "minItems": 2,
+            "type": "array"
+          }
+        },
+        "required": [
+          "min",
+          "max"
+        ],
+        "type": "object"
+      },
+      "type": "array"
     },
     "spawns": {
       "items": {
@@ -41,8 +173,37 @@
       },
       "type": "array"
     },
+    "water_rects": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "max": {
+            "items": {
+              "type": "integer"
+            },
+            "maxItems": 2,
+            "minItems": 2,
+            "type": "array"
+          },
+          "min": {
+            "items": {
+              "type": "integer"
+            },
+            "maxItems": 2,
+            "minItems": 2,
+            "type": "array"
+          }
+        },
+        "required": [
+          "min",
+          "max"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
     "width": {
-      "minimum": 16,
+      "minimum": 1,
       "type": "integer"
     }
   },

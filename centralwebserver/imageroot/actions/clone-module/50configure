@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import re
 import sys
 import agent
 import agent.tasks
@@ -8,7 +9,40 @@ import agent.tasks
 agent.run_helper("podman", "volume", "create", "--ignore", "rust-rts-data")
 agent.run_helper("systemctl", "--user", "daemon-reload")
 
+module_id = os.environ["MODULE_ID"]
+node_id = os.environ.get("NODE_ID", "1")
+if not str(node_id).isdigit():
+    node_id = "1"
+
+# Allocate a non-colliding 40-port relay range for the cloned module instance
+match = re.search(r"(\d+)$", module_id)
+instance_num = max(1, int(match.group(1))) if match else 2
+relay_port_start = 30100 + (instance_num - 1) * 40
+relay_port_end = relay_port_start + 39
+agent.set_env("RELAY_PORT_START", str(relay_port_start))
+agent.set_env("RELAY_PORT_END", str(relay_port_end))
+
+# Prevent cloned instance from hijacking the source instance's active Traefik FQDN route
 host = (os.environ.get("TRAEFIK_HOST") or os.environ.get("HOST") or "").strip()
+route_conflict = False
+if host and hasattr(agent, "http_route_in_use"):
+    try:
+        route_conflict = bool(agent.http_route_in_use(domain=host))
+    except Exception:
+        route_conflict = True
+elif host:
+    route_conflict = True
+
+if route_conflict:
+    host = ""
+    agent.set_env("TRAEFIK_HOST", "")
+    agent.set_env("HOST", "")
+    agent.set_env("TRAEFIK_LETS_ENCRYPT", "False")
+    agent.set_env("LETS_ENCRYPT", "False")
+
+# CRITICAL: Flush updated clone environment before starting services
+agent.dump_env()
+
 if host:
     default_traefik_id = agent.resolve_agent_id("traefik@node")
     if default_traefik_id is None:
@@ -16,13 +50,13 @@ if host:
 
     tcp_port = os.environ["TCP_PORT"]
     lets_encrypt = (os.environ.get("TRAEFIK_LETS_ENCRYPT") or os.environ.get("LETS_ENCRYPT") or "False") == "True"
-    http2https = (os.environ.get("TRAEFIK_HTTP2HTTPS") or os.environ.get("HTTP2HTTPS") or "True") == "True"
+    http2https = (os.environ.get("TRAEFIK_HTTP2HTTPS") or os.environ.get("HTTP2HTTPS") or "False") == "True"
 
     response = agent.tasks.run(
         agent_id=default_traefik_id,
         action="set-route",
         data={
-            "instance": os.environ["MODULE_ID"],
+            "instance": module_id,
             "url": f"http://127.0.0.1:{tcp_port}",
             "host": host,
             "lets_encrypt": lets_encrypt,
@@ -30,5 +64,23 @@ if host:
         },
     )
     agent.assert_exp(response["exit_code"] == 0)
+
+    fw_service = f"{module_id}-relay"
+    fw_ports = [f"{relay_port_start}-{relay_port_end}/tcp"]
+    if hasattr(agent, "add_public_service"):
+        fw_ok = agent.add_public_service(fw_service, fw_ports)
+        agent.assert_exp(fw_ok, "Firewall relay service clone configuration failed")
+    else:
+        fw_resp = agent.tasks.run(
+            agent_id=f"node/{node_id}",
+            action="add-public-service",
+            data={
+                "service": fw_service,
+                "ports": fw_ports,
+                "replaces": [fw_service],
+            },
+        )
+        agent.assert_exp(fw_resp["exit_code"] == 0)
+
     agent.run_helper("systemctl", "--user", "enable", "rust-rts.service")
     agent.run_helper("systemctl", "--user", "restart", "rust-rts.service")

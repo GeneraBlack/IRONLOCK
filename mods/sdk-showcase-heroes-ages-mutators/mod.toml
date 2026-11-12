@@ -1,0 +1,125 @@
+id = "sdk-showcase-heroes-ages-mutators"
+name = "Aetherion: Heroes, Ages & Relics (SDK Showcase #2)"
+version = "0.1.0"
+authors = ["Rust RTS Engine Team"]
+description = "Genre-agnostic SDK Showcase #2 demonstrating BAR streaming economy, 3-age progression, WC3-style levelable hero with mana & 6-slot inventory relics, free ArmorTag x WarheadTag matrix, SC2 bottom command card HUD, data-driven VFX, AI Behavior Trees, and Multi-Zone Control-Point ticket bleed."
+engine_version = "0.1.0"
+default_hud_layout = "modern_bottom_command_card"
+entry_map = "maps/citadel_crossroads.toml"
+scripts = ["scripts/hero_rules.rhai"]
+
+[catalogs]
+factions = "factions/factions.toml"
+weapons = "weapons/weapons.toml"
+buildings = "buildings/buildings.toml"
+units = "units/units.toml"
+vfx = "vfx/vfx.toml"
+items = "items/items.toml"
+
+[rules]
+economy_model = "streaming"
+fog_of_war = true
+crates_enabled = false
+superweapons_enabled = true
+construction_yard_build_radius = 22.0
+adjacent_build_radius = 12.0
+ore_value = 35
+gem_value = 70
+free_harvester_on_refinery = true
+
+[rules.free_unit_by_faction]
+solar_order = "crystal_harvester"
+obsidian_pact = "crystal_harvester"
+
+# ------------------------------------------------------------------------------
+# Age / Era Progression Chain (Age I -> Age II -> Age III)
+# ------------------------------------------------------------------------------
+[[rules.eras]]
+id = "age_1"
+display_name_key = "era.age_1.name"
+order = 1
+cost = 0
+research_time_secs = 0.0
+unlocks_tech_tier = 1
+
+[[rules.eras]]
+id = "age_2"
+display_name_key = "era.age_2.name"
+order = 2
+cost = 400
+research_time_secs = 8.0
+prerequisite_buildings = ["vanguard_barracks", "arcane_smithy"]
+unlocks_tech_tier = 2
+
+[rules.eras.resource_costs]
+aether = 150
+
+[[rules.eras]]
+id = "age_3"
+display_name_key = "era.age_3.name"
+order = 3
+cost = 800
+research_time_secs = 12.0
+prerequisite_buildings = ["grand_archive"]
+prerequisite_upgrades = ["advance_age_2"]
+unlocks_tech_tier = 3
+
+[rules.eras.resource_costs]
+aether = 350
+relic_flux = 50
+
+# ------------------------------------------------------------------------------
+# Custom Free-Form WarheadTag x ArmorTag Damage Matrix
+# ------------------------------------------------------------------------------
+[rules.damage_matrix.warhead_vs_armor.sunlance_pierce]
+warded_plate = 1.35
+runic_medium = 1.05
+heroic_aegis = 0.85
+titan_hull = 0.65
+citadel_masonry = 0.45
+
+[rules.damage_matrix.warhead_vs_armor.pyre_breath]
+warded_plate = 1.55
+runic_medium = 1.15
+heroic_aegis = 0.90
+titan_hull = 0.60
+citadel_masonry = 1.15
+
+[rules.damage_matrix.warhead_vs_armor.aether_seeker]
+warded_plate = 0.90
+runic_medium = 1.25
+heroic_aegis = 1.05
+titan_hull = 1.45
+citadel_masonry = 0.85
+
+[rules.damage_matrix.warhead_vs_armor.prism_lance_beam]
+warded_plate = 1.10
+runic_medium = 1.20
+heroic_aegis = 1.15
+titan_hull = 1.50
+citadel_masonry = 1.10
+
+[rules.damage_matrix.warhead_vs_armor.meteor_siege]
+warded_plate = 1.15
+runic_medium = 1.25
+heroic_aegis = 0.80
+titan_hull = 1.35
+citadel_masonry = 1.75
+
+[rules.damage_matrix.warhead_vs_armor.archon_blade]
+warded_plate = 1.25
+runic_medium = 1.20
+heroic_aegis = 1.10
+titan_hull = 1.15
+citadel_masonry = 0.95
+
+# ------------------------------------------------------------------------------
+# Multi-Zone Control-Point & Ticket-Bleed Victory Rules
+# ------------------------------------------------------------------------------
+[rules.gamemode]
+annihilation_enabled = true
+multi_capture_points = true
+victory_ticket_bleed = true
+initial_tickets = 300
+ticket_bleed_per_sec = 5.0
+capture_zones_to_bleed = 2

@@ -1,35 +1,181 @@
 id = "yr_allied_04_tomb_raided"
-name = "YR Allied 04: Tomb Raided (Egypt)"
+name = "YR Op. 04: Tomb Raided (Egypt)"
 width = 96
 height = 82
 tile_size = 2.0
 ore_regen_per_sec = 4.0
-mission_objective = "Yuri has captured Einstein in an attempt to expedite the completion of his Psychic Dominator Technology. It is imperative we rescue Einstein immediately and then rid Egypt of all Yuri forces. \n \n Objective 1: Destroy Bio Reactors around Great Pyramid to rescue Einstein. \n Objective 2: Destroy Yuri's Base."
+mission_objective = "Send Tanya to the Great Pyramid of Giza to free Professor Einstein and obliterate Yuri's Nile stronghold."
 
 [[ore_patches]]
-position = [49, 64]
+position = [33, 62]
 radius = 3
-amount_per_tile = 1400
+amount_per_tile = 1600
 
 [[ore_patches]]
-position = [69, 26]
+position = [66, 16]
 radius = 3
-amount_per_tile = 1400
+amount_per_tile = 1550
 
-[[ore_patches]]
+[[gem_patches]]
 position = [48, 41]
-radius = 4
-amount_per_tile = 2000
+radius = 2
+amount_per_tile = 2500
 
-[[ore_patches]]
-position = [41, 54]
-radius = 3
-amount_per_tile = 1500
+[[water_rects]]
+min = [4, 30]
+max = [91, 33]
 
-[[ore_patches]]
-position = [61, 18]
-radius = 3
-amount_per_tile = 1500
+[[bridge_rects]]
+min = [26, 29]
+max = [28, 34]
+
+[[bridge_rects]]
+min = [68, 29]
+max = [70, 34]
+
+[[elevation_rects]]
+min = [51, 34]
+max = [57, 36]
+
+[[ramp_rects]]
+min = [50, 34]
+max = [51, 36]
+
+[[ramp_rects]]
+min = [57, 34]
+max = [58, 36]
+
+[[obstacles]]
+min = [47, 23]
+max = [48, 24]
+
+[[obstacles]]
+min = [38, 25]
+max = [39, 26]
+
+[[obstacles]]
+min = [44, 29]
+max = [45, 29]
+
+[[obstacles]]
+min = [41, 41]
+max = [42, 42]
+
+[[obstacles]]
+min = [39, 57]
+max = [40, 58]
+
+[[props]]
+kind = "tree"
+tile_pos = [41, 74]
+
+[[props]]
+kind = "tree"
+tile_pos = [26, 55]
+
+[[props]]
+kind = "tree"
+tile_pos = [46, 56]
+
+[[props]]
+kind = "tree"
+tile_pos = [80, 36]
+
+[[props]]
+kind = "tree"
+tile_pos = [19, 47]
+
+[[props]]
+kind = "tree"
+tile_pos = [55, 34]
+
+[[props]]
+kind = "tree"
+tile_pos = [52, 29]
+
+[[props]]
+kind = "tree"
+tile_pos = [12, 55]
+
+[[props]]
+kind = "tree"
+tile_pos = [66, 59]
+
+[[props]]
+kind = "tree"
+tile_pos = [72, 54]
+
+[[props]]
+kind = "tree"
+tile_pos = [78, 24]
+
+[[props]]
+kind = "tree"
+tile_pos = [64, 36]
+
+[[props]]
+kind = "tree"
+tile_pos = [34, 66]
+
+[[props]]
+kind = "tree"
+tile_pos = [58, 59]
+
+[[props]]
+kind = "tree"
+tile_pos = [49, 63]
+
+[[props]]
+kind = "tree"
+tile_pos = [60, 58]
+
+[[props]]
+kind = "tree"
+tile_pos = [64, 50]
+
+[[props]]
+kind = "tree"
+tile_pos = [69, 10]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [40, 25]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [49, 23]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [46, 29]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [45, 44]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [41, 57]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [66, 9]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [57, 11]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [52, 12]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [61, 14]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [54, 19]
 
 [[preplaced_entities]]
 player_id = 2
@@ -37,27 +183,27 @@ building_id = "yuri_conyard"
 tile_pos = [72, 14]
 
 [[preplaced_entities]]
-player_id = 2
+player_id = 0
 building_id = "tech_oil_derrick"
-tile_pos = [81, 33]
+tile_pos = [80, 34]
 
 [[preplaced_entities]]
-player_id = 2
+player_id = 0
 building_id = "tech_oil_derrick"
 tile_pos = [80, 40]
 
 [[preplaced_entities]]
-player_id = 2
+player_id = 0
 building_id = "tech_oil_derrick"
-tile_pos = [89, 33]
+tile_pos = [88, 34]
 
 [[preplaced_entities]]
-player_id = 2
+player_id = 0
 building_id = "tech_oil_derrick"
 tile_pos = [84, 37]
 
 [[preplaced_entities]]
-player_id = 2
+player_id = 0
 building_id = "tech_oil_derrick"
 tile_pos = [86, 35]
 
@@ -84,7 +230,7 @@ tile_pos = [35, 39]
 [[preplaced_entities]]
 player_id = 2
 building_id = "yuri_gatling_cannon"
-tile_pos = [48, 39]
+tile_pos = [49, 38]
 
 [[preplaced_entities]]
 player_id = 2
@@ -99,12 +245,12 @@ tile_pos = [48, 35]
 [[preplaced_entities]]
 player_id = 2
 building_id = "yuri_bio_reactor"
-tile_pos = [46, 36]
+tile_pos = [45, 35]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "yuri_bio_reactor"
-tile_pos = [46, 37]
+tile_pos = [45, 37]
 
 [[preplaced_entities]]
 player_id = 2
@@ -114,7 +260,7 @@ tile_pos = [37, 36]
 [[preplaced_entities]]
 player_id = 2
 building_id = "yuri_bio_reactor"
-tile_pos = [37, 37]
+tile_pos = [36, 38]
 
 [[preplaced_entities]]
 player_id = 2
@@ -231,121 +377,204 @@ player_id = 2
 unit_id = "yuri_initiate"
 tile_pos = [66, 22]
 
+[[preplaced_entities]]
+player_id = 0
+building_id = "great_pyramid"
+tile_pos = [47, 39]
+
+[[preplaced_entities]]
+player_id = 1
+unit_id = "tanya"
+tile_pos = [26, 57]
+tag = "tanya"
+
+[[objectives]]
+id = "obj_primary_main"
+tier = "primary"
+title = "Send Tanya to the Great Pyramid of Giza to free Professor Einstein and obliterate Yur..."
+marker_tile = [72, 16]
+
+[[objectives]]
+id = "obj_vip_tanya"
+tier = "primary"
+title = "Keep Agent Tanya Alive Throughout the Operation"
+marker_tile = [26, 57]
+
+[[objectives]]
+id = "obj_bonus_tech"
+tier = "bonus"
+title = "Capture Neutral Tech Oil Derrick with an Engineer"
+marker_tile = [80, 34]
+
+[[cutscenes]]
+id = "intro_flyover"
+skippable = true
+letterbox = true
+
+[[cutscenes.keyframes]]
+time_secs = 0.0
+focus = [145.0, 0.0, 33.0]
+distance = 46.0
+pitch_deg = 52.0
+yaw_deg = -22.0
+
+[[cutscenes.keyframes]]
+time_secs = 2.2
+focus = [99.0, 0.0, 73.0]
+distance = 42.0
+pitch_deg = 55.0
+yaw_deg = -10.0
+
+[[cutscenes.keyframes]]
+time_secs = 4.5
+focus = [53.0, 0.0, 115.0]
+distance = 36.0
+pitch_deg = 58.0
+yaw_deg = 0.0
+
 [[spawns]]
 player_id = 1
 faction = "allies"
-base_tile = [41, 64]
+sub_faction = "great_britain"
+base_tile = [24, 64]
+team_id = 1
 
 [[spawns.initial_buildings]]
 building_id = "allied_conyard"
-tile_pos = [41, 64]
+tile_pos = [24, 64]
 
 [[spawns.initial_buildings]]
 building_id = "allied_power_plant"
-tile_pos = [44, 64]
+tile_pos = [21, 64]
 
 [[spawns.initial_buildings]]
 building_id = "allied_refinery"
-tile_pos = [41, 61]
+tile_pos = [28, 64]
 
 [[spawns.initial_buildings]]
 building_id = "allied_barracks"
-tile_pos = [44, 61]
+tile_pos = [24, 60]
 
 [[spawns.initial_buildings]]
 building_id = "allied_war_factory"
-tile_pos = [47, 64]
-
-[[spawns.initial_units]]
-unit_id = "allied_gi"
-tile_pos = [43, 59]
-
-[[spawns.initial_units]]
-unit_id = "allied_gi"
-tile_pos = [45, 59]
-
-[[spawns.initial_units]]
-unit_id = "grizzly_tank"
-tile_pos = [47, 60]
+tile_pos = [28, 60]
 
 [[spawns.initial_units]]
 unit_id = "chrono_miner"
-tile_pos = [43, 60]
+tile_pos = [30, 63]
+
+[[spawns.initial_units]]
+unit_id = "guardian_gi"
+tile_pos = [24, 58]
+
+[[spawns.initial_units]]
+unit_id = "guardian_gi"
+tile_pos = [26, 58]
+
+[[spawns.initial_units]]
+unit_id = "grizzly_tank"
+tile_pos = [28, 58]
+
+[[spawns.initial_units]]
+unit_id = "prism_tank"
+tile_pos = [30, 58]
+
+[[spawns.initial_units]]
+unit_id = "battle_fortress"
+tile_pos = [24, 57]
 
 [[spawns]]
 player_id = 2
 faction = "yuri"
-base_tile = [77, 26]
-
-[[spawns.initial_buildings]]
-building_id = "yuri_conyard"
-tile_pos = [77, 26]
-
-[[spawns.initial_buildings]]
-building_id = "yuri_bio_reactor"
-tile_pos = [74, 26]
-
-[[spawns.initial_buildings]]
-building_id = "yuri_slave_refinery"
-tile_pos = [77, 29]
-
-[[spawns.initial_buildings]]
-building_id = "yuri_barracks"
-tile_pos = [74, 29]
-
-[[spawns.initial_buildings]]
-building_id = "yuri_war_factory"
-tile_pos = [71, 26]
-
-[[spawns.initial_units]]
-unit_id = "yuri_initiate"
-tile_pos = [75, 31]
-
-[[spawns.initial_units]]
-unit_id = "yuri_initiate"
-tile_pos = [73, 31]
-
-[[spawns.initial_units]]
-unit_id = "lasher_tank"
-tile_pos = [71, 30]
-
-[[spawns.initial_units]]
-unit_id = "yuri_slave_miner"
-tile_pos = [75, 30]
+sub_faction = "yuri"
+base_tile = [72, 16]
+team_id = 2
 
 [[trigger_zones]]
-id = "mission_stage_init"
-min = [6, 6]
-max = [12, 12]
+id = "yr_allied_04_tomb_raided_init"
+min = [0, 0]
+max = [3, 3]
 once = true
 condition = { type = "timer_elapsed", secs = 1.0 }
 actions = [
+    { type = "play_cutscene", cutscene_id = "intro_flyover" },
+    { type = "set_objective_status", objective_id = "obj_primary_main", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_vip_tanya", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_bonus_tech", status = "active" },
     { type = "set_variable", name = "mission_stage", value = 1 },
-    { type = "eva_transmission", speaker = "EVA", text = "Battle Control Online. Primary tactical objectives initialized." },
-    { type = "reveal_area", tile = [41, 64], radius = 14 }
+    { type = "reveal_area", tile = [72, 16], radius = 9 },
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Send Tanya to the Great Pyramid of Giza to free Professor Einstein and obliterate Yuri's Nile stronghold.", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "battle_control_online" },
 ]
 
 [[trigger_zones]]
-id = "tactical_reinforcement_wave"
-min = [40, 62]
-max = [44, 66]
+id = "einstein_pyramid_rescue"
+min = [44, 36]
+max = [53, 45]
 once = true
-condition = { type = "all", conditions = [{ type = "timer_elapsed", secs = 45.0 }, { type = "variable_equals", name = "mission_stage", value = 1 }] }
+condition = { type = "entered_zone", player_id = 1 }
 actions = [
-    { type = "set_variable", name = "mission_stage", value = 2 },
-    { type = "spawn_reinforcements", player_id = 1, unit_id = "tanya", count = 1, tile = [40, 62] },
-    { type = "grant_credits", player_id = 1, amount = 1500 },
-    { type = "eva_transmission", speaker = "EVA", text = "Reinforcements have arrived. Forward command has authorized 1500 bonus credits." }
+    { type = "play_radar_video", video_path = "assets/videos/radar_pip/yr_allied_04_pip_03.mp4" },
+    { type = "set_variable", name = "einstein_rescued", value = 1 },
+    { type = "grant_credits", player_id = 1, amount = 2500 },
+    { type = "spawn_reinforcements", player_id = 1, unit_id = "prism_tank", count = 3, tile = [45, 44] },
+    { type = "eva_transmission", speaker = "PROF. EINSTEIN", text = "Ach, thank you Agent Tanya! Take my Prism Tank prototypes and flatten Yuri's Giza base!", portrait = "assets/ui/cameos/einstein_lab.png", audio_cue = "battle_control_online", radar_video = "assets/videos/radar_pip/yr_allied_04_pip_03.mp4" },
 ]
 
 [[trigger_zones]]
-id = "decisive_campaign_victory"
-min = [2, 2]
-max = [6, 6]
+id = "yr_allied_04_tomb_raided_protect_lost"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "building_destroyed", building_id = "great_pyramid" }
+actions = [
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Critical landmark destroyed! Mission failed.", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "unit_lost" },
+    { type = "declare_winner", player_id = 2 },
+]
+
+[[trigger_zones]]
+id = "yr_allied_04_tomb_raided_victory"
+min = [0, 0]
+max = [3, 3]
 once = true
 condition = { type = "all_buildings_destroyed", player_id = 2 }
 actions = [
+    { type = "set_objective_status", objective_id = "obj_primary_main", status = "completed" },
+    { type = "set_objective_status", objective_id = "obj_vip_tanya", status = "completed" },
     { type = "set_variable", name = "mission_stage", value = 3 },
-    { type = "eva_transmission", speaker = "EVA", text = "Mission Accomplished. All primary hostile command structures neutralized." },
-    { type = "declare_winner", player_id = 1 }
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Yuri's forces in this sector have been completely eradicated! Victory is ours!", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "primary_objective_achieved" },
+    { type = "declare_winner", player_id = 1 },
+]
+
+[[trigger_zones]]
+id = "p22_vip_tanya_lost"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "tagged_entity_destroyed", tag = "tanya" }
+actions = [
+    { type = "set_objective_status", objective_id = "obj_vip_tanya", status = "failed" },
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Agent Tanya has fallen in combat!", portrait = "assets/ui/cameos/tanyicon.png", audio_cue = "unit_lost" },
+    { type = "declare_winner", player_id = 2 },
+]
+
+[[trigger_zones]]
+id = "p22_bonus_tech_captured"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "building_captured", building_id = "tech_oil_derrick", by_player_id = 1 }
+actions = [
+    { type = "set_objective_status", objective_id = "obj_bonus_tech", status = "completed" },
+    { type = "grant_credits", player_id = 1, amount = 750 },
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Bonus objective achieved: Neutral tech structure secured!", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "building_captured" },
+]
+
+[[trigger_zones]]
+id = "p22_periodic_skirmish_wave"
+min = [0, 0]
+max = [3, 3]
+once = false
+condition = { type = "periodic_timer", start_secs = 75, interval_secs = 75, max_repeats = 3 }
+actions = [
+    { type = "spawn_reinforcements", player_id = 2, unit_id = "yuri_initiate", count = 3, tile = [73, 18] },
 ]

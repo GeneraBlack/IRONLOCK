@@ -19,7 +19,7 @@ if not cur_node_id.isdigit():
     agent.dump_env()
 
 host = os.getenv("TRAEFIK_HOST") or os.getenv("HOST") or ""
-http2https_raw = os.getenv("TRAEFIK_HTTP2HTTPS") or os.getenv("HTTP2HTTPS") or "True"
+http2https_raw = os.getenv("TRAEFIK_HTTP2HTTPS") or os.getenv("HTTP2HTTPS") or "False"
 lets_encrypt_raw = os.getenv("TRAEFIK_LETS_ENCRYPT") or os.getenv("LETS_ENCRYPT") or "False"
 rts_node_id = os.getenv("RTS_NODE_ID") or "bls-isp-eu-central-01"
 

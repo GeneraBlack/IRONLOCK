@@ -1,0 +1,13 @@
+[[factions]]
+id = "frontier_corps"
+name = "Frontier Pioneer Corps"
+color = [0.22, 0.56, 0.88]
+starting_credits = 5000
+description = "Expeditionary engineering force utilizing mobile combat dozers, multi-resource logistics, and disciplined 6-man rifle squads."
+
+[[factions]]
+id = "iron_syndicate"
+name = "Iron Syndicate"
+color = [0.84, 0.28, 0.22]
+starting_credits = 5000
+description = "Industrialized combined-arms coalition leveraging alloy foundries, mortar halftracks, and fortified bunkers."

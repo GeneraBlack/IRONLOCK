@@ -1,0 +1,134 @@
+# ==============================================================================
+# IRONLOCK SDK SHOWCASE: AUTOMATED WORKER, MULTI-RESOURCE & SQUADS 2.0 SUITE
+# ==============================================================================
+
+# 1. DOZER WORKER CONSTRUCTION & MULTI-RESOURCE ECONOMY SCENARIO
+[[scenarios]]
+name = "dozer_worker_construction_and_economy_test"
+map_id = "timberline_valley"
+ticks = 180
+clear_initial_entities = true
+
+[[scenarios.spawns]]
+player_id = 1
+building_id = "command_hq"
+tile = [8, 8]
+
+[[scenarios.spawns]]
+player_id = 1
+unit_id = "combat_dozer"
+tile = [12, 12]
+tag = "dozer1"
+
+[[scenarios.spawns]]
+player_id = 1
+unit_id = "multi_harvester"
+tile = [16, 10]
+
+[[scenarios.commands]]
+tick = 2
+command = "worker_build @dozer1 field_barracks 13 12 1"
+
+[[scenarios.assertions]]
+kind = "ai_built_building_role"
+player_id = 1
+role = "barracks"
+min_count = 1
+
+[[scenarios.assertions]]
+kind = "entity_health_fraction_above"
+tag = "dozer1"
+min_fraction = 0.95
+
+[[scenarios.assertions]]
+kind = "max_avg_tick_ms"
+max_ms = 20.0
+
+# 2. TACTICAL SQUAD PINNING UNDER HEAVY MG SUPPRESSION SCENARIO
+[[scenarios]]
+name = "tactical_squad_pinning_under_heavy_mg_fire_test"
+map_id = "timberline_valley"
+ticks = 45
+clear_initial_entities = true
+
+[[scenarios.spawns]]
+player_id = 1
+building_id = "command_hq"
+tile = [8, 8]
+
+[[scenarios.spawns]]
+player_id = 1
+unit_id = "rifle_squad"
+tile = [24, 16]
+tag = "pinned_squad"
+
+[[scenarios.spawns]]
+player_id = 2
+building_id = "command_hq"
+tile = [28, 22]
+
+[[scenarios.spawns]]
+player_id = 2
+building_id = "mg_bunker"
+tile = [24, 20]
+
+[[scenarios.assertions]]
+kind = "squad_pinned"
+player_id = 1
+expected = true
+
+[[scenarios.assertions]]
+kind = "entity_health_fraction_above"
+tag = "pinned_squad"
+min_fraction = 0.15
+
+# 3. TACTICAL SQUAD WEAPON UPGRADE, RETREAT SPRINT & SUPPRESSION IMMUNITY SCENARIO
+[[scenarios]]
+name = "tactical_squad_retreat_immunity_and_weapon_upgrade_test"
+map_id = "timberline_valley"
+ticks = 95
+clear_initial_entities = true
+
+[[scenarios.spawns]]
+player_id = 1
+building_id = "command_hq"
+tile = [8, 8]
+
+[[scenarios.spawns]]
+player_id = 1
+building_id = "field_barracks"
+tile = [12, 8]
+
+[[scenarios.spawns]]
+player_id = 1
+unit_id = "rifle_squad"
+tile = [20, 14]
+tag = "alpha_squad"
+
+[[scenarios.spawns]]
+player_id = 2
+building_id = "command_hq"
+tile = [26, 20]
+
+[[scenarios.spawns]]
+player_id = 2
+building_id = "mg_bunker"
+tile = [20, 18]
+
+[[scenarios.commands]]
+tick = 2
+command = "upgrade_squad @alpha_squad squad_lmg"
+
+[[scenarios.commands]]
+tick = 32
+command = "retreat_squad @alpha_squad"
+
+[[scenarios.assertions]]
+kind = "squad_pinned"
+player_id = 1
+expected = false
+
+[[scenarios.assertions]]
+kind = "entity_health_fraction_above"
+tag = "alpha_squad"
+min_fraction = 0.25

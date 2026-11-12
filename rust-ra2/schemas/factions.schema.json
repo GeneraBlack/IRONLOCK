@@ -1,0 +1,226 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "FactionDef": {
+      "properties": {
+        "campaign_loading_screens": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "color": {
+          "items": {
+            "format": "float",
+            "type": "number"
+          },
+          "maxItems": 3,
+          "minItems": 3,
+          "type": "array"
+        },
+        "description": {
+          "default": "",
+          "type": "string"
+        },
+        "hud_skin": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/FactionHudSkinDef"
+            }
+          ],
+          "default": {
+            "addon_panel": null,
+            "cameo_footer_frame": null,
+            "cameo_row_frame": null,
+            "credits_panel": null,
+            "dialog_background": null,
+            "diplomacy_button": null,
+            "options_button": null,
+            "power_bar_icon": null,
+            "radar_frame": null,
+            "repair_button": null,
+            "sell_button": null,
+            "side_header": null,
+            "tab_icons": [],
+            "top_panel": null
+          }
+        },
+        "id": {
+          "type": "string"
+        },
+        "loading_screen": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "name": {
+          "type": "string"
+        },
+        "starting_credits": {
+          "format": "uint32",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "sub_factions": {
+          "default": [],
+          "items": {
+            "$ref": "#/definitions/SubFactionDef"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "color",
+        "id",
+        "name",
+        "starting_credits"
+      ],
+      "type": "object"
+    },
+    "FactionHudSkinDef": {
+      "properties": {
+        "addon_panel": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "cameo_footer_frame": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "cameo_row_frame": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "credits_panel": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "dialog_background": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "diplomacy_button": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "options_button": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "power_bar_icon": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "radar_frame": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "repair_button": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "sell_button": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "side_header": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "tab_icons": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "top_panel": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "type": "object"
+    },
+    "SubFactionDef": {
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "loading_screen": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "name": {
+          "type": "string"
+        },
+        "specialty": {
+          "default": "",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ],
+      "type": "object"
+    }
+  },
+  "properties": {
+    "factions": {
+      "items": {
+        "$ref": "#/definitions/FactionDef"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "factions"
+  ],
+  "title": "FactionCatalog",
+  "type": "object"
+}

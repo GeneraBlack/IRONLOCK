@@ -1,394 +1,340 @@
 mod buildings;
+mod buildings_support;
 mod components;
+mod gltf_writer;
 mod infantry;
+mod infantry_rig;
+mod infantry_specialists;
+#[cfg(test)]
+mod mesh_tests;
 mod primitives;
+mod primitives_organic;
+pub mod props;
+mod props_urban;
+mod rig_splitter;
 mod units;
+mod units_air_naval;
+
+pub use props::{build_prop_glb_bytes, generate_prop_library, PropKind};
 
 use anyhow::{Context, Result};
+use buildings::{build_building_state_rig, compute_building_sockets};
+use gltf_writer::{
+    append_batches_to_gltf_buffers, assemble_glb_binary, select_faction_emissive_color,
+};
 use primitives::GeometryBatch;
+use rig_splitter::{
+    build_infantry_gltf_scene, is_articulated_infantry_model, is_building_archetype,
+    split_hull_turret_barrel_and_rotor_batches,
+};
 use rts_sdk::loader::LoadedMod;
 use rts_sdk::schema::{VisualArchetype, VisualDef};
 use serde_json::json;
 use std::fs;
 use std::path::{Path, PathBuf};
-use units::populate_archetype_batches;
+use units::{compute_unit_sockets, populate_archetype_batches};
 
-fn split_hull_turret_and_rotor_batches(
-    name: &str,
-    archetype: VisualArchetype,
-    scale: [f32; 3],
-    batches: &[GeometryBatch; 6],
-) -> ([GeometryBatch; 6], [GeometryBatch; 6], [GeometryBatch; 6]) {
-    let mut hull = [
-        GeometryBatch::new(),
-        GeometryBatch::new(),
-        GeometryBatch::new(),
-        GeometryBatch::new(),
-        GeometryBatch::new(),
-        GeometryBatch::new(),
-    ];
-    let mut turret = [
-        GeometryBatch::new(),
-        GeometryBatch::new(),
-        GeometryBatch::new(),
-        GeometryBatch::new(),
-        GeometryBatch::new(),
-        GeometryBatch::new(),
-    ];
-    let mut rotor = [
-        GeometryBatch::new(),
-        GeometryBatch::new(),
-        GeometryBatch::new(),
-        GeometryBatch::new(),
-        GeometryBatch::new(),
-        GeometryBatch::new(),
-    ];
-
-    let lower = name.to_ascii_lowercase();
-    let has_rotor = archetype == VisualArchetype::Aircraft
-        || lower.contains("chopper")
-        || lower.contains("heli")
-        || lower.contains("radar")
-        || lower.contains("sensor");
-
-    let turret_split_y = match archetype {
-        VisualArchetype::Tank => Some(0.43 * scale[1]),
-        VisualArchetype::Turret => Some(0.32 * scale[1]),
-        VisualArchetype::Ship => Some(0.48 * scale[1]),
-        _ => None,
-    };
-    let rotor_split_y = if has_rotor {
-        Some(0.46 * scale[1])
-    } else {
-        None
-    };
-
-    for (mat_idx, src) in batches.iter().enumerate() {
-        if turret_split_y.is_none() && rotor_split_y.is_none() {
-            hull[mat_idx].positions = src.positions.clone();
-            hull[mat_idx].normals = src.normals.clone();
-            hull[mat_idx].colors = src.colors.clone();
-            hull[mat_idx].indices = src.indices.clone();
-            continue;
-        }
-        for tri in src.indices.chunks_exact(3) {
-            let i0 = tri[0] as usize;
-            let i1 = tri[1] as usize;
-            let i2 = tri[2] as usize;
-            let cy = (src.positions[i0][1] + src.positions[i1][1] + src.positions[i2][1]) / 3.0;
-            let dst = if let Some(ry) = rotor_split_y {
-                if cy >= ry {
-                    &mut rotor[mat_idx]
-                } else {
-                    &mut hull[mat_idx]
-                }
-            } else if let Some(ty) = turret_split_y {
-                if cy >= ty {
-                    &mut turret[mat_idx]
-                } else {
-                    &mut hull[mat_idx]
-                }
-            } else {
-                &mut hull[mat_idx]
-            };
-            let base = dst.positions.len() as u32;
-            for &vi in &[i0, i1, i2] {
-                dst.positions.push(src.positions[vi]);
-                dst.normals.push(src.normals[vi]);
-                dst.colors
-                    .push(src.colors.get(vi).copied().unwrap_or([1.0, 1.0, 1.0]));
-            }
-            dst.indices.extend_from_slice(&[base, base + 1, base + 2]);
-        }
-    }
-
-    // Ensure hull is never empty if all geometry happened to sit above split_y
-    if hull.iter().all(|b| b.positions.is_empty()) {
-        for i in 0..6 {
-            if !turret[i].positions.is_empty() {
-                std::mem::swap(&mut hull[i], &mut turret[i]);
-            } else if !rotor[i].positions.is_empty() {
-                std::mem::swap(&mut hull[i], &mut rotor[i]);
-            }
-        }
-    }
-
-    (hull, turret, rotor)
+#[derive(Debug, Clone, Copy)]
+struct SocketRigSpec {
+    muzzle_01: Option<[f32; 3]>,
+    muzzle_02: Option<[f32; 3]>,
+    exhaust_01: Option<[f32; 3]>,
+    damage_smoke_01: [f32; 3],
 }
 
-fn append_batches_to_gltf_buffers(
-    batches: &[GeometryBatch; 6],
-    bin_chunk: &mut Vec<u8>,
-    buffer_views: &mut Vec<serde_json::Value>,
-    accessors: &mut Vec<serde_json::Value>,
-) -> Vec<serde_json::Value> {
-    let mut primitives = Vec::with_capacity(6);
-
-    for (material_idx, batch) in batches.iter().enumerate() {
-        if batch.positions.is_empty() {
-            continue;
-        }
-        // Positions
-        let pos_offset = bin_chunk.len();
-        for p in &batch.positions {
-            for c in p {
-                bin_chunk.extend_from_slice(&c.to_le_bytes());
-            }
-        }
-        let pos_len = bin_chunk.len() - pos_offset;
-        let pos_view_idx = buffer_views.len();
-        buffer_views.push(json!({
-            "buffer": 0,
-            "byteOffset": pos_offset,
-            "byteLength": pos_len,
-            "target": 34962
-        }));
-        let (min, max) = batch.bounds();
-        let pos_acc_idx = accessors.len();
-        accessors.push(json!({
-            "bufferView": pos_view_idx,
-            "componentType": 5126,
-            "count": batch.positions.len(),
-            "type": "VEC3",
-            "min": min,
-            "max": max
-        }));
-
-        // Normals
-        let norm_offset = bin_chunk.len();
-        for n in &batch.normals {
-            for c in n {
-                bin_chunk.extend_from_slice(&c.to_le_bytes());
-            }
-        }
-        let norm_len = bin_chunk.len() - norm_offset;
-        let norm_view_idx = buffer_views.len();
-        buffer_views.push(json!({
-            "buffer": 0,
-            "byteOffset": norm_offset,
-            "byteLength": norm_len,
-            "target": 34962
-        }));
-        let norm_acc_idx = accessors.len();
-        accessors.push(json!({
-            "bufferView": norm_view_idx,
-            "componentType": 5126,
-            "count": batch.normals.len(),
-            "type": "VEC3"
-        }));
-
-        // Vertex Colors (COLOR_0 VEC4 combining per-vertex RGB with vertical ambient-occlusion shading)
-        let col_offset = bin_chunk.len();
-        let y_span = (max[1] - min[1]).max(0.1);
-        for (vi, p) in batch.positions.iter().enumerate() {
-            let h_t = ((p[1] - min[1]) / y_span).clamp(0.0, 1.0);
-            let ao = 0.84 + 0.16 * h_t;
-            let vcol = batch.colors.get(vi).copied().unwrap_or([1.0, 1.0, 1.0]);
-            for c in [vcol[0] * ao, vcol[1] * ao, vcol[2] * ao, 1.0f32] {
-                bin_chunk.extend_from_slice(&c.to_le_bytes());
-            }
-        }
-        let col_len = bin_chunk.len() - col_offset;
-        let col_view_idx = buffer_views.len();
-        buffer_views.push(json!({
-            "buffer": 0,
-            "byteOffset": col_offset,
-            "byteLength": col_len,
-            "target": 34962
-        }));
-        let col_acc_idx = accessors.len();
-        accessors.push(json!({
-            "bufferView": col_view_idx,
-            "componentType": 5126,
-            "count": batch.positions.len(),
-            "type": "VEC4"
-        }));
-
-        // Indices (u32)
-        let idx_offset = bin_chunk.len();
-        for idx in &batch.indices {
-            bin_chunk.extend_from_slice(&idx.to_le_bytes());
-        }
-        let idx_len = bin_chunk.len() - idx_offset;
-        while !bin_chunk.len().is_multiple_of(4) {
-            bin_chunk.push(0);
-        }
-        let idx_view_idx = buffer_views.len();
-        buffer_views.push(json!({
-            "buffer": 0,
-            "byteOffset": idx_offset,
-            "byteLength": idx_len,
-            "target": 34963
-        }));
-        let idx_acc_idx = accessors.len();
-        accessors.push(json!({
-            "bufferView": idx_view_idx,
-            "componentType": 5125,
-            "count": batch.indices.len(),
-            "type": "SCALAR"
-        }));
-
-        primitives.push(json!({
-            "attributes": {
-                "POSITION": pos_acc_idx,
-                "NORMAL": norm_acc_idx,
-                "COLOR_0": col_acc_idx
-            },
-            "indices": idx_acc_idx,
-            "material": material_idx
-        }));
-    }
-
-    primitives
-}
-
-/// Selects the appropriate faction/technology emissive glow color for a unit or building.
-fn select_faction_emissive_color(name: &str, primary_rgb: [f32; 3]) -> [f32; 3] {
-    let [r, _g, b] = primary_rgb;
-    let lower = name.to_ascii_lowercase();
-    if lower.contains("nanrct")
-        || lower.contains("naapwr")
-        || lower.contains("nuclear")
-        || lower.contains("deso")
-        || lower.contains("virus")
-        || lower.contains("vrus")
-        || lower.contains("naclon")
-        || lower.contains("dtruck")
-    {
-        [0.25, 1.0, 0.22] // Toxic / Nuclear Green
-    } else if lower.contains("yuri")
-        || lower.contains("psi")
-        || lower.contains("init")
-        || lower.contains("brute")
-    {
-        [0.92, 0.22, 1.0] // Psychic Magenta
-    } else if lower.contains("harv") || lower.contains("orep") {
-        [0.98, 0.76, 0.14] // Golden Ore
-    } else if r > b && !lower.contains("tesla") && !lower.contains("ttnk") && !lower.contains("shk") {
-        [1.0, 0.32, 0.12] // Soviet Crimson/Orange
-    } else {
-        [0.22, 0.88, 1.0] // Allied Chrono/Prism/Tesla Cyan
-    }
-}
-
-/// Packs the glTF JSON document and binary geometry buffer into a spec-compliant GLB 2.0 binary container.
-fn assemble_glb_binary(gltf_json: &serde_json::Value, bin_chunk: &[u8]) -> Result<Vec<u8>> {
-    let mut json_bytes = serde_json::to_vec(gltf_json)?;
-    while !json_bytes.len().is_multiple_of(4) {
-        json_bytes.push(0x20);
-    }
-
-    let total_len = 12 + 8 + json_bytes.len() + 8 + bin_chunk.len();
-    let mut out = Vec::with_capacity(total_len);
-
-    // GLB Header
-    out.extend_from_slice(&0x46546C67u32.to_le_bytes()); // "glTF"
-    out.extend_from_slice(&2u32.to_le_bytes()); // version 2
-    out.extend_from_slice(&(total_len as u32).to_le_bytes());
-
-    // Chunk 0: JSON
-    out.extend_from_slice(&(json_bytes.len() as u32).to_le_bytes());
-    out.extend_from_slice(&0x4E4F534Au32.to_le_bytes()); // "JSON"
-    out.extend_from_slice(&json_bytes);
-
-    // Chunk 1: BIN
-    out.extend_from_slice(&(bin_chunk.len() as u32).to_le_bytes());
-    out.extend_from_slice(&0x004E4942u32.to_le_bytes()); // "BIN\0"
-    out.extend_from_slice(bin_chunk);
-
-    Ok(out)
+fn new_six_batches() -> [GeometryBatch; 6] {
+    [
+        GeometryBatch::new(),
+        GeometryBatch::new(),
+        GeometryBatch::new(),
+        GeometryBatch::new(),
+        GeometryBatch::new(),
+        GeometryBatch::new(),
+    ]
 }
 
 pub fn build_glb_bytes(name: &str, visual: &VisualDef) -> Result<Vec<u8>> {
-    // Step 1: Populate high-polygon geometry batches for the specific building or unit
-    let mut batches = [
-        GeometryBatch::new(),
-        GeometryBatch::new(),
-        GeometryBatch::new(),
-        GeometryBatch::new(),
-        GeometryBatch::new(),
-        GeometryBatch::new(),
-    ];
-    populate_archetype_batches(name, visual.archetype, visual.scale, &mut batches);
-
-    if batches.iter().all(|b| b.positions.is_empty()) {
-        batches[0].add_box([0.0, 0.5, 0.0], [0.4, 0.5, 0.4], [1.0, 1.0, 1.0]);
-    }
-
-    // Step 2: Compute crease-aware smooth Phong vertex normals per batch
-    for batch in &mut batches {
-        batch.smooth_vertex_normals(0.45);
-    }
-
-    // Step 3: Split into Hull (Node 0), Turret (Child Node 1), and Rotor (Child Node 2) sub-meshes & encode to glTF buffers
-    let (hull_batches, turret_batches, rotor_batches) =
-        split_hull_turret_and_rotor_batches(name, visual.archetype, visual.scale, &batches);
     let mut bin_chunk: Vec<u8> = Vec::with_capacity(65536);
-    let mut buffer_views = Vec::with_capacity(36);
-    let mut accessors = Vec::with_capacity(36);
-    let hull_primitives = append_batches_to_gltf_buffers(
-        &hull_batches,
-        &mut bin_chunk,
-        &mut buffer_views,
-        &mut accessors,
-    );
-    let turret_primitives = append_batches_to_gltf_buffers(
-        &turret_batches,
-        &mut bin_chunk,
-        &mut buffer_views,
-        &mut accessors,
-    );
-    let rotor_primitives = append_batches_to_gltf_buffers(
-        &rotor_batches,
-        &mut bin_chunk,
-        &mut buffer_views,
-        &mut accessors,
-    );
+    let mut buffer_views = Vec::with_capacity(64);
+    let mut accessors = Vec::with_capacity(64);
 
-    let mut meshes_vec = vec![json!({
-        "name": format!("{name}_hull_mesh"),
-        "primitives": hull_primitives
-    })];
-    let turret_node = if turret_primitives.is_empty() {
-        json!({ "name": "Turret" })
-    } else {
-        let idx = meshes_vec.len();
-        meshes_vec.push(json!({
-            "name": format!("{name}_turret_mesh"),
-            "primitives": turret_primitives
-        }));
-        json!({ "name": "Turret", "mesh": idx })
-    };
-    let rotor_node = if rotor_primitives.is_empty() {
-        json!({ "name": "Rotor" })
-    } else {
-        let idx = meshes_vec.len();
-        meshes_vec.push(json!({
-            "name": format!("{name}_rotor_mesh"),
-            "primitives": rotor_primitives
-        }));
-        json!({ "name": "Rotor", "mesh": idx })
-    };
-    let nodes_json = json!([
-        { "name": "Hull", "mesh": 0, "children": [1, 2] },
-        turret_node,
-        rotor_node
-    ]);
-    let meshes_json = serde_json::Value::Array(meshes_vec);
+    let (nodes_json, meshes_json, animations_opt) =
+        if is_articulated_infantry_model(name, visual.archetype) {
+            build_infantry_gltf_scene(
+                name,
+                visual,
+                &mut bin_chunk,
+                &mut buffer_views,
+                &mut accessors,
+            )
+        } else {
+            // Vehicles, Aircraft, Ships, Buildings & Defensive Turrets
+            let mut batches = new_six_batches();
+            populate_archetype_batches(name, visual.archetype, visual.scale, &mut batches);
 
-    // Step 4: Build 6-material PBR palette & assemble GLB 2.0 binary container
+            if batches.iter().all(|b| b.positions.is_empty()) {
+                batches[0].add_box([0.0, 0.5, 0.0], [0.4, 0.5, 0.4], [1.0, 1.0, 1.0]);
+            }
+
+            for batch in &mut batches {
+                batch.smooth_vertex_normals(0.45);
+            }
+
+            let (hull_batches, turret_batches, barrel_batches, rotor_batches) =
+                split_hull_turret_barrel_and_rotor_batches(
+                    name,
+                    visual.archetype,
+                    visual.scale,
+                    &batches,
+                );
+            let hull_primitives = append_batches_to_gltf_buffers(
+                &hull_batches,
+                &mut bin_chunk,
+                &mut buffer_views,
+                &mut accessors,
+            );
+            let turret_primitives = append_batches_to_gltf_buffers(
+                &turret_batches,
+                &mut bin_chunk,
+                &mut buffer_views,
+                &mut accessors,
+            );
+            let barrel_primitives = append_batches_to_gltf_buffers(
+                &barrel_batches,
+                &mut bin_chunk,
+                &mut buffer_views,
+                &mut accessors,
+            );
+            let rotor_primitives = append_batches_to_gltf_buffers(
+                &rotor_batches,
+                &mut bin_chunk,
+                &mut buffer_views,
+                &mut accessors,
+            );
+
+            let mut meshes_vec = vec![json!({
+                "name": format!("{name}_hull_mesh"),
+                "primitives": hull_primitives
+            })];
+            let has_barrel = !barrel_primitives.is_empty();
+            let has_turret_mesh = !turret_primitives.is_empty();
+            let turret_mesh_opt = if has_turret_mesh {
+                let idx = meshes_vec.len();
+                meshes_vec.push(json!({
+                    "name": format!("{name}_turret_mesh"),
+                    "primitives": turret_primitives
+                }));
+                Some(idx)
+            } else {
+                None
+            };
+            let rotor_node = if rotor_primitives.is_empty() {
+                json!({ "name": "Rotor" })
+            } else {
+                let idx = meshes_vec.len();
+                meshes_vec.push(json!({
+                    "name": format!("{name}_rotor_mesh"),
+                    "primitives": rotor_primitives
+                }));
+                json!({ "name": "Rotor", "mesh": idx })
+            };
+            let barrel_mesh_opt = if has_barrel {
+                let idx = meshes_vec.len();
+                meshes_vec.push(json!({
+                    "name": format!("{name}_barrel_mesh"),
+                    "primitives": barrel_primitives
+                }));
+                Some(idx)
+            } else {
+                None
+            };
+
+            // Preserve exact base node indices: 0=Hull, 1=Turret, 2=Rotor, [3=Barrel if has_barrel]
+            let mut nodes_vec = vec![serde_json::Value::Null, serde_json::Value::Null, rotor_node];
+            if has_barrel {
+                nodes_vec.push(serde_json::Value::Null);
+            }
+
+            let mut hull_children = vec![1usize, 2usize];
+            let mut turret_children = if has_barrel { vec![3usize] } else { Vec::new() };
+            let mut barrel_children = Vec::new();
+
+            // Building state child nodes: ScaffoldFrame, FactoryDoor, DamageOverlay
+            let is_bldg = is_building_archetype(visual.archetype);
+            if is_bldg {
+                let state_rig = build_building_state_rig(name, visual.archetype, visual.scale);
+                let scaf_prims = append_batches_to_gltf_buffers(
+                    &state_rig.scaffold_frame,
+                    &mut bin_chunk,
+                    &mut buffer_views,
+                    &mut accessors,
+                );
+                let scaf_mesh_idx = meshes_vec.len();
+                meshes_vec.push(json!({
+                    "name": format!("{name}_scaffold_frame_mesh"),
+                    "primitives": scaf_prims
+                }));
+                let scaf_node_idx = nodes_vec.len();
+                nodes_vec.push(json!({
+                    "name": "ScaffoldFrame",
+                    "mesh": scaf_mesh_idx
+                }));
+                hull_children.push(scaf_node_idx);
+
+                let door_prims = append_batches_to_gltf_buffers(
+                    &state_rig.factory_door,
+                    &mut bin_chunk,
+                    &mut buffer_views,
+                    &mut accessors,
+                );
+                let door_mesh_idx = meshes_vec.len();
+                meshes_vec.push(json!({
+                    "name": format!("{name}_factory_door_mesh"),
+                    "primitives": door_prims
+                }));
+                let door_node_idx = nodes_vec.len();
+                nodes_vec.push(json!({
+                    "name": "FactoryDoor",
+                    "mesh": door_mesh_idx,
+                    "translation": state_rig.factory_door_translation
+                }));
+                hull_children.push(door_node_idx);
+
+                let dmg_prims = append_batches_to_gltf_buffers(
+                    &state_rig.damage_overlay,
+                    &mut bin_chunk,
+                    &mut buffer_views,
+                    &mut accessors,
+                );
+                let dmg_mesh_idx = meshes_vec.len();
+                meshes_vec.push(json!({
+                    "name": format!("{name}_damage_overlay_mesh"),
+                    "primitives": dmg_prims
+                }));
+                let dmg_node_idx = nodes_vec.len();
+                nodes_vec.push(json!({
+                    "name": "DamageOverlay",
+                    "mesh": dmg_mesh_idx
+                }));
+                hull_children.push(dmg_node_idx);
+            }
+
+            // Named attachment socket child nodes (Muzzle_01, Muzzle_02, Exhaust_01, DamageSmoke_01)
+            let mut sockets = if is_bldg {
+                compute_building_sockets(name, visual.archetype, visual.scale)
+            } else {
+                compute_unit_sockets(name, visual.archetype, visual.scale)
+            };
+            if let Some(m1) = visual.find_socket("Muzzle_01") {
+                sockets.muzzle_01 = Some(m1);
+            }
+            if let Some(m2) = visual.find_socket("Muzzle_02") {
+                sockets.muzzle_02 = Some(m2);
+            }
+            if let Some(ex) = visual.find_socket("Exhaust_01") {
+                sockets.exhaust_01 = Some(ex);
+            }
+            if let Some(sm) = visual.find_socket("DamageSmoke_01") {
+                sockets.damage_smoke_01 = sm;
+            }
+
+            let mut muzzle_node_indices = Vec::new();
+            if let Some(m1) = sockets.muzzle_01 {
+                let idx = nodes_vec.len();
+                nodes_vec.push(json!({
+                    "name": "Muzzle_01",
+                    "translation": m1
+                }));
+                muzzle_node_indices.push(idx);
+            }
+            if let Some(m2) = sockets.muzzle_02 {
+                let idx = nodes_vec.len();
+                nodes_vec.push(json!({
+                    "name": "Muzzle_02",
+                    "translation": m2
+                }));
+                muzzle_node_indices.push(idx);
+            }
+            if !muzzle_node_indices.is_empty() {
+                if has_barrel {
+                    barrel_children.extend_from_slice(&muzzle_node_indices);
+                } else if has_turret_mesh {
+                    turret_children.extend_from_slice(&muzzle_node_indices);
+                } else {
+                    hull_children.extend_from_slice(&muzzle_node_indices);
+                }
+            }
+
+            if let Some(ex) = sockets.exhaust_01 {
+                let idx = nodes_vec.len();
+                nodes_vec.push(json!({
+                    "name": "Exhaust_01",
+                    "translation": ex
+                }));
+                hull_children.push(idx);
+            }
+            let smoke_idx = nodes_vec.len();
+            nodes_vec.push(json!({
+                "name": "DamageSmoke_01",
+                "translation": sockets.damage_smoke_01
+            }));
+            hull_children.push(smoke_idx);
+
+            // Finalize Hull (0), Turret (1), and optional Barrel (3)
+            nodes_vec[0] = json!({
+                "name": "Hull",
+                "mesh": 0,
+                "children": hull_children
+            });
+
+            let mut turret_obj = serde_json::Map::new();
+            turret_obj.insert("name".to_string(), json!("Turret"));
+            if let Some(t_mesh) = turret_mesh_opt {
+                turret_obj.insert("mesh".to_string(), json!(t_mesh));
+            }
+            if !turret_children.is_empty() {
+                turret_obj.insert("children".to_string(), json!(turret_children));
+            }
+            nodes_vec[1] = serde_json::Value::Object(turret_obj);
+
+            if let Some(b_mesh) = barrel_mesh_opt {
+                let mut barrel_obj = serde_json::Map::new();
+                barrel_obj.insert("name".to_string(), json!("Barrel"));
+                barrel_obj.insert("mesh".to_string(), json!(b_mesh));
+                if !barrel_children.is_empty() {
+                    barrel_obj.insert("children".to_string(), json!(barrel_children));
+                }
+                nodes_vec[3] = serde_json::Value::Object(barrel_obj);
+            }
+
+            (
+                serde_json::Value::Array(nodes_vec),
+                serde_json::Value::Array(meshes_vec),
+                None,
+            )
+        };
+
+    // Build 6-material PBR palette & assemble GLB 2.0 binary container
     let [r, g, b] = visual.primary_color;
     let emissive_rgb = select_faction_emissive_color(name, visual.primary_color);
-    let gltf_json = json!({
-        "asset": {
+    let mut gltf_map = serde_json::Map::new();
+    gltf_map.insert(
+        "asset".to_string(),
+        json!({
             "version": "2.0",
-            "generator": "rts-mod-tools glb_gen v4 (multi-node Hull + Turret hierarchy)"
-        },
-        "scene": 0,
-        "scenes": [{ "nodes": [0] }],
-        "nodes": nodes_json,
-        "meshes": meshes_json,
-        "materials": [
+            "generator": "rts-mod-tools glb_gen v5 (articulated limbs, state nodes & FX sockets)"
+        }),
+    );
+    gltf_map.insert("scene".to_string(), json!(0));
+    gltf_map.insert("scenes".to_string(), json!([{ "nodes": [0] }]));
+    gltf_map.insert("nodes".to_string(), nodes_json);
+    gltf_map.insert("meshes".to_string(), meshes_json);
+    if let Some(animations) = animations_opt {
+        gltf_map.insert("animations".to_string(), json!(animations));
+    }
+    gltf_map.insert(
+        "materials".to_string(),
+        json!([
             {
                 "name": "PrimaryColor",
                 "pbrMetallicRoughness": {
@@ -442,14 +388,18 @@ pub fn build_glb_bytes(name: &str, visual: &VisualDef) -> Result<Vec<u8>> {
                     "roughnessFactor": 0.32
                 }
             }
-        ],
-        "accessors": accessors,
-        "bufferViews": buffer_views,
-        "buffers": [{
+        ]),
+    );
+    gltf_map.insert("accessors".to_string(), json!(accessors));
+    gltf_map.insert("bufferViews".to_string(), json!(buffer_views));
+    gltf_map.insert(
+        "buffers".to_string(),
+        json!([{
             "byteLength": bin_chunk.len()
-        }]
-    });
+        }]),
+    );
 
+    let gltf_json = serde_json::Value::Object(gltf_map);
     assemble_glb_binary(&gltf_json, &bin_chunk)
 }
 
@@ -592,50 +542,4 @@ pub fn write_single_glb(path: impl AsRef<Path>, name: &str, visual: &VisualDef) 
     }
     fs::write(path.as_ref(), bytes)?;
     Ok(())
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn generates_valid_glb_binary_header_and_json_chunk() {
-        let visual = VisualDef {
-            model: "assets/models/grizzly_tank.glb".to_string(),
-            icon: None,
-            archetype: VisualArchetype::Tank,
-            scale: [1.8, 1.1, 2.4],
-            primary_color: [0.22, 0.45, 0.82],
-            team_color_tint: true,
-            ..Default::default()
-        };
-        let bytes = build_glb_bytes("grizzly_tank", &visual).expect("should build glb");
-        assert!(bytes.len() > 100);
-        assert_eq!(&bytes[0..4], b"glTF");
-        let version = u32::from_le_bytes(bytes[4..8].try_into().unwrap());
-        let total_len = u32::from_le_bytes(bytes[8..12].try_into().unwrap()) as usize;
-        assert_eq!(version, 2);
-        assert_eq!(total_len, bytes.len());
-
-        let json_len = u32::from_le_bytes(bytes[12..16].try_into().unwrap()) as usize;
-        assert_eq!(&bytes[16..20], b"JSON");
-        let json_val: serde_json::Value =
-            serde_json::from_slice(glb_slice(&bytes, 20, json_len)).expect("valid glTF JSON chunk");
-        assert_eq!(json_val["asset"]["version"], "2.0");
-        assert_eq!(json_val["nodes"][0]["name"], "Hull");
-        assert_eq!(json_val["nodes"][1]["name"], "Turret");
-        assert_eq!(json_val["nodes"][2]["name"], "Rotor");
-        assert_eq!(json_val["meshes"].as_array().unwrap().len(), 2);
-        assert!(
-            json_val["meshes"][0]["primitives"]
-                .as_array()
-                .unwrap()
-                .len()
-                >= 3
-        );
-    }
-
-    fn glb_slice(bytes: &[u8], start: usize, len: usize) -> &[u8] {
-        &bytes[start..start + len]
-    }
 }

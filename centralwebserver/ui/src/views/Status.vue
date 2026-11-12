@@ -74,7 +74,7 @@
         <NsInfoCard
           light
           :title="status.instance || '-'"
-          :description="$t('status.app_instance')"
+          :description="serviceRuntimeStatusLabel"
           :icon="Application32"
           :loading="loading.getStatus"
           class="min-height-card"
@@ -133,6 +133,48 @@
           :moduleId="instanceName"
           light
         />
+      </cv-column>
+      <cv-column :md="4" :max="4">
+        <NsInfoCard
+          light
+          :title="$t('status.module_update_title')"
+          :description="
+            $t('status.current_version') + ': ' + (installedVersion || '-')
+          "
+          :icon="Application32"
+          :loading="loading.listInstalledModules"
+          :isErrorShown="Boolean(error.updateModule)"
+          :errorTitle="$t('action.update-module')"
+          :errorDescription="error.updateModule"
+          class="min-height-card"
+        >
+          <template slot="content">
+            <div class="module-update-controls">
+              <cv-text-input
+                :label="$t('status.target_version')"
+                placeholder="1.0.1"
+                v-model.trim="targetUpdateVersion"
+                :invalid-message="error.targetVersion"
+                :disabled="loading.updateModule || !moduleSource"
+                class="mg-bottom-sm"
+              />
+              <NsButton
+                kind="secondary"
+                size="field"
+                :icon="ArrowRight20"
+                :loading="loading.updateModule"
+                :disabled="
+                  loading.updateModule ||
+                  loading.listInstalledModules ||
+                  !moduleSource
+                "
+                @click="triggerModuleUpdate"
+              >
+                {{ $t("status.update_now") }}
+              </NsButton>
+            </div>
+          </template>
+        </NsInfoCard>
       </cv-column>
     </cv-row>
     <!-- services -->
@@ -207,7 +249,7 @@
                     image.name
                   }}</cv-structured-list-data>
                   <cv-structured-list-data>{{
-                    image.size
+                    formatImageSize(image.size)
                   }}</cv-structured-list-data>
                   <cv-structured-list-data class="break-word">{{
                     image.created
@@ -311,22 +353,46 @@ export default {
       },
       backupRepositories: [],
       backups: [],
+      installedVersion: "-",
+      moduleSource: "",
+      targetUpdateVersion: "",
       loading: {
         getStatus: false,
         getConfiguration: false,
         listBackupRepositories: false,
         listBackups: false,
+        listInstalledModules: false,
+        updateModule: false,
       },
       error: {
         getStatus: "",
         getConfiguration: "",
         listBackupRepositories: "",
         listBackups: "",
+        updateModule: "",
+        targetVersion: "",
       },
     };
   },
   computed: {
     ...mapState(["instanceName", "instanceLabel", "core", "appName"]),
+    serviceRuntimeStatusLabel() {
+      const base = this.$t("status.app_instance");
+      if (this.loading.getStatus) {
+        return base;
+      }
+      const services = (this.status && this.status.services) || [];
+      if (!services.length) {
+        return `${base} · ${this.$t("status.no_services")}`;
+      }
+      if (services.some((s) => Boolean(s.failed))) {
+        return `${base} · ${this.$t("status.service_failed")}`;
+      }
+      if (services.every((s) => Boolean(s.active))) {
+        return `${base} · ${this.$t("status.service_running")}`;
+      }
+      return `${base} · ${this.$t("status.service_inactive")}`;
+    },
     installationNodeTitle() {
       if (this.status && this.status.node) {
         if (this.status.node_ui_name) {
@@ -362,15 +428,151 @@ export default {
       200
     );
   },
-  beforeUnmount() {
+  beforeDestroy() {
     clearTimeout(this.redirectTimeout);
+    clearInterval(this.urlCheckInterval);
   },
   created() {
     this.getStatus();
     this.getConfiguration();
     this.listBackupRepositories();
+    this.listInstalledModules();
   },
   methods: {
+    formatImageSize(rawSize) {
+      if (rawSize === null || rawSize === undefined || rawSize === "") {
+        return "-";
+      }
+      const numericBytes = Number(rawSize);
+      if (!Number.isFinite(numericBytes) || numericBytes < 0) {
+        return String(rawSize);
+      }
+      if (
+        this.$options &&
+        this.$options.filters &&
+        typeof this.$options.filters.byteFormat === "function"
+      ) {
+        return this.$options.filters.byteFormat(numericBytes);
+      }
+      if (numericBytes < 1024) {
+        return `${Math.round(numericBytes)} B`;
+      }
+      const units = ["KiB", "MiB", "GiB", "TiB"];
+      let value = numericBytes;
+      let unitIndex = -1;
+      while (value >= 1024 && unitIndex < units.length - 1) {
+        value /= 1024;
+        unitIndex += 1;
+      }
+      return `${value.toFixed(value >= 100 ? 0 : 1)} ${units[unitIndex]}`;
+    },
+    async listInstalledModules() {
+      this.loading.listInstalledModules = true;
+      const taskAction = "list-installed-modules";
+      const eventId = this.getUuid();
+
+      this.core.$root.$once(
+        `${taskAction}-aborted-${eventId}`,
+        this.listInstalledModulesAborted
+      );
+      this.core.$root.$once(
+        `${taskAction}-completed-${eventId}`,
+        this.listInstalledModulesCompleted
+      );
+
+      const res = await to(
+        this.createClusterTaskForApp({
+          action: taskAction,
+          extra: {
+            title: this.$t("action." + taskAction),
+            isNotificationHidden: true,
+            eventId,
+          },
+        })
+      );
+      if (res[0]) {
+        this.loading.listInstalledModules = false;
+      }
+    },
+    listInstalledModulesAborted() {
+      this.loading.listInstalledModules = false;
+    },
+    listInstalledModulesCompleted(taskContext, taskResult) {
+      const output = (taskResult && taskResult.output) || {};
+      for (const instances of Object.values(output)) {
+        if (!Array.isArray(instances)) continue;
+        for (const inst of instances) {
+          if (inst && inst.id === this.instanceName) {
+            this.installedVersion = inst.version || "-";
+            this.moduleSource = inst.source || "";
+            if (!this.targetUpdateVersion && inst.version) {
+              this.targetUpdateVersion = inst.version;
+            }
+          }
+        }
+      }
+      this.loading.listInstalledModules = false;
+    },
+    async triggerModuleUpdate() {
+      this.error.targetVersion = "";
+      this.error.updateModule = "";
+      const semverRe =
+        /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-[0-9A-Za-z.-]+)?$/;
+      if (
+        !this.targetUpdateVersion ||
+        this.targetUpdateVersion.toLowerCase() === "latest" ||
+        !semverRe.test(this.targetUpdateVersion)
+      ) {
+        this.error.targetVersion = this.$t("error.invalid_semver");
+        return;
+      }
+      if (!this.moduleSource) {
+        return;
+      }
+
+      this.loading.updateModule = true;
+      const taskAction = "update-module";
+      const eventId = this.getUuid();
+
+      this.core.$root.$once(
+        `${taskAction}-aborted-${eventId}`,
+        this.updateModuleAborted
+      );
+      this.core.$root.$once(
+        `${taskAction}-completed-${eventId}`,
+        this.updateModuleCompleted
+      );
+
+      const res = await to(
+        this.createClusterTaskForApp({
+          action: taskAction,
+          data: {
+            module_url: `${this.moduleSource}:${this.targetUpdateVersion}`,
+            instances: [this.instanceName],
+            force: false,
+          },
+          extra: {
+            title: this.$t("action." + taskAction),
+            description: this.$t("common.processing"),
+            eventId,
+          },
+        })
+      );
+      if (res[0]) {
+        this.error.updateModule = this.getErrorMessage(res[0]);
+        this.loading.updateModule = false;
+      }
+    },
+    updateModuleAborted(taskResult) {
+      console.error("update-module aborted", taskResult);
+      this.error.updateModule = this.$t("error.generic_error");
+      this.loading.updateModule = false;
+    },
+    updateModuleCompleted() {
+      this.loading.updateModule = false;
+      this.getStatus();
+      this.listInstalledModules();
+    },
     goToWebapp() {
       window.open(`https://${this.host}`, "_blank");
     },

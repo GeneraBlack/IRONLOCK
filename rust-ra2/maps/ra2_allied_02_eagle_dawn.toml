@@ -1,45 +1,258 @@
 id = "ra2_allied_02_eagle_dawn"
-name = "RA2 Allied 02: Eagle Dawn (Colorado)"
+name = "Op. 02: Eagle Dawn (Colorado Springs)"
 width = 96
 height = 75
 tile_size = 2.0
 ore_regen_per_sec = 4.0
-mission_objective = "Soviet troops cover America like a foul plague. They have even penetrated our heartland to capture the Air Force Academy in Colorado. The Academy, its cadets, and the unique technology it contains are vital to our defense. Use Tanya to contact any American forces in the area, reclaim our Air Force Academy, and drive the Soviets from the area. \n \n Objective 1: Capture the Soviet-occupied Air Force Academy Chapel. \n \n Objective 2: Destroy all Soviet forces. \n \n Objective 3: Keep Tanya alive."
+mission_objective = "Send Tanya and Rocketeers into the occupied Air Force Academy to liberate the base, protect the Air Force Chapel, and eliminate all Soviet forces."
 
 [[ore_patches]]
-position = [69, 41]
+position = [42, 34]
 radius = 3
-amount_per_tile = 1400
+amount_per_tile = 1600
 
 [[ore_patches]]
-position = [43, 41]
-radius = 3
-amount_per_tile = 1400
-
-[[ore_patches]]
-position = [48, 37]
-radius = 4
-amount_per_tile = 2000
-
-[[ore_patches]]
-position = [57, 21]
+position = [60, 18]
 radius = 3
 amount_per_tile = 1500
 
-[[ore_patches]]
-position = [71, 21]
-radius = 3
-amount_per_tile = 1500
+[[water_rects]]
+min = [43, 27]
+max = [43, 27]
+
+[[water_rects]]
+min = [43, 28]
+max = [44, 28]
+
+[[water_rects]]
+min = [42, 29]
+max = [45, 31]
+
+[[water_rects]]
+min = [49, 53]
+max = [50, 53]
+
+[[water_rects]]
+min = [49, 54]
+max = [51, 55]
+
+[[water_rects]]
+min = [51, 56]
+max = [51, 56]
+
+[[elevation_rects]]
+min = [4, 32]
+max = [9, 38]
+
+[[elevation_rects]]
+min = [4, 44]
+max = [12, 51]
+
+[[elevation_rects]]
+min = [28, 66]
+max = [42, 70]
+
+[[ramp_rects]]
+min = [3, 34]
+max = [4, 36]
+
+[[ramp_rects]]
+min = [9, 34]
+max = [10, 36]
+
+[[ramp_rects]]
+min = [3, 46]
+max = [4, 48]
+
+[[ramp_rects]]
+min = [12, 46]
+max = [13, 48]
+
+[[ramp_rects]]
+min = [27, 67]
+max = [28, 69]
+
+[[ramp_rects]]
+min = [42, 67]
+max = [43, 69]
+
+[[obstacles]]
+min = [62, 36]
+max = [63, 37]
+
+[[obstacles]]
+min = [54, 37]
+max = [55, 38]
+
+[[obstacles]]
+min = [30, 42]
+max = [31, 43]
+
+[[obstacles]]
+min = [41, 43]
+max = [42, 44]
+
+[[obstacles]]
+min = [47, 45]
+max = [48, 46]
+
+[[obstacles]]
+min = [36, 46]
+max = [37, 47]
+
+[[obstacles]]
+min = [30, 52]
+max = [31, 53]
+
+[[obstacles]]
+min = [35, 53]
+max = [36, 54]
+
+[[obstacles]]
+min = [40, 53]
+max = [41, 54]
+
+[[props]]
+kind = "tree"
+tile_pos = [69, 44]
+
+[[props]]
+kind = "tree"
+tile_pos = [72, 47]
+
+[[props]]
+kind = "tree"
+tile_pos = [30, 46]
+
+[[props]]
+kind = "tree"
+tile_pos = [46, 46]
+
+[[props]]
+kind = "tree"
+tile_pos = [39, 57]
+
+[[props]]
+kind = "tree"
+tile_pos = [33, 52]
+
+[[props]]
+kind = "tree"
+tile_pos = [32, 28]
+
+[[props]]
+kind = "tree"
+tile_pos = [66, 32]
+
+[[props]]
+kind = "tree"
+tile_pos = [77, 6]
+
+[[props]]
+kind = "tree"
+tile_pos = [49, 25]
+
+[[props]]
+kind = "tree"
+tile_pos = [56, 43]
+
+[[props]]
+kind = "tree"
+tile_pos = [55, 49]
+
+[[props]]
+kind = "tree"
+tile_pos = [61, 46]
+
+[[props]]
+kind = "tree"
+tile_pos = [55, 36]
+
+[[props]]
+kind = "tree"
+tile_pos = [57, 35]
+
+[[props]]
+kind = "tree"
+tile_pos = [79, 39]
+
+[[props]]
+kind = "tree"
+tile_pos = [23, 56]
+
+[[props]]
+kind = "tree"
+tile_pos = [33, 39]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [49, 45]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [50, 42]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [42, 46]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [42, 53]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [64, 36]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [68, 2]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [73, 2]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [72, 4]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [55, 25]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [55, 28]
 
 [[preplaced_entities]]
-player_id = 2
+player_id = 3
 building_id = "allied_conyard"
 tile_pos = [34, 29]
 
 [[preplaced_entities]]
-player_id = 2
+player_id = 3
+building_id = "air_force_chapel"
+tile_pos = [29, 29]
+
+[[preplaced_entities]]
+player_id = 3
+building_id = "allied_airforce_command"
+tile_pos = [34, 25]
+
+[[preplaced_entities]]
+player_id = 3
+building_id = "allied_power_plant"
+tile_pos = [30, 25]
+
+[[preplaced_entities]]
+player_id = 3
 building_id = "allied_refinery"
-tile_pos = [30, 35]
+tile_pos = [38, 29]
+
+[[preplaced_entities]]
+player_id = 3
+unit_id = "chrono_miner"
+tile_pos = [41, 29]
 
 [[preplaced_entities]]
 player_id = 2
@@ -58,11 +271,6 @@ tile_pos = [39, 37]
 
 [[preplaced_entities]]
 player_id = 2
-building_id = "air_force_chapel"
-tile_pos = [29, 29]
-
-[[preplaced_entities]]
-player_id = 2
 building_id = "soviet_sentry_gun"
 tile_pos = [36, 37]
 
@@ -74,7 +282,7 @@ tile_pos = [32, 37]
 [[preplaced_entities]]
 player_id = 2
 building_id = "soviet_flak_cannon"
-tile_pos = [38, 29]
+tile_pos = [37, 28]
 
 [[preplaced_entities]]
 player_id = 2
@@ -89,17 +297,17 @@ tile_pos = [64, 10]
 [[preplaced_entities]]
 player_id = 2
 building_id = "soviet_tesla_reactor"
-tile_pos = [64, 9]
+tile_pos = [63, 8]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "allied_airforce_command"
-tile_pos = [30, 31]
+tile_pos = [27, 32]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "allied_power_plant"
-tile_pos = [34, 34]
+tile_pos = [33, 33]
 
 [[preplaced_entities]]
 player_id = 2
@@ -139,12 +347,12 @@ tile_pos = [70, 13]
 [[preplaced_entities]]
 player_id = 2
 building_id = "soviet_tesla_reactor"
-tile_pos = [70, 14]
+tile_pos = [69, 15]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "soviet_barracks"
-tile_pos = [68, 16]
+tile_pos = [67, 15]
 
 [[preplaced_entities]]
 player_id = 2
@@ -179,7 +387,7 @@ tile_pos = [65, 16]
 [[preplaced_entities]]
 player_id = 2
 unit_id = "chrono_miner"
-tile_pos = [32, 35]
+tile_pos = [33, 35]
 
 [[preplaced_entities]]
 player_id = 2
@@ -219,7 +427,7 @@ tile_pos = [63, 10]
 [[preplaced_entities]]
 player_id = 2
 unit_id = "soviet_conscript"
-tile_pos = [64, 11]
+tile_pos = [63, 11]
 
 [[preplaced_entities]]
 player_id = 2
@@ -229,123 +437,209 @@ tile_pos = [69, 20]
 [[preplaced_entities]]
 player_id = 2
 unit_id = "soviet_conscript"
-tile_pos = [63, 11]
+tile_pos = [62, 10]
+
+[[preplaced_entities]]
+player_id = 1
+unit_id = "tanya"
+tile_pos = [72, 56]
+tag = "tanya"
+
+[[preplaced_entities]]
+player_id = 0
+building_id = "tech_communications_center"
+tile_pos = [70, 41]
+
+[[objectives]]
+id = "obj_stage1_linkup"
+tier = "primary"
+title = "Reach Allied Command Point & Assume Outpost Control"
+marker_tile = [34, 29]
+
+[[objectives]]
+id = "obj_primary_main"
+tier = "primary"
+title = "Send Tanya and Rocketeers into the occupied Air Force Academy to liberate the base, p..."
+marker_tile = [66, 12]
+
+[[objectives]]
+id = "obj_vip_tanya"
+tier = "primary"
+title = "Keep Agent Tanya Alive Throughout the Operation"
+marker_tile = [72, 56]
+
+[[objectives]]
+id = "obj_capture_comms"
+tier = "secondary"
+title = "Capture Neutral Tech Communications Center for Tactical Radar"
+marker_tile = [70, 41]
+
+[[objectives]]
+id = "obj_bonus_waves"
+tier = "bonus"
+title = "Weather Enemy Tactical Counterattack Waves"
+target_count = 2
+marker_tile = [72, 56]
+
+[[cutscenes]]
+id = "intro_flyover"
+skippable = true
+letterbox = true
+
+[[cutscenes.keyframes]]
+time_secs = 0.0
+focus = [133.0, 0.0, 25.0]
+distance = 46.0
+pitch_deg = 52.0
+yaw_deg = -22.0
+
+[[cutscenes.keyframes]]
+time_secs = 2.2
+focus = [139.0, 0.0, 69.0]
+distance = 42.0
+pitch_deg = 55.0
+yaw_deg = -10.0
+
+[[cutscenes.keyframes]]
+time_secs = 4.5
+focus = [145.0, 0.0, 113.0]
+distance = 36.0
+pitch_deg = 58.0
+yaw_deg = 0.0
 
 [[spawns]]
 player_id = 1
 faction = "allies"
-base_tile = [77, 41]
+sub_faction = "usa"
+base_tile = [72, 56]
+team_id = 1
 
-[[spawns.initial_buildings]]
-building_id = "allied_conyard"
-tile_pos = [77, 41]
+[[spawns.initial_units]]
+unit_id = "rocketeer"
+tile_pos = [70, 55]
 
-[[spawns.initial_buildings]]
-building_id = "allied_power_plant"
-tile_pos = [74, 41]
+[[spawns.initial_units]]
+unit_id = "rocketeer"
+tile_pos = [74, 55]
 
-[[spawns.initial_buildings]]
-building_id = "allied_refinery"
-tile_pos = [77, 38]
+[[spawns.initial_units]]
+unit_id = "rocketeer"
+tile_pos = [70, 57]
 
-[[spawns.initial_buildings]]
-building_id = "allied_barracks"
-tile_pos = [74, 38]
-
-[[spawns.initial_buildings]]
-building_id = "allied_war_factory"
-tile_pos = [71, 41]
+[[spawns.initial_units]]
+unit_id = "rocketeer"
+tile_pos = [74, 57]
 
 [[spawns.initial_units]]
 unit_id = "allied_gi"
-tile_pos = [75, 36]
+tile_pos = [71, 58]
 
 [[spawns.initial_units]]
 unit_id = "allied_gi"
-tile_pos = [73, 36]
-
-[[spawns.initial_units]]
-unit_id = "grizzly_tank"
-tile_pos = [71, 37]
-
-[[spawns.initial_units]]
-unit_id = "chrono_miner"
-tile_pos = [75, 37]
+tile_pos = [73, 58]
 
 [[spawns]]
 player_id = 2
 faction = "soviets"
-base_tile = [51, 41]
+sub_faction = "russia"
+base_tile = [66, 12]
+team_id = 2
 
-[[spawns.initial_buildings]]
-building_id = "soviet_conyard"
-tile_pos = [51, 41]
-
-[[spawns.initial_buildings]]
-building_id = "soviet_tesla_reactor"
-tile_pos = [48, 41]
-
-[[spawns.initial_buildings]]
-building_id = "soviet_refinery"
-tile_pos = [51, 38]
-
-[[spawns.initial_buildings]]
-building_id = "soviet_barracks"
-tile_pos = [48, 38]
-
-[[spawns.initial_buildings]]
-building_id = "soviet_war_factory"
-tile_pos = [45, 41]
-
-[[spawns.initial_units]]
-unit_id = "soviet_conscript"
-tile_pos = [49, 36]
-
-[[spawns.initial_units]]
-unit_id = "soviet_conscript"
-tile_pos = [47, 36]
-
-[[spawns.initial_units]]
-unit_id = "rhino_tank"
-tile_pos = [45, 37]
-
-[[spawns.initial_units]]
-unit_id = "war_miner"
-tile_pos = [49, 37]
+[[spawns]]
+player_id = 3
+faction = "allies"
+sub_faction = "usa"
+base_tile = [34, 29]
+team_id = 1
 
 [[trigger_zones]]
-id = "mission_stage_init"
-min = [6, 6]
-max = [12, 12]
+id = "eagle_dawn_init"
+min = [0, 0]
+max = [3, 3]
 once = true
 condition = { type = "timer_elapsed", secs = 1.0 }
 actions = [
+    { type = "play_cutscene", cutscene_id = "intro_flyover" },
+    { type = "set_objective_status", objective_id = "obj_stage1_linkup", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_primary_main", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_vip_tanya", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_capture_comms", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_bonus_waves", status = "active" },
     { type = "set_variable", name = "mission_stage", value = 1 },
-    { type = "eva_transmission", speaker = "EVA", text = "Battle Control Online. Primary tactical objectives initialized." },
-    { type = "reveal_area", tile = [77, 41], radius = 14 }
+    { type = "reveal_area", tile = [32, 29], radius = 9 },
+    { type = "eva_transmission", speaker = "GEN. CARVILLE", text = "Fly your Rocketeers to knock out Flak Cannons and escort Tanya into the Air Force Academy to reclaim our base!", portrait = "assets/ui/cameos/allied_conyard_icon.png", audio_cue = "battle_control_online" },
 ]
 
 [[trigger_zones]]
-id = "tactical_reinforcement_wave"
-min = [76, 39]
-max = [80, 43]
+id = "academy_liberated"
+min = [27, 24]
+max = [41, 35]
 once = true
-condition = { type = "all", conditions = [{ type = "timer_elapsed", secs = 45.0 }, { type = "variable_equals", name = "mission_stage", value = 1 }] }
+condition = { type = "entered_zone", player_id = 1 }
 actions = [
-    { type = "set_variable", name = "mission_stage", value = 2 },
-    { type = "spawn_reinforcements", player_id = 1, unit_id = "tanya", count = 1, tile = [76, 39] },
-    { type = "grant_credits", player_id = 1, amount = 1500 },
-    { type = "eva_transmission", speaker = "EVA", text = "Reinforcements have arrived. Forward command has authorized 1500 bonus credits." }
+    { type = "set_objective_status", objective_id = "obj_stage1_linkup", status = "completed" },
+    { type = "play_radar_video", video_path = "assets/videos/radar_pip/allied_02_pip_02.mp4" },
+    { type = "change_owner", from_player_id = 3, to_player_id = 1 },
+    { type = "grant_credits", player_id = 1, amount = 2500 },
+    { type = "spawn_reinforcements", player_id = 1, unit_id = "harrier", count = 2, tile = [33, 25] },
+    { type = "set_objective", text = "Air Force Academy liberated! Build Grizzly Tanks and Harriers and wipe out the Soviet occupation base." },
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Air Force Academy and Airforce Command HQ are back online!", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "battle_control_online", radar_video = "assets/videos/radar_pip/allied_02_pip_02.mp4" },
 ]
 
 [[trigger_zones]]
-id = "decisive_campaign_victory"
-min = [2, 2]
-max = [6, 6]
+id = "chapel_lost_defeat"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "building_destroyed", building_id = "air_force_chapel" }
+actions = [
+    { type = "declare_winner", player_id = 2 },
+]
+
+[[trigger_zones]]
+id = "eagle_dawn_victory"
+min = [0, 0]
+max = [3, 3]
 once = true
 condition = { type = "all_buildings_destroyed", player_id = 2 }
 actions = [
-    { type = "set_variable", name = "mission_stage", value = 3 },
-    { type = "eva_transmission", speaker = "EVA", text = "Mission Accomplished. All primary hostile command structures neutralized." },
-    { type = "declare_winner", player_id = 1 }
+    { type = "set_objective_status", objective_id = "obj_primary_main", status = "completed" },
+    { type = "set_objective_status", objective_id = "obj_vip_tanya", status = "completed" },
+    { type = "declare_winner", player_id = 1 },
+]
+
+[[trigger_zones]]
+id = "p22_vip_tanya_lost"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "tagged_entity_destroyed", tag = "tanya" }
+actions = [
+    { type = "set_objective_status", objective_id = "obj_vip_tanya", status = "failed" },
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Agent Tanya has fallen in combat!", portrait = "assets/ui/cameos/tanyicon.png", audio_cue = "unit_lost" },
+    { type = "declare_winner", player_id = 2 },
+]
+
+[[trigger_zones]]
+id = "p22_tech_comms_captured"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "building_captured", building_id = "tech_communications_center", by_player_id = 1 }
+actions = [
+    { type = "set_objective_status", objective_id = "obj_capture_comms", status = "completed" },
+    { type = "grant_credits", player_id = 1, amount = 1000 },
+    { type = "reveal_area_for_player", player_id = 1, center = [133.0, 0.0, 25.0], radius = 24.0, duration_secs = 45 },
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Tech Communications Center online! Satellite radar sweep active.", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "building_captured" },
+]
+
+[[trigger_zones]]
+id = "p22_periodic_skirmish_wave"
+min = [0, 0]
+max = [3, 3]
+once = false
+condition = { type = "periodic_timer", start_secs = 75, interval_secs = 75, max_repeats = 3 }
+actions = [
+    { type = "spawn_reinforcements", player_id = 2, unit_id = "soviet_conscript", count = 3, tile = [65, 13] },
+    { type = "add_objective_progress", objective_id = "obj_bonus_waves", delta = 1 },
 ]

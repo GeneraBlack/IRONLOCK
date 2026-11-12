@@ -1,0 +1,155 @@
+[[buildings]]
+id = "command_hq"
+name = "Frontier Command HQ"
+faction = "shared"
+role = "construction_yard"
+cost = 2000
+build_time_secs = 15.0
+health = 2500.0
+armor = "structure"
+footprint = [3, 3]
+power_delta = 60
+vision_range = 18.0
+prerequisites = []
+
+[buildings.resource_costs]
+credits = 2000
+timber = 400
+alloy = 200
+
+[buildings.resource_trickle_per_sec]
+credits = 10
+
+[buildings.visual]
+model = "assets/models/command_hq.glb"
+archetype = "construction_yard"
+scale = [3.0, 2.2, 3.0]
+primary_color = [0.25, 0.55, 0.85]
+team_color_tint = true
+has_damage_states = true
+
+[buildings.visual.animations]
+idle = "Idle"
+constructing = "Constructing"
+producing = "Producing"
+damaged = "Damaged"
+
+[[buildings]]
+id = "resource_mill"
+name = "Timber & Alloy Processing Mill"
+faction = "shared"
+role = "refinery"
+cost = 800
+build_time_secs = 8.0
+health = 1400.0
+armor = "structure"
+footprint = [3, 2]
+power_delta = -15
+vision_range = 14.0
+prerequisites = ["command_hq"]
+spawns_unit_on_complete = "multi_harvester"
+
+[buildings.resource_costs]
+credits = 800
+timber = 250
+
+[buildings.visual]
+model = "assets/models/resource_mill.glb"
+archetype = "refinery"
+scale = [3.0, 1.8, 2.0]
+primary_color = [0.55, 0.65, 0.42]
+team_color_tint = true
+has_damage_states = true
+
+[[buildings.visual.sockets]]
+name = "Exhaust"
+offset = [0.0, 2.2, -0.6]
+
+[[buildings]]
+id = "field_barracks"
+name = "Squad Field Barracks"
+faction = "shared"
+role = "barracks"
+cost = 500
+build_time_secs = 6.0
+health = 1100.0
+armor = "structure"
+footprint = [2, 2]
+power_delta = -10
+vision_range = 15.0
+prerequisites = ["command_hq"]
+
+[buildings.resource_costs]
+credits = 500
+timber = 300
+
+[buildings.visual]
+model = "assets/models/field_barracks.glb"
+archetype = "barracks"
+scale = [2.0, 1.6, 2.0]
+primary_color = [0.35, 0.58, 0.40]
+team_color_tint = true
+has_damage_states = true
+
+[[buildings]]
+id = "alloy_foundry"
+name = "Heavy Alloy Foundry"
+faction = "shared"
+role = "war_factory"
+cost = 1200
+build_time_secs = 11.0
+health = 1800.0
+armor = "structure"
+footprint = [3, 3]
+power_delta = -25
+vision_range = 16.0
+prerequisites = ["resource_mill"]
+
+[buildings.resource_costs]
+credits = 1200
+timber = 200
+alloy = 400
+
+[buildings.visual]
+model = "assets/models/alloy_foundry.glb"
+archetype = "war_factory"
+scale = [3.0, 2.0, 3.0]
+primary_color = [0.48, 0.56, 0.68]
+team_color_tint = true
+has_damage_states = true
+
+[[buildings]]
+id = "mg_bunker"
+name = "Reinforced Suppression Bunker"
+faction = "shared"
+role = "defense"
+cost = 450
+build_time_secs = 5.0
+health = 950.0
+armor = "structure"
+footprint = [1, 1]
+power_delta = -5
+vision_range = 16.0
+primary_weapon = "heavy_mg_nest"
+prerequisites = ["field_barracks"]
+
+[buildings.resource_costs]
+credits = 450
+timber = 200
+alloy = 100
+
+[buildings.container]
+capacity = 2
+garrison_damage_bonus_per_passenger = 0.25
+
+[buildings.visual]
+model = "assets/models/mg_bunker.glb"
+archetype = "turret"
+scale = [1.2, 1.1, 1.2]
+primary_color = [0.45, 0.48, 0.50]
+team_color_tint = true
+has_damage_states = true
+
+[[buildings.visual.sockets]]
+name = "Muzzle_01"
+offset = [0.0, 1.05, 0.85]

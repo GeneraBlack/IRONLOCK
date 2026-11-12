@@ -1,30 +1,98 @@
 # ==============================================================================
 # NethServer 8 Rootless Application Module Containerfile
 # IRONLOCK // RUST-RTS (rust-rts.bls-isp.net)
+# Build from repository root: podman build -f centralwebserver/Containerfile.ns8 .
 # ==============================================================================
 
-# Stage 1: Build NS8 Cockpit UI (Vue 2 + Carbon Design System)
+# Stage 1: Build Headless Authoritative Dedicated Server (rts-dedicated-server)
+FROM docker.io/library/rust:1.85.0-alpine3.21 AS dedicated-builder
+
+RUN apk add --no-cache musl-dev pkgconfig
+
+WORKDIR /workspace/engine
+COPY engine/Cargo.toml engine/Cargo.lock* ./
+COPY engine/crates ./crates
+
+RUN cargo build --release -p rts-network --bin rts-dedicated-server && \
+    strip /workspace/engine/target/release/rts-dedicated-server
+
+# Stage 2: Build Central Webserver & Fleet Orchestrator
+FROM docker.io/library/node:22.14.0-alpine3.21 AS web-builder
+
+WORKDIR /app
+COPY centralwebserver/package.json centralwebserver/package-lock.json* ./
+RUN npm install --no-audit --no-fund
+
+COPY centralwebserver/tsconfig.json centralwebserver/tsconfig.client.json ./
+COPY centralwebserver/src ./src
+COPY centralwebserver/test ./test
+COPY centralwebserver/public ./public
+
+RUN npm run build
+
+# Stage 3: Bundled NS8 App Server Runtime (--target server-runtime)
+FROM docker.io/library/node:22.14.0-alpine3.21 AS server-runtime
+
+ARG MODULE_VERSION=1.0.0
+
+WORKDIR /app
+ENV NODE_ENV=production
+ENV HOST=0.0.0.0
+ENV PORT=8080
+ENV PUBLIC_DOMAIN=rust-rts.bls-isp.net
+ENV PUBLIC_HOST=rust-rts.bls-isp.net
+ENV NODE_ID=ns8-bls-isp-01
+ENV TTL_SECS=45
+ENV DATA_DIR=/app/data
+ENV RELAY_PORT_START=30100
+ENV RELAY_PORT_END=30139
+ENV DEDICATED_SERVER_BIN=/usr/local/bin/rts-dedicated-server
+
+LABEL org.opencontainers.image.title="IRONLOCK // RUST-RTS Server" \
+      org.opencontainers.image.version="${MODULE_VERSION}"
+
+COPY --from=dedicated-builder /workspace/engine/target/release/rts-dedicated-server /usr/local/bin/rts-dedicated-server
+COPY --from=web-builder --chown=node:node /app/package.json ./package.json
+COPY --from=web-builder --chown=node:node /app/dist ./dist
+COPY --from=web-builder --chown=node:node /app/public ./public
+
+RUN chmod 0755 /usr/local/bin/rts-dedicated-server && \
+    mkdir -p /app/data && chown -R node:node /app/data
+
+USER node
+
+EXPOSE 8080
+EXPOSE 30100-30139
+
+CMD ["node", "dist/src/index.js"]
+
+# Stage 4: Build NS8 Cockpit UI (Vue 2 + Carbon Design System)
 FROM docker.io/library/node:20.18.3-alpine3.21 AS ui-builder
 
 WORKDIR /ui
 ENV NODE_OPTIONS=--openssl-legacy-provider
-COPY ui/package.json ./
+COPY centralwebserver/ui/package.json ./
 RUN npm install --legacy-peer-deps
-COPY ui/ ./
+COPY centralwebserver/ui/ ./
 RUN npm run build
 
-# Stage 2: Normalize LF line endings & permissions for imageroot
+# Stage 5: Verify server + dedicated binary artifacts & normalize LF for imageroot
 FROM docker.io/library/alpine:3.19.4 AS imageroot-prep
 
-COPY imageroot /imageroot
+COPY centralwebserver/imageroot /imageroot
 COPY --from=ui-builder /ui/dist /ui
+COPY --from=dedicated-builder /workspace/engine/target/release/rts-dedicated-server /tmp/rts-dedicated-server
+COPY --from=web-builder /app/dist/src/index.js /tmp/centralwebserver-index.js
 
-RUN find /imageroot -name "__pycache__" -type d -exec rm -rf {} + && \
+RUN test -x /tmp/rts-dedicated-server && \
+    test -s /tmp/centralwebserver-index.js && \
+    rm -f /tmp/rts-dedicated-server /tmp/centralwebserver-index.js && \
+    find /imageroot -name "__pycache__" -type d -exec rm -rf {} + && \
     find /imageroot -name "*.pyc" -delete && \
     find /imageroot -type f -exec sed -i 's/\r$//' {} + && \
     chmod +x /imageroot/actions/*/[0-9]* /imageroot/update-module.d/* /imageroot/bin/*
 
-# Stage 3: Final NethServer 8 Scratch Module Image
+# Stage 6: Final NethServer 8 Scratch Module Image
 FROM scratch
 
 ARG MODULE_VERSION=1.0.0
@@ -35,7 +103,7 @@ COPY --from=imageroot-prep /ui /ui
 
 ENTRYPOINT ["/"]
 
-LABEL org.nethserver.authorizations="traefik@node:routeadm" \
+LABEL org.nethserver.authorizations="traefik@node:routeadm node:fwadm" \
       org.nethserver.tcp-ports-demand="1" \
       org.nethserver.rootfull="0" \
       org.nethserver.min-core="3.0.0" \

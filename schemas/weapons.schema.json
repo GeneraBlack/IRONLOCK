@@ -1,56 +1,177 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
   "properties": {
-    "status_effects": {
-      "items": {
-        "type": "object"
-      },
-      "type": "array"
-    },
     "weapons": {
       "items": {
+        "additionalProperties": false,
         "properties": {
+          "airstrike_delay_secs": {
+            "type": "number"
+          },
+          "arc_height": {
+            "type": "number"
+          },
           "armor_multipliers": {
+            "additionalProperties": false,
+            "properties": {
+              "heavy": {
+                "type": "number"
+              },
+              "light": {
+                "type": "number"
+              },
+              "medium": {
+                "type": "number"
+              },
+              "none": {
+                "type": "number"
+              },
+              "structure": {
+                "type": "number"
+              }
+            },
             "type": "object"
           },
+          "burst": {
+            "minimum": 1,
+            "type": "integer"
+          },
+          "c4_demolition": {
+            "type": "boolean"
+          },
+          "calls_airstrike_damage": {
+            "type": "number"
+          },
+          "can_mind_control_buildings": {
+            "type": "boolean"
+          },
+          "clears_garrison": {
+            "type": "boolean"
+          },
+          "clears_grapple": {
+            "type": "boolean"
+          },
           "cooldown_secs": {
+            "minimum": 0.0,
             "type": "number"
           },
           "damage": {
             "type": "number"
           },
-          "effects": {
+          "delivery": {
+            "enum": [
+              "instant",
+              "ballistic",
+              "missile"
+            ],
+            "type": "string"
+          },
+          "disables_building_duration_secs": {
+            "type": "number"
+          },
+          "friendly_fire": {
+            "type": "boolean"
+          },
+          "id": {
+            "type": "string"
+          },
+          "interceptable_by_aa_health": {
+            "type": "number"
+          },
+          "kamikaze": {
+            "type": "boolean"
+          },
+          "max_spin_up_multiplier": {
+            "type": "number"
+          },
+          "min_range": {
+            "minimum": 0.0,
+            "type": "number"
+          },
+          "mind_control": {
+            "type": "boolean"
+          },
+          "name": {
+            "type": "string"
+          },
+          "naval_only": {
+            "type": "boolean"
+          },
+          "on_hit_status": {
+            "type": "object"
+          },
+          "on_hit_statuses": {
             "items": {
               "type": "object"
             },
             "type": "array"
           },
-          "id": {
-            "type": "string"
+          "on_hit_zone": {
+            "type": "object"
           },
-          "name": {
-            "type": "string"
+          "prism_support": {
+            "type": "boolean"
           },
           "projectile_speed": {
+            "minimum": 0.0,
             "type": "number"
           },
           "projectile_style": {
+            "enum": [
+              "bullet",
+              "laser",
+              "tesla",
+              "radiation",
+              "sonic",
+              "mind_control",
+              "missile"
+            ],
             "type": "string"
           },
           "range": {
+            "minimum": 0.0,
+            "type": "number"
+          },
+          "refraction_damage_ratio": {
+            "type": "number"
+          },
+          "refraction_range": {
+            "type": "number"
+          },
+          "refraction_targets": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "spin_up_per_shot": {
             "type": "number"
           },
           "splash_radius": {
+            "minimum": 0.0,
             "type": "number"
+          },
+          "steals_credits_per_hit": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "targets_air": {
+            "type": "boolean"
+          },
+          "targets_ground": {
+            "type": "boolean"
+          },
+          "temporal_erase_dps": {
+            "type": "number"
+          },
+          "tractor_pull_distance": {
+            "type": "number"
+          },
+          "warp_erase": {
+            "type": "boolean"
           }
         },
         "required": [
-          "id",
-          "name",
-          "damage",
-          "range",
-          "cooldown_secs",
-          "projectile_speed"
+          "id"
         ],
         "type": "object"
       },

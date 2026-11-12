@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "ResourceTypeDef": {
+      "description": "Configurable economy resource definition loaded optionally from `resources.toml`. When omitted by a mod, `ResourceTypeDef::default_catalog()` supplies `credits` and `power`.",
+      "properties": {
+        "color_rgb": {
+          "default": [
+            0.949999988079071,
+            0.7799999713897705,
+            0.20000000298023224
+          ],
+          "items": {
+            "format": "float",
+            "type": "number"
+          },
+          "maxItems": 3,
+          "minItems": 3,
+          "type": "array"
+        },
+        "display_name": {
+          "type": "string"
+        },
+        "icon": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "id": {
+          "type": "string"
+        },
+        "is_capacity_pool": {
+          "default": false,
+          "type": "boolean"
+        },
+        "starting_amount": {
+          "default": 0,
+          "format": "uint32",
+          "minimum": 0.0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "display_name",
+        "id"
+      ],
+      "type": "object"
+    }
+  },
+  "properties": {
+    "resources": {
+      "default": [],
+      "items": {
+        "$ref": "#/definitions/ResourceTypeDef"
+      },
+      "type": "array"
+    }
+  },
+  "title": "ResourceCatalog",
+  "type": "object"
+}

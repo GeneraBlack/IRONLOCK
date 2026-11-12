@@ -7,9 +7,9 @@
 ## 1. Overview & Architecture
 
 The **Rust 3D RTS Engine** is a 100% data-driven, deterministic lockstep 3D Real-Time Strategy engine and Mod/Dev Kit:
-- **Zero Hardcoded Game Content in the Core Engine:** All units, buildings, weapons, warheads, status effects, factions, sub-factions, AI profiles, audio cues, localization tables, maps, and campaigns live in declarative `.toml` catalogs and `.rhai` / `.lua` scripts inside each mod folder (e.g., `rust-ra2/`).
+- **Zero Hardcoded Game Content in the Core Engine:** All units, buildings, weapons, status effects, factions, sub-factions, upgrades/doctrines, AI profiles, audio cues, localization tables, maps, and campaigns live in declarative `.toml` catalogs and `.rhai` / `.lua` scripts inside each mod folder (e.g., `rust-ra2/`).
 - **Sub-Mod Inheritance (`extends`):** Mods can extend a parent mod (`extends = "rust-ra2"`) using field-level TOML deep-merging per `id` and cascading asset search paths (`asset_search_dirs`).
-- **Deterministic Lockstep & Content Verification:** Every `LoadedMod` computes an FNV-1a 64-bit `content_hash()` verified during multiplayer handshakes, and `SimWorld::state_hash()` hashes all simulation state (including `trigger_vars` and `formation_locked`).
+- **Deterministic Lockstep & Content Verification:** Every `LoadedMod` computes an FNV-1a 64-bit `content_hash()` across manifest, `[rules]`, catalogs, `entry_map`, all `maps`, `campaigns`, `audio`, and script sources, verified during multiplayer handshakes; `SimWorld::state_hash()` hashes simulation state every tick.
 - **Live Hot-Reload (`[F12]`):** Edit any `.toml`, `.rhai`, or `.lua` file on disk and press **`[F12]`** in-game (or click **Hot-Reload Mod [F12]** in the Studio overlay) to transactionally validate and apply new stats, weapons, AI profiles, audio, locales, and scripts to live entities without restarting.
 
 ---
@@ -18,37 +18,36 @@ The **Rust 3D RTS Engine** is a 100% data-driven, deterministic lockstep 3D Real
 
 ```text
 my-mod/
-├── mod.toml                  # ModManifest, ModPaths & ModRules
+├── mod.toml                  # ModManifest, ModCatalogPaths & ModRules
 ├── factions/
-│   ├── factions.toml         # FactionDef & SubFactionDef
-│   └── doctrines.toml        # CommanderDoctrineDef
+│   └── factions.toml         # FactionDef, SubFactionDef & FactionHudSkinDef
 ├── buildings/
-│   └── buildings.toml        # BuildingDef + 5 Trait-Substructs
+│   └── buildings.toml        # BuildingDef + 5 Trait-Substructs + SupportPowerDef
 ├── units/
-│   └── units.toml            # UnitDef + 5 Trait-Substructs
+│   └── units.toml            # UnitDef + 5 Trait-Substructs + AbilityDef
 ├── weapons/
-│   ├── weapons.toml          # WeaponDef & EffectPayload
-│   └── status_effects.toml   # StatusEffectDef
+│   └── weapons.toml          # WeaponDef, StatusEffectDef & HazardZoneSpec
 ├── upgrades/
-│   └── upgrades.toml         # UpgradeDef
+│   └── upgrades.toml         # UpgradeDef (Tech Upgrades & Promotion-Point Doctrines)
 ├── ai/
-│   └── ai_profiles.toml      # AiProfileDef (Build-Orders, Unit Weights, on_ai_tick)
+│   └── ai_profiles.toml      # AiProfileDef (Build-Orders, Unit Weights, Preferred Superweapons, on_ai_tick)
 ├── audio/
-│   └── audio.toml            # AudioCatalog (SFX, Voice Lines, EVA Alerts, Music)
+│   └── audio.toml            # AudioCatalog (weapon_sfx, unit_voices, music_tracks, eva_cues)
 ├── locales/
 │   ├── de.toml               # LocaleCatalog (German)
 │   └── en.toml               # LocaleCatalog (English)
 ├── maps/
-│   └── skirmish_valley.toml  # MapDef, Spawns, Props & TriggerZones
+│   └── skirmish_valley.toml  # MapDef, Terrain Rects, Spawns, PreplacedEntities & TriggerZones
 ├── campaigns/
 │   └── campaigns.toml        # CampaignDef & MissionDef
 ├── scripts/
-│   ├── rules.rhai            # Rhai unit & world hooks
-│   └── director.lua          # Lua unit & world hooks (1:1 parity with Rhai)
+│   ├── allied_rules.rhai     # Deterministic sandboxed Rhai unit & world hooks
+│   └── soviet_rules.lua      # Deterministic sandboxed Lua unit & world hooks (1:1 parity)
 └── assets/
-    ├── models/*.glb          # Binary glTF 2.0 3D models
-    ├── audio/*.wav           # Custom PCM WAV files
-    └── ui/*.png              # Cameo icons & loading screens
+    ├── models/*.glb          # Multi-node binary glTF 2.0 3D models (Hull, Turret, Barrel, Rotor)
+    ├── audio/*.wav           # PCM WAV files
+    ├── vfx/vfx_catalog.json  # Optional flipbook VFX definitions
+    └── ui/                   # Cameo icons (cameos/*.png), HUD skins (hud/), loading screens & cursors
 ```
 
 ### `ModManifest` (`mod.toml`)
@@ -58,97 +57,119 @@ my-mod/
 | `id` | `String` | *(required)* | Unique mod identifier (`"rust-ra2"`). |
 | `name` | `String` | *(required)* | Display title of the mod. |
 | `version` | `String` | *(required)* | Semantic version (`"0.2.0"`). |
-| `sdk_version` | `String` | *(required)* | Target SDK version (`"0.1"`). |
+| `engine_version` | `String` | *(required)* | Target engine version (`"0.1.0"`). |
 | `extends` | `Option<String>` | `None` | Optional parent mod ID or relative path for sub-mod inheritance & deep-merging. |
-| `entry_map` | `String` | *(required)* | Default map file relative to mod root (`"maps/skirmish_valley.toml"`). |
-| `[paths]` | `ModPaths` | *(optional)* | Relative paths to catalog files (`factions`, `buildings`, `units`, `weapons`, `status_effects`, `upgrades`, `doctrines`, `campaigns`, `ai_profiles`, `audio`, `locales_dir`, `scripts_dir`, `assets_dir`). |
-| `[rules]` | `ModRules` | `ModRules::default()` | Global economy, combat, veterancy, and superweapon rules. |
+| `authors` | `Vec<String>` | `[]` | Mod author list. |
+| `description` | `String` | `""` | Human-readable mod summary. |
+| `entry_map` | `String` | `""` | Default map file relative to mod root (`"maps/skirmish_valley.toml"`). Optional when `extends` is set. |
+| `scripts` | `Vec<String>` | `[]` | Relative paths to `.rhai` and `.lua` script files. |
+| `[catalogs]` | `ModCatalogPaths` | `ModCatalogPaths::default()` | Relative paths to core catalogs (`factions`, `weapons`, `buildings`, `units`). Optional when `extends` is set. |
+| `[rules]` | `ModRules` | `ModRules::default()` | Global economy, veterancy (`veteran_xp_threshold`, `elite_xp_threshold`, `commander_rank_xp_thresholds`), repair/sell rates, crates, and faction commando/worker/mutant unit rules. |
 
 ---
 
 ## 3. Units, Buildings & The 5 Modular Trait-Substructs
 
+`UnitRole` values: `"infantry"`, `"vehicle"`, `"harvester"`, `"engineer"`.
+`MovementDomain` values: `"ground"`, `"air"`, `"naval"`, `"amphibious"`, `"jumpjet"`, `"chrono"`.
+`ArmorType` values: `"none"`, `"light"`, `"medium"`, `"heavy"`, `"structure"`.
+
 Both `UnitDef` (`units/*.toml`) and `BuildingDef` (`buildings/*.toml`) share the **5 modular trait-substructs** (`#[serde(default)]`):
 
-### 3.1 `ContainerTraitDef` (`[units.container]` / `[buildings.container]`)
+### 3.1 `ContainerSpec` (`[units.container]` / `[buildings.container]`)
 
 | Field | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
-| `transport_capacity` | `u32` | `0` | Number of infantry/vehicle slots inside the transport or bunker. |
-| `passengers_can_fire` | `bool` | `false` | Whether embarked passengers can fire their own weapons out of firing ports (Battle Fortress / Bunker). |
-| `weapon_by_passenger_role` | `BTreeMap<String, String>` | `{}` | Dynamic turret/weapon swap table keyed by passenger `UnitRole` or `unit_id` (e.g. IFV adaptation). |
-| `shared_tunnel_network` | `bool` | `false` | Connects all buildings of this type owned by the player into a shared subterranean garrison pool. |
-| `recycle_refund_ratio` | `f32` | `0.0` | Credit refund ratio (`0.0..=1.0`) when friendly units enter this Grinder/Recycler structure. |
+| `capacity` | `u32` | `0` | Number of passenger/garrison slots inside the transport, bunker, or bio-reactor. |
+| `accepts_vehicles` | `bool` | `false` | Allows armored vehicles to embark (e.g. amphibious hover transports). |
+| `passengers_can_fire` | `bool` | `false` | Allows embarked infantry to fire out of firing ports (Battle Fortress / Civilian Bunker). |
+| `tunnel_network` | `bool` | `false` | Connects owned buildings of this type into a shared subterranean garrison pool. |
+| `power_per_occupant` | `i32` | `0` | Bonus power generated per garrisoned infantryman (Bio-Reactor). |
+| `adapts_weapon_to_passenger` | `bool` | `false` | Swaps turret weapon dynamically via `passenger_weapon_by_unit` / `passenger_weapon_by_role` (IFV). |
+| `engineer_repair_aura_per_sec` | `f32` | `0.0` | Repair aura unlocked when an engineer is embarked. |
 
-### 3.2 `StealthDetectionTraitDef` (`[units.stealth]` / `[buildings.stealth]`)
-
-| Field | Type | Default | Description |
-| :--- | :--- | :--- | :--- |
-| `permanent_cloak` | `bool` | `false` | Unit remains cloaked while moving and decloaks only briefly when firing. |
-| `cloak_when_stationary` | `bool` | `false` | Mirage-style camouflage when stationary. |
-| `disguise_as_enemy` | `bool` | `false` | Allows spy/mirage disguise commands on enemy targets. |
-| `stealth_detection_range` | `f32` | `0.0` | Radius in world units within which enemy cloaked/submerged/disguised units and mines are revealed. |
-| `can_infiltrate_buildings` | `bool` | `false` | Spy infiltration capability (power outage, radar reset, credit theft, veteran tech steal). |
-| `hide_enemies_in_radius` | `f32` | `0.0` | Gap Generator radius shrouding friendly territory from hostile Fog-of-War vision. |
-
-### 3.3 `DeathEffectTraitDef` (`[units.death_effect]` / `[buildings.death_effect]`)
+### 3.2 `StealthSensorSpec` (`[units.stealth]` / `[buildings.stealth]`)
 
 | Field | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
-| `explosion_weapon` | `Option<String>` | `None` | `WeaponDef` ID triggered automatically at the entity's coordinates upon destruction (Demolition Truck / Crazy Ivan). |
-| `spawn_survivor_unit` | `Option<String>` | `None` | Infantry unit ID spawned when a building is sold or destroyed. |
-| `survivor_count_on_sell` | `u32` | `0` | Number of survivors spawned on manual sell. |
-| `survivor_count_on_death` | `u32` | `0` | Number of survivors spawned on combat destruction. |
-| `drops_salvage` | `bool` | `false` | Drops a collectible metallic salvage crate when destroyed. |
+| `cloaked` | `bool` | `false` | Permanent cloak/submersion while out of combat. |
+| `detects_cloak` | `bool` | `false` | Reveals nearby cloaked/submerged enemy units and mines. |
+| `detects_disguise` | `bool` | `false` | Unmasks enemy spies and disguised units (Attack Dog / Psychic Sensor). |
+| `cloak_field_radius` | `f32` | `0.0` | Gap Generator radius shrouding friendly territory from hostile vision. |
+| `psychic_sensor_radius` | `f32` | `0.0` | Sensor radius detecting hostile commands and infiltrators. |
+| `disguises_as_terrain` | `bool` | `false` | Mirage-style tree/terrain camouflage when stationary. |
+| `can_disguise_as_enemy` | `bool` | `false` | Spy disguise capability on infantry targets. |
+| `reveal_on_fire_secs` | `f32` | `0.0` | Duration for which firing temporarily reveals a cloaked/disguised unit. |
 
-### 3.4 `PointDefenseTraitDef` (`[units.point_defense]` / `[buildings.point_defense]`)
-
-| Field | Type | Default | Description |
-| :--- | :--- | :--- | :--- |
-| `enabled` | `bool` | `false` | Enables automatic interception of incoming hostile missiles/ballistic projectiles. |
-| `range` | `f32` | `0.0` | Interception radius in world units. |
-| `cooldown_secs` | `f32` | `2.0` | Cooldown between laser/chaff interceptions. |
-
-### 3.5 `SupportAuraTraitDef` (`[units.support_aura]` / `[buildings.support_aura]`)
+### 3.3 `DeathPayloadSpec` (`[units.death_effect]` / `[buildings.death_effect]`)
 
 | Field | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
-| `heal_aura_radius` | `f32` | `0.0` | Radius for automatic biological/mechanical repair aura. |
-| `heal_aura_hps` | `f32` | `0.0` | Health restored per second inside the aura. |
-| `Overcharge / Synergy` | `f32` | `0.0` | `overcharge_bonus_damage`, `overcharge_bonus_range`, `prism_forwarding_range`, `radar_jam_radius`, `requires_control_link`. |
+| `explosion_damage` | `f32` | `0.0` | Blast damage dealt around the entity upon destruction (Demolition Truck / Crazy Ivan). |
+| `explosion_radius` | `f32` | `0.0` | Splash radius in world units for the death explosion. |
+| `leaves_radiation` | `bool` | `false` | Spawns a lingering radioactive hazard zone on death. |
+| `survivor_unit` | `Option<String>` | `None` | Infantry unit ID spawned when sold or destroyed. |
+| `survivor_chance` | `f32` | `0.0` | Probability (`0.0..=1.0`) of spawning a survivor on combat destruction. |
+| `drops_salvage` | `bool` | `false` | Drops a collectible metallic salvage crate for vehicles when destroyed. |
+
+### 3.4 `PointDefenseSpec` (`[units.point_defense]` / `[buildings.point_defense]`)
+
+| Field | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `intercept_radius` | `f32` | `0.0` | Radius in world units within which incoming interceptable missiles are shot down (`> 0.0` enables). |
+| `cooldown_secs` | `f32` | `0.0` | Cooldown in seconds between point-defense interceptions. |
+
+### 3.5 `SupportAuraSpec` (`[units.support_aura]` / `[buildings.support_aura]`)
+
+| Field | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `heals_infantry_per_sec` | `f32` | `0.0` | Passive biological regeneration aura for friendly infantry. |
+| `repairs_vehicles_per_sec` | `f32` | `0.0` | Service depot / support vehicle mechanical repair rate. |
+| `repairs_ships_per_sec` | `f32` | `0.0` | Naval shipyard hull repair rate for docked/nearby vessels. |
+| `mobile_heal_per_sec` | `f32` | `0.0` | Mobile medic/repair aura health per second. |
+| `mobile_heal_radius` | `f32` | `0.0` | Radius of the mobile medic/repair aura. |
+| `cash_trickle_per_sec` | `u32` | `0` | Continuous passive credit generation (Tech Oil Derrick). |
+| `ore_refine_multiplier` | `f32` | `0.0` | Bonus multiplier applied to ore/gem refinery payouts (Ore Purifier). |
+| `vehicle_cost_discount` | `f32` | `0.0` | Fractional credit discount on vehicle production (Industrial Plant). |
 
 ---
 
-## 4. Composable Weapons (`WeaponDef`), Status Effects & `EffectPayload`
+## 4. Weapons (`WeaponDef`), `StatusEffectDef`, Abilities & `EffectPayload`
 
-Every `WeaponDef` (`weapons/weapons.toml`) can carry standard damage properties (`damage`, `range`, `cooldown_secs`, `splash_radius`, `projectile_style`, `warhead_multipliers`) plus a list of composable **`effects: Vec<EffectPayload>`**:
+### 4.1 `WeaponDef` (`weapons/weapons.toml`)
+Core ballistic/beam fields (`damage`, `range`, `min_range`, `cooldown_secs`, `projectile_speed`, `delivery`, `arc_height`, `friendly_fire`, `armor_multipliers`, `targets_ground`, `targets_air`, `splash_radius`, `burst`, `projectile_style`) combine with specialized warhead flags and status payloads:
+- **Statuses & Hazard Zones:** `on_hit_status: Option<StatusEffectDef>`, `on_hit_statuses: Vec<StatusEffectDef>`, `on_hit_zone: Option<HazardZoneSpec>`.
+- **Temporal, Psychic & Prism Mechanics:** `mind_control`, `can_mind_control_buildings`, `warp_erase`, `temporal_erase_dps` (Chrono Legionnaire erase beam), `tractor_pull_distance` (Magnetron tether), `prism_support`, `refraction_targets`, `refraction_damage_ratio`, `refraction_range` (Prism Tank / Prism Tower beam refraction).
+- **Special Ops & Anti-Structure:** `c4_demolition`, `clears_garrison`, `disables_building_duration_secs`, `steals_credits_per_hit` (Floating Disc), `spin_up_per_shot` & `max_spin_up_multiplier` (Gattling), `calls_airstrike_damage` & `airstrike_delay_secs` (Boris MiG strike), `clears_grapple` (Dolphin sonic beam), `interceptable_by_aa_health` (V3 / Dreadnought missiles), `naval_only`, `kamikaze`.
 
-| `EffectPayload` Variant (`type = "..."`) | Parameters | Behavior |
+### 4.2 `EffectPayload` (`kind = "..."` on `AbilityDef` & `SupportPowerDef`)
+
+| `EffectPayload` Variant (`kind = "..."`) | Parameters | Behavior |
 | :--- | :--- | :--- |
-| `direct_damage` | `amount: f32`, `ignore_armor: bool` | Deals bonus or armor-ignoring direct damage on impact. |
-| `apply_status` | `status_id: String`, `duration_secs: Option<f32>` | Applies a data-driven `StatusEffectDef` from `weapons/status_effects.toml`. |
-| `mind_control` | `max_targets: u32`, `overload_At: u32`, `overload_damage: f32`, `can_capture_buildings: bool` | Captures enemy units/buildings via psychic tether (Yuri / Mastermind). |
-| `temporal_drain` | `erase_speed_mult: f32` | Phases target out of time (`temporal_progress -> 1.0`) until erased (Chrono Legionnaire). |
-| `magnetron_tether` | `levitate_altitude: f32`, `pull_speed: f32`, `fall_damage_to_buildings: f32` | Levitates and pulls vehicles toward the caster; drops them if interrupted. |
-| `grapple_lock` | `dps: f32`, `duration_secs: f32` | Locks naval vessels in place and applies crushing DoT (Giant Squid). |
-| `disarm_mines_and_c4` | `radius: f32` | Defuses hostile landmines and C4/Ivan bombs on friendly targets. |
-| `chrono_shift` | `crush_infantry: bool` | Teleports caster to target tile (Chrono Commando / Legionnaire). |
-| `power_drain` | `duration_secs: f32`, `credits_stolen_per_sec: f32` | Disables enemy building power and siphons credits (Floating Disc). |
-| `convert_infantry` | `into_unit_id: String` | Mutates organic infantry in splash radius into `into_unit_id` (Genetic Mutator). |
-| `airstrike_target` | `plane_unit_id: String`, `plane_count: u32`, `bomb_damage: f32` | Calls in off-map strike aircraft against the target (Boris Laser). |
-| `place_c4` | `fuse_secs: f32`, `damage: f32`, `splash_radius: f32` | Plants a timed demolition charge on buildings/units/bridges (Tanya / Navy SEAL / Crazy Ivan). |
+| `spawn_units` | `unit_id: Option<String>`, `count: u32`, `parachute: bool` | Spawns reinforcements or paratroopers at the target area. |
+| `reveal_area` | `radius_tiles: i32`, `duration_secs: f32` | Reveals Fog-of-War around the target tile (Psychic Radar / SpySat). |
+| `area_damage` | `radius: f32`, `damage: f32`, `friendly_fire: bool` | Delivers direct area-of-effect blast damage (Nuclear Strike / Lightning Storm). |
+| `spawn_hazard_zone` | `radius: f32`, `dps: f32`, `duration_secs: f32`, `is_toxic_cloud: bool` | Creates a lingering radiation field or toxic virus cloud (Desolator / Nuke). |
+| `apply_area_status` | `radius: f32`, `status: StatusEffectDef`, `kills_organic_infantry: bool`, `buildings_only: bool`, `friendly_only: bool` | Applies Iron Curtain invulnerability, Force Shield, EMP, or buffs across a radius. |
+| `teleport_units` | `radius: f32`, `max_units: usize`, `chrono_disable_secs: f32`, `vaporize_organic_infantry: bool` | Chronosphere group teleportation (vaporizing organic infantry). |
+| `mutate_organic_infantry` | `radius: f32`, `into_unit_id: Option<String>` | Genetic Mutator conversion of organic infantry into Brutes (`into_unit_id`). |
+| `mind_control_wave` | `radius: f32`, `max_units: usize`, `blast_damage: f32` | Psychic Dominator permanent area mind-control + structural shockwave. |
+| `unload_passengers` | *(none)* | Ejects embarked passengers at the carrier's position. |
 
 ---
 
-## 5. Data-Driven AI Profiles (`AiProfileDef` — `ai/ai_profiles.toml`)
+## 5. Upgrades, Doctrines (`upgrades/upgrades.toml`) & AI Profiles (`ai/ai_profiles.toml`)
+
+- **`UpgradeDef` (`upgrades/upgrades.toml`):** Supports lab research upgrades (`cost`, `research_time_secs`, `prerequisites`, `target_role`, `damage_bonus_mult`, `armor_bonus_mult`, `speed_bonus_mult`, `range_bonus`, `cash_bounty_ratio`) and Commander Rank Doctrines (`requires_promotion_point = true`).
+- **`AiProfileDef` (`ai/ai_profiles.toml`):**
 
 ```toml
 [[profiles]]
 id = "allied_rusher"
 faction = "allies"
-personality = "rusher" # "balanced" | "rusher" | "turtle" | "air_force"
-min_attack_wave_size = 3
-build_order = ["allied_refinery", "allied_barracks", "allied_war_factory", "allied_pillbox"]
+personality = "rusher"
+min_attack_wave_size = 5
+build_order = ["allied_power_plant", "allied_barracks", "allied_ore_refinery", "allied_war_factory"]
 preferred_superweapons = ["chronosphere_shift", "weather_lightning_storm"]
 on_ai_tick = "on_custom_ai_tick" # Optional .rhai or .lua hook
 
@@ -163,12 +184,14 @@ allied_gi = 65
 
 ## 6. Data-Driven Audio (`audio/audio.toml`) & Localization (`locales/<lang>.toml`)
 
-- **`audio/audio.toml` (`AudioCatalog`):** Maps logical sound keys (`ui_click`, `weapon_fire`, `explosion`, `eva_warning`), unit voice lines (`unit_voices.<unit_id>.select` / `.move` / `.attack`), and `music_tracks` to relative `.wav` files in `assets/audio/`. Falls back to the procedural WAV synthesizer if a file is omitted.
-- **`locales/<lang>.toml` (`LocaleCatalog`):** Key-value translation catalog (`language = "de"` / `"en"`, `[strings]`). Use `LoadedMod::translate(key)` in UI and EVA transmissions.
+- **`audio/audio.toml` (`AudioCatalog`):** Maps weapon IDs (`[weapon_sfx]`), per-unit voice banks (`[unit_voices.<unit_id>]` with `select`, `move_order`, `attack_order`, `death`), faction EVA alert keys (`[eva_cues]` & `[faction_eva_cues.<faction>]`), and `[[music_tracks]]` to relative `.wav`, `.ogg`, or `.flac` files in `assets/audio/`. Falls back to the procedural WAV synthesizer if a cue is omitted.
+- **`locales/<lang>.toml` (`LocaleCatalog`):** Key-value UTF-8 translation catalog (`language = "de"` / `"en"`, `[strings]`) with 160+ UI, HUD, lobby, replay, post-game, and faction keys. Resolved across all client menus/HUDs/modals via `LoadedMod::t(lang, key)` (`requested -> "en" -> built-in fallback -> key`) and switchable live at runtime in **`Options -> Gameplay -> Language (`English` / `Deutsch`)`**.
 
 ---
 
-## 7. Maps, 3D Map Editor v2 & Campaign Director (`TriggerCondition` & `TriggerAction`)
+## 7. Maps (`maps/*.toml`) & Campaign Director (`TriggerCondition` & `TriggerAction`)
+
+`MapDef` defines terrain geometry via `water_rects`, `bridge_rects`, `elevation_rects`, `ramp_rects`, `obstacles`, `ore_patches`, `gem_patches`, `props`, `spawns`, `preplaced_entities` (`player_id = 0` for neutral capturable tech buildings), and `trigger_zones`.
 
 ### 7.1 `TriggerCondition` (`type = "..."`)
 
@@ -202,9 +225,9 @@ allied_gi = 65
 
 ---
 
-## 8. Dual-Language Scripting API (`.rhai` & `.lua` — 100% 1:1 Parity)
+## 8. Deterministic Sandboxed Scripting API (`.rhai` & `.lua` — 1:1 Parity)
 
-Both `.rhai` and `.lua` scripts in `scripts/` support unit hooks (`ScriptContext`) and global world/campaign hooks (`WorldEventContext`) with **1:1 parity**:
+Both `.rhai` (`Engine::new_raw()` with deterministic packages only — no host wall-clock/filesystem, `eval` disabled, 50,000-op cap) and `.lua` (`LuaRuntime` with `local` lexical scoping, `elseif`, bounded `while`/`for`/`repeat` loops, exact `i64` integer math, isolated per-call globals, 50,000-op cap) execute unit hooks (`ScriptContext`, preserving `flag_*` custom flags across invocations) and world hooks (`WorldEventContext`) with **1:1 parity**:
 
 ### Rhai World Director Example (`scripts/director.rhai`)
 ```rhai
@@ -246,6 +269,8 @@ end
 - `queue_grant_credits(player_id, amount)`
 - `queue_spawn_reinforcements(player_id, unit_id, count, tile_x, tile_z)`
 - `queue_spawn_building(player_id, building_id, tile_x, tile_z)`
+- `queue_change_owner(from_player_id, to_player_id)` / `queue_change_building_owner(from_player_id, to_player_id, building_id)`
+- `queue_fire_support_power(player_id, power_id, tile_x, tile_z)`
 - `queue_focus_camera(tile_x, tile_z)`
 - `queue_eva(speaker, text)` / `queue_eva_transmission(speaker, text)`
 - `queue_set_objective(text)`
@@ -255,9 +280,12 @@ end
 
 ---
 
-## 9. Companion CLI (`rts-mod-tools`) & In-Game Dev Studio
+## 9. Companion CLI (`rts-asset-pipeline`) & In-Game Dev Studio (`rts-client`)
 
 ```bash
+# Launch the 3D RTS client with a mod
+cargo run --manifest-path engine/Cargo.toml -p rts-client -- --mod-path rust-ra2
+
 # Scaffold a complete new standalone mod or sub-mod (--extends rust-ra2)
 cargo run --manifest-path engine/Cargo.toml -p rts-asset-pipeline -- new-mod --id my-mod --name "My Total Conversion" --output mods/my-mod
 
@@ -270,25 +298,72 @@ cargo run --manifest-path engine/Cargo.toml -p rts-asset-pipeline -- generate-ma
 # Run declarative headless mod scenario tests (tests/*.toml)
 cargo run --manifest-path engine/Cargo.toml -p rts-asset-pipeline -- test-mod --mod-path rust-ra2
 
-# Validate mod catalogs, tech-tree references, AI profiles, triggers & 3D .glb models
+# Validate mod catalogs, maps, tech-tree references, icons, AI profiles, triggers & 3D .glb models
 cargo run --manifest-path engine/Cargo.toml -p rts-asset-pipeline -- validate --mod-path rust-ra2
 
-# Run headless 1v1 unit duel matrix & AI vs AI faction balance benchmark (flags >2.0x cost-efficiency outliers)
+# Extract Westwood IMA ADPCM .wav or .bag/.idx audio archives into standard 16-bit PCM WAVs
+cargo run --manifest-path engine/Cargo.toml -p rts-asset-pipeline -- extract-audio --input audio.bag --idx audio.idx --output-dir rust-ra2/assets/audio/extracted
+
+# Run headless 1v1 unit duel matrix & AI vs AI faction balance benchmark
 cargo run --manifest-path engine/Cargo.toml -p rts-asset-pipeline -- benchmark-balance --mod-path rust-ra2 --output target/balance_report.md
 
-# Pack & unpack portable .rtsmod.json bundles with verified 64-bit FNV-1a content_hash
-cargo run --manifest-path engine/Cargo.toml -p rts-asset-pipeline -- pack --mod-path rust-ra2 --output target/rust-ra2.rtsmod.json
-cargo run --manifest-path engine/Cargo.toml -p rts-asset-pipeline -- unpack --input target/rust-ra2.rtsmod.json --output-dir target/unpacked-ra2
+# Pack & unpack Zlib-compressed RTSMOD03 binary .rtsmod VFS archives (excludes assets/raw/, validates mod, verifies 64-bit FNV-1a content_hash)
+cargo run --manifest-path engine/Cargo.toml -p rts-asset-pipeline -- pack --mod-path rust-ra2 --output target/rust-ra2.rtsmod
+cargo run --manifest-path engine/Cargo.toml -p rts-asset-pipeline -- unpack --input target/rust-ra2.rtsmod --output-dir target/unpacked-ra2
+
+# Mount & play a packed .rtsmod archive directly with zero disk extraction via Bevy ArchiveAssetReader
+cargo run --manifest-path engine/Cargo.toml -p rts-client -- --mod-path target/rust-ra2.rtsmod
+
+# Cook a self-contained standalone game distribution (RTSMOD03 archive + game_bundle.toml + Play.bat / play.sh)
+# See docs/STANDALONE_PUBLISHING.md for complete publishing documentation.
+cargo run --manifest-path engine/Cargo.toml -p rts-asset-pipeline -- cook-standalone --mod-path rust-ra2 --output-dir dist/rust-ra2-standalone --title "IRONLOCK: Red Alert" --lock-player-mode true
+
+# Convert legacy Westwood .csf string tables, Blowfish .mix archives, WSADPCM .aud audio, and multi-frame .vxl+.hva models
+cargo run --manifest-path engine/Cargo.toml -p rts-asset-pipeline -- convert-csf --input ra2md.csf --output rust-ra2/locales/en_imported.toml --lang en
+cargo run --manifest-path engine/Cargo.toml -p rts-asset-pipeline -- extract-mix --input ra2.mix --output-dir target/ra2_mix
+
+# Optimize .glb models with automatic LOD0/LOD1 mesh simplification (preserving Hull/Turret/Barrel/Rotor nodes & COLOR_0)
+cargo run --manifest-path engine/Cargo.toml -p rts-asset-pipeline -- optimize-models --mod-path rust-ra2 --target-ratio 0.35
+
+# Import modern .glb/.png/.ogg/.flac/.wav/.mp4 assets with automatic bounding-box, clip & socket discovery
+cargo run --manifest-path engine/Cargo.toml -p rts-asset-pipeline -- import-asset --mod-path rust-ra2 --input tank.glb --category unit --id heavy_tank
+
+# Batch-render crisp 96x72 sidebar cameo PNGs for all units & buildings
+cargo run --manifest-path engine/Cargo.toml -p rts-asset-pipeline -- render-cameos --mod-path rust-ra2
 
 # Regenerate this Mod Development Kit manual
 cargo run --manifest-path engine/Cargo.toml -p rts-asset-pipeline -- generate-docs --output docs/MOD_DEV_KIT.md
 ```
 
-### In-Game Studio, Dev-Console & Tactical Shortcuts (`rts-client-3d`)
-- **`[F9]`**: Toggle Interactive Dev-Console, Live Subsystem Tick-Profiler (`SimTickProfile`), Single-Tick-Debugger (`step [N]`), and 3D Debug Gizmo Layers (`gizmo <paths|weapons|vision|triggers|grid|all>`). Automatically switches to Read-Only Profiler & Desync-Diagnostic Mode in Multiplayer Lockstep.
-- **`[Shift + F9]`**: Toggle In-Game Tech-Tree & Unit Encyclopedia Overlay.
-- **`[Alt + F9]`**: Toggle Mod & Asset Studio Modal Overlay.
-- **`[F10]`**: Cycle Live 3D Map Editor Brushes (`1x1`/`3x3`/`5x5`, Symmetry `Off`/`MirrorX`/`MirrorZ`/`Rot2`/`Rot4`, Pre-Placed Buildings, Spawns, Trigger Zones & Playability Validator).
-- **`[F11]`**: Export current edited 3D map to `saves/custom_map.toml`.
-- **`[F12]`**: Transactional Live Hot-Reload of `.toml`, `.rhai`, and `.lua` files.
+### Dual-UI Player Shortcuts & `IRONLOCK Creator Workbench` IDE (`rts-client`)
+See [`docs/CREATOR_WORKBENCH_GUIDE.md`](CREATOR_WORKBENCH_GUIDE.md) for the complete 9-window Studio IDE manual.
+
+- **`[F12]`** (or `--studio` CLI flag / Main Menu **Creator Workbench** button): Toggle the 9-window **`IRONLOCK Creator Workbench`** desktop IDE (`bevy_egui` + `egui_dock`), featuring:
+  1. **Asset Browser & 10-Schema CRUD (`+ New` / Reference-Checked `Delete`) + Modern Asset Import Wizards**,
+  2. **Scene Hierarchy & Outliner** (`Neutral`, `Player 1..8`, `TriggerZones`, `CameraCutscenes`, `ResourceNodes`, `CivilianStructures`),
+  3. **Complete 10-Schema Property Inspector** (`UnitDef`, `BuildingDef`, `WeaponDef`, `UpgradeDef`, `CommanderPowerTreeDef`, `FactionDef`, `ResourceTypeDef`, `AiProfileDef`, `CampaignDef`, `AudioCatalog` via `LoadedMod::upsert_*`),
+  4. **Map Builder Pro** (Heightmap sculpting, True Auto-Ramp grading, `(width + 1) * (height + 1)` 5-layer WGSL splat painting, Catmull-Rom 3D Road/River/Cliff Splines, `.prefab.toml` Stamp Brush, Cutscene Frustum Gizmos & Live Weather),
+  5. **Balance Spreadsheet, Visual Tech Graph & Headless Combat Duel Simulator**,
+  6. **Campaign, Structured `MissionObjectiveDef`, Cutscene & `.rhai`/`.lua` Script IDE** (Syntax highlighting, line numbers, clickable error jump, API browser, Playtest Watch table & `on_ai_tick` AI 2.0 hooks),
+  7. **Isolated Offscreen 3D Turntable, Socket Rigging & 1-Click `[📸 Capture Cameo PNG]` Studio**,
+  8. **Clickable Mod Diagnostics (incl. Deep Binary Header Validator), `SimTickProfile` Subsystem Graph & AI 2.0 Heatmaps**,
+  9. **Side-by-Side Bilingual `LocaleCatalog` Editor (`locales/en.toml` ↔ `locales/de.toml`)**.
+- **Phases 21–24 Declarative Gameplay Schemas**:
+  - `commander_trees.toml` (`CommanderPowerTreeDef`): Branching `1★`–`5★` Generals promotion trees (`UnlockCommanderNode`).
+  - `prefabs/*.prefab.toml` (`MapPrefabDef`): Reusable multi-entity + terrain/splat map prefabs.
+  - `MapDef.{objectives, playable_bounds, initial_weather, cutscenes}`: Tiered `MissionObjectiveDef` (`Primary`/`Secondary`/`Bonus`), dynamic map boundary expansion (`ExpandPlayableBounds`), `CameraCutsceneDef` smooth splines, and VIP `PreplacedEntityDef.tag`.
+  - `SquadTraitSpec` 2.0 & `AiProfileDef` 2.0: `Light`/`Heavy` directional cover, `Pinned` suppression, `RetreatSquad` (`[R]`), weapon slot upgrades, naval amphibious landings, chokepoint walls, and `on_ai_tick` scriptable AI.
+- **Phases 25–28 Next-Gen Multi-Genre Modular SDK (`sdk-showcase-heroes-ages-mutators` & `mutator-turbo-economy`, see [`docs/ENGINE_MODULAR_ARCHITECTURE.md`](ENGINE_MODULAR_ARCHITECTURE.md))**:
+  - **Multi-Mod Dependency DAG & Delta Overlays (`ModManifest.depends_on`)**: Declare SemVer dependencies (`{ id = "sdk-showcase-heroes-ages-mutators", version_req = "^0.1.0" }`), topological multi-layer `.rtsmod` / folder VFS stacking (`LoadedMod::load_mod_with_overlays`), and TOML array/table patch directives (`$append`, `$remove`, `$delete = true`).
+  - **Auto-Generated JSON Schemas (`rts-asset-pipeline gen-docs`)**: Generates `docs/schemas/*.schema.json` + root `taplo.toml` via `schemars::JsonSchema` across all 12+2 mod catalog types for live IDE autocomplete.
+  - **Free-Form Combat Tags & Buff Stacks (`ModRules.damage_matrix`, `BuffModifierSpec`)**: Arbitrary `armor_tag` × `warhead_tag` multiplier tables, tag-based upgrades (`target_tags`), `StackPolicy` (`Refresh`, `Additive { max_stacks }`, `Independent`), and `GamemodeRulesDef` (`victory_ticket_bleed`, `multi_capture_points`, `survival_waves`).
+  - **BAR/SupCom Streaming Economy & AoE Era Progression (`EconomyModel::Streaming`, `ModRules.eras`)**: Continuous resource drain (`income_per_sec`, `expense_per_sec`, `stall_efficiency`), multi-worker build assist (`streaming_build_power`), `EraDef` civilization ages (`GameCommand::AdvanceEra`), and parallel per-building `local_research_queue`s (`GameCommand::StartLocalResearch`).
+  - **WC3/SC2 Heroes, Mana, Multi-Cooldowns & 6-Slot Inventory (`HeroTraitSpec`, `items/items.toml`)**: Regenerating `EnergyPoolSpec` mana, independent per-ability cooldowns + right-click `allow_auto_cast`, `learnable_abilities` skill ranks (`GameCommand::LearnHeroSkill`), altar revival (`GameCommand::ReviveHero`), 6-slot `ItemCatalog` relics (`PickupItem`, `UseInventoryItem`, `DropInventoryItem`), and zero-clone `ScriptContext` 2.0 spatial queries (`ctx.units_in_radius`).
+  - **Visual Node Graphs, VFX Catalog, PBR Shader Extension & Data-Driven HUD Presets**: `TriggerGraphDef` node graphs, `BehaviorTreeDef` AI behavior trees, `vfx/vfx.toml` (`VfxCatalog` GPU emitters/beams/decals), `VisualDef` PBR/Team-Mask controls (`unit_pbr_team.wgsl`, `.ktx2` cooked textures), and `ModManifest.default_hud_layout` (`ClassicRightSidebar`, `ModernBottomCommandCard`, `CompactBarOverlay`).
+- **`[Ctrl + F12]`**: Transactional Live Hot-Reload of `.toml`, `.rhai`, and `.lua` files (`LoadedMod::reload_from_disk` + `SimWorld::apply_mod_hot_reload`).
+- **`[Ctrl + Z]` / `[Ctrl + Y]`**: Undo / Redo across terrain strokes, splines, prefabs, map entities, locales, and all 10 SDK schemas (`EditorHistory`).
+- **`[J]` / `[D]` / `[Y]` / `[Tab]`**: Toggle floating mod-skinned In-Game Player Sub-Windows (**26-Track Interactive Jukebox**, **Diplomacy & Tribute**, **Visual Faction Tech Tree**, **Mission Objectives & EVA Logbook**); **`[ESC]`** skips active cutscenes or closes the topmost floating sub-window before opening the Pause Menu.
+- **Multi-Resource, Worker & Squad HUD**: Custom currencies declared in `resources.toml` (`LoadedMod.resources`) appear automatically in the Top Bar; selecting units with `BuilderTraitSpec` opens the **Worker On-Site Construction** drawer (`GameCommand::OrderWorkerConstruct`), and `SquadTraitSpec` squads display live member-count and reinforce affordances.
+- **`[F9]`**: Toggle Live Subsystem Tick-Profiler (`SimTickProfile`) & Telemetry Console (Read-Only in Multiplayer Lockstep).
+- **`[Shift + F9]`**: Toggle Master Audio Mute across the 5-bus audio mixer (`Master`, `Music`, `CombatSfx`, `UnitVoice`, `Eva`).
 - **`[Ctrl + J]`**: Toggle Formation Speed Coupling (`formation_locked`) so fast units escort slower convoy members at matched speed.

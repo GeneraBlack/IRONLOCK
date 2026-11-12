@@ -1,48 +1,642 @@
 id = "yr_soviet_03_brain_wash"
-name = "YR Soviet 03: Brain Wash (London)"
+name = "YR Op. 03: Brain Wash (London)"
 width = 60
 height = 85
 tile_size = 2.0
 ore_regen_per_sec = 4.0
-mission_objective = "The Allies have discovered a Psychic Dominator in London, England. Yuri has taken control of the Allied strike force to help defend his near-complete Dominator. Free the Allies and join forces with them to defeat Yuri...but beware, the Dominator could become operational at any moment. \n \n Objective 1: Destroy the Psychic Beacon. \n Objective 2: Destroy the Psychic Dominator. \n Objective 3: Finish off Yuri's forces."
+mission_objective = "Destroy Yuri's Psychic Beacon in London to liberate the mind-controlled Allied garrison, then crush Yuri's Psychic Dominator together!"
 
 [[ore_patches]]
-position = [16, 8]
+position = [27, 66]
 radius = 3
-amount_per_tile = 1400
+amount_per_tile = 1600
 
 [[ore_patches]]
-position = [42, 75]
+position = [34, 12]
 radius = 3
-amount_per_tile = 1400
+amount_per_tile = 1550
 
-[[ore_patches]]
+[[gem_patches]]
 position = [30, 42]
-radius = 4
-amount_per_tile = 2000
+radius = 2
+amount_per_tile = 2500
 
-[[ore_patches]]
-position = [51, 50]
-radius = 3
-amount_per_tile = 1500
+[[water_rects]]
+min = [16, 11]
+max = [16, 12]
 
-[[ore_patches]]
-position = [45, 64]
-radius = 3
-amount_per_tile = 1500
+[[water_rects]]
+min = [15, 13]
+max = [16, 16]
+
+[[water_rects]]
+min = [15, 17]
+max = [19, 18]
+
+[[water_rects]]
+min = [37, 18]
+max = [37, 19]
+
+[[water_rects]]
+min = [15, 19]
+max = [15, 19]
+
+[[water_rects]]
+min = [15, 20]
+max = [19, 20]
+
+[[water_rects]]
+min = [37, 20]
+max = [38, 20]
+
+[[water_rects]]
+min = [15, 21]
+max = [15, 21]
+
+[[water_rects]]
+min = [19, 21]
+max = [19, 21]
+
+[[water_rects]]
+min = [35, 21]
+max = [39, 22]
+
+[[water_rects]]
+min = [15, 22]
+max = [17, 22]
+
+[[water_rects]]
+min = [9, 23]
+max = [18, 23]
+
+[[water_rects]]
+min = [35, 23]
+max = [40, 23]
+
+[[water_rects]]
+min = [32, 24]
+max = [41, 25]
+
+[[water_rects]]
+min = [12, 25]
+max = [18, 25]
+
+[[water_rects]]
+min = [12, 26]
+max = [15, 27]
+
+[[water_rects]]
+min = [31, 26]
+max = [40, 26]
+
+[[water_rects]]
+min = [30, 27]
+max = [40, 27]
+
+[[water_rects]]
+min = [12, 28]
+max = [18, 30]
+
+[[water_rects]]
+min = [30, 28]
+max = [30, 28]
+
+[[water_rects]]
+min = [32, 28]
+max = [40, 28]
+
+[[water_rects]]
+min = [26, 29]
+max = [30, 29]
+
+[[water_rects]]
+min = [32, 29]
+max = [34, 30]
+
+[[water_rects]]
+min = [37, 29]
+max = [43, 29]
+
+[[water_rects]]
+min = [37, 30]
+max = [39, 30]
+
+[[water_rects]]
+min = [12, 31]
+max = [16, 31]
+
+[[water_rects]]
+min = [26, 31]
+max = [34, 31]
+
+[[water_rects]]
+min = [37, 31]
+max = [41, 31]
+
+[[water_rects]]
+min = [44, 31]
+max = [45, 31]
+
+[[water_rects]]
+min = [16, 32]
+max = [18, 32]
+
+[[water_rects]]
+min = [30, 32]
+max = [40, 33]
+
+[[water_rects]]
+min = [43, 32]
+max = [45, 32]
+
+[[water_rects]]
+min = [12, 33]
+max = [17, 33]
+
+[[water_rects]]
+min = [43, 33]
+max = [43, 33]
+
+[[water_rects]]
+min = [45, 33]
+max = [45, 37]
+
+[[water_rects]]
+min = [4, 34]
+max = [4, 38]
+
+[[water_rects]]
+min = [15, 34]
+max = [17, 34]
+
+[[water_rects]]
+min = [30, 34]
+max = [38, 34]
+
+[[water_rects]]
+min = [15, 35]
+max = [24, 35]
+
+[[water_rects]]
+min = [32, 35]
+max = [38, 37]
+
+[[water_rects]]
+min = [15, 36]
+max = [16, 36]
+
+[[water_rects]]
+min = [23, 36]
+max = [24, 36]
+
+[[water_rects]]
+min = [15, 37]
+max = [24, 37]
+
+[[water_rects]]
+min = [15, 38]
+max = [18, 39]
+
+[[water_rects]]
+min = [21, 38]
+max = [24, 39]
+
+[[water_rects]]
+min = [32, 38]
+max = [36, 39]
+
+[[water_rects]]
+min = [4, 39]
+max = [6, 39]
+
+[[water_rects]]
+min = [17, 40]
+max = [18, 40]
+
+[[water_rects]]
+min = [21, 40]
+max = [22, 40]
+
+[[water_rects]]
+min = [33, 40]
+max = [36, 44]
+
+[[water_rects]]
+min = [46, 40]
+max = [49, 40]
+
+[[water_rects]]
+min = [49, 41]
+max = [49, 44]
+
+[[water_rects]]
+min = [9, 42]
+max = [9, 42]
+
+[[water_rects]]
+min = [20, 42]
+max = [22, 42]
+
+[[water_rects]]
+min = [25, 42]
+max = [27, 42]
+
+[[water_rects]]
+min = [8, 43]
+max = [9, 44]
+
+[[water_rects]]
+min = [15, 43]
+max = [15, 43]
+
+[[water_rects]]
+min = [20, 43]
+max = [25, 43]
+
+[[water_rects]]
+min = [15, 44]
+max = [18, 45]
+
+[[water_rects]]
+min = [20, 44]
+max = [22, 44]
+
+[[water_rects]]
+min = [24, 44]
+max = [25, 44]
+
+[[water_rects]]
+min = [9, 45]
+max = [9, 49]
+
+[[water_rects]]
+min = [22, 45]
+max = [22, 46]
+
+[[water_rects]]
+min = [25, 45]
+max = [25, 45]
+
+[[water_rects]]
+min = [30, 45]
+max = [36, 46]
+
+[[water_rects]]
+min = [47, 45]
+max = [49, 45]
+
+[[water_rects]]
+min = [14, 46]
+max = [18, 46]
+
+[[water_rects]]
+min = [15, 47]
+max = [19, 48]
+
+[[water_rects]]
+min = [22, 47]
+max = [24, 47]
+
+[[water_rects]]
+min = [30, 47]
+max = [34, 47]
+
+[[water_rects]]
+min = [44, 47]
+max = [48, 47]
+
+[[water_rects]]
+min = [29, 48]
+max = [33, 54]
+
+[[water_rects]]
+min = [18, 50]
+max = [18, 50]
+
+[[water_rects]]
+min = [21, 50]
+max = [21, 50]
+
+[[water_rects]]
+min = [18, 51]
+max = [21, 52]
+
+[[water_rects]]
+min = [37, 52]
+max = [37, 52]
+
+[[water_rects]]
+min = [18, 54]
+max = [21, 54]
+
+[[water_rects]]
+min = [20, 55]
+max = [21, 56]
+
+[[water_rects]]
+min = [29, 55]
+max = [32, 57]
+
+[[water_rects]]
+min = [20, 57]
+max = [22, 57]
+
+[[water_rects]]
+min = [29, 58]
+max = [34, 58]
+
+[[water_rects]]
+min = [29, 59]
+max = [35, 60]
+
+[[water_rects]]
+min = [30, 61]
+max = [35, 61]
+
+[[water_rects]]
+min = [30, 62]
+max = [33, 67]
+
+[[water_rects]]
+min = [46, 62]
+max = [46, 62]
+
+[[water_rects]]
+min = [45, 63]
+max = [46, 63]
+
+[[water_rects]]
+min = [45, 64]
+max = [47, 65]
+
+[[water_rects]]
+min = [44, 66]
+max = [47, 66]
+
+[[water_rects]]
+min = [40, 67]
+max = [40, 69]
+
+[[water_rects]]
+min = [30, 68]
+max = [37, 68]
+
+[[water_rects]]
+min = [30, 69]
+max = [36, 71]
+
+[[water_rects]]
+min = [38, 70]
+max = [40, 70]
+
+[[water_rects]]
+min = [39, 71]
+max = [40, 72]
+
+[[water_rects]]
+min = [30, 72]
+max = [31, 72]
+
+[[water_rects]]
+min = [33, 72]
+max = [34, 72]
+
+[[water_rects]]
+min = [30, 73]
+max = [34, 75]
+
+[[water_rects]]
+min = [30, 76]
+max = [35, 76]
+
+[[water_rects]]
+min = [31, 77]
+max = [36, 77]
+
+[[water_rects]]
+min = [31, 78]
+max = [38, 78]
+
+[[water_rects]]
+min = [32, 79]
+max = [39, 79]
+
+[[water_rects]]
+min = [35, 80]
+max = [38, 81]
+
+[[water_rects]]
+min = [36, 82]
+max = [39, 82]
+
+[[water_rects]]
+min = [36, 83]
+max = [38, 83]
+
+[[bridge_rects]]
+min = [29, 32]
+max = [41, 34]
+
+[[bridge_rects]]
+min = [28, 40]
+max = [37, 42]
+
+[[bridge_rects]]
+min = [28, 53]
+max = [34, 55]
+
+[[bridge_rects]]
+min = [28, 71]
+max = [37, 71]
+
+[[bridge_rects]]
+min = [28, 72]
+max = [41, 73]
+
+[[bridge_rects]]
+min = [38, 74]
+max = [41, 74]
+
+[[elevation_rects]]
+min = [6, 6]
+max = [9, 9]
+
+[[elevation_rects]]
+min = [42, 6]
+max = [45, 9]
+
+[[ramp_rects]]
+min = [5, 6]
+max = [6, 8]
+
+[[ramp_rects]]
+min = [9, 6]
+max = [10, 8]
+
+[[ramp_rects]]
+min = [41, 6]
+max = [42, 8]
+
+[[ramp_rects]]
+min = [45, 6]
+max = [46, 8]
+
+[[obstacles]]
+min = [8, 16]
+max = [9, 17]
+
+[[obstacles]]
+min = [44, 16]
+max = [45, 17]
+
+[[obstacles]]
+min = [26, 24]
+max = [27, 25]
+
+[[props]]
+kind = "tree"
+tile_pos = [49, 53]
+
+[[props]]
+kind = "tree"
+tile_pos = [27, 44]
+
+[[props]]
+kind = "tree"
+tile_pos = [21, 46]
+
+[[props]]
+kind = "tree"
+tile_pos = [51, 56]
+
+[[props]]
+kind = "tree"
+tile_pos = [42, 66]
+
+[[props]]
+kind = "tree"
+tile_pos = [45, 61]
+
+[[props]]
+kind = "tree"
+tile_pos = [44, 51]
+
+[[props]]
+kind = "tree"
+tile_pos = [40, 47]
+
+[[props]]
+kind = "tree"
+tile_pos = [52, 45]
+
+[[props]]
+kind = "tree"
+tile_pos = [19, 63]
+
+[[props]]
+kind = "tree"
+tile_pos = [10, 46]
+
+[[props]]
+kind = "tree"
+tile_pos = [7, 39]
+
+[[props]]
+kind = "tree"
+tile_pos = [14, 20]
+
+[[props]]
+kind = "tree"
+tile_pos = [22, 33]
+
+[[props]]
+kind = "tree"
+tile_pos = [20, 23]
+
+[[props]]
+kind = "tree"
+tile_pos = [26, 40]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [27, 35]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [40, 78]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [19, 34]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [27, 49]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [41, 75]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [43, 62]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [52, 53]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [34, 65]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [22, 9]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [23, 28]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [27, 28]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [24, 53]
 
 [[preplaced_entities]]
-player_id = 2
+player_id = 3
+building_id = "allied_conyard"
+tile_pos = [44, 54]
+
+[[preplaced_entities]]
+player_id = 3
+building_id = "allied_war_factory"
+tile_pos = [48, 54]
+
+[[preplaced_entities]]
+player_id = 3
+unit_id = "prism_tank"
+tile_pos = [43, 58]
+
+[[preplaced_entities]]
+player_id = 3
+unit_id = "mirage_tank"
+tile_pos = [46, 58]
+
+[[preplaced_entities]]
+player_id = 0
 building_id = "tech_oil_derrick"
-tile_pos = [13, 45]
+tile_pos = [12, 44]
 
 [[preplaced_entities]]
-player_id = 2
+player_id = 0
 building_id = "tech_oil_derrick"
 tile_pos = [41, 38]
 
 [[preplaced_entities]]
-player_id = 2
+player_id = 0
 building_id = "tech_oil_derrick"
 tile_pos = [43, 35]
 
@@ -59,7 +653,7 @@ tile_pos = [36, 63]
 [[preplaced_entities]]
 player_id = 2
 building_id = "soviet_tesla_reactor"
-tile_pos = [35, 63]
+tile_pos = [34, 62]
 
 [[preplaced_entities]]
 player_id = 2
@@ -79,7 +673,7 @@ tile_pos = [24, 28]
 [[preplaced_entities]]
 player_id = 2
 building_id = "yuri_gatling_cannon"
-tile_pos = [29, 29]
+tile_pos = [28, 28]
 
 [[preplaced_entities]]
 player_id = 2
@@ -89,7 +683,7 @@ tile_pos = [24, 58]
 [[preplaced_entities]]
 player_id = 2
 building_id = "allied_refinery"
-tile_pos = [22, 63]
+tile_pos = [23, 60]
 
 [[preplaced_entities]]
 player_id = 2
@@ -104,17 +698,17 @@ tile_pos = [26, 63]
 [[preplaced_entities]]
 player_id = 2
 building_id = "allied_power_plant"
-tile_pos = [25, 60]
+tile_pos = [26, 58]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "allied_power_plant"
-tile_pos = [25, 62]
+tile_pos = [28, 61]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "allied_pillbox"
-tile_pos = [21, 55]
+tile_pos = [22, 54]
 
 [[preplaced_entities]]
 player_id = 2
@@ -149,7 +743,7 @@ tile_pos = [19, 58]
 [[preplaced_entities]]
 player_id = 2
 building_id = "allied_patriot_missile"
-tile_pos = [20, 56]
+tile_pos = [19, 55]
 
 [[preplaced_entities]]
 player_id = 2
@@ -174,12 +768,12 @@ tile_pos = [28, 41]
 [[preplaced_entities]]
 player_id = 2
 unit_id = "ifv"
-tile_pos = [26, 64]
+tile_pos = [25, 63]
 
 [[preplaced_entities]]
 player_id = 2
 unit_id = "ifv"
-tile_pos = [23, 65]
+tile_pos = [21, 63]
 
 [[preplaced_entities]]
 player_id = 2
@@ -189,7 +783,7 @@ tile_pos = [24, 63]
 [[preplaced_entities]]
 player_id = 2
 unit_id = "grizzly_tank"
-tile_pos = [27, 58]
+tile_pos = [26, 57]
 
 [[preplaced_entities]]
 player_id = 2
@@ -199,27 +793,27 @@ tile_pos = [26, 65]
 [[preplaced_entities]]
 player_id = 2
 unit_id = "grizzly_tank"
-tile_pos = [24, 61]
+tile_pos = [23, 62]
 
 [[preplaced_entities]]
 player_id = 2
 unit_id = "grizzly_tank"
-tile_pos = [26, 58]
+tile_pos = [25, 57]
 
 [[preplaced_entities]]
 player_id = 2
-unit_id = "soviet_amphibious_apc"
-tile_pos = [31, 58]
-
-[[preplaced_entities]]
-player_id = 2
-unit_id = "terror_drone"
-tile_pos = [37, 63]
+unit_id = "soviet_zubr_transport"
+tile_pos = [33, 56]
 
 [[preplaced_entities]]
 player_id = 2
 unit_id = "terror_drone"
-tile_pos = [37, 64]
+tile_pos = [36, 62]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "terror_drone"
+tile_pos = [38, 63]
 
 [[preplaced_entities]]
 player_id = 2
@@ -229,123 +823,259 @@ tile_pos = [37, 65]
 [[preplaced_entities]]
 player_id = 2
 unit_id = "flak_track"
-tile_pos = [38, 63]
+tile_pos = [37, 62]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_conyard"
+tile_pos = [28, 12]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_bio_reactor"
+tile_pos = [32, 12]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_barracks"
+tile_pos = [28, 16]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_war_factory"
+tile_pos = [32, 16]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "psychic_beacon"
+tile_pos = [28, 36]
+
+[[preplaced_entities]]
+player_id = 1
+unit_id = "boris"
+tile_pos = [18, 62]
+tag = "boris"
+
+[[preplaced_entities]]
+player_id = 0
+building_id = "bridge_repair_hut"
+tile_pos = [27, 40]
+
+[[objectives]]
+id = "obj_stage1_linkup"
+tier = "primary"
+title = "Reach Forward Rendezvous & Assume Base Command"
+marker_tile = [18, 68]
+
+[[objectives]]
+id = "obj_primary_main"
+tier = "primary"
+title = "Destroy Yuri's Psychic Beacon in London to liberate the mind-controlled Allied garris..."
+marker_tile = [28, 12]
+
+[[objectives]]
+id = "obj_vip_boris"
+tier = "secondary"
+title = "Keep Hero Boris Alive Throughout the Operation"
+marker_tile = [18, 62]
+
+[[objectives]]
+id = "obj_secondary_strike"
+tier = "secondary"
+title = "Neutralize or Capture Enemy Strategic Facility"
+marker_tile = [28, 12]
+
+[[objectives]]
+id = "obj_bonus_tech"
+tier = "bonus"
+title = "Capture Neutral Tech Oil Derrick with an Engineer"
+marker_tile = [12, 44]
+
+[[cutscenes]]
+id = "intro_flyover"
+skippable = true
+letterbox = true
+
+[[cutscenes.keyframes]]
+time_secs = 0.0
+focus = [57.0, 0.0, 25.0]
+distance = 46.0
+pitch_deg = 52.0
+yaw_deg = -22.0
+
+[[cutscenes.keyframes]]
+time_secs = 2.2
+focus = [47.0, 0.0, 75.0]
+distance = 42.0
+pitch_deg = 55.0
+yaw_deg = -10.0
+
+[[cutscenes.keyframes]]
+time_secs = 4.5
+focus = [37.0, 0.0, 125.0]
+distance = 36.0
+pitch_deg = 58.0
+yaw_deg = 0.0
 
 [[spawns]]
 player_id = 1
 faction = "soviets"
-base_tile = [8, 8]
+sub_faction = "russia"
+base_tile = [18, 68]
+team_id = 1
 
 [[spawns.initial_buildings]]
 building_id = "soviet_conyard"
-tile_pos = [8, 8]
+tile_pos = [18, 68]
 
 [[spawns.initial_buildings]]
 building_id = "soviet_tesla_reactor"
-tile_pos = [11, 8]
+tile_pos = [15, 68]
 
 [[spawns.initial_buildings]]
 building_id = "soviet_refinery"
-tile_pos = [8, 11]
+tile_pos = [22, 68]
 
 [[spawns.initial_buildings]]
 building_id = "soviet_barracks"
-tile_pos = [11, 11]
+tile_pos = [18, 64]
 
 [[spawns.initial_buildings]]
 building_id = "soviet_war_factory"
-tile_pos = [14, 8]
-
-[[spawns.initial_units]]
-unit_id = "soviet_conscript"
-tile_pos = [10, 13]
-
-[[spawns.initial_units]]
-unit_id = "soviet_conscript"
-tile_pos = [12, 13]
-
-[[spawns.initial_units]]
-unit_id = "rhino_tank"
-tile_pos = [14, 12]
+tile_pos = [22, 64]
 
 [[spawns.initial_units]]
 unit_id = "war_miner"
-tile_pos = [10, 12]
+tile_pos = [24, 67]
+
+[[spawns.initial_units]]
+unit_id = "tesla_trooper"
+tile_pos = [20, 62]
+
+[[spawns.initial_units]]
+unit_id = "flak_trooper"
+tile_pos = [22, 62]
+
+[[spawns.initial_units]]
+unit_id = "rhino_tank"
+tile_pos = [24, 62]
+
+[[spawns.initial_units]]
+unit_id = "apocalypse_tank"
+tile_pos = [18, 61]
+
+[[spawns.initial_units]]
+unit_id = "siege_chopper"
+tile_pos = [20, 61]
+
+[[spawns.initial_units]]
+unit_id = "soviet_zubr_transport"
+tile_pos = [22, 61]
+
+[[spawns]]
+player_id = 3
+faction = "allies"
+sub_faction = "great_britain"
+base_tile = [44, 54]
+team_id = 1
 
 [[spawns]]
 player_id = 2
 faction = "yuri"
-base_tile = [50, 75]
-
-[[spawns.initial_buildings]]
-building_id = "yuri_conyard"
-tile_pos = [50, 75]
-
-[[spawns.initial_buildings]]
-building_id = "yuri_bio_reactor"
-tile_pos = [47, 75]
-
-[[spawns.initial_buildings]]
-building_id = "yuri_slave_refinery"
-tile_pos = [50, 72]
-
-[[spawns.initial_buildings]]
-building_id = "yuri_barracks"
-tile_pos = [47, 72]
-
-[[spawns.initial_buildings]]
-building_id = "yuri_war_factory"
-tile_pos = [44, 75]
-
-[[spawns.initial_units]]
-unit_id = "yuri_initiate"
-tile_pos = [48, 70]
-
-[[spawns.initial_units]]
-unit_id = "yuri_initiate"
-tile_pos = [46, 70]
-
-[[spawns.initial_units]]
-unit_id = "lasher_tank"
-tile_pos = [44, 71]
-
-[[spawns.initial_units]]
-unit_id = "yuri_slave_miner"
-tile_pos = [48, 71]
+sub_faction = "yuri"
+base_tile = [28, 12]
+team_id = 2
 
 [[trigger_zones]]
-id = "mission_stage_init"
-min = [6, 6]
-max = [12, 12]
+id = "yr_soviet_03_brain_wash_init"
+min = [0, 0]
+max = [3, 3]
 once = true
 condition = { type = "timer_elapsed", secs = 1.0 }
 actions = [
+    { type = "play_cutscene", cutscene_id = "intro_flyover" },
+    { type = "set_objective_status", objective_id = "obj_stage1_linkup", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_primary_main", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_vip_boris", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_secondary_strike", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_bonus_tech", status = "active" },
+    { type = "set_weather", preset = "dusk" },
     { type = "set_variable", name = "mission_stage", value = 1 },
-    { type = "eva_transmission", speaker = "ZOFIA", text = "Battle Control Online. Primary tactical objectives initialized." },
-    { type = "reveal_area", tile = [8, 8], radius = 14 }
+    { type = "reveal_area", tile = [28, 12], radius = 9 },
+    { type = "eva_transmission", speaker = "LT. ZOFIA", text = "Destroy Yuri's Psychic Beacon in London to liberate the mind-controlled Allied garrison, then crush Yuri's Psychic Dominator together!", portrait = "assets/ui/cameos/nradicon.png", audio_cue = "battle_control_online" },
 ]
 
 [[trigger_zones]]
-id = "tactical_reinforcement_wave"
-min = [7, 6]
-max = [11, 10]
+id = "london_beacon_shattered"
+min = [0, 0]
+max = [3, 3]
 once = true
-condition = { type = "all", conditions = [{ type = "timer_elapsed", secs = 45.0 }, { type = "variable_equals", name = "mission_stage", value = 1 }] }
+condition = { type = "building_destroyed", building_id = "psychic_beacon", player_id = 2 }
 actions = [
-    { type = "set_variable", name = "mission_stage", value = 2 },
-    { type = "spawn_reinforcements", player_id = 1, unit_id = "apocalypse_tank", count = 2, tile = [7, 6] },
-    { type = "grant_credits", player_id = 1, amount = 1500 },
-    { type = "eva_transmission", speaker = "ZOFIA", text = "Reinforcements have arrived. Forward command has authorized 1500 bonus credits." }
+    { type = "set_objective_status", objective_id = "obj_stage1_linkup", status = "completed" },
+    { type = "play_radar_video", video_path = "assets/videos/radar_pip/yr_soviet_03_pip_02.mp4" },
+    { type = "change_owner", from_player_id = 3, to_player_id = 1 },
+    { type = "grant_credits", player_id = 1, amount = 2500 },
+    { type = "set_objective", text = "Allied London garrison freed and under your command! Crush Yuri's Psychic Dominator in northern London." },
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Mind control broken! Allied Prism and Mirage divisions in London now answer to you, General!", portrait = "assets/ui/cameos/nradicon.png", audio_cue = "battle_control_online", radar_video = "assets/videos/radar_pip/yr_soviet_03_pip_02.mp4" },
 ]
 
 [[trigger_zones]]
-id = "decisive_campaign_victory"
-min = [2, 2]
-max = [6, 6]
+id = "yr_soviet_03_brain_wash_target_down"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "building_destroyed", building_id = "yuri_psychic_dominator", player_id = 2 }
+actions = [
+    { type = "set_objective_status", objective_id = "obj_secondary_strike", status = "completed" },
+    { type = "play_radar_video", video_path = "assets/videos/radar_pip/yr_soviet_03_pip_03.mp4" },
+    { type = "grant_credits", player_id = 1, amount = 2000 },
+    { type = "eva_transmission", speaker = "LT. ZOFIA", text = "Key Psi-Corps structure destroyed! Press the assault and wipe out the rest of Yuri's base!", portrait = "assets/ui/cameos/nradicon.png", audio_cue = "battle_control_online", radar_video = "assets/videos/radar_pip/yr_soviet_03_pip_03.mp4" },
+]
+
+[[trigger_zones]]
+id = "yr_soviet_03_brain_wash_victory"
+min = [0, 0]
+max = [3, 3]
 once = true
 condition = { type = "all_buildings_destroyed", player_id = 2 }
 actions = [
+    { type = "set_objective_status", objective_id = "obj_primary_main", status = "completed" },
+    { type = "set_objective_status", objective_id = "obj_vip_boris", status = "completed" },
     { type = "set_variable", name = "mission_stage", value = 3 },
-    { type = "eva_transmission", speaker = "ZOFIA", text = "Mission Accomplished. All primary hostile command structures neutralized." },
-    { type = "declare_winner", player_id = 1 }
+    { type = "eva_transmission", speaker = "LT. ZOFIA", text = "Yuri's forces in this sector have been completely eradicated! Victory is ours!", portrait = "assets/ui/cameos/nradicon.png", audio_cue = "primary_objective_achieved" },
+    { type = "declare_winner", player_id = 1 },
+]
+
+[[trigger_zones]]
+id = "p22_vip_boris_lost"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "tagged_entity_destroyed", tag = "boris" }
+actions = [
+    { type = "set_objective_status", objective_id = "obj_vip_boris", status = "failed" },
+    { type = "eva_transmission", speaker = "LT. ZOFIA", text = "Hero Boris has fallen in combat!", portrait = "assets/ui/cameos/nradicon.png", audio_cue = "unit_lost" },
+]
+
+[[trigger_zones]]
+id = "p22_bonus_tech_captured"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "building_captured", building_id = "tech_oil_derrick", by_player_id = 1 }
+actions = [
+    { type = "set_objective_status", objective_id = "obj_bonus_tech", status = "completed" },
+    { type = "grant_credits", player_id = 1, amount = 750 },
+    { type = "eva_transmission", speaker = "LT. ZOFIA", text = "Bonus objective achieved: Neutral tech structure secured!", portrait = "assets/ui/cameos/nradicon.png", audio_cue = "building_captured" },
+]
+
+[[trigger_zones]]
+id = "p22_periodic_skirmish_wave"
+min = [0, 0]
+max = [3, 3]
+once = false
+condition = { type = "periodic_timer", start_secs = 75, interval_secs = 75, max_repeats = 3 }
+actions = [
+    { type = "spawn_reinforcements", player_id = 2, unit_id = "yuri_initiate", count = 3, tile = [28, 10] },
 ]

@@ -1,8 +1,10 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
   "properties": {
     "profiles": {
       "items": {
+        "additionalProperties": false,
         "properties": {
           "build_order": {
             "items": {
@@ -17,18 +19,13 @@
             "type": "string"
           },
           "min_attack_wave_size": {
+            "minimum": 1,
             "type": "integer"
           },
           "on_ai_tick": {
             "type": "string"
           },
           "personality": {
-            "enum": [
-              "balanced",
-              "rusher",
-              "turtle",
-              "air_force"
-            ],
             "type": "string"
           },
           "preferred_superweapons": {
@@ -38,6 +35,10 @@
             "type": "array"
           },
           "unit_weights": {
+            "additionalProperties": {
+              "minimum": 0,
+              "type": "integer"
+            },
             "type": "object"
           }
         },

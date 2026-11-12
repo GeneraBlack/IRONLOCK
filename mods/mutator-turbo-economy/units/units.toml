@@ -1,0 +1,53 @@
+# ==============================================================================
+# Turbo Economy Unit Delta Overrides + `$append` Array Patch Directives
+# ==============================================================================
+
+[[units]]
+id = "acolyte_worker"
+build_time_secs = 1.5
+speed = 7.2
+streaming_build_power = 90.0
+"tags$append" = ["turbo_boosted"]
+
+[units.builder_trait]
+build_speed_multiplier = 2.5
+
+[[units]]
+id = "crystal_harvester"
+build_time_secs = 3.0
+speed = 6.5
+harvest_capacity = 1200
+"tags$append" = ["turbo_boosted"]
+
+[units.gatherer_trait]
+carry_capacity = 1200
+gather_rate_per_sec = 100.0
+
+[[units]]
+id = "legion_sentinel"
+build_time_secs = 1.8
+speed = 6.0
+"tags$append" = ["turbo_boosted"]
+
+[[units]]
+id = "pyre_warden"
+build_time_secs = 2.5
+speed = 5.8
+"tags$append" = ["turbo_boosted"]
+
+[[units]]
+id = "astral_colossus"
+build_time_secs = 4.5
+speed = 4.6
+"tags$append" = ["turbo_boosted"]
+
+[[units]]
+id = "archon_commander"
+build_time_secs = 4.0
+speed = 6.4
+"tags$append" = ["turbo_boosted"]
+
+[units.energy_pool]
+max_energy = 300.0
+initial_energy = 250.0
+regen_per_sec = 10.0

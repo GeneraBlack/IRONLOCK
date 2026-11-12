@@ -1,0 +1,13 @@
+[[factions]]
+id = "solar_order"
+name = "Solar Order"
+color = [0.22, 0.56, 0.96]
+starting_credits = 2000
+description = "Sanctified citadel builders wielding sunforged lances, prismatic beam spires, and radiant Archon commanders."
+
+[[factions]]
+id = "obsidian_pact"
+name = "Obsidian Pact"
+color = [0.88, 0.24, 0.22]
+starting_credits = 2000
+description = "Relentless war-conclave channeling astral pyres, siege colossi, and ancient cataclysm relics."

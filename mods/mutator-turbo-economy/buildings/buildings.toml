@@ -1,0 +1,45 @@
+# ==============================================================================
+# Turbo Economy Building Delta Overrides + `$append` Array Patch Directives
+# ==============================================================================
+
+[[buildings]]
+id = "citadel_hq"
+build_time_secs = 6.0
+streaming_build_power = 120.0
+"tags$append" = ["turbo_economy"]
+
+[buildings.resource_trickle_per_sec]
+credits = 18
+aether = 10
+
+[[buildings]]
+id = "aether_extractor"
+cost = 250
+build_time_secs = 3.0
+"tags$append" = ["turbo_economy"]
+
+[buildings.resource_trickle_per_sec]
+credits = 20
+aether = 14
+relic_flux = 4
+
+[[buildings]]
+id = "vanguard_barracks"
+cost = 150
+build_time_secs = 2.0
+"tags$append" = ["turbo_economy"]
+
+[[buildings]]
+id = "arcane_smithy"
+build_time_secs = 3.0
+"tags$append" = ["turbo_economy"]
+
+[[buildings]]
+id = "grand_archive"
+build_time_secs = 4.0
+"tags$append" = ["turbo_economy"]
+
+[[buildings]]
+id = "construct_foundry"
+build_time_secs = 3.5
+"tags$append" = ["turbo_economy"]

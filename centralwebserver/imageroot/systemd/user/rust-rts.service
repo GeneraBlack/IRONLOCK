@@ -14,7 +14,7 @@ ExecStart=/usr/bin/podman run \
     --conmon-pidfile %t/rust-rts.pid \
     --cidfile %t/rust-rts.ctr-id \
     --cgroups=no-conmon \
-    --replace -d --name rust-rts \
+    --replace -d --name %u-rust-rts \
     --pull=missing \
     -p 127.0.0.1:${TCP_PORT}:8080 \
     -p ${RELAY_PORT_START}-${RELAY_PORT_END}:${RELAY_PORT_START}-${RELAY_PORT_END}/tcp \

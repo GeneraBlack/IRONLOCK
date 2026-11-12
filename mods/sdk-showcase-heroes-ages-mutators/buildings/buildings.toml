@@ -1,0 +1,235 @@
+# ==============================================================================
+# Buildings Catalog — Streaming Build Power, Hero Revival Altar, Parallel Local
+# Research Queues (`arcane_smithy` + `grand_archive`), and Age II Beam Spire
+# ==============================================================================
+
+[[buildings]]
+id = "citadel_hq"
+name = "Astral Citadel Sanctum"
+faction = "shared"
+role = "construction_yard"
+cost = 1200
+build_time_secs = 12.0
+health = 3200.0
+armor = "structure"
+armor_tag = "citadel_masonry"
+footprint = [3, 3]
+power_delta = 100
+vision_range = 22.0
+streaming_build_power = 50.0
+tags = ["construction_yard", "citadel_altar", "structure_core", "fortified_building"]
+ambient_vfx_id = "vfx_citadel_beacon"
+death_vfx_id = "vfx_arcane_collapse"
+
+[buildings.resource_trickle_per_sec]
+credits = 4
+aether = 2
+
+[buildings.visual]
+model = "assets/models/citadel_hq.glb"
+icon = "assets/ui/cameos/citadel_hq.png"
+archetype = "construction_yard"
+scale = [1.0, 1.0, 1.0]
+primary_color = [0.26, 0.56, 0.94]
+team_color_tint = true
+metallic = 0.45
+roughness = 0.52
+emissive_boost = 1.25
+team_mask_mode = "auto_neutral_gray"
+
+[[buildings]]
+id = "aether_extractor"
+name = "Aether Conduit & Refinery"
+faction = "shared"
+role = "refinery"
+cost = 350
+build_time_secs = 6.0
+health = 1450.0
+armor = "structure"
+armor_tag = "citadel_masonry"
+footprint = [3, 2]
+power_delta = 25
+vision_range = 16.0
+prerequisites = ["citadel_hq"]
+spawns_unit_on_complete = "crystal_harvester"
+tags = ["economy", "extractor", "fortified_building"]
+ambient_vfx_id = "vfx_aether_siphon"
+death_vfx_id = "vfx_arcane_collapse"
+
+[buildings.resource_trickle_per_sec]
+credits = 6
+aether = 4
+relic_flux = 1
+
+[buildings.visual]
+model = "assets/models/aether_extractor.glb"
+icon = "assets/ui/cameos/aether_extractor.png"
+archetype = "refinery"
+scale = [1.0, 1.0, 1.0]
+primary_color = [0.28, 0.72, 0.92]
+team_color_tint = true
+metallic = 0.40
+roughness = 0.55
+emissive_boost = 1.35
+
+[[buildings]]
+id = "vanguard_barracks"
+name = "Vanguard Bastion Hall"
+faction = "shared"
+role = "barracks"
+cost = 200
+build_time_secs = 4.0
+health = 1250.0
+armor = "structure"
+armor_tag = "citadel_masonry"
+footprint = [2, 2]
+power_delta = -15
+vision_range = 16.0
+prerequisites = ["citadel_hq"]
+tags = ["production", "infantry_hall", "fortified_building"]
+death_vfx_id = "vfx_arcane_collapse"
+
+[buildings.visual]
+model = "assets/models/vanguard_barracks.glb"
+icon = "assets/ui/cameos/vanguard_barracks.png"
+archetype = "barracks"
+scale = [1.0, 1.0, 1.0]
+primary_color = [0.35, 0.52, 0.80]
+team_color_tint = true
+metallic = 0.35
+roughness = 0.60
+
+[[buildings]]
+id = "arcane_smithy"
+name = "Arcane Runesmithy (Forge Research)"
+faction = "shared"
+role = "tech_center"
+cost = 300
+build_time_secs = 6.0
+health = 1350.0
+armor = "structure"
+armor_tag = "citadel_masonry"
+footprint = [2, 2]
+power_delta = -20
+vision_range = 16.0
+prerequisites = ["vanguard_barracks"]
+tags = ["research", "forge_tech", "fortified_building"]
+death_vfx_id = "vfx_arcane_collapse"
+
+[buildings.resource_costs]
+aether = 75
+
+[buildings.visual]
+model = "assets/models/arcane_smithy.glb"
+icon = "assets/ui/cameos/arcane_smithy.png"
+archetype = "power_plant"
+scale = [1.0, 1.0, 1.0]
+primary_color = [0.78, 0.52, 0.24]
+team_color_tint = true
+metallic = 0.55
+roughness = 0.45
+emissive_boost = 1.15
+
+[[buildings]]
+id = "grand_archive"
+name = "Grand Astral Archive (High Research)"
+faction = "shared"
+role = "tech_center"
+cost = 450
+build_time_secs = 8.0
+health = 1550.0
+armor = "structure"
+armor_tag = "citadel_masonry"
+footprint = [2, 2]
+power_delta = -25
+vision_range = 18.0
+required_era = "age_2"
+prerequisites = ["arcane_smithy"]
+prerequisite_upgrades = ["advance_age_2"]
+tags = ["research", "archive_tech", "fortified_building"]
+ambient_vfx_id = "vfx_citadel_beacon"
+death_vfx_id = "vfx_arcane_collapse"
+
+[buildings.resource_costs]
+aether = 160
+
+[buildings.visual]
+model = "assets/models/grand_archive.glb"
+icon = "assets/ui/cameos/grand_archive.png"
+archetype = "power_plant"
+scale = [1.0, 1.0, 1.0]
+primary_color = [0.56, 0.38, 0.92]
+team_color_tint = true
+metallic = 0.50
+roughness = 0.42
+emissive_boost = 1.40
+
+[[buildings]]
+id = "construct_foundry"
+name = "Titan Construct Foundry"
+faction = "shared"
+role = "war_factory"
+cost = 420
+build_time_secs = 7.0
+health = 1650.0
+armor = "structure"
+armor_tag = "citadel_masonry"
+footprint = [3, 2]
+power_delta = -25
+vision_range = 17.0
+required_era = "age_2"
+prerequisites = ["vanguard_barracks", "aether_extractor"]
+prerequisite_upgrades = ["advance_age_2"]
+tags = ["production", "construct_bay", "fortified_building"]
+death_vfx_id = "vfx_arcane_collapse"
+
+[buildings.resource_costs]
+aether = 120
+
+[buildings.visual]
+model = "assets/models/construct_foundry.glb"
+icon = "assets/ui/cameos/construct_foundry.png"
+archetype = "war_factory"
+scale = [1.0, 1.0, 1.0]
+primary_color = [0.42, 0.52, 0.72]
+team_color_tint = true
+metallic = 0.58
+roughness = 0.48
+
+[[buildings]]
+id = "sunbeam_spire"
+name = "Sunbeam Prism Spire"
+faction = "shared"
+role = "defense"
+cost = 280
+build_time_secs = 5.5
+health = 1050.0
+armor = "structure"
+armor_tag = "citadel_masonry"
+footprint = [1, 1]
+power_delta = -20
+vision_range = 17.0
+required_era = "age_2"
+prerequisites = ["arcane_smithy"]
+prerequisite_upgrades = ["advance_age_2"]
+primary_weapon = "sunbeam_prism_lance"
+tags = ["defense", "beam_tower", "fortified_building"]
+death_vfx_id = "vfx_arcane_collapse"
+
+[buildings.resource_costs]
+aether = 90
+
+[buildings.visual]
+model = "assets/models/sunbeam_spire.glb"
+icon = "assets/ui/cameos/sunbeam_spire.png"
+archetype = "turret"
+scale = [1.0, 1.0, 1.0]
+primary_color = [0.92, 0.78, 0.28]
+team_color_tint = true
+metallic = 0.50
+roughness = 0.40
+emissive_boost = 1.50
+
+[[buildings.visual.sockets]]
+name = "Muzzle_0"
+offset = [0.0, 2.6, 0.35]

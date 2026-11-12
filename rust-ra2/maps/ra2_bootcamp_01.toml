@@ -1,266 +1,600 @@
 id = "ra2_bootcamp_01"
-name = "RA2 Boot Camp 01: Basic Training"
+name = "Training 01: Basic Command & Control"
 width = 56
 height = 69
 tile_size = 2.0
 ore_regen_per_sec = 4.0
-mission_objective = "This is basic training. Listen to your sergeant and do as he tells you."
+mission_objective = "Lead your Allied recruit squad to Waypoint Alpha to receive your MCV, deploy a forward supply base, and destroy the simulated target structures."
+playable_bounds = [[0, 0], [35, 42]]
 
 [[ore_patches]]
-position = [30, 12]
+position = [26, 34]
 radius = 3
+amount_per_tile = 1600
+
+[[ore_patches]]
+position = [44, 56]
+radius = 2
 amount_per_tile = 1400
 
-[[ore_patches]]
-position = [22, 37]
-radius = 3
-amount_per_tile = 1400
+[[water_rects]]
+min = [7, 16]
+max = [7, 16]
 
-[[ore_patches]]
-position = [28, 34]
-radius = 4
-amount_per_tile = 2000
+[[water_rects]]
+min = [6, 17]
+max = [7, 18]
 
-[[ore_patches]]
-position = [37, 32]
-radius = 3
-amount_per_tile = 1500
+[[water_rects]]
+min = [4, 19]
+max = [7, 20]
 
-[[ore_patches]]
-position = [28, 25]
-radius = 3
-amount_per_tile = 1500
+[[water_rects]]
+min = [23, 19]
+max = [26, 19]
+
+[[water_rects]]
+min = [23, 20]
+max = [28, 20]
+
+[[water_rects]]
+min = [3, 21]
+max = [10, 21]
+
+[[water_rects]]
+min = [22, 21]
+max = [24, 21]
+
+[[water_rects]]
+min = [3, 22]
+max = [24, 22]
+
+[[water_rects]]
+min = [6, 23]
+max = [16, 23]
+
+[[water_rects]]
+min = [6, 24]
+max = [13, 24]
+
+[[water_rects]]
+min = [40, 24]
+max = [41, 24]
+
+[[water_rects]]
+min = [7, 25]
+max = [12, 26]
+
+[[water_rects]]
+min = [40, 25]
+max = [42, 25]
+
+[[water_rects]]
+min = [29, 26]
+max = [29, 26]
+
+[[water_rects]]
+min = [40, 26]
+max = [43, 26]
+
+[[water_rects]]
+min = [8, 27]
+max = [12, 28]
+
+[[water_rects]]
+min = [29, 27]
+max = [30, 27]
+
+[[water_rects]]
+min = [38, 27]
+max = [47, 27]
+
+[[water_rects]]
+min = [29, 28]
+max = [33, 28]
+
+[[water_rects]]
+min = [37, 28]
+max = [48, 28]
+
+[[water_rects]]
+min = [9, 29]
+max = [11, 30]
+
+[[water_rects]]
+min = [29, 29]
+max = [49, 29]
+
+[[water_rects]]
+min = [29, 30]
+max = [50, 31]
+
+[[water_rects]]
+min = [10, 31]
+max = [11, 31]
+
+[[water_rects]]
+min = [10, 32]
+max = [10, 37]
+
+[[water_rects]]
+min = [30, 32]
+max = [52, 32]
+
+[[water_rects]]
+min = [31, 33]
+max = [52, 33]
+
+[[water_rects]]
+min = [32, 34]
+max = [53, 34]
+
+[[water_rects]]
+min = [38, 35]
+max = [54, 40]
+
+[[water_rects]]
+min = [9, 38]
+max = [10, 38]
+
+[[water_rects]]
+min = [8, 39]
+max = [10, 39]
+
+[[water_rects]]
+min = [7, 40]
+max = [10, 40]
+
+[[water_rects]]
+min = [6, 41]
+max = [9, 42]
+
+[[water_rects]]
+min = [39, 41]
+max = [54, 44]
+
+[[water_rects]]
+min = [6, 43]
+max = [8, 44]
+
+[[water_rects]]
+min = [6, 45]
+max = [7, 45]
+
+[[water_rects]]
+min = [46, 45]
+max = [53, 45]
+
+[[water_rects]]
+min = [7, 46]
+max = [7, 46]
+
+[[water_rects]]
+min = [46, 46]
+max = [52, 47]
+
+[[water_rects]]
+min = [46, 48]
+max = [50, 48]
+
+[[water_rects]]
+min = [46, 49]
+max = [49, 50]
+
+[[water_rects]]
+min = [46, 51]
+max = [48, 51]
+
+[[water_rects]]
+min = [46, 52]
+max = [47, 52]
+
+[[water_rects]]
+min = [46, 53]
+max = [46, 53]
+
+[[water_rects]]
+min = [37, 60]
+max = [41, 60]
+
+[[water_rects]]
+min = [37, 61]
+max = [40, 61]
+
+[[water_rects]]
+min = [37, 62]
+max = [39, 62]
+
+[[water_rects]]
+min = [38, 63]
+max = [38, 63]
+
+[[bridge_rects]]
+min = [17, 19]
+max = [19, 20]
+
+[[bridge_rects]]
+min = [2, 21]
+max = [25, 23]
+
+[[bridge_rects]]
+min = [5, 24]
+max = [14, 26]
+
+[[bridge_rects]]
+min = [33, 27]
+max = [35, 27]
+
+[[bridge_rects]]
+min = [33, 28]
+max = [36, 35]
+
+[[elevation_rects]]
+min = [11, 4]
+max = [25, 7]
+
+[[elevation_rects]]
+min = [21, 8]
+max = [25, 10]
+
+[[elevation_rects]]
+min = [22, 11]
+max = [25, 18]
+
+[[ramp_rects]]
+min = [10, 4]
+max = [11, 6]
+
+[[ramp_rects]]
+min = [25, 4]
+max = [26, 6]
+
+[[ramp_rects]]
+min = [20, 8]
+max = [21, 10]
+
+[[ramp_rects]]
+min = [25, 8]
+max = [26, 10]
+
+[[ramp_rects]]
+min = [21, 13]
+max = [22, 15]
+
+[[ramp_rects]]
+min = [25, 13]
+max = [26, 15]
+
+[[obstacles]]
+min = [19, 44]
+max = [20, 45]
+
+[[obstacles]]
+min = [25, 50]
+max = [26, 51]
+
+[[obstacles]]
+min = [30, 53]
+max = [30, 54]
+
+[[props]]
+kind = "tree"
+tile_pos = [32, 59]
+
+[[props]]
+kind = "tree"
+tile_pos = [35, 46]
+
+[[props]]
+kind = "tree"
+tile_pos = [36, 42]
+
+[[props]]
+kind = "tree"
+tile_pos = [29, 16]
+
+[[props]]
+kind = "tree"
+tile_pos = [21, 11]
+
+[[props]]
+kind = "tree"
+tile_pos = [10, 14]
+
+[[props]]
+kind = "tree"
+tile_pos = [27, 30]
+
+[[props]]
+kind = "tree"
+tile_pos = [25, 44]
+
+[[props]]
+kind = "tree"
+tile_pos = [13, 30]
+
+[[props]]
+kind = "tree"
+tile_pos = [3, 29]
+
+[[props]]
+kind = "tree"
+tile_pos = [10, 47]
+
+[[props]]
+kind = "tree"
+tile_pos = [25, 63]
+
+[[props]]
+kind = "tree"
+tile_pos = [3, 38]
+
+[[props]]
+kind = "tree"
+tile_pos = [24, 25]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [32, 22]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [32, 21]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [32, 25]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [26, 21]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [23, 24]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [37, 25]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [38, 25]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [25, 26]
 
 [[preplaced_entities]]
-player_id = 2
-building_id = "allied_barracks"
-tile_pos = [23, 48]
-
-[[preplaced_entities]]
-player_id = 2
-building_id = "allied_battle_lab"
-tile_pos = [21, 45]
-
-[[preplaced_entities]]
-player_id = 2
+player_id = 3
 building_id = "allied_conyard"
-tile_pos = [18, 45]
+tile_pos = [18, 30]
 
 [[preplaced_entities]]
-player_id = 2
+player_id = 3
+building_id = "allied_power_plant"
+tile_pos = [22, 30]
+
+[[preplaced_entities]]
+player_id = 3
 building_id = "allied_refinery"
-tile_pos = [18, 51]
+tile_pos = [18, 34]
 
 [[preplaced_entities]]
-player_id = 2
-building_id = "allied_war_factory"
-tile_pos = [21, 54]
-
-[[preplaced_entities]]
-player_id = 2
-building_id = "allied_patriot_missile"
-tile_pos = [26, 45]
-
-[[preplaced_entities]]
-player_id = 2
-building_id = "allied_patriot_missile"
-tile_pos = [21, 42]
-
-[[preplaced_entities]]
-player_id = 2
-building_id = "allied_patriot_missile"
-tile_pos = [16, 42]
-
-[[preplaced_entities]]
-player_id = 2
-building_id = "allied_patriot_missile"
-tile_pos = [12, 43]
-
-[[preplaced_entities]]
-player_id = 2
-building_id = "allied_patriot_missile"
-tile_pos = [15, 51]
-
-[[preplaced_entities]]
-player_id = 2
-building_id = "allied_patriot_missile"
-tile_pos = [22, 59]
-
-[[preplaced_entities]]
-player_id = 2
-building_id = "allied_patriot_missile"
-tile_pos = [26, 63]
-
-[[preplaced_entities]]
-player_id = 2
-building_id = "allied_power_plant"
-tile_pos = [18, 43]
-
-[[preplaced_entities]]
-player_id = 2
-building_id = "allied_power_plant"
-tile_pos = [19, 53]
-
-[[preplaced_entities]]
-player_id = 2
-building_id = "allied_power_plant"
-tile_pos = [25, 56]
-
-[[preplaced_entities]]
-player_id = 2
-building_id = "allied_power_plant"
-tile_pos = [23, 47]
-
-[[preplaced_entities]]
-player_id = 2
-building_id = "allied_airforce_command"
-tile_pos = [23, 58]
-
-[[preplaced_entities]]
-player_id = 2
-building_id = "allied_barracks"
-tile_pos = [32, 20]
-
-[[preplaced_entities]]
-player_id = 2
+player_id = 3
 unit_id = "chrono_miner"
-tile_pos = [19, 50]
+tile_pos = [23, 35]
+tag = "convoy"
+
+[[preplaced_entities]]
+player_id = 3
+unit_id = "nighthawk_chopper"
+tile_pos = [16, 31]
 
 [[preplaced_entities]]
 player_id = 2
-unit_id = "nighthawk_transport"
-tile_pos = [13, 37]
-
-[[preplaced_entities]]
-player_id = 1
-unit_id = "allied_gi"
-tile_pos = [23, 51]
+building_id = "soviet_barracks"
+tile_pos = [38, 52]
 
 [[preplaced_entities]]
 player_id = 2
-unit_id = "allied_gi"
-tile_pos = [29, 54]
+building_id = "soviet_tesla_reactor"
+tile_pos = [42, 52]
 
 [[preplaced_entities]]
 player_id = 2
-unit_id = "allied_gi"
-tile_pos = [30, 54]
+building_id = "soviet_sentry_gun"
+tile_pos = [35, 48]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "soviet_conscript"
+tile_pos = [34, 46]
+
+[[preplaced_entities]]
+player_id = 2
+unit_id = "soviet_conscript"
+tile_pos = [36, 46]
+
+[[preplaced_entities]]
+player_id = 0
+building_id = "bridge_repair_hut"
+tile_pos = [2, 20]
+
+[[objectives]]
+id = "obj_stage1_linkup"
+tier = "primary"
+title = "Reach Allied Command Point & Assume Outpost Control"
+marker_tile = [20, 32]
+
+[[objectives]]
+id = "obj_primary_main"
+tier = "primary"
+title = "Lead your Allied recruit squad to Waypoint Alpha to receive your MCV, deploy a forwar..."
+marker_tile = [38, 52]
+
+[[objectives]]
+id = "obj_vip_convoy"
+tier = "bonus"
+title = "Preserve the Supply Chrono Miner Convoy"
+marker_tile = [23, 35]
+
+[[objectives]]
+id = "obj_bonus_waves"
+tier = "bonus"
+title = "Weather Enemy Tactical Counterattack Waves"
+target_count = 2
+marker_tile = [14, 14]
+
+[[cutscenes]]
+id = "intro_flyover"
+skippable = true
+letterbox = true
+
+[[cutscenes.keyframes]]
+time_secs = 0.0
+focus = [47.0, 0.0, 71.0]
+distance = 46.0
+pitch_deg = 52.0
+yaw_deg = -22.0
+
+[[cutscenes.keyframes]]
+time_secs = 2.2
+focus = [37.0, 0.0, 49.0]
+distance = 42.0
+pitch_deg = 55.0
+yaw_deg = -10.0
+
+[[cutscenes.keyframes]]
+time_secs = 4.5
+focus = [29.0, 0.0, 29.0]
+distance = 36.0
+pitch_deg = 58.0
+yaw_deg = 0.0
 
 [[spawns]]
 player_id = 1
 faction = "allies"
-base_tile = [22, 12]
-
-[[spawns.initial_buildings]]
-building_id = "allied_conyard"
-tile_pos = [22, 12]
-
-[[spawns.initial_buildings]]
-building_id = "allied_power_plant"
-tile_pos = [25, 12]
-
-[[spawns.initial_buildings]]
-building_id = "allied_refinery"
-tile_pos = [22, 15]
-
-[[spawns.initial_buildings]]
-building_id = "allied_barracks"
-tile_pos = [25, 15]
-
-[[spawns.initial_buildings]]
-building_id = "allied_war_factory"
-tile_pos = [28, 12]
+sub_faction = "usa"
+base_tile = [14, 14]
+team_id = 1
 
 [[spawns.initial_units]]
 unit_id = "allied_gi"
-tile_pos = [24, 17]
+tile_pos = [12, 14]
 
 [[spawns.initial_units]]
 unit_id = "allied_gi"
-tile_pos = [26, 17]
+tile_pos = [14, 14]
 
 [[spawns.initial_units]]
-unit_id = "grizzly_tank"
-tile_pos = [28, 16]
+unit_id = "allied_gi"
+tile_pos = [16, 14]
 
 [[spawns.initial_units]]
-unit_id = "chrono_miner"
-tile_pos = [24, 16]
+unit_id = "allied_gi"
+tile_pos = [13, 16]
+
+[[spawns.initial_units]]
+unit_id = "allied_attack_dog"
+tile_pos = [15, 16]
+
+[[spawns.initial_units]]
+unit_id = "allied_engineer"
+tile_pos = [11, 15]
 
 [[spawns]]
 player_id = 2
 faction = "soviets"
-base_tile = [30, 37]
+sub_faction = "russia"
+base_tile = [38, 52]
+team_id = 2
 
-[[spawns.initial_buildings]]
-building_id = "soviet_conyard"
-tile_pos = [30, 37]
-
-[[spawns.initial_buildings]]
-building_id = "soviet_tesla_reactor"
-tile_pos = [27, 37]
-
-[[spawns.initial_buildings]]
-building_id = "soviet_refinery"
-tile_pos = [30, 34]
-
-[[spawns.initial_buildings]]
-building_id = "soviet_barracks"
-tile_pos = [27, 34]
-
-[[spawns.initial_buildings]]
-building_id = "soviet_war_factory"
-tile_pos = [24, 37]
-
-[[spawns.initial_units]]
-unit_id = "soviet_conscript"
-tile_pos = [28, 32]
-
-[[spawns.initial_units]]
-unit_id = "soviet_conscript"
-tile_pos = [26, 32]
-
-[[spawns.initial_units]]
-unit_id = "rhino_tank"
-tile_pos = [24, 33]
-
-[[spawns.initial_units]]
-unit_id = "war_miner"
-tile_pos = [28, 33]
+[[spawns]]
+player_id = 3
+faction = "allies"
+sub_faction = "usa"
+base_tile = [18, 30]
+team_id = 1
 
 [[trigger_zones]]
-id = "mission_stage_init"
-min = [6, 6]
-max = [12, 12]
+id = "bootcamp_01_init"
+min = [0, 0]
+max = [3, 3]
 once = true
 condition = { type = "timer_elapsed", secs = 1.0 }
 actions = [
+    { type = "play_cutscene", cutscene_id = "intro_flyover" },
+    { type = "set_objective_status", objective_id = "obj_stage1_linkup", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_primary_main", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_vip_convoy", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_bonus_waves", status = "active" },
     { type = "set_variable", name = "mission_stage", value = 1 },
-    { type = "eva_transmission", speaker = "EVA", text = "Battle Control Online. Primary tactical objectives initialized." },
-    { type = "reveal_area", tile = [22, 12], radius = 14 }
+    { type = "reveal_area", tile = [19, 32], radius = 8 },
+    { type = "eva_transmission", speaker = "DRILL INSTRUCTOR", text = "Welcome to Allied Tactical Bootcamp, Commander! March your GIs south to Waypoint Alpha to unlock your forward Construction Yard.", portrait = "assets/ui/cameos/allied_conyard_icon.png", audio_cue = "battle_control_online" },
 ]
 
 [[trigger_zones]]
-id = "tactical_reinforcement_wave"
-min = [21, 10]
-max = [25, 14]
+id = "bootcamp_waypoint_alpha"
+min = [15, 27]
+max = [26, 38]
 once = true
-condition = { type = "all", conditions = [{ type = "timer_elapsed", secs = 45.0 }, { type = "variable_equals", name = "mission_stage", value = 1 }] }
+condition = { type = "entered_zone", player_id = 1 }
 actions = [
+    { type = "set_objective_status", objective_id = "obj_stage1_linkup", status = "completed" },
+    { type = "expand_playable_bounds", min_tile = [0, 0], max_tile = [55, 68] },
+    { type = "reveal_area_for_player", player_id = 1, center = [77.0, 0.0, 105.0], radius = 22.0, duration_secs = 30 },
+    { type = "change_owner", from_player_id = 3, to_player_id = 1 },
     { type = "set_variable", name = "mission_stage", value = 2 },
-    { type = "spawn_reinforcements", player_id = 1, unit_id = "grizzly_tank", count = 2, tile = [21, 10] },
-    { type = "grant_credits", player_id = 1, amount = 1500 },
-    { type = "eva_transmission", speaker = "EVA", text = "Reinforcements have arrived. Forward command has authorized 1500 bonus credits." }
+    { type = "grant_credits", player_id = 1, amount = 2000 },
+    { type = "spawn_reinforcements", player_id = 1, unit_id = "grizzly_tank", count = 2, tile = [22, 33] },
+    { type = "set_objective", text = "Build an Allied Barracks, train additional GIs, and destroy all simulated OPFOR structures in the southern range." },
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Forward Training Outpost transferred to your command! Harvest Ore and clear the southern OPFOR target range.", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "building_captured" },
 ]
 
 [[trigger_zones]]
-id = "decisive_campaign_victory"
-min = [2, 2]
-max = [6, 6]
+id = "bootcamp_01_squad_lost_defeat"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "player_units_below", player_id = 1, max_count = 0 }
+actions = [
+    { type = "eva_transmission", speaker = "DRILL INSTRUCTOR", text = "All training units lost! Resetting exercise.", portrait = "assets/ui/cameos/allied_conyard_icon.png", audio_cue = "unit_lost" },
+    { type = "declare_winner", player_id = 2 },
+]
+
+[[trigger_zones]]
+id = "bootcamp_01_victory"
+min = [0, 0]
+max = [3, 3]
 once = true
 condition = { type = "all_buildings_destroyed", player_id = 2 }
 actions = [
+    { type = "set_objective_status", objective_id = "obj_primary_main", status = "completed" },
+    { type = "set_objective_status", objective_id = "obj_vip_convoy", status = "completed" },
     { type = "set_variable", name = "mission_stage", value = 3 },
-    { type = "eva_transmission", speaker = "EVA", text = "Mission Accomplished. All primary hostile command structures neutralized." },
-    { type = "declare_winner", player_id = 1 }
+    { type = "eva_transmission", speaker = "DRILL INSTRUCTOR", text = "First-rate command work, Recruit! Proceed to Day 2: Base Defense & Armored Counterattack.", portrait = "assets/ui/cameos/allied_conyard_icon.png", audio_cue = "primary_objective_achieved" },
+    { type = "declare_winner", player_id = 1 },
+]
+
+[[trigger_zones]]
+id = "p22_vip_convoy_lost"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "tagged_entity_destroyed", tag = "convoy" }
+actions = [
+    { type = "set_objective_status", objective_id = "obj_vip_convoy", status = "failed" },
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Critical protected asset (convoy) has been destroyed!", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "unit_lost" },
+]
+
+[[trigger_zones]]
+id = "p22_periodic_skirmish_wave"
+min = [0, 0]
+max = [3, 3]
+once = false
+condition = { type = "periodic_timer", start_secs = 75, interval_secs = 75, max_repeats = 3 }
+actions = [
+    { type = "spawn_reinforcements", player_id = 2, unit_id = "soviet_conscript", count = 2, tile = [36, 50] },
+    { type = "add_objective_progress", objective_id = "obj_bonus_waves", delta = 1 },
 ]

@@ -1,4 +1,3 @@
-
 pub(super) struct PaddedVoxelField {
     ux: usize,
     uy: usize,
@@ -149,7 +148,8 @@ pub(super) fn compute_smooth_density_field(field: &PaddedVoxelField) -> Vec<f32>
             let row_base = (z * ny + y) * nx;
             for x in 1..(nx - 1) {
                 let i = row_base + x;
-                pass_a[i] = 0.25 * (field.density[i - 1] + 2.0 * field.density[i] + field.density[i + 1]);
+                pass_a[i] =
+                    0.25 * (field.density[i - 1] + 2.0 * field.density[i] + field.density[i + 1]);
             }
         }
     }
@@ -173,7 +173,8 @@ pub(super) fn compute_smooth_density_field(field: &PaddedVoxelField) -> Vec<f32>
             let row_base = (z * ny + y) * nx;
             for x in 1..(nx - 1) {
                 let i = row_base + x;
-                pass_a[i] = 0.25 * (pass_b[i - slice_stride] + 2.0 * pass_b[i] + pass_b[i + slice_stride]);
+                pass_a[i] =
+                    0.25 * (pass_b[i - slice_stride] + 2.0 * pass_b[i] + pass_b[i + slice_stride]);
             }
         }
     }
@@ -267,9 +268,24 @@ pub(super) fn extract_dual_surface_nets_mesh(
                 } else {
                     0.0
                 };
-                let cx = x as f32 + if cross_count > 0.0 { cross_sum[0] * inv_cross } else { 0.5 };
-                let cy = y as f32 + if cross_count > 0.0 { cross_sum[1] * inv_cross } else { 0.5 };
-                let cz = z as f32 + if cross_count > 0.0 { cross_sum[2] * inv_cross } else { 0.5 };
+                let cx = x as f32
+                    + if cross_count > 0.0 {
+                        cross_sum[0] * inv_cross
+                    } else {
+                        0.5
+                    };
+                let cy = y as f32
+                    + if cross_count > 0.0 {
+                        cross_sum[1] * inv_cross
+                    } else {
+                        0.5
+                    };
+                let cz = z as f32
+                    + if cross_count > 0.0 {
+                        cross_sum[2] * inv_cross
+                    } else {
+                        0.5
+                    };
 
                 let wx = (cx - pad_f - half_x) * field.step_scale + part_offset[0];
                 let wy = (cz - pad_f).max(0.0) * field.step_scale + part_offset[1];
@@ -548,4 +564,3 @@ pub(super) fn reconstruct_smooth_isosurface_into_mesh(
         out_indices.push(base_vertex + i2);
     }
 }
-

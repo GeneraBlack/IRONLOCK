@@ -1,0 +1,20 @@
+[[resources]]
+id = "credits"
+display_name = "Credits"
+starting_amount = 5000
+color_rgb = [0.95, 0.78, 0.22]
+is_capacity_pool = false
+
+[[resources]]
+id = "timber"
+display_name = "Timber"
+starting_amount = 1500
+color_rgb = [0.46, 0.72, 0.30]
+is_capacity_pool = false
+
+[[resources]]
+id = "alloy"
+display_name = "Refined Alloy"
+starting_amount = 800
+color_rgb = [0.55, 0.75, 0.92]
+is_capacity_pool = false

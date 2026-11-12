@@ -1,11 +1,56 @@
-use crate::westwood::build_default_converted_map;
 use super::miniyaml::*;
+use crate::westwood::build_default_converted_map;
 use crate::westwood::normalize_id;
 use anyhow::{bail, Result};
 use rts_sdk::schema::{
     BuildingDef, InitialBuildingSpawn, InitialUnitSpawn, MapDef, ObstacleRectDef, OrePatchDef,
-    UnitDef,
+    PlayerSpawnDef, UnitDef,
 };
+
+fn merge_bool_grid_to_rects(
+    grid: &[bool],
+    gw: usize,
+    gh: usize,
+    min_area: usize,
+) -> Vec<ObstacleRectDef> {
+    let mut visited = vec![false; gw * gh];
+    let mut rects = Vec::new();
+    for y0 in 0..gh {
+        for x0 in 0..gw {
+            let idx = y0 * gw + x0;
+            if !grid[idx] || visited[idx] {
+                continue;
+            }
+            let mut x1 = x0;
+            while x1 + 1 < gw && grid[y0 * gw + (x1 + 1)] && !visited[y0 * gw + (x1 + 1)] {
+                x1 += 1;
+            }
+            let mut y1 = y0;
+            'grow_y: while y1 + 1 < gh {
+                for x in x0..=x1 {
+                    let c = (y1 + 1) * gw + x;
+                    if !grid[c] || visited[c] {
+                        break 'grow_y;
+                    }
+                }
+                y1 += 1;
+            }
+            for y in y0..=y1 {
+                for x in x0..=x1 {
+                    visited[y * gw + x] = true;
+                }
+            }
+            let area = (x1 - x0 + 1) * (y1 - y0 + 1);
+            if area >= min_area {
+                rects.push(ObstacleRectDef {
+                    min: [x0 as i32, y0 as i32],
+                    max: [x1 as i32, y1 as i32],
+                });
+            }
+        }
+    }
+    rects
+}
 
 pub fn convert_openra_map_yaml(
     map_yaml: &str,
@@ -24,8 +69,8 @@ pub fn convert_openra_map_yaml(
             "MapSize" => {
                 if let Some((w, h)) = node.value.split_once(',') {
                     if let (Ok(pw), Ok(ph)) = (w.trim().parse::<u32>(), h.trim().parse::<u32>()) {
-                        map.width = pw.clamp(20, 96);
-                        map.height = ph.clamp(20, 96);
+                        map.width = pw.clamp(20, 128);
+                        map.height = ph.clamp(20, 128);
                     }
                 }
             }
@@ -36,8 +81,8 @@ pub fn convert_openra_map_yaml(
                         parts[2].trim().parse::<u32>(),
                         parts[3].trim().parse::<u32>(),
                     ) {
-                        map.width = pw.clamp(20, 96);
-                        map.height = ph.clamp(20, 96);
+                        map.width = pw.clamp(20, 128);
+                        map.height = ph.clamp(20, 128);
                     }
                 }
             }
@@ -69,25 +114,40 @@ pub fn convert_openra_map_yaml(
                         let cy = (map.height as i32) / 2;
                         map.water_rects.push(ObstacleRectDef {
                             min: [(cx - 8).max(2), (cy + 4).min(map.height as i32 - 6)],
-                            max: [(cx + 8).min(map.width as i32 - 3), (cy + 8).min(map.height as i32 - 3)],
+                            max: [
+                                (cx + 8).min(map.width as i32 - 3),
+                                (cy + 8).min(map.height as i32 - 3),
+                            ],
                         });
                     }
                 }
                 if !ore_patches.is_empty() {
                     map.ore_patches = ore_patches;
                 }
-                let unit_offsets = [[4, 1], [4, 3], [5, 2], [3, 4]];
-                for (idx, pos) in spawn_coords.into_iter().take(2).enumerate() {
-                    if let Some(sp) = map.spawns.get_mut(idx) {
-                        let sign = if idx == 0 { 1 } else { -1 };
+                if !spawn_coords.is_empty() {
+                    let templates = map.spawns.clone();
+                    let mut new_spawns = Vec::new();
+                    for (idx, pos) in spawn_coords.into_iter().take(8).enumerate() {
+                        let mut sp = templates
+                            .get(idx % templates.len().max(1))
+                            .cloned()
+                            .unwrap_or(PlayerSpawnDef {
+                                player_id: (idx + 1) as u8,
+                                faction: "allies".to_string(),
+                                sub_faction: None,
+                                base_tile: pos,
+                                team_id: 0,
+                                initial_buildings: Vec::new(),
+                                initial_units: Vec::new(),
+                            });
+                        sp.player_id = (idx + 1) as u8;
                         sp.base_tile = pos;
-                        if let Some(b) = sp.initial_buildings.first_mut() {
-                            b.tile_pos = pos;
-                        }
-                        for (u_idx, u) in sp.initial_units.iter_mut().enumerate() {
-                            let off = unit_offsets[u_idx % unit_offsets.len()];
-                            u.tile_pos = [pos[0] + sign * off[0], pos[1] + sign * off[1]];
-                        }
+                        new_spawns.push(sp);
+                    }
+                    if new_spawns.len() >= 2 {
+                        map.spawns = new_spawns;
+                    } else if let Some(first_sp) = map.spawns.first_mut() {
+                        first_sp.base_tile = new_spawns[0].base_tile;
                     }
                 }
             }
@@ -95,41 +155,87 @@ pub fn convert_openra_map_yaml(
         }
     }
 
-    // Ensure spawns, ore patches, and initial entities are within map bounds
+    // Ensure spawns, ore patches, and initial entities are within map bounds without clobbering valid spawns
     let max_x = (map.width as i32 - 4).max(4);
     let max_y = (map.height as i32 - 4).max(4);
     for ore in &mut map.ore_patches {
         ore.position[0] = ore.position[0].clamp(4, max_x);
         ore.position[1] = ore.position[1].clamp(4, max_y);
     }
+
+    let mut placed_bases: Vec<[i32; 2]> = Vec::new();
+    let fallback_corners = [
+        [6, 6],
+        [(max_x - 6).max(6), (max_y - 6).max(6)],
+        [(max_x - 6).max(6), 6],
+        [6, (max_y - 6).max(6)],
+        [(map.width as i32) / 2, 6],
+        [(map.width as i32) / 2, (max_y - 6).max(6)],
+        [6, (map.height as i32) / 2],
+        [(max_x - 6).max(6), (map.height as i32) / 2],
+    ];
+    let unit_offsets = [[4, 1], [4, 3], [5, 2], [3, 4]];
+
     for (idx, sp) in map.spawns.iter_mut().enumerate() {
-        sp.base_tile[0] = sp.base_tile[0].clamp(4, max_x - 5);
-        sp.base_tile[1] = sp.base_tile[1].clamp(4, max_y - 5);
-        // Prevent isometric coordinates from clamping both players onto the same tile
-        if idx == 1 {
-            sp.base_tile = [max_x - 6, max_y - 6];
+        sp.base_tile[0] = sp.base_tile[0].clamp(4, (max_x - 3).max(4));
+        sp.base_tile[1] = sp.base_tile[1].clamp(4, (max_y - 3).max(4));
+
+        // Only nudge if isometric clamping caused two distinct spawns to collide on the same base area
+        let collides = placed_bases.iter().any(|prev| {
+            (prev[0] - sp.base_tile[0]).abs() <= 4 && (prev[1] - sp.base_tile[1]).abs() <= 4
+        });
+        if collides {
+            if let Some(&alt) = fallback_corners.iter().find(|cand| {
+                placed_bases
+                    .iter()
+                    .all(|p| (p[0] - cand[0]).abs() > 4 || (p[1] - cand[1]).abs() > 4)
+            }) {
+                sp.base_tile = alt;
+            }
         }
-        let sign = if idx == 0 { 1 } else { -1 };
-        let unit_offsets = [[4, 1], [4, 3], [5, 2], [3, 4]];
+        placed_bases.push(sp.base_tile);
+
+        let sign_x = if sp.base_tile[0] <= (map.width as i32) / 2 {
+            1
+        } else {
+            -1
+        };
+        let sign_y = if sp.base_tile[1] <= (map.height as i32) / 2 {
+            1
+        } else {
+            -1
+        };
         for InitialBuildingSpawn { tile_pos, .. } in &mut sp.initial_buildings {
             *tile_pos = sp.base_tile;
         }
         for (u_idx, InitialUnitSpawn { tile_pos, .. }) in sp.initial_units.iter_mut().enumerate() {
             let off = unit_offsets[u_idx % unit_offsets.len()];
-            tile_pos[0] = (sp.base_tile[0] + sign * off[0]).clamp(2, max_x);
-            tile_pos[1] = (sp.base_tile[1] + sign * off[1]).clamp(2, max_y);
+            tile_pos[0] = (sp.base_tile[0] + sign_x * off[0]).clamp(2, max_x);
+            tile_pos[1] = (sp.base_tile[1] + sign_y * off[1]).clamp(2, max_y);
+        }
+        let _ = idx;
+    }
+
+    if map.obstacles.is_empty() && map.water_rects.is_empty() {
+        let cx = (map.width as i32) / 2;
+        let cy = (map.height as i32) / 2;
+        let hits_spawn = map
+            .spawns
+            .iter()
+            .any(|sp| (sp.base_tile[0] - cx).abs() <= 5 && (sp.base_tile[1] - cy).abs() <= 5);
+        if !hits_spawn {
+            map.obstacles.push(ObstacleRectDef {
+                min: [cx - 1, cy - 1],
+                max: [cx + 1, cy + 1],
+            });
         }
     }
-    map.obstacles = vec![ObstacleRectDef {
-        min: [(map.width as i32) / 2 - 1, (map.height as i32) / 2 - 1],
-        max: [(map.width as i32) / 2 + 1, (map.height as i32) / 2 + 1],
-    }];
 
     map
 }
 
 /// Parses an OpenRA binary `map.bin` file (format version 1 or 2) and enriches `map_def`
-/// with binary tile dimensions, resource/ore patches, water rects, and cliff obstacles.
+/// with binary tile dimensions, resource/ore patches, disjoint water rects, and elevation rects.
 pub fn parse_openra_map_bin(bin_bytes: &[u8], map_def: &mut MapDef) -> Result<()> {
     if bin_bytes.len() < 5 {
         bail!("OpenRA map.bin is too short ({} bytes)", bin_bytes.len());
@@ -142,7 +248,7 @@ pub fn parse_openra_map_bin(bin_bytes: &[u8], map_def: &mut MapDef) -> Result<()
     }
 
     let num_cells = width * height;
-    let (tiles_off, _heights_off, res_off) = if version == 1 {
+    let (tiles_off, heights_off, res_off) = if version == 1 {
         let t_off = 5usize;
         let h_off = t_off + num_cells * 3;
         let r_off = if bin_bytes.len() >= h_off + num_cells + num_cells * 2 {
@@ -160,8 +266,10 @@ pub fn parse_openra_map_bin(bin_bytes: &[u8], map_def: &mut MapDef) -> Result<()
         bail!("Unsupported OpenRA map.bin format version {version}");
     };
 
-    map_def.width = (width as u32).clamp(20, 96);
-    map_def.height = (height as u32).clamp(20, 96);
+    map_def.width = (width as u32).clamp(20, 128);
+    map_def.height = (height as u32).clamp(20, 128);
+    let mw = map_def.width as usize;
+    let mh = map_def.height as usize;
     let max_x = (map_def.width as i32 - 4).max(4);
     let max_y = (map_def.height as i32 - 4).max(4);
 
@@ -182,7 +290,7 @@ pub fn parse_openra_map_bin(bin_bytes: &[u8], map_def: &mut MapDef) -> Result<()
                     let already_clustered = extracted_ores.iter().any(|p| {
                         (p.position[0] - cx).abs() <= 5 && (p.position[1] - cy).abs() <= 5
                     });
-                    if !already_clustered && extracted_ores.len() < 8 {
+                    if !already_clustered && extracted_ores.len() < 16 {
                         extracted_ores.push(OrePatchDef {
                             position: [cx, cy],
                             radius: 3,
@@ -197,11 +305,19 @@ pub fn parse_openra_map_bin(bin_bytes: &[u8], map_def: &mut MapDef) -> Result<()
         }
     }
 
-    // Parse water tiles from the tile table if water_rects is empty
+    let is_near_ground_spawn = |tx: i32, ty: i32, map: &MapDef| -> bool {
+        map.spawns.iter().any(|sp| {
+            ((sp.base_tile[0] - tx).abs() <= 5 && (sp.base_tile[1] - ty).abs() <= 5)
+                || sp
+                    .initial_units
+                    .iter()
+                    .any(|u| (u.tile_pos[0] - tx).abs() <= 1 && (u.tile_pos[1] - ty).abs() <= 1)
+        })
+    };
+
+    // Parse water tiles from the tile table into disjoint merged water rectangles (never single giant AABB!)
     if map_def.water_rects.is_empty() && tiles_off + num_cells * 3 <= bin_bytes.len() {
-        let mut water_min = [i32::MAX, i32::MAX];
-        let mut water_max = [i32::MIN, i32::MIN];
-        let mut water_count = 0usize;
+        let mut water_grid = vec![false; mw * mh];
         for x in 0..width {
             for y in 0..height {
                 let cell_idx = x * height + y;
@@ -209,25 +325,49 @@ pub fn parse_openra_map_bin(bin_bytes: &[u8], map_def: &mut MapDef) -> Result<()
                 let tile_type =
                     u16::from_le_bytes(bin_bytes[t_base..t_base + 2].try_into().unwrap());
                 if tile_type == 1 || tile_type == 2 {
-                    let sx = ((x as f32 / width as f32) * map_def.width as f32) as i32;
-                    let sy = ((y as f32 / height as f32) * map_def.height as f32) as i32;
-                    water_min[0] = water_min[0].min(sx);
-                    water_min[1] = water_min[1].min(sy);
-                    water_max[0] = water_max[0].max(sx);
-                    water_max[1] = water_max[1].max(sy);
-                    water_count += 1;
+                    let sx = (((x as f32 / width as f32) * mw as f32) as usize).min(mw - 1);
+                    let sy = (((y as f32 / height as f32) * mh as f32) as usize).min(mh - 1);
+                    if !is_near_ground_spawn(sx as i32, sy as i32, map_def) {
+                        water_grid[sy * mw + sx] = true;
+                    }
                 }
             }
         }
-        if water_count >= 4 {
-            map_def.water_rects.push(ObstacleRectDef {
-                min: [water_min[0].clamp(2, max_x), water_min[1].clamp(2, max_y)],
-                max: [
-                    water_max[0].clamp(2, max_x).max(water_min[0] + 1),
-                    water_max[1].clamp(2, max_y).max(water_min[1] + 1),
-                ],
+        let merged = merge_bool_grid_to_rects(&water_grid, mw, mh, 4);
+        if !merged.is_empty() {
+            // Remove any synthetic center obstacle that overlaps extracted water
+            map_def.obstacles.retain(|obs| {
+                !merged.iter().any(|w| {
+                    obs.min[0] <= w.max[0]
+                        && obs.max[0] >= w.min[0]
+                        && obs.min[1] <= w.max[1]
+                        && obs.max[1] >= w.min[1]
+                })
             });
+            map_def.water_rects = merged;
         }
+    }
+
+    // Parse height table into elevation plateaus
+    if map_def.elevation_rects.is_empty()
+        && heights_off < res_off
+        && heights_off + num_cells <= bin_bytes.len()
+    {
+        let mut high_grid = vec![false; mw * mh];
+        for x in 0..width {
+            for y in 0..height {
+                let cell_idx = x * height + y;
+                let h = bin_bytes[heights_off + cell_idx];
+                if h >= 2 {
+                    let sx = (((x as f32 / width as f32) * mw as f32) as usize).min(mw - 1);
+                    let sy = (((y as f32 / height as f32) * mh as f32) as usize).min(mh - 1);
+                    high_grid[sy * mw + sx] = true;
+                }
+            }
+        }
+        map_def
+            .elevation_rects
+            .extend(merge_bool_grid_to_rects(&high_grid, mw, mh, 4));
     }
 
     Ok(())
@@ -244,7 +384,10 @@ pub fn build_sample_openra_map_bin(width: u16, height: u16) -> Vec<u8> {
     // Tile table: num_cells * 3 bytes (tile_type: u16, index: u8)
     for x in 0..width {
         for y in 0..height {
-            let is_water = x >= width / 2 - 2 && x <= width / 2 + 2 && y >= height / 2 - 2 && y <= height / 2 + 2;
+            let is_water = x >= width / 2 - 2
+                && x <= width / 2 + 2
+                && y >= height / 2 - 2
+                && y <= height / 2 + 2;
             let tile_type: u16 = if is_water { 1 } else { 0 };
             bin.extend_from_slice(&tile_type.to_le_bytes());
             bin.push(0u8);
@@ -269,4 +412,3 @@ pub fn build_sample_openra_map_bin(width: u16, height: u16) -> Vec<u8> {
 
     bin
 }
-

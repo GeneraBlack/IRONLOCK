@@ -1,0 +1,304 @@
+id = "citadel_crossroads"
+name = "Citadel Crossroads (3-Zone Relic Sanctum)"
+width = 64
+height = 64
+tile_size = 2.0
+theme = "temperate"
+
+# ------------------------------------------------------------------------------
+# Symmetric Sacred Pillar Obstacles (Leaving Crossroads & Spawns Clear)
+# ------------------------------------------------------------------------------
+[[obstacles]]
+min = [24, 18]
+max = [26, 22]
+
+[[obstacles]]
+min = [37, 41]
+max = [39, 45]
+
+[[obstacles]]
+min = [18, 28]
+max = [20, 30]
+
+[[obstacles]]
+min = [43, 33]
+max = [45, 35]
+
+# ------------------------------------------------------------------------------
+# Elevated Central Sanctum Plateau + 2 Symmetric Ramps
+# ------------------------------------------------------------------------------
+[[elevation_rects]]
+min = [28, 28]
+max = [36, 36]
+level = 1
+
+[[ramp_rects]]
+min = [27, 31]
+max = [28, 33]
+
+[[ramp_rects]]
+min = [36, 31]
+max = [37, 33]
+
+# ------------------------------------------------------------------------------
+# Resource Nodes (Credits Ore/Gems + Aether Crystal Leylines)
+# ------------------------------------------------------------------------------
+[[ore_patches]]
+position = [16, 7]
+radius = 2
+amount_per_tile = 800
+
+[[ore_patches]]
+position = [47, 56]
+radius = 2
+amount_per_tile = 800
+
+[[ore_patches]]
+position = [16, 40]
+radius = 2
+amount_per_tile = 900
+
+[[ore_patches]]
+position = [47, 23]
+radius = 2
+amount_per_tile = 900
+
+[[gem_patches]]
+position = [32, 24]
+radius = 1
+amount_per_tile = 1100
+
+[[gem_patches]]
+position = [32, 40]
+radius = 1
+amount_per_tile = 1100
+
+[[resource_patches]]
+resource_id = "credits"
+position = [16, 8]
+radius = 2
+amount_per_tile = 750
+
+[[resource_patches]]
+resource_id = "credits"
+position = [47, 55]
+radius = 2
+amount_per_tile = 750
+
+[[resource_patches]]
+resource_id = "aether"
+position = [7, 16]
+radius = 2
+amount_per_tile = 700
+
+[[resource_patches]]
+resource_id = "aether"
+position = [56, 47]
+radius = 2
+amount_per_tile = 700
+
+[[resource_patches]]
+resource_id = "aether"
+position = [24, 32]
+radius = 2
+amount_per_tile = 850
+
+[[resource_patches]]
+resource_id = "aether"
+position = [40, 32]
+radius = 2
+amount_per_tile = 850
+
+# ------------------------------------------------------------------------------
+# 3 Multi-Zone Control-Point Obelisks (Ticket-Bleed Victory Condition)
+# ------------------------------------------------------------------------------
+[[capture_zones]]
+id = "west_obelisk"
+tile_pos = [16, 46]
+radius = 5.0
+capture_time_secs = 6.0
+
+[[capture_zones]]
+id = "central_sanctum"
+tile_pos = [32, 32]
+radius = 5.5
+capture_time_secs = 6.0
+
+[[capture_zones]]
+id = "east_obelisk"
+tile_pos = [48, 18]
+radius = 5.0
+capture_time_secs = 6.0
+
+# ------------------------------------------------------------------------------
+# Preplaced Hero Inventory Relics & Consumables (`PreplacedItemDropDef`)
+# ------------------------------------------------------------------------------
+[[item_drops]]
+item_id = "crown_of_solaris"
+tile_pos = [32, 30]
+
+[[item_drops]]
+item_id = "boots_of_windstrider"
+tile_pos = [18, 18]
+
+[[item_drops]]
+item_id = "vial_of_astral_nectar"
+tile_pos = [46, 46]
+
+[[item_drops]]
+item_id = "orb_of_cataclysm"
+tile_pos = [30, 34]
+
+# ------------------------------------------------------------------------------
+# Player 1 (Solar Order) & Player 2 (Obsidian Pact) Symmetric Spawns
+# ------------------------------------------------------------------------------
+[[spawns]]
+player_id = 1
+faction = "solar_order"
+base_tile = [8, 8]
+
+[[spawns.initial_buildings]]
+building_id = "citadel_hq"
+tile_pos = [6, 6]
+
+[[spawns.initial_buildings]]
+building_id = "aether_extractor"
+tile_pos = [11, 6]
+
+[[spawns.initial_units]]
+unit_id = "acolyte_worker"
+tile_pos = [10, 9]
+
+[[spawns.initial_units]]
+unit_id = "acolyte_worker"
+tile_pos = [11, 9]
+
+[[spawns.initial_units]]
+unit_id = "crystal_harvester"
+tile_pos = [13, 9]
+
+[[spawns.initial_units]]
+unit_id = "legion_sentinel"
+tile_pos = [10, 11]
+
+[[spawns.initial_units]]
+unit_id = "legion_sentinel"
+tile_pos = [12, 11]
+
+[[spawns.initial_units]]
+unit_id = "archon_commander"
+tile_pos = [14, 11]
+
+[[spawns]]
+player_id = 2
+faction = "obsidian_pact"
+base_tile = [54, 54]
+
+[[spawns.initial_buildings]]
+building_id = "citadel_hq"
+tile_pos = [55, 55]
+
+[[spawns.initial_buildings]]
+building_id = "aether_extractor"
+tile_pos = [50, 56]
+
+[[spawns.initial_units]]
+unit_id = "acolyte_worker"
+tile_pos = [53, 53]
+
+[[spawns.initial_units]]
+unit_id = "acolyte_worker"
+tile_pos = [52, 53]
+
+[[spawns.initial_units]]
+unit_id = "crystal_harvester"
+tile_pos = [50, 53]
+
+[[spawns.initial_units]]
+unit_id = "legion_sentinel"
+tile_pos = [53, 51]
+
+[[spawns.initial_units]]
+unit_id = "legion_sentinel"
+tile_pos = [51, 51]
+
+[[spawns.initial_units]]
+unit_id = "archon_commander"
+tile_pos = [49, 51]
+
+# ------------------------------------------------------------------------------
+# Visual Node-Based Trigger Graph (`TriggerGraphDef`)
+# ------------------------------------------------------------------------------
+[[trigger_graphs]]
+id = "citadel_match_director"
+name = "Citadel Sanctum Initialization & Vision Reveal"
+enabled = true
+
+[[trigger_graphs.groups]]
+id = "grp_opening"
+title = "Opening Sanctum Sequence"
+comment = "Reveals the central relic sanctum and marks control obelisks active shortly after match start."
+canvas_rect = [40.0, 40.0, 920.0, 260.0]
+
+[[trigger_graphs.nodes]]
+id = "node_match_start"
+title = "On Match Start"
+group_id = "grp_opening"
+canvas_pos = [80.0, 120.0]
+node_kind = { kind = "event_start", event = { event = "match_start" }, once = true }
+
+[[trigger_graphs.nodes]]
+id = "node_intro_delay"
+title = "Wait 0.5s"
+group_id = "grp_opening"
+canvas_pos = [300.0, 120.0]
+node_kind = { kind = "delay", delay_secs = 0.5, repeat_count = 0, repeat_interval_secs = 0.0 }
+
+[[trigger_graphs.nodes]]
+id = "node_gate_ready"
+title = "Sanctum Gate (AND)"
+group_id = "grp_opening"
+canvas_pos = [510.0, 120.0]
+node_kind = { kind = "logic_gate", gate = { op = "and" } }
+
+[[trigger_graphs.nodes]]
+id = "node_set_sanctum_var"
+title = "Mark Sanctums Active"
+group_id = "grp_opening"
+canvas_pos = [720.0, 80.0]
+node_kind = { kind = "action", action = { type = "set_variable", name = "citadel_sanctums_online", value = 1 } }
+
+[[trigger_graphs.nodes]]
+id = "node_reveal_center"
+title = "Reveal Central Relic Sanctum"
+group_id = "grp_opening"
+canvas_pos = [720.0, 175.0]
+node_kind = { kind = "action", action = { type = "reveal_area", player_id = 1, tile = [32, 32], radius = 8 } }
+
+[[trigger_graphs.wires]]
+id = "wire_start_to_delay"
+from_node = "node_match_start"
+from_port = "out"
+to_node = "node_intro_delay"
+to_port = "in"
+
+[[trigger_graphs.wires]]
+id = "wire_delay_to_gate"
+from_node = "node_intro_delay"
+from_port = "out"
+to_node = "node_gate_ready"
+to_port = "in"
+
+[[trigger_graphs.wires]]
+id = "wire_gate_to_var"
+from_node = "node_gate_ready"
+from_port = "out"
+to_node = "node_set_sanctum_var"
+to_port = "in"
+
+[[trigger_graphs.wires]]
+id = "wire_gate_to_reveal"
+from_node = "node_gate_ready"
+from_port = "out"
+to_node = "node_reveal_center"
+to_port = "in"

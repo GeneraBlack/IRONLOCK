@@ -1,76 +1,178 @@
-use super::*;
-use crate::camera::RtsCameraRig;
-use crate::input::ClientInteractionState;
-use crate::rendering::{
-    spawn_map_environment_entities, MapEnvironmentEntity, SimVisualEntity,
+use super::minimap_render::{
+    composite_radar_frame, compute_radar_dynamic_fingerprint, fnv_mix,
+    rebuild_static_radar_terrain_256, CachedRadarBaseTerrain, RADAR_TEX_SIZE,
 };
+use super::*;
+use crate::audio::{SoundEffectKind, SoundSettingsResource, UnitVoiceCategory};
+use crate::camera::RtsCameraRig;
+use crate::input::{AppPhase, ClientInteractionState};
+use crate::rendering::{CachedFogVisibility, PreviewStageCamera, VideoPlaybackResource};
 use crate::{ModResource, SimWorldResource};
 use bevy::prelude::*;
 use bevy::ui::RelativeCursorPosition;
 use rts_sdk::loader::LoadedMod;
-use rts_simulation::command::GameCommand;
-use rts_simulation::world::{EntityKind, SimWorld, TileVisibility};
+use rts_sdk::schema::{BuildingDef, BuildingRole, MapDef, SupportPowerKind};
+use rts_simulation::command::{GameCommand, QueuedOrder};
+use rts_simulation::pathfinding::CollisionGrid;
+use rts_simulation::world::{EntityKind, SimWorld};
 
-#[allow(clippy::too_many_arguments)]
-pub(super) fn rebuild_3d_battlefield(
-    commands: &mut Commands,
-    meshes: &mut Assets<Mesh>,
-    materials: &mut Assets<StandardMaterial>,
-    loaded: &LoadedMod,
-    sim_world: &mut SimWorld,
-    client_state: &mut ClientInteractionState,
-    env_q: &Query<Entity, With<MapEnvironmentEntity>>,
-    vis_q: &Query<Entity, With<SimVisualEntity>>,
-    camera_q: &mut Query<(&mut RtsCameraRig, &mut Transform)>,
-) {
-    for ent in env_q {
-        commands.entity(ent).despawn_recursive();
+pub fn compute_terrain_static_digest(map: &MapDef, grid: &CollisionGrid) -> u64 {
+    let mut h = 0xCBF2_9CE4_8422_2325_u64;
+    for b in map.id.as_bytes() {
+        h = fnv_mix(h, u64::from(*b));
     }
-    for ent in vis_q {
-        commands.entity(ent).despawn_recursive();
+    h = fnv_mix(h, u64::from(map.width));
+    h = fnv_mix(h, u64::from(map.height));
+    h = fnv_mix(h, grid.elevation_tiles.len() as u64);
+    h = fnv_mix(h, grid.water_tiles.len() as u64);
+    h = fnv_mix(h, grid.ramp_tiles.len() as u64);
+    h = fnv_mix(h, grid.blocked_tiles.len() as u64);
+    h = fnv_mix(h, map.obstacles.len() as u64);
+    let splat_len = map
+        .splatmap
+        .as_ref()
+        .map(|s| s.weights_rgba.len())
+        .unwrap_or(0);
+    h = fnv_mix(h, splat_len as u64);
+    for (idx, &vh) in grid.vertex_heights.iter().step_by(7).enumerate() {
+        h = fnv_mix(h, ((vh * 20.0).round() as i64 as u64) ^ (idx as u64));
     }
-
-    *sim_world = SimWorld::from_mod(loaded);
-    client_state.selected_ids.clear();
-    client_state.placing_building_id = None;
-
-    spawn_map_environment_entities(commands, meshes, materials, loaded, sim_world);
-
-    let map = &loaded.entry_map;
-    if let Ok((mut rig, mut cam_transform)) = camera_q.get_single_mut() {
-        rig.map_max = Vec2::new(
-            map.width as f32 * map.tile_size,
-            map.height as f32 * map.tile_size,
-        );
-        if let Some(spawn) = map
-            .spawns
-            .iter()
-            .find(|s| s.player_id == client_state.local_player_id)
-            .or_else(|| map.spawns.first())
-        {
-            rig.reset_orientation();
-            rig.snap_to(Vec3::new(
-                spawn.base_tile[0] as f32 * map.tile_size,
-                0.0,
-                spawn.base_tile[1] as f32 * map.tile_size,
-            ));
+    if let Some(ref splat) = map.splatmap {
+        for (idx, &[r, g, b, a]) in splat.weights_rgba.iter().step_by(19).enumerate() {
+            let packed = u32::from_le_bytes([r, g, b, a]) as u64;
+            h = fnv_mix(h, packed ^ ((idx as u64) << 8));
         }
-        *cam_transform = rig.compute_transform();
+    }
+    h
+}
+
+pub fn fit_radar_box_dimensions(map_w: u32, map_h: u32, max_w: f32, max_h: f32) -> (f32, f32) {
+    let mw = (map_w.max(1)) as f32;
+    let mh = (map_h.max(1)) as f32;
+    let map_aspect = mw / mh;
+    let box_aspect = max_w / max_h.max(1.0);
+    if map_aspect >= box_aspect {
+        (max_w, (max_w / map_aspect).clamp(48.0, max_h))
+    } else {
+        ((max_h * map_aspect).clamp(48.0, max_w), max_h)
     }
 }
 
-#[allow(clippy::too_many_arguments)]
+/// Returns `true` when `b` acts as a tactical radar/communications provider structure.
+pub fn is_radar_provider_building(b: &BuildingDef) -> bool {
+    b.role == BuildingRole::Airfield
+        || b.support_aura.grants_radar
+        || b.stealth.psychic_sensor_radius > 0.0
+        || b.support_powers
+            .iter()
+            .any(|sp| sp.kind == SupportPowerKind::RadarScan)
+        || b.id.to_ascii_lowercase().contains("radar")
+        || b.name.to_ascii_lowercase().contains("radar")
+}
+
+/// Checks whether `pid` currently has an operational, powered radar structure (when the faction defines one).
+pub fn player_has_active_radar(world: &SimWorld, loaded: &LoadedMod, pid: u8) -> bool {
+    let Some(econ) = world.players.get(&pid) else {
+        return true;
+    };
+    let faction_defines_radar = loaded
+        .buildings
+        .values()
+        .any(|b| b.is_available_to_faction(&econ.faction) && is_radar_provider_building(b));
+    if !faction_defines_radar {
+        return true;
+    }
+    if econ.is_low_power() || econ.power_sabotage_timer > 0.0 {
+        return false;
+    }
+    world.entities.values().any(|e| {
+        e.player_id == pid
+            && e.health > 0.0
+            && e.construction_progress >= 1.0
+            && !e.power_disabled
+            && e.emp_remaining() <= 0.0
+            && !e.is_phased_out()
+            && matches!(&e.kind, EntityKind::Building { building_id }
+                if loaded.buildings.get(building_id).is_some_and(is_radar_provider_building))
+    })
+}
+
+/// Event-driven upload key (strictly NO `tick` field so idle frames perform zero CPU/GPU uploads!).
+#[derive(Default, PartialEq, Eq)]
+pub struct RadarUploadKey {
+    pub initialized: bool,
+    pub terrain_digest: u64,
+    pub dynamic_fingerprint: u64,
+}
+
+#[allow(clippy::too_many_arguments, clippy::type_complexity)]
 pub fn update_and_interact_radar_minimap(
     mouse_buttons: Res<ButtonInput<MouseButton>>,
     keys: Res<ButtonInput<KeyCode>>,
     radar_res: Option<Res<RadarMinimapImage>>,
+    mut video_res: Option<ResMut<VideoPlaybackResource>>,
+    mut subwindows: Option<ResMut<PlayerSubWindowStack>>,
+    cached_fow: Res<CachedFogVisibility>,
     mut images: ResMut<Assets<Image>>,
-    mod_res: Res<ModResource>,
-    mut sim_res: ResMut<SimWorldResource>,
-    mut interaction: ResMut<ClientInteractionState>,
-    radar_node_q: Query<&RelativeCursorPosition, With<RadarMinimapNode>>,
-    mut camera_q: Query<&mut RtsCameraRig>,
+    (mod_res, mut sim_res, mut interaction, mut sound_res): (
+        Res<ModResource>,
+        ResMut<SimWorldResource>,
+        ResMut<ClientInteractionState>,
+        Option<ResMut<SoundSettingsResource>>,
+    ),
+    mut radar_node_q: Query<
+        (&RelativeCursorPosition, &mut Node),
+        (
+            With<RadarMinimapNode>,
+            Without<RadarPipVideoNode>,
+            Without<HudLayoutRole>,
+            Without<StudioModalRoot>,
+            Without<SelectionDragBoxNode>,
+            Without<super::player_windows::BriefingVideoProgressFill>,
+        ),
+    >,
+    mut pip_video_q: Query<
+        (&mut Node, &mut ImageNode),
+        (
+            With<RadarPipVideoNode>,
+            Without<RadarMinimapNode>,
+            Without<HudLayoutRole>,
+            Without<StudioModalRoot>,
+            Without<SelectionDragBoxNode>,
+            Without<super::player_windows::BriefingVideoProgressFill>,
+        ),
+    >,
+    mut camera_q: Query<
+        (&Camera, &GlobalTransform, &mut RtsCameraRig),
+        Without<PreviewStageCamera>,
+    >,
+    mut last_upload: Local<RadarUploadKey>,
+    mut base_cache: Local<CachedRadarBaseTerrain>,
 ) {
+    // 0. Sync In-Engine Radar PIP Video overlay whenever an incoming transmission plays outside Briefing modal
+    let briefing_open = subwindows
+        .as_deref()
+        .is_some_and(|s| s.is_open(PlayerSubWindowKind::Briefing));
+    let pip_frame = video_res
+        .as_deref()
+        .filter(|v| v.is_playing && !briefing_open)
+        .map(|v| v.frame_image.clone());
+    let pip_active = pip_frame.is_some();
+
+    for (mut node, mut img_node) in &mut pip_video_q {
+        if let Some(ref handle) = pip_frame {
+            node.display = Display::Flex;
+            if img_node.image != *handle {
+                img_node.image = handle.clone();
+            }
+        } else {
+            node.display = Display::None;
+        }
+    }
+
+    if interaction.app_phase != AppPhase::InGame {
+        return;
+    }
     let Some(radar_img_res) = radar_res else {
         return;
     };
@@ -80,90 +182,120 @@ pub fn update_and_interact_radar_minimap(
     let world_w = map_w * map.tile_size;
     let world_h = map_h * map.tile_size;
 
-    // 1. Handle interactive mouse clicks inside the Radar Minimap
-    if !interaction.studio_open {
-        if let Ok(rel_cursor) = radar_node_q.get_single() {
+    // Aspect-ratio-preserving fit inside the 192x138 radar bezel so 1:1 maps never stretch!
+    let (fit_w, fit_h) = fit_radar_box_dimensions(map.width, map.height, 192.0, 138.0);
+    if let Ok((_, mut r_node)) = radar_node_q.get_single_mut() {
+        let target_w = Val::Px(fit_w);
+        let target_h = Val::Px(fit_h);
+        if r_node.width != target_w {
+            r_node.width = target_w;
+        }
+        if r_node.height != target_h {
+            r_node.height = target_h;
+        }
+    }
+
+    let pov_pid =
+        if interaction.observer_pov_player_id > 0 && interaction.observer_pov_player_id != 255 {
+            interaction.observer_pov_player_id
+        } else {
+            interaction.local_player_id
+        };
+    let enforce_radar_gate = !interaction.dev_mode_enabled
+        && !interaction.replay_active
+        && !interaction.spectator_mode_active
+        && interaction.observer_pov_player_id == 0;
+    let radar_online =
+        !enforce_radar_gate || player_has_active_radar(&sim_res.0, &mod_res.0, pov_pid);
+
+    // 1. Handle interactive mouse clicks inside the fitted Radar / PIP frame
+    if !interaction.menu_open && !interaction.studio_open {
+        if let Ok((rel_cursor, _)) = radar_node_q.get_single() {
             if let Some(norm) = rel_cursor.normalized {
                 if (0.0..=1.0).contains(&norm.x) && (0.0..=1.0).contains(&norm.y) {
-                    let target_world = Vec3::new(norm.x * world_w, 0.0, norm.y * world_h);
-
-                    if mouse_buttons.pressed(MouseButton::Left) {
-                        if let Ok(mut rig) = camera_q.get_single_mut() {
-                            rig.jump_to(target_world);
-                        }
-                    }
-
-                    if mouse_buttons.just_pressed(MouseButton::Right) {
-                        let pid = interaction.local_player_id;
-                        let alt_held =
-                            keys.pressed(KeyCode::AltLeft) || keys.pressed(KeyCode::AltRight);
-                        if alt_held {
-                            sim_res.0.push_command(GameCommand::PingLocation {
-                                player_id: pid,
-                                position: [target_world.x, 0.0, target_world.z],
-                            });
-                            interaction.push_eva_alert(format!(
-                                "EVA: Taktischer Radar-Ping bei ({:.0}, {:.0})!",
-                                target_world.x, target_world.z
-                            ));
-                        } else if !interaction.selected_ids.is_empty() {
-                            let selected: Vec<u64> =
-                                interaction.selected_ids.iter().copied().collect();
-                            let shift_held = keys.pressed(KeyCode::ShiftLeft)
-                                || keys.pressed(KeyCode::ShiftRight);
-                            let ctrl_held = keys.pressed(KeyCode::ControlLeft)
-                                || keys.pressed(KeyCode::ControlRight);
-
-                            if ctrl_held {
-                                sim_res.0.push_command(GameCommand::AttackGround {
-                                    player_id: pid,
-                                    attacker_ids: selected,
-                                    target_pos: [target_world.x, 0.0, target_world.z],
-                                });
-                                interaction.pending_command_rings.push((
-                                    Vec3::new(target_world.x, 0.12, target_world.z),
-                                    Color::srgb(1.0, 0.25, 0.12),
-                                ));
-                            } else if interaction.attack_move_mode {
-                                sim_res.0.push_command(GameCommand::AttackMove {
-                                    player_id: pid,
-                                    entity_ids: selected,
-                                    target_pos: [target_world.x, 0.0, target_world.z],
-                                });
-                                interaction.attack_move_mode = false;
-                                interaction.pending_command_rings.push((
-                                    Vec3::new(target_world.x, 0.08, target_world.z),
-                                    Color::srgb(1.0, 0.55, 0.15),
-                                ));
-                            } else if shift_held {
-                                sim_res.0.push_command(GameCommand::QueueMoveUnits {
-                                    player_id: pid,
-                                    entity_ids: selected,
-                                    target_pos: [target_world.x, 0.0, target_world.z],
-                                });
-                                interaction.pending_command_rings.push((
-                                    Vec3::new(target_world.x, 0.08, target_world.z),
-                                    Color::srgb(0.25, 0.88, 0.98),
-                                ));
-                            } else {
-                                sim_res.0.push_command(GameCommand::MoveUnits {
-                                    player_id: pid,
-                                    entity_ids: selected,
-                                    target_pos: [target_world.x, 0.0, target_world.z],
-                                });
-                                interaction.pending_command_rings.push((
-                                    Vec3::new(target_world.x, 0.08, target_world.z),
-                                    Color::srgb(0.20, 0.95, 0.35),
-                                ));
+                    if pip_active {
+                        if mouse_buttons.just_pressed(MouseButton::Left) {
+                            if let Some(ref mut sw) = subwindows {
+                                sw.open_or_focus(PlayerSubWindowKind::Briefing);
+                            }
+                        } else if mouse_buttons.just_pressed(MouseButton::Right) {
+                            if let Some(ref mut vid) = video_res {
+                                vid.stop();
                             }
                         }
+                    } else if !radar_online {
+                        if mouse_buttons.just_pressed(MouseButton::Left)
+                            || mouse_buttons.just_pressed(MouseButton::Right)
+                        {
+                            interaction.push_eva_alert(
+                                "EVA: Radar offline - build a Radar facility and maintain power.",
+                            );
+                        }
+                    } else {
+                        let wx = norm.x * world_w;
+                        let wz = norm.y * world_h;
+                        let wy = sim_res.0.grid.sample_world_height(wx, wz);
+                        handle_radar_click(
+                            &mouse_buttons,
+                            &keys,
+                            Vec3::new(wx, wy, wz),
+                            &mut sim_res.0,
+                            &mut interaction,
+                            sound_res.as_deref_mut(),
+                            &mut camera_q,
+                        );
                     }
                 }
             }
         }
     }
 
-    // 2. Render live 144x144 RGBA8 tactical radar texture
+    let cam_quant = camera_q
+        .get_single()
+        .map(|(_, _, rig)| {
+            [
+                (rig.focus.x * 2.0).round() as i32,
+                (rig.focus.z * 2.0).round() as i32,
+                (rig.distance * 2.0).round() as i32,
+                (rig.yaw_radians * 40.0).round() as i32,
+                (rig.pitch_radians * 40.0).round() as i32,
+            ]
+        })
+        .unwrap_or([0; 5]);
+
+    let terrain_digest = compute_terrain_static_digest(map, &sim_res.0.grid);
+    let fog_on = interaction.fog_of_war_enabled && !interaction.spectator_all_vision;
+    let dynamic_fp = compute_radar_dynamic_fingerprint(
+        &sim_res.0,
+        &mod_res.0,
+        &cached_fow,
+        &interaction,
+        pov_pid,
+        fog_on,
+        radar_online,
+        cam_quant,
+    );
+
+    let key = RadarUploadKey {
+        initialized: true,
+        terrain_digest,
+        dynamic_fingerprint: dynamic_fp,
+    };
+    if *last_upload == key {
+        return;
+    }
+    *last_upload = key;
+
+    if base_cache.dims != [map.width, map.height]
+        || base_cache.terrain_digest != terrain_digest
+        || base_cache.rgba_256.len() != RADAR_TEX_SIZE * RADAR_TEX_SIZE * 4
+    {
+        base_cache.map_id = map.id.clone();
+        base_cache.dims = [map.width, map.height];
+        base_cache.terrain_digest = terrain_digest;
+        base_cache.rgba_256 = rebuild_static_radar_terrain_256(map, &sim_res.0.grid);
+    }
+
     let Some(img) = images.get_mut(&radar_img_res.0) else {
         return;
     };
@@ -173,213 +305,238 @@ pub fn update_and_interact_radar_minimap(
         return;
     }
 
-    // Fill tactical radar grid background (semi-translucent so faction radar.png emblem shines through)
-    let low_power = sim_res
-        .0
-        .players
-        .get(&interaction.local_player_id)
-        .map(|e| e.is_low_power())
-        .unwrap_or(false);
-    let bg_alpha = if low_power { 95 } else { 185 };
-    for py in 0..h_px {
-        for px in 0..w_px {
-            let idx = ((py * w_px + px) * 4) as usize;
-            let is_grid = px % 24 == 0 || py % 24 == 0;
-            let col = if is_grid {
-                [24, 38, 28, bg_alpha]
-            } else {
-                [14, 22, 16, bg_alpha]
-            };
-            img.data[idx..idx + 4].copy_from_slice(&col);
+    // 100% opaque (`alpha = 255`) offline radar standby screen so `radar.png` never bleeds through
+    if !radar_online {
+        for py in 0..h_px {
+            for px in 0..w_px {
+                let idx = ((py * w_px + px) * 4) as usize;
+                let border = px <= 1 || py <= 1 || px >= w_px - 2 || py >= h_px - 2;
+                let col = if border {
+                    [96, 36, 36, 255]
+                } else if py % 4 == 0 {
+                    [12, 17, 22, 255]
+                } else if px % 32 == 0 || py % 32 == 0 {
+                    [18, 26, 34, 255]
+                } else {
+                    [8, 11, 16, 255]
+                };
+                img.data[idx..idx + 4].copy_from_slice(&col);
+            }
         }
+        return;
     }
 
-pub(super) fn plot_radar_rect(
-    data: &mut [u8],
-    w_px: i32,
-    h_px: i32,
-    cx: i32,
-    cy: i32,
-    half: i32,
-    rgba: [u8; 4],
+    let cam_pair = camera_q.get_single().ok();
+    composite_radar_frame(
+        &mut img.data,
+        &base_cache.rgba_256,
+        w_px,
+        h_px,
+        &sim_res.0,
+        &mod_res.0,
+        &cached_fow,
+        &interaction,
+        pov_pid,
+        fog_on,
+        cam_pair.map(|(c, gt, _)| (c, gt)),
+        cam_pair.map(|(_, _, rig)| rig),
+    );
+}
+
+fn handle_radar_click(
+    mouse_buttons: &ButtonInput<MouseButton>,
+    keys: &ButtonInput<KeyCode>,
+    target_world: Vec3,
+    sim_world: &mut SimWorld,
+    interaction: &mut ClientInteractionState,
+    sound_res: Option<&mut SoundSettingsResource>,
+    camera_q: &mut Query<
+        (&Camera, &GlobalTransform, &mut RtsCameraRig),
+        Without<PreviewStageCamera>,
+    >,
 ) {
-    for dy in -half..=half {
-        for dx in -half..=half {
-            let x = cx + dx;
-            let y = cy + dy;
-            if x >= 0 && x < w_px && y >= 0 && y < h_px {
-                let i = ((y * w_px + x) * 4) as usize;
-                data[i..i + 4].copy_from_slice(&rgba);
+    let pid = interaction.local_player_id;
+    let alt_held = keys.pressed(KeyCode::AltLeft) || keys.pressed(KeyCode::AltRight);
+    let shift_held = keys.pressed(KeyCode::ShiftLeft) || keys.pressed(KeyCode::ShiftRight);
+    let ctrl_held = keys.pressed(KeyCode::ControlLeft) || keys.pressed(KeyCode::ControlRight);
+    let pos = [target_world.x, target_world.y, target_world.z];
+
+    // Alt + LMB, Alt + RMB, or HUD `[PING]` cursor + LMB sends a tactical PingLocation beacon!
+    let lmb_ping =
+        mouse_buttons.just_pressed(MouseButton::Left) && (alt_held || interaction.ping_cursor_mode);
+    let rmb_ping = mouse_buttons.just_pressed(MouseButton::Right) && alt_held;
+    if (lmb_ping || rmb_ping) && !interaction.replay_active && !interaction.spectator_mode_active {
+        sim_world.push_command(GameCommand::PingLocation {
+            player_id: pid,
+            position: pos,
+        });
+        interaction.push_radar_event(pos);
+        if !shift_held {
+            interaction.ping_cursor_mode = false;
+        }
+        if let Some(snd) = sound_res {
+            snd.trigger(SoundEffectKind::EvaAlert);
+        }
+        interaction.push_eva_alert(format!(
+            "EVA: Tactical radar ping at ({:.0}, {:.0})!",
+            target_world.x, target_world.z
+        ));
+        return;
+    }
+
+    if mouse_buttons.pressed(MouseButton::Left) && !alt_held && !interaction.ping_cursor_mode {
+        if let Ok((_, _, mut rig)) = camera_q.get_single_mut() {
+            rig.jump_to(target_world);
+        }
+    }
+    if !mouse_buttons.just_pressed(MouseButton::Right)
+        || interaction.replay_active
+        || interaction.spectator_mode_active
+        || interaction.selected_ids.is_empty()
+    {
+        return;
+    }
+
+    let owned_units: Vec<u64> = interaction
+        .selected_ids
+        .iter()
+        .copied()
+        .filter(|id| {
+            sim_world.entities.get(id).is_some_and(|e| {
+                e.player_id == pid
+                    && e.transported_by.is_none()
+                    && matches!(e.kind, EntityKind::Unit { .. })
+            })
+        })
+        .collect();
+    let owned_buildings: Vec<u64> = interaction
+        .selected_ids
+        .iter()
+        .copied()
+        .filter(|id| {
+            sim_world.entities.get(id).is_some_and(|e| {
+                e.player_id == pid && matches!(e.kind, EntityKind::Building { .. })
+            })
+        })
+        .collect();
+
+    if !owned_units.is_empty() {
+        let is_atk = ctrl_held || interaction.attack_move_mode;
+        if let Some(snd) = sound_res {
+            if let Some(first_uid) = owned_units.iter().find_map(|eid| {
+                sim_world.entities.get(eid).and_then(|e| match &e.kind {
+                    EntityKind::Unit { unit_id } => Some(unit_id.as_str()),
+                    _ => None,
+                })
+            }) {
+                let cat = if is_atk {
+                    UnitVoiceCategory::Attack
+                } else {
+                    UnitVoiceCategory::Move
+                };
+                snd.trigger_unit_ack(first_uid, cat);
             }
+        }
+        let cmd = if shift_held {
+            let order = if ctrl_held {
+                QueuedOrder::AttackGround { target_pos: pos }
+            } else if interaction.attack_move_mode {
+                QueuedOrder::AttackMove {
+                    target_pos: pos,
+                    facing_radians: None,
+                }
+            } else if interaction.patrol_mode {
+                QueuedOrder::Patrol { target_pos: pos }
+            } else {
+                QueuedOrder::Move {
+                    target_pos: pos,
+                    facing_radians: None,
+                }
+            };
+            GameCommand::EnqueueOrder {
+                player_id: pid,
+                entity_ids: owned_units,
+                order,
+            }
+        } else if ctrl_held {
+            GameCommand::AttackGround {
+                player_id: pid,
+                attacker_ids: owned_units,
+                target_pos: pos,
+            }
+        } else if interaction.attack_move_mode {
+            interaction.attack_move_mode = false;
+            GameCommand::AttackMove {
+                player_id: pid,
+                entity_ids: owned_units,
+                target_pos: pos,
+            }
+        } else if interaction.patrol_mode {
+            interaction.patrol_mode = false;
+            GameCommand::PatrolUnits {
+                player_id: pid,
+                entity_ids: owned_units,
+                target_pos: pos,
+            }
+        } else {
+            GameCommand::MoveUnits {
+                player_id: pid,
+                entity_ids: owned_units,
+                target_pos: pos,
+            }
+        };
+        sim_world.push_command(cmd);
+        interaction.pending_command_rings.push((
+            Vec3::new(target_world.x, target_world.y + 0.08, target_world.z),
+            Color::srgb(0.20, 0.95, 0.35),
+        ));
+    } else if !owned_buildings.is_empty() {
+        if shift_held {
+            sim_world.push_command(GameCommand::QueueRallyPoint {
+                player_id: pid,
+                building_ids: owned_buildings,
+                rally_pos: pos,
+            });
+        } else {
+            sim_world.push_command(GameCommand::SetRallyPoint {
+                player_id: pid,
+                building_ids: owned_buildings,
+                rally_pos: pos,
+            });
         }
     }
 }
 
-    // Draw rocky cliffs / obstacles
-    for obs in &map.obstacles {
-        let x0 = ((obs.min[0] as f32 / map_w) * w_px as f32) as i32;
-        let x1 = (((obs.max[0] + 1) as f32 / map_w) * w_px as f32) as i32;
-        let y0 = ((obs.min[1] as f32 / map_h) * h_px as f32) as i32;
-        let y1 = (((obs.max[1] + 1) as f32 / map_h) * h_px as f32) as i32;
-        for py in y0.clamp(0, h_px - 1)..=y1.clamp(0, h_px - 1) {
-            for px in x0.clamp(0, w_px - 1)..=x1.clamp(0, w_px - 1) {
-                let i = ((py * w_px + px) * 4) as usize;
-                img.data[i..i + 4].copy_from_slice(&[68, 66, 62, 255]);
-            }
-        }
-    }
+#[cfg(test)]
+mod tests {
+    use super::fit_radar_box_dimensions;
+    use super::minimap_render::*;
 
-    let vis_map = if interaction.fog_of_war_enabled {
-        Some(
-            sim_res
-                .0
-                .compute_visibility_map(interaction.local_player_id, &mod_res.0),
+    #[test]
+    fn radar_base_terrain_is_100_percent_opaque_and_fits_aspect_ratio() {
+        let loaded = rts_sdk::loader::LoadedMod::load_from_dir(
+            rts_sdk::loader::LoadedMod::resolve_mod_dir("rust-ra2"),
         )
-    } else {
-        None
-    };
+        .expect("load rust-ra2");
+        let world = rts_simulation::world::SimWorld::from_mod(&loaded);
+        let rgba = rebuild_static_radar_terrain_256(&loaded.entry_map, &world.grid);
+        assert_eq!(rgba.len(), 256 * 256 * 4);
+        assert!(
+            rgba.chunks_exact(4).all(|px| px[3] == 255),
+            "Every base terrain radar pixel MUST have alpha == 255 so radar.png never bleeds through"
+        );
 
-    // Draw water & bridge tiles
-    for &tile in &sim_res.0.grid.water_tiles {
-        let px = ((tile[0] as f32 / map_w) * w_px as f32) as i32;
-        let py = ((tile[1] as f32 / map_h) * h_px as f32) as i32;
-        plot_radar_rect(&mut img.data, w_px, h_px, px, py, 1, [20, 65, 130, 255]);
-    }
-    for &tile in &sim_res.0.grid.bridge_tiles {
-        let px = ((tile[0] as f32 / map_w) * w_px as f32) as i32;
-        let py = ((tile[1] as f32 / map_h) * h_px as f32) as i32;
-        plot_radar_rect(&mut img.data, w_px, h_px, px, py, 1, [160, 128, 86, 255]);
-    }
+        let (sq_w, sq_h) = fit_radar_box_dimensions(64, 64, 192.0, 138.0);
+        assert!((sq_w - 138.0).abs() < 0.01 && (sq_h - 138.0).abs() < 0.01);
 
-    // Draw glowing golden Ore & magenta Gem tiles
-    for (&tile, &amt) in &sim_res.0.grid.ore_tiles {
-        if amt > 0 {
-            if let Some(ref vm) = vis_map {
-                if sim_res.0.tile_visibility_in_map(vm, tile) == TileVisibility::Unexplored {
-                    continue;
-                }
-            }
-            let px = ((tile[0] as f32 / map_w) * w_px as f32) as i32;
-            let py = ((tile[1] as f32 / map_h) * h_px as f32) as i32;
-            let color = if sim_res.0.grid.gem_tiles.contains(&tile) {
-                [235, 65, 245, 255]
-            } else {
-                [235, 190, 35, 255]
-            };
-            plot_radar_rect(&mut img.data, w_px, h_px, px, py, 1, color);
-        }
-    }
-
-    // Draw collectible bonus crates
-    for crate_item in &sim_res.0.crates {
-        if let Some(ref vm) = vis_map {
-            let tile = sim_res.0.grid.world_to_tile(crate_item.position);
-            if sim_res.0.tile_visibility_in_map(vm, tile) == TileVisibility::Unexplored {
-                continue;
-            }
-        }
-        let px = ((crate_item.position[0] / world_w.max(1.0)) * w_px as f32) as i32;
-        let py = ((crate_item.position[2] / world_h.max(1.0)) * h_px as f32) as i32;
-        plot_radar_rect(&mut img.data, w_px, h_px, px, py, 1, [255, 235, 55, 255]);
-    }
-
-    // Draw all alive units and structures (respecting Fog of War for enemies)
-    for ent in sim_res.0.entities.values() {
-        if ent.health <= 0.0 {
-            continue;
-        }
-        if let Some(ref vm) = vis_map {
-            if ent.player_id != interaction.local_player_id {
-                let tile = sim_res.0.grid.world_to_tile(ent.position);
-                let tv = sim_res.0.tile_visibility_in_map(vm, tile);
-                match ent.kind {
-                    EntityKind::Unit { .. } if tv != TileVisibility::Visible => continue,
-                    EntityKind::Building { .. } if tv == TileVisibility::Unexplored => continue,
-                    _ => {}
-                }
-            }
-        }
-        let px = ((ent.position[0] / world_w.max(1.0)) * w_px as f32) as i32;
-        let py = ((ent.position[2] / world_h.max(1.0)) * h_px as f32) as i32;
-        let half = match ent.kind {
-            EntityKind::Building { .. } => 2,
-            EntityKind::Unit { .. } => 1,
-        };
-        let color = if interaction.selected_ids.contains(&ent.id) {
-            [110, 255, 130, 255]
-        } else {
-            match ent.player_id {
-                1 => [55, 165, 255, 255],
-                2 => [255, 65, 65, 255],
-                3 => [65, 225, 95, 255],
-                4 => [255, 205, 45, 255],
-                5 => [195, 85, 255, 255],
-                6 => [55, 235, 235, 255],
-                7 => [255, 145, 45, 255],
-                _ => [235, 95, 185, 255],
-            }
-        };
-        plot_radar_rect(&mut img.data, w_px, h_px, px, py, half, color);
-    }
-
-    // Draw active tactical radar pings
-    for ping in &sim_res.0.active_pings {
-        let px = ((ping.position[0] / world_w.max(1.0)) * w_px as f32) as i32;
-        let py = ((ping.position[2] / world_h.max(1.0)) * h_px as f32) as i32;
-        plot_radar_rect(&mut img.data, w_px, h_px, px, py, 3, [255, 255, 120, 255]);
-        plot_radar_rect(&mut img.data, w_px, h_px, px, py, 1, [255, 80, 40, 255]);
-    }
-
-    // Apply Fog-of-War shroud and explored dimming onto the radar texture
-    if let Some(ref vm) = vis_map {
-        for py in 0..h_px {
-            let ty = ((py as f32 / h_px as f32) * map_h) as i32;
-            for px in 0..w_px {
-                let tx = ((px as f32 / w_px as f32) * map_w) as i32;
-                let tv = sim_res.0.tile_visibility_in_map(vm, [tx, ty]);
-                let i = ((py * w_px + px) * 4) as usize;
-                match tv {
-                    TileVisibility::Unexplored => {
-                        img.data[i..i + 4].copy_from_slice(&[5, 8, 12, 210]);
-                    }
-                    TileVisibility::Explored => {
-                        img.data[i] = (img.data[i] as u16 * 55 / 100) as u8;
-                        img.data[i + 1] = (img.data[i + 1] as u16 * 55 / 100) as u8;
-                        img.data[i + 2] = (img.data[i + 2] as u16 * 65 / 100) as u8;
-                    }
-                    TileVisibility::Visible => {}
-                }
-            }
-        }
-    }
-
-    // Draw 3D Camera Viewport Frame on the Radar
-    if let Ok(rig) = camera_q.get_single() {
-        let cam_px = ((rig.focus.x / world_w.max(1.0)) * w_px as f32) as i32;
-        let cam_py = ((rig.focus.z / world_h.max(1.0)) * h_px as f32) as i32;
-        let half_w = ((rig.distance * 0.42 / world_w.max(1.0)) * w_px as f32)
-            .round()
-            .clamp(6.0, 48.0) as i32;
-        let half_h = ((rig.distance * 0.32 / world_h.max(1.0)) * h_px as f32)
-            .round()
-            .clamp(5.0, 38.0) as i32;
-
-        let x0 = (cam_px - half_w).clamp(0, w_px - 1);
-        let x1 = (cam_px + half_w).clamp(0, w_px - 1);
-        let y0 = (cam_py - half_h).clamp(0, h_px - 1);
-        let y1 = (cam_py + half_h).clamp(0, h_px - 1);
-
-        for x in x0..=x1 {
-            let i_top = ((y0 * w_px + x) * 4) as usize;
-            let i_bot = ((y1 * w_px + x) * 4) as usize;
-            img.data[i_top..i_top + 4].copy_from_slice(&[235, 245, 255, 255]);
-            img.data[i_bot..i_bot + 4].copy_from_slice(&[235, 245, 255, 255]);
-        }
-        for y in y0..=y1 {
-            let i_left = ((y * w_px + x0) * 4) as usize;
-            let i_right = ((y * w_px + x1) * 4) as usize;
-            img.data[i_left..i_left + 4].copy_from_slice(&[235, 245, 255, 255]);
-            img.data[i_right..i_right + 4].copy_from_slice(&[235, 245, 255, 255]);
-        }
+        let rig = crate::camera::RtsCameraRig::new(128.0, 128.0);
+        let trap =
+            compute_camera_trapezoid_pixels(None, &rig, &world.grid, false, 128.0, 128.0, 256, 256);
+        let top_span = (trap[1].0 - trap[0].0).abs();
+        let bot_span = (trap[2].0 - trap[3].0).abs();
+        assert!(
+            top_span >= bot_span,
+            "Perspective camera trapezoid far (top) edge ({top_span}) should be >= near (bottom) edge ({bot_span})"
+        );
     }
 }

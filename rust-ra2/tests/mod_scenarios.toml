@@ -124,3 +124,158 @@ value = 2
 kind = "player_credits_at_least"
 player_id = 1
 min_credits = 11500
+
+# ------------------------------------------------------------------------------
+# 5. CAMPAIGN STRUCTURED OBJECTIVES & VIP TAG PROTECTION SCENARIO
+# ------------------------------------------------------------------------------
+[[scenarios]]
+name = "campaign_objectives_vip_and_fort_bradley_test"
+map_id = "ra2_allied_01_lone_guardian"
+ticks = 35
+clear_initial_entities = false
+
+[[scenarios.commands]]
+tick = 1
+command = "move @tanya 26 22"
+
+[[scenarios.commands]]
+tick = 25
+command = "trigger fort_bradley_contact"
+
+[[scenarios.assertions]]
+kind = "objective_completed"
+objective_id = "obj_stage1_linkup"
+
+[[scenarios.assertions]]
+kind = "entity_health_fraction_above"
+tag = "tanya"
+min_fraction = 0.90
+
+[[scenarios.assertions]]
+kind = "max_avg_tick_ms"
+max_ms = 25.0
+
+# ------------------------------------------------------------------------------
+# 6. BRIDGE REPAIR HUT ENGINEER RESTORATION SCENARIO
+# ------------------------------------------------------------------------------
+[[scenarios]]
+name = "bridge_repair_hut_engineer_restoration_test"
+map_id = "ra2_bootcamp_01"
+ticks = 45
+clear_initial_entities = true
+
+[[scenarios.spawns]]
+player_id = 0
+building_id = "bridge_repair_hut"
+tile = [17, 18]
+
+[[scenarios.spawns]]
+player_id = 1
+unit_id = "allied_engineer"
+tile = [17, 15]
+tag = "bridge_eng"
+
+[[scenarios.commands]]
+tick = 2
+command = "demolish_bridge 17 19"
+
+[[scenarios.commands]]
+tick = 4
+command = "move @bridge_eng 17 18"
+
+[[scenarios.assertions]]
+kind = "bridge_intact"
+tile = [17, 19]
+expected = true
+
+[[scenarios.assertions]]
+kind = "bridge_intact"
+tile = [19, 20]
+expected = true
+
+# ------------------------------------------------------------------------------
+# 7. AI TAKEOVER BASE CONSTRUCTION & TICK BUDGET SCENARIO
+# ------------------------------------------------------------------------------
+[[scenarios]]
+name = "ai_takeover_base_construction_and_tick_budget_test"
+ticks = 90
+clear_initial_entities = true
+
+[[scenarios.spawns]]
+player_id = 1
+building_id = "allied_conyard"
+tile = [6, 8]
+
+[[scenarios.spawns]]
+player_id = 2
+building_id = "soviet_conyard"
+tile = [40, 40]
+
+[[scenarios.commands]]
+tick = 1
+command = "credits 10000 1"
+
+[[scenarios.commands]]
+tick = 2
+command = "ai_takeover 1 hard"
+
+[[scenarios.commands]]
+tick = 25
+command = "instant_build 1"
+
+[[scenarios.assertions]]
+kind = "ai_built_building_role"
+player_id = 1
+role = "power_plant"
+min_count = 1
+
+[[scenarios.assertions]]
+kind = "max_avg_tick_ms"
+max_ms = 25.0
+
+# ------------------------------------------------------------------------------
+# 8. AI SERVICE DEPOT DAMAGED VEHICLE RETREAT & REPAIR SCENARIO
+# ------------------------------------------------------------------------------
+[[scenarios]]
+name = "ai_service_depot_vehicle_repair_test"
+ticks = 110
+clear_initial_entities = true
+
+[[scenarios.spawns]]
+player_id = 1
+building_id = "allied_conyard"
+tile = [8, 8]
+
+[[scenarios.spawns]]
+player_id = 1
+building_id = "allied_power_plant"
+tile = [12, 8]
+
+[[scenarios.spawns]]
+player_id = 1
+building_id = "allied_service_depot"
+tile = [12, 13]
+
+[[scenarios.spawns]]
+player_id = 1
+unit_id = "grizzly_tank"
+tile = [13, 16]
+tag = "damaged_grizzly"
+
+[[scenarios.spawns]]
+player_id = 2
+building_id = "soviet_conyard"
+tile = [48, 48]
+
+[[scenarios.commands]]
+tick = 1
+command = "damage @damaged_grizzly 220"
+
+[[scenarios.commands]]
+tick = 2
+command = "ai_takeover 1 hard"
+
+[[scenarios.assertions]]
+kind = "entity_health_fraction_above"
+tag = "damaged_grizzly"
+min_fraction = 0.65

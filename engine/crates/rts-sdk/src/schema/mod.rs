@@ -1,11 +1,19 @@
+pub mod ai_behavior_tree;
 pub mod combat_defs;
 pub mod common;
 pub mod entities;
+pub mod traits;
+pub mod trigger_graph;
+pub mod vfx_defs;
 pub mod world_defs;
 
+pub use ai_behavior_tree::*;
 pub use combat_defs::*;
 pub use common::*;
 pub use entities::*;
+pub use traits::*;
+pub use trigger_graph::*;
+pub use vfx_defs::*;
 pub use world_defs::*;
 
 #[cfg(test)]
@@ -57,5 +65,23 @@ primary_color = [0.22, 0.45, 0.82]
         assert_eq!(units.units.len(), 1);
         assert_eq!(units.units[0].id, "grizzly_tank");
         assert_eq!(units.units[0].visual.archetype, VisualArchetype::Tank);
+    }
+
+    #[test]
+    fn generates_schemars_json_schemas_for_all_root_catalogs() {
+        let _ = schemars::schema_for!(crate::manifest::ModManifest);
+        let _ = schemars::schema_for!(FactionCatalog);
+        let _ = schemars::schema_for!(UnitCatalog);
+        let _ = schemars::schema_for!(BuildingCatalog);
+        let _ = schemars::schema_for!(WeaponCatalog);
+        let _ = schemars::schema_for!(UpgradeCatalog);
+        let _ = schemars::schema_for!(ResourceCatalog);
+        let _ = schemars::schema_for!(AiProfileCatalog);
+        let _ = schemars::schema_for!(CampaignCatalog);
+        let _ = schemars::schema_for!(AudioCatalog);
+        let _ = schemars::schema_for!(LocaleCatalog);
+        let _ = schemars::schema_for!(MapDef);
+        let _ = schemars::schema_for!(VfxCatalog);
+        let _ = schemars::schema_for!(ItemCatalog);
     }
 }

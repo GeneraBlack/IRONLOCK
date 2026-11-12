@@ -22,7 +22,14 @@
     "no_volumes": "Keine Container-Volumes vorhanden",
     "not_configured": "Noch nicht konfiguriert",
     "open_webapp": "Portal & Lobby-Register öffnen",
-    "configure": "Konfigurieren"
+    "configure": "Konfigurieren",
+    "service_running": "Aktiv (systemd läuft)",
+    "service_inactive": "Gestoppt / Inaktiv",
+    "service_failed": "Fehlgeschlagen",
+    "module_update_title": "Modul-Update über NethServer 8 UI",
+    "current_version": "Installierte SemVer-Version",
+    "target_version": "Ziel-SemVer-Version (kein latest)",
+    "update_now": "Auf SemVer aktualisieren"
   },
   "settings": {
     "title": "Einstellungen",
@@ -53,7 +60,8 @@
     "get-name": "Name abrufen",
     "list-backup-repositories": "Backup-Repositorys abrufen",
     "list-backups": "Backups abrufen",
-    "list-installed-modules": "Installierte Module abrufen"
+    "list-installed-modules": "Installierte Module abrufen",
+    "update-module": "Modul aktualisieren"
   },
   "error": {
     "error": "Fehler",
@@ -68,6 +76,7 @@
     "cannot_retrieve_installed_modules": "Installierte Module konnten nicht abgerufen werden",
     "cannot_retrieve_configuration": "Konfiguration konnte nicht geladen werden",
     "domain_already_used_in_traefik": "Diese Domain wird bereits von einer anderen Route in Traefik verwendet",
-    "relay_port_range_invalid": "Der End-Port muss größer oder gleich dem Start-Port sein"
+    "relay_port_range_invalid": "Der End-Port muss größer oder gleich dem Start-Port sein",
+    "invalid_semver": "Bitte eine gültige SemVer-Version angeben (z. B. 1.0.1, kein 'latest')"
   }
 }

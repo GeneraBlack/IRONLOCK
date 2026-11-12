@@ -1,0 +1,17 @@
+id = "mutator-turbo-economy"
+name = "Turbo Economy & Rapid Ascension Mutator"
+version = "0.1.0"
+authors = ["Rust RTS Engine Team"]
+description = "Stacked overlay mutator for sdk-showcase-heroes-ages-mutators doubling starting reserves, passive resource trickle, streaming build power, harvester gather rate, and era research pace via depends_on + $append delta patches."
+engine_version = "0.1.0"
+
+[[depends_on]]
+id = "sdk-showcase-heroes-ages-mutators"
+version_req = ">=0.1.0"
+
+[rules]
+ore_value = 80
+gem_value = 160
+
+[rules.gamemode]
+ticket_bleed_per_sec = 8.0

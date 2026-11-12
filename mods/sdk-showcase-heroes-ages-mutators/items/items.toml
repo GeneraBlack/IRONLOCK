@@ -1,0 +1,140 @@
+# ==============================================================================
+# Hero Inventory Relics & Consumables Catalog (`ItemCatalog`)
+# ==============================================================================
+
+[[items]]
+id = "crown_of_solaris"
+name = "Crown of Solaris"
+description = "Ancient sun-diadem granting +180 HP, +60 Mana, +15% Attack Damage, +12% Armor, and passive HP regeneration."
+icon = "assets/ui/cameos/item_crown_solaris.png"
+visual_model = "assets/models/relic_chest.glb"
+cost = 300
+consumable = false
+max_charges = 1
+bonus_max_health = 180.0
+bonus_max_energy = 60.0
+
+[items.passive_modifiers]
+speed_mult = 1.0
+damage_mult = 1.15
+armor_mult = 1.12
+range_bonus = 0.0
+fire_rate_mult = 1.0
+vision_mult = 1.10
+build_speed_mult = 1.0
+hp_regen_per_sec = 4.5
+stack_policy = "stack_intensity"
+max_stacks = 2
+
+[[items]]
+id = "boots_of_windstrider"
+name = "Greaves of the Windstrider"
+description = "Featherlight astral greaves granting +75 HP, +22% Move Speed, +12% Attack Speed, and +1.0 Weapon Range."
+icon = "assets/ui/cameos/item_windstrider.png"
+visual_model = "assets/models/relic_chest.glb"
+cost = 220
+consumable = false
+max_charges = 1
+bonus_max_health = 75.0
+bonus_max_energy = 30.0
+
+[items.passive_modifiers]
+speed_mult = 1.22
+damage_mult = 1.0
+armor_mult = 1.0
+range_bonus = 1.0
+fire_rate_mult = 1.12
+vision_mult = 1.05
+build_speed_mult = 1.0
+hp_regen_per_sec = 1.5
+stack_policy = "refresh"
+max_stacks = 1
+
+[[items]]
+id = "vial_of_astral_nectar"
+name = "Vial of Astral Nectar"
+description = "Consumable 2-charge crystal phial that instantly restores 220 Health to the Hero and nearby allies."
+icon = "assets/ui/cameos/item_astral_vial.png"
+visual_model = "assets/models/relic_chest.glb"
+cost = 120
+consumable = true
+max_charges = 2
+bonus_max_health = 0.0
+bonus_max_energy = 0.0
+
+[items.active_ability]
+id = "drink_astral_nectar"
+name = "Drink Astral Nectar"
+cooldown_secs = 6.0
+cost = 0
+energy_cost = 0.0
+allow_auto_cast = true
+default_auto_cast = false
+max_rank = 1
+range = 0.0
+radius = 3.0
+target_mode = "self_only"
+cast_vfx_id = "vfx_aegis_shield_cast"
+impact_vfx_id = "vfx_aegis_shield_cast"
+
+[[items.active_ability.payloads]]
+kind = "apply_area_status"
+radius = 3.5
+friendly_only = true
+
+[items.active_ability.payloads.status]
+id = "astral_nectar_restoration"
+duration_secs = 4.0
+dps = 0.0
+speed_multiplier = 1.12
+armor_multiplier = 1.15
+damage_multiplier = 1.0
+hp_regen_per_sec = 55.0
+stack_policy = "refresh"
+max_stacks = 1
+dispel_category = "magic"
+
+[[items]]
+id = "orb_of_cataclysm"
+name = "Orb of Cataclysm"
+description = "Volatile obsidian relic granting +50 Mana, +18% Damage, and an active Cataclysmic Pulse shockwave."
+icon = "assets/ui/cameos/item_orb_cataclysm.png"
+visual_model = "assets/models/relic_chest.glb"
+cost = 400
+consumable = false
+max_charges = 1
+bonus_max_health = 50.0
+bonus_max_energy = 50.0
+
+[items.passive_modifiers]
+speed_mult = 1.0
+damage_mult = 1.18
+armor_mult = 1.05
+range_bonus = 0.5
+fire_rate_mult = 1.05
+vision_mult = 1.0
+build_speed_mult = 1.0
+hp_regen_per_sec = 0.0
+stack_policy = "refresh"
+max_stacks = 1
+
+[items.active_ability]
+id = "unleash_cataclysm_orb"
+name = "Cataclysmic Pulse"
+cooldown_secs = 16.0
+cost = 0
+energy_cost = 30.0
+allow_auto_cast = true
+default_auto_cast = false
+max_rank = 1
+range = 10.0
+radius = 4.0
+target_mode = "area_radius"
+cast_vfx_id = "vfx_solar_nova_cast"
+impact_vfx_id = "vfx_solar_nova_blast"
+
+[[items.active_ability.payloads]]
+kind = "area_damage"
+damage = 110.0
+radius = 4.0
+friendly_fire = false

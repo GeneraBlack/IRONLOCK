@@ -5,7 +5,7 @@ Bereitstellung eines deterministischen Lockstep-Multiplayer-, Replay-, NAT/UPnP-
 
 ## Kernfunktionen
 1. **Mod-Kompatibilitäts-Handshake (`ClientHello` / `ServerWelcome` in [`protocol.rs`](file:///d:/projekt/rust-rts/engine/crates/rts-network/src/protocol.rs)):**
-   - Prüft beim Verbindungsaufbau automatisch, ob Host und Client exakt dieselbe Mod (`mod_id` + `mod_version`) geladen haben, und weist dem Client eine `player_id` zu.
+   - Prüft beim Verbindungsaufbau automatisch, ob Host und Client exakt dieselbe Mod (`mod_id`, `mod_version`, `content_hash` & `map_id`) geladen haben, und weist dem Client eine `player_id` zu.
 2. **Deterministischer Lockstep-Scheduler ([`lockstep.rs`](file:///d:/projekt/rust-rts/engine/crates/rts-network/src/lockstep.rs)):**
    - Puffert lokale Befehle mit konfigurierbarem `input_delay_ticks` (Standard: 2 Ticks = 100 ms bei 20 Hz).
    - Führt einen Simulations-Tick erst aus, wenn das autoritative `ServerTickBundle` vorliegt, und gleicht den 64-Bit-`SimWorld::state_hash()` aller Peers zur sofortigen Desync-Erkennung ab.
@@ -25,7 +25,7 @@ Bereitstellung eines deterministischen Lockstep-Multiplayer-, Replay-, NAT/UPnP-
 6. **3-Stufen NAT- & UPnP-Traversal + Reverse-TCP-Relay-Tunnel ([`nat_upnp.rs`](file:///d:/projekt/rust-rts/engine/crates/rts-network/src/nat_upnp.rs), [`lobby_registry.rs`](file:///d:/projekt/rust-rts/engine/crates/rts-network/src/lobby_registry.rs), [`centralwebserver/src/relay.ts`](file:///d:/projekt/rust-rts/centralwebserver/src/relay.ts)):**
    - **Stufe 1 — Automatische UPnP-IGD-Portfreigabe:** SSDP `M-SEARCH` + SOAP `AddPortMapping` + CGNAT-Erkennung (`100.64.0.0/10`).
    - **Stufe 2 — Multi-Endpoint-Registrierung (`candidate_connect_addrs`):** Priorisiert direkte Verbindung (`external_addr` → `host_addr`) vor Relay (`relay_addr`).
-   - **Stufe 3 — Reverse-TCP-Relay-Tunnel (`RelayTunnelRoom`):** Allokiert auf `rust-rts.bls-isp.net` deterministische Relay-Ports im Bereich **`27900–27999`** (`--relay-port-range 27900-27999`) und koppelt Client- und Host-Uplink-Streams nach dem `'R'`-Wakeup-Byte verzögerungsfrei per TCP-Splicing.
+   - **Stufe 3 — Reverse-TCP-Relay-Tunnel (`RelayTunnelRoom`):** Allokiert auf `rust-rts.bls-isp.net` deterministische Relay-Ports im Bereich **`30100–30139`** (NS8-Container-Standard; Dev-Override `27900–27999`) und koppelt Client- und Host-Uplink-Streams nach dem `'R'`-Wakeup-Byte verzögerungsfrei per TCP-Splicing.
 
 ## Commands
 ```powershell

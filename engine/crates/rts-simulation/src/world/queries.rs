@@ -21,9 +21,10 @@ impl SimEntity {
         self.health > 0.0 && self.transported_by.is_none() && !self.is_phased_out()
     }
 
-    /// Returns true if the entity is currently immune to damage (e.g. Iron Curtain / Force Shield / Phased Out).
+    /// Returns true if the entity is currently immune to damage (e.g. Iron Curtain / Force Shield / Phased Out / Indestructible).
     pub fn is_invulnerable(&self) -> bool {
-        self.is_phased_out()
+        self.indestructible
+            || self.is_phased_out()
             || self
                 .active_buffs
                 .iter()
@@ -66,9 +67,10 @@ impl SimWorld {
         true
     }
 
-    /// Central locomotion capability check: returns true if `ent` can act and is not immobilized by deployment or status.
+    /// Central locomotion capability check: returns true if `ent` can act and is not immobilized by deployment, pinning, or status.
     pub fn can_entity_move(&self, ent: &SimEntity, loaded: &LoadedMod) -> bool {
         if !self.can_entity_act(ent, loaded)
+            || (ent.is_pinned && !ent.is_retreating)
             || ent
                 .active_buffs
                 .iter()
@@ -89,14 +91,67 @@ impl SimWorld {
         }
     }
 
-    /// Central weapon capability check: returns true if `ent` can act and is not burrowed underground or disarmed.
+    /// Central weapon capability check: returns true if `ent` can act and is not burrowed underground, pinned, retreating, or disarmed.
     pub fn can_entity_fire(&self, ent: &SimEntity, loaded: &LoadedMod) -> bool {
         self.can_entity_act(ent, loaded)
             && !ent.burrowed
+            && !ent.is_pinned
+            && !ent.is_retreating
             && !ent
                 .active_buffs
                 .iter()
                 .any(|b| b.disarmed && b.remaining_secs > 0.0)
+    }
+
+    /// Returns `true` if `b` provides tactical minimap radar (`SupportAuraSpec.grants_radar` or radar facility).
+    pub fn is_radar_provider_building(b: &rts_sdk::schema::BuildingDef) -> bool {
+        if b.support_aura_spec().grants_radar {
+            return true;
+        }
+        let id_lc = b.id.to_ascii_lowercase();
+        let name_lc = b.name.to_ascii_lowercase();
+        id_lc.contains("radar")
+            || id_lc.contains("airforce")
+            || id_lc.contains("sensor")
+            || id_lc.contains("psychic_sensor")
+            || id_lc.contains("communications_center")
+            || name_lc.contains("radar")
+            || name_lc.contains("sensor")
+            || name_lc.contains("airforce command")
+            || name_lc.contains("communications center")
+    }
+
+    /// Returns `true` if `player_id` currently has an online, powered radar provider structure
+    /// (including captured neutral `"tech_communications_center"` with `grants_radar = true`).
+    pub fn player_has_active_radar(&self, player_id: u8, loaded: &LoadedMod) -> bool {
+        let Some(econ) = self.players.get(&player_id) else {
+            return false;
+        };
+        let outage = self
+            .power_outage_timers
+            .get(&player_id)
+            .copied()
+            .unwrap_or(0.0)
+            > 0.0;
+        let low_power = econ.is_low_power() || outage;
+        self.entities.values().any(|e| {
+            if e.player_id != player_id || !self.is_building_online(e) {
+                return false;
+            }
+            let EntityKind::Building { building_id } = &e.kind else {
+                return false;
+            };
+            let Some(b_def) = loaded.buildings.get(building_id) else {
+                return false;
+            };
+            if !Self::is_radar_provider_building(b_def) {
+                return false;
+            }
+            if b_def.power_delta < 0 && low_power && !e.has_power_charge_boost() {
+                return false;
+            }
+            true
+        })
     }
 
     pub fn entity_container_spec(
@@ -110,11 +165,24 @@ impl SimWorld {
                 .get(unit_id)
                 .map(|u| u.container_spec())
                 .unwrap_or_default(),
-            EntityKind::Building { building_id } => loaded
-                .buildings
-                .get(building_id)
-                .map(|b| b.container_spec())
-                .unwrap_or_default(),
+            EntityKind::Building { building_id } => {
+                if let Some(b) = loaded.buildings.get(building_id) {
+                    let mut spec = b.container_spec();
+                    if ent.neutral_garrison && spec.capacity == 0 {
+                        spec.capacity = 6;
+                        spec.passengers_can_fire = true;
+                    }
+                    spec
+                } else if ent.neutral_garrison {
+                    rts_sdk::schema::ContainerSpec {
+                        capacity: 6,
+                        passengers_can_fire: true,
+                        ..Default::default()
+                    }
+                } else {
+                    rts_sdk::schema::ContainerSpec::default()
+                }
+            }
         }
     }
 
@@ -278,6 +346,103 @@ impl SimWorld {
                 econ.power_produced = 0;
             }
         }
+        self.power_dirty = false;
+    }
+
+    /// Recomputes player power and supply caps only when `self.power_dirty` (or an unsynced outage) is flagged (`Task 200`).
+    #[inline]
+    pub fn recalculate_power_if_dirty(&mut self, loaded: &LoadedMod) {
+        let unsynced_outage = self.power_outage_timers.iter().any(|(&pid, &t)| {
+            t > 0.0 && self.players.get(&pid).is_some_and(|p| p.power_produced > 0)
+        }) || self
+            .players
+            .values()
+            .any(|p| p.power_sabotage_timer > 0.0 && p.power_produced > 0);
+        if self.power_dirty || unsynced_outage {
+            self.recalculate_power(loaded);
+        }
+    }
+
+    /// Credits `amount` of damage dealt to `attacker_player` and optional `attacker_def_id` (`Task 190a`).
+    pub fn record_damage_dealt(
+        &mut self,
+        attacker_player: u8,
+        attacker_def_id: Option<&str>,
+        amount: f32,
+    ) {
+        if attacker_player == 0 || !amount.is_finite() || amount <= 0.0 {
+            return;
+        }
+        if let Some(econ) = self.players.get_mut(&attacker_player) {
+            econ.damage_dealt += amount;
+        }
+        if let Some(def_id) = attacker_def_id {
+            if !def_id.is_empty() {
+                self.telemetry
+                    .per_unit_ledger
+                    .entry(attacker_player)
+                    .or_default()
+                    .entry(def_id.to_string())
+                    .or_default()
+                    .damage_dealt += amount;
+            }
+        }
+    }
+
+    /// Samples `PlayerTelemetrySample` across all active players in `O(N)` (`Task 190a`).
+    pub fn record_telemetry_sample(&mut self, loaded: &LoadedMod) {
+        let mut army_values: BTreeMap<u8, u32> = BTreeMap::new();
+        for ent in self.entities.values() {
+            if ent.health <= 0.0 || ent.player_id == 0 || ent.is_support_aircraft {
+                continue;
+            }
+            if let EntityKind::Unit { unit_id } = &ent.kind {
+                let cost = loaded.units.get(unit_id).map(|u| u.cost).unwrap_or(100);
+                let entry = army_values.entry(ent.player_id).or_insert(0);
+                *entry = entry.saturating_add(cost);
+            }
+        }
+
+        let player_ids: Vec<u8> = self.players.keys().copied().collect();
+        for pid in player_ids {
+            let Some(econ) = self.players.get(&pid) else {
+                continue;
+            };
+            let prev_harv = self
+                .telemetry
+                .last_sample_harvested
+                .get(&pid)
+                .copied()
+                .unwrap_or(0);
+            let prev_cmds = self
+                .telemetry
+                .last_sample_commands
+                .get(&pid)
+                .copied()
+                .unwrap_or(0);
+            let delta_harv = econ.credits_harvested.saturating_sub(prev_harv);
+            let delta_cmds = econ.commands_issued.saturating_sub(prev_cmds);
+            let rate_mult = if self.tick == 0 { 0 } else { 6 };
+            let sample = PlayerTelemetrySample {
+                tick: self.tick,
+                credits: econ.credits,
+                income_per_min: delta_harv.saturating_mul(rate_mult),
+                army_value: army_values.get(&pid).copied().unwrap_or(0),
+                power_net: econ.net_power(),
+                apm: delta_cmds.saturating_mul(rate_mult),
+            };
+            self.telemetry
+                .last_sample_harvested
+                .insert(pid, econ.credits_harvested);
+            self.telemetry
+                .last_sample_commands
+                .insert(pid, econ.commands_issued);
+            self.telemetry
+                .player_samples
+                .entry(pid)
+                .or_default()
+                .push(sample);
+        }
     }
 
     /// Computes the total credit value of all living units owned by `player_id`.
@@ -313,7 +478,13 @@ impl SimWorld {
             .filter(|upg| {
                 !econ.researched_upgrades.contains(&upg.id)
                     && upg.is_available_to_faction(&econ.faction)
-                    && self.has_prerequisites(player_id, &upg.prerequisites)
+                    && self.has_tech_and_era_prerequisites(
+                        player_id,
+                        &upg.prerequisites,
+                        &upg.prerequisite_upgrades,
+                        upg.required_era.as_deref(),
+                        loaded,
+                    )
             })
             .map(|upg| upg.id.clone())
             .collect()
@@ -325,10 +496,19 @@ impl SimWorld {
         let mut building_tiles = BTreeSet::new();
         for ent in self.entities.values() {
             if matches!(ent.kind, EntityKind::Building { .. }) {
-                let fp = ent.custom_footprint.unwrap_or([4, 4]);
+                let fp = ent.custom_footprint.unwrap_or([2, 2]);
                 for dx in 0..fp[0] as i32 {
                     for dz in 0..fp[1] as i32 {
                         building_tiles.insert([ent.tile_origin[0] + dx, ent.tile_origin[1] + dz]);
+                    }
+                }
+            }
+        }
+        for cs in &self.civilian_structures {
+            if !cs.is_ruin {
+                for dx in 0..cs.footprint[0] as i32 {
+                    for dz in 0..cs.footprint[1] as i32 {
+                        building_tiles.insert([cs.tile_pos[0] + dx, cs.tile_pos[1] + dz]);
                     }
                 }
             }
@@ -368,7 +548,7 @@ impl SimWorld {
             .grid
             .ore_tiles
             .iter()
-            .filter(|(pos, &amt)| amt > 0 && !self.grid.gem_tiles.contains(*pos))
+            .filter(|(pos, &amt)| amt > 0 && !self.grid.gem_tiles.contains(pos))
             .map(|(&pos, &amt)| OrePatchDef {
                 position: pos,
                 radius: 0,
@@ -379,7 +559,7 @@ impl SimWorld {
             .grid
             .ore_tiles
             .iter()
-            .filter(|(pos, &amt)| amt > 0 && self.grid.gem_tiles.contains(*pos))
+            .filter(|(pos, &amt)| amt > 0 && self.grid.gem_tiles.contains(pos))
             .map(|(&pos, &amt)| OrePatchDef {
                 position: pos,
                 radius: 0,
@@ -399,7 +579,11 @@ impl SimWorld {
 
         let mut preplaced_entities: Vec<PreplacedEntityDef> = Vec::new();
         for ent in self.entities.values() {
-            if ent.health > 0.0 && ent.transported_by.is_none() {
+            if ent.health > 0.0
+                && ent.transported_by.is_none()
+                && ent.linked_civ_structure_id.is_none()
+                && !ent.is_support_aircraft
+            {
                 match &ent.kind {
                     EntityKind::Building { building_id } => {
                         let key = (ent.player_id, building_id.clone(), ent.tile_origin);
@@ -409,6 +593,7 @@ impl SimWorld {
                                 building_id: Some(building_id.clone()),
                                 unit_id: None,
                                 tile_pos: ent.tile_origin,
+                                tag: self.entity_tags.get(&ent.id).cloned(),
                             });
                         }
                     }
@@ -420,12 +605,23 @@ impl SimWorld {
                                 building_id: None,
                                 unit_id: Some(unit_id.clone()),
                                 tile_pos: ent.tile_origin,
+                                tag: self.entity_tags.get(&ent.id).cloned(),
                             });
                         }
                     }
                 }
             }
         }
+
+        let heightmap = if self.grid.has_valid_vertex_heights() {
+            Some(rts_sdk::schema::HeightmapDef {
+                width: (self.grid.width.max(0) as u32) + 1,
+                height: (self.grid.height.max(0) as u32) + 1,
+                heights: self.grid.vertex_heights.clone(),
+            })
+        } else {
+            base_map.heightmap.clone()
+        };
 
         MapDef {
             id: base_map.id.clone(),
@@ -445,6 +641,9 @@ impl SimWorld {
             bridge_rects,
             elevation_rects,
             ramp_rects,
+            heightmap,
+            splatmap: base_map.splatmap.clone(),
+            civilian_structures: base_map.civilian_structures.clone(),
             spawns: base_map.spawns.clone(),
             preplaced_entities,
             trigger_zones: self.trigger_zones.clone(),
@@ -456,6 +655,21 @@ impl SimWorld {
                     tile_pos: p.tile,
                 })
                 .collect(),
+            initial_weather: base_map.initial_weather.clone(),
+            playable_bounds: self.playable_bounds.or(base_map.playable_bounds),
+            resource_patches: base_map.resource_patches.clone(),
+            objectives: if !self.mission_objectives.is_empty() {
+                self.mission_objectives
+                    .iter()
+                    .map(|o| o.def.clone())
+                    .collect()
+            } else {
+                base_map.objectives.clone()
+            },
+            cutscenes: base_map.cutscenes.clone(),
+            capture_zones: base_map.capture_zones.clone(),
+            item_drops: base_map.item_drops.clone(),
+            trigger_graphs: base_map.trigger_graphs.clone(),
         }
     }
 
@@ -499,7 +713,17 @@ impl SimWorld {
                         }
                     }
                     MapSymmetryMode::Rotational4Way => {
-                        for rot in [[mx, mz], [p[1], mx], [mz, p[0]]] {
+                        let x_max = (self.grid.width - 1).max(1) as i64;
+                        let z_max = (self.grid.height - 1).max(1) as i64;
+                        let r90 = [
+                            ((p[1] as i64 * x_max) / z_max) as i32,
+                            ((mx as i64 * z_max) / x_max) as i32,
+                        ];
+                        let r270 = [
+                            ((mz as i64 * x_max) / z_max) as i32,
+                            ((p[0] as i64 * z_max) / x_max) as i32,
+                        ];
+                        for rot in [[mx, mz], r90, r270] {
                             if self.grid.in_bounds(rot) {
                                 unique.insert(rot);
                             }
@@ -559,7 +783,9 @@ impl SimWorld {
             if !ore_tiles.is_empty() {
                 // Sort ore tiles by Manhattan distance to check nearest ore first
                 let mut sorted_ore = ore_tiles.clone();
-                sorted_ore.sort_by_key(|ot| (ot[0] - start_tile[0]).abs() + (ot[1] - start_tile[1]).abs());
+                sorted_ore.sort_by_key(|ot| {
+                    (ot[0] - start_tile[0]).abs() + (ot[1] - start_tile[1]).abs()
+                });
                 let reachable = sorted_ore.iter().take(6).any(|&ot| {
                     let adj_walkable = [
                         ot,
@@ -642,12 +868,22 @@ impl SimWorld {
             return result;
         }
 
-        let n = ranked_units.len() as f32;
-        let cx = ranked_units.iter().map(|(_, _, p)| p[0]).sum::<f32>() / n;
-        let cz = ranked_units.iter().map(|(_, _, p)| p[2]).sum::<f32>() / n;
+        let count_scalar = crate::det_math::SimScalar::from_i32(ranked_units.len() as i32);
+        let sum_x = ranked_units
+            .iter()
+            .fold(crate::det_math::SimScalar::ZERO, |acc, (_, _, p)| {
+                acc + crate::det_math::SimScalar::from_f32(p[0])
+            });
+        let sum_z = ranked_units
+            .iter()
+            .fold(crate::det_math::SimScalar::ZERO, |acc, (_, _, p)| {
+                acc + crate::det_math::SimScalar::from_f32(p[2])
+            });
+        let cx = (sum_x / count_scalar).to_f32();
+        let cz = (sum_z / count_scalar).to_f32();
         let dx = target_pos[0] - cx;
         let dz = target_pos[2] - cz;
-        let dist = (dx * dx + dz * dz).sqrt();
+        let dist = crate::det_math::det_distance_xz_f32(target_pos, [cx, 0.0, cz]);
         let (fwd_x, fwd_z) = if dist > 0.5 {
             (dx / dist, dz / dist)
         } else {
@@ -663,7 +899,7 @@ impl SimWorld {
             .map(|p| p.formation)
             .unwrap_or(FormationKind::Box);
         let total = ranked_units.len();
-        let cols = (total as f32).sqrt().ceil().max(2.0) as i32;
+        let cols = crate::det_math::det_sqrt_f32(total as f32).ceil().max(2.0) as i32;
 
         for (idx, (rank, eid, _)) in ranked_units.into_iter().enumerate() {
             let (lateral, depth) = match formation {
@@ -721,6 +957,13 @@ impl SimWorld {
         let mut cluster_cache: Vec<(rts_sdk::schema::MovementDomain, [i32; 2], Vec<[f32; 3]>)> =
             Vec::new();
 
+        let use_flow_field = entity_ids.len() >= 8;
+        let common_goal_tile = self.grid.world_to_tile(target_pos);
+        let mut domain_flows: BTreeMap<
+            rts_sdk::schema::MovementDomain,
+            crate::flow_field::FlowField,
+        > = BTreeMap::new();
+
         for &ent_id in entity_ids {
             let Some(ent) = self.entities.get(&ent_id) else {
                 continue;
@@ -729,20 +972,70 @@ impl SimWorld {
             let goal_tile = formation_goals
                 .get(&ent_id)
                 .copied()
-                .unwrap_or_else(|| self.grid.world_to_tile(target_pos));
+                .unwrap_or(common_goal_tile);
             let goal_world = self.grid.tile_to_world(goal_tile);
             let is_sub = self.is_subterranean_unit(ent, loaded);
             let (domain, alt) = self.unit_domain_and_altitude(ent, loaded);
+            let clearance = crate::world::locomotors::unit_clearance_tiles(ent, loaded);
 
-            if is_sub && !self.grid.water_tiles.contains(&goal_tile) {
-                paths.insert(ent_id, vec![goal_world]);
+            if is_sub {
+                paths.insert(
+                    ent_id,
+                    self.grid.find_path_subterranean(start_tile, goal_tile),
+                );
                 continue;
+            }
+
+            if use_flow_field && clearance <= 1 {
+                let flow = domain_flows.entry(domain).or_insert_with(|| {
+                    crate::flow_field::FlowField::compute(
+                        &self.grid,
+                        common_goal_tile,
+                        domain,
+                        clearance,
+                        &allowed_gates,
+                    )
+                });
+                let mut traced = flow.extract_waypoints(&self.grid, start_tile);
+                if !traced.is_empty() {
+                    if matches!(
+                        domain,
+                        rts_sdk::schema::MovementDomain::Air
+                            | rts_sdk::schema::MovementDomain::Jumpjet
+                    ) && alt > 0.0
+                    {
+                        for wp in &mut traced {
+                            wp[1] = alt;
+                        }
+                    }
+                    let final_y = if matches!(
+                        domain,
+                        rts_sdk::schema::MovementDomain::Air
+                            | rts_sdk::schema::MovementDomain::Jumpjet
+                    ) {
+                        alt
+                    } else {
+                        self.grid.tile_elevation(goal_tile)
+                    };
+                    if goal_tile != common_goal_tile
+                        && self.grid.is_tile_traversable_for_domain(
+                            goal_tile,
+                            domain,
+                            &allowed_gates,
+                        )
+                    {
+                        traced.push([goal_world[0], final_y, goal_world[2]]);
+                    }
+                    cache_hits += 1;
+                    paths.insert(ent_id, traced);
+                    continue;
+                }
             }
 
             let mut reused_path: Option<Vec<[f32; 3]>> = None;
             if self
                 .grid
-                .is_tile_traversable_for_domain(goal_tile, domain, &allowed_gates)
+                .tile_has_clearance_for_domain(goal_tile, clearance, domain, &allowed_gates)
             {
                 for (c_domain, anchor_start, trunk_path) in &cluster_cache {
                     if *c_domain != domain || trunk_path.is_empty() {
@@ -753,6 +1046,19 @@ impl SimWorld {
                     if manhattan > 6 {
                         continue;
                     }
+                    if clearance > 1
+                        && trunk_path.iter().any(|wp| {
+                            let wt = self.grid.world_to_tile(*wp);
+                            !self.grid.tile_has_clearance_for_domain(
+                                wt,
+                                clearance,
+                                domain,
+                                &allowed_gates,
+                            )
+                        })
+                    {
+                        continue;
+                    }
                     let first_wp_tile = self.grid.world_to_tile(trunk_path[0]);
                     let steps = (first_wp_tile[0] - start_tile[0])
                         .abs()
@@ -761,8 +1067,12 @@ impl SimWorld {
                     let los_clear = (0..=steps).all(|s| {
                         let tx = start_tile[0] + (first_wp_tile[0] - start_tile[0]) * s / steps;
                         let tz = start_tile[1] + (first_wp_tile[1] - start_tile[1]) * s / steps;
-                        self.grid
-                            .is_tile_traversable_for_domain([tx, tz], domain, &allowed_gates)
+                        self.grid.tile_has_clearance_for_domain(
+                            [tx, tz],
+                            clearance,
+                            domain,
+                            &allowed_gates,
+                        )
                     });
                     if los_clear {
                         let mut unit_path = trunk_path[..trunk_path.len() - 1].to_vec();
@@ -773,7 +1083,7 @@ impl SimWorld {
                         ) {
                             alt
                         } else {
-                            0.0
+                            self.grid.tile_elevation(goal_tile)
                         };
                         unit_path.push([goal_world[0], final_y, goal_world[2]]);
                         reused_path = Some(unit_path);
@@ -786,12 +1096,13 @@ impl SimWorld {
                 cache_hits += 1;
                 paths.insert(ent_id, cached);
             } else {
-                let computed = self.grid.find_path_for_player(
+                let computed = self.grid.find_path_with_clearance(
                     start_tile,
                     goal_tile,
                     domain,
                     alt,
                     &allowed_gates,
+                    clearance,
                 );
                 if !computed.is_empty() {
                     cluster_cache.push((domain, start_tile, computed.clone()));
@@ -800,6 +1111,376 @@ impl SimWorld {
             }
         }
         (paths, cache_hits)
+    }
+
+    /// Mutable group pathing variant that populates and reuses `SimWorld::flow_field_cache`
+    /// across sequential group move/attack-move commands for `>= 8` units.
+    pub fn compute_group_paths_with_flow(
+        &mut self,
+        player_id: u8,
+        entity_ids: &[u64],
+        target_pos: [f32; 3],
+        formation_goals: &BTreeMap<u64, [i32; 2]>,
+        loaded: &LoadedMod,
+    ) -> (BTreeMap<u64, Vec<[f32; 3]>>, u64) {
+        if entity_ids.len() >= 8 {
+            let allowed_gates = self.allowed_gate_owners(player_id);
+            let common_goal_tile = self.grid.world_to_tile(target_pos);
+            let mut paths = BTreeMap::new();
+            let mut hits = 0u64;
+            for &ent_id in entity_ids {
+                let Some(ent) = self.entities.get(&ent_id) else {
+                    continue;
+                };
+                let start_tile = self.grid.world_to_tile(ent.position);
+                let goal_tile = formation_goals
+                    .get(&ent_id)
+                    .copied()
+                    .unwrap_or(common_goal_tile);
+                let goal_world = self.grid.tile_to_world(goal_tile);
+                let is_sub = self.is_subterranean_unit(ent, loaded);
+                let (domain, alt) = self.unit_domain_and_altitude(ent, loaded);
+                let clearance = crate::world::locomotors::unit_clearance_tiles(ent, loaded);
+                if is_sub {
+                    paths.insert(
+                        ent_id,
+                        self.grid.find_path_subterranean(start_tile, goal_tile),
+                    );
+                    continue;
+                }
+                if clearance <= crate::pathfinding::CollisionGrid::MAX_CLEARANCE {
+                    let (flow, _) = self.flow_field_cache.get_or_compute(
+                        &self.grid,
+                        common_goal_tile,
+                        domain,
+                        clearance,
+                        &allowed_gates,
+                    );
+                    let mut traced = flow.extract_waypoints(&self.grid, start_tile);
+                    if !traced.is_empty() {
+                        if matches!(
+                            domain,
+                            rts_sdk::schema::MovementDomain::Air
+                                | rts_sdk::schema::MovementDomain::Jumpjet
+                        ) && alt > 0.0
+                        {
+                            for wp in &mut traced {
+                                wp[1] = alt;
+                            }
+                        }
+                        let final_y = if matches!(
+                            domain,
+                            rts_sdk::schema::MovementDomain::Air
+                                | rts_sdk::schema::MovementDomain::Jumpjet
+                        ) {
+                            alt
+                        } else {
+                            self.grid.sample_domain_surface_height(
+                                goal_world[0],
+                                goal_world[2],
+                                domain,
+                            )
+                        };
+                        if goal_tile != common_goal_tile
+                            && crate::flow_field::is_formation_offset_leg_clear(
+                                &self.grid,
+                                common_goal_tile,
+                                goal_tile,
+                                domain,
+                                clearance,
+                                &allowed_gates,
+                            )
+                        {
+                            traced.push([goal_world[0], final_y, goal_world[2]]);
+                        }
+                        hits += 1;
+                        paths.insert(ent_id, traced);
+                        continue;
+                    }
+                }
+                let computed = self.hpa_cache.find_path(
+                    &self.grid,
+                    start_tile,
+                    goal_tile,
+                    domain,
+                    alt,
+                    &allowed_gates,
+                    clearance,
+                );
+                paths.insert(ent_id, computed);
+            }
+            return (paths, hits);
+        }
+        if entity_ids.len() == 1 {
+            let ent_id = entity_ids[0];
+            if let Some(ent) = self.entities.get(&ent_id) {
+                let allowed_gates = self.allowed_gate_owners(player_id);
+                let start_tile = self.grid.world_to_tile(ent.position);
+                let goal_tile = formation_goals
+                    .get(&ent_id)
+                    .copied()
+                    .unwrap_or_else(|| self.grid.world_to_tile(target_pos));
+                let is_sub = self.is_subterranean_unit(ent, loaded);
+                let (domain, alt) = self.unit_domain_and_altitude(ent, loaded);
+                let clearance = crate::world::locomotors::unit_clearance_tiles(ent, loaded);
+                let mut paths = BTreeMap::new();
+                if is_sub {
+                    paths.insert(
+                        ent_id,
+                        self.grid.find_path_subterranean(start_tile, goal_tile),
+                    );
+                } else {
+                    let computed = self.hpa_cache.find_path(
+                        &self.grid,
+                        start_tile,
+                        goal_tile,
+                        domain,
+                        alt,
+                        &allowed_gates,
+                        clearance,
+                    );
+                    paths.insert(ent_id, computed);
+                }
+                return (paths, 0);
+            }
+        }
+        self.compute_group_cached_paths(player_id, entity_ids, target_pos, formation_goals, loaded)
+    }
+
+    /// Assigns `O(1)` shared `FlowFieldHandle` steering for groups of `>= 4` surface/naval units (`Task 233`)
+    /// without cloning `Vec<[f32; 3]>` waypoint chains per unit, falling back to cached HPA* paths for
+    /// small groups (`< 4`), aircraft, Chrono units, or subterranean units.
+    #[allow(clippy::type_complexity)]
+    pub fn prepare_group_flow_or_paths(
+        &mut self,
+        player_id: u8,
+        entity_ids: &[u64],
+        target_pos: [f32; 3],
+        formation_goals: &BTreeMap<u64, [i32; 2]>,
+        loaded: &LoadedMod,
+    ) -> (
+        BTreeMap<
+            u64,
+            (
+                Option<crate::flow_field::FlowFieldHandle>,
+                Option<[i32; 2]>,
+                Vec<[f32; 3]>,
+            ),
+        >,
+        u64,
+    ) {
+        if entity_ids.len() >= 4 {
+            let allowed_gates = self.allowed_gate_owners(player_id);
+            let common_goal_tile = self.grid.world_to_tile(target_pos);
+            let mut out = BTreeMap::new();
+            let mut hits = 0u64;
+            for &ent_id in entity_ids {
+                let Some(ent) = self.entities.get(&ent_id) else {
+                    continue;
+                };
+                let start_tile = self.grid.world_to_tile(ent.position);
+                let goal_tile = formation_goals
+                    .get(&ent_id)
+                    .copied()
+                    .unwrap_or(common_goal_tile);
+                let is_sub = self.is_subterranean_unit(ent, loaded);
+                let (domain, alt) = self.unit_domain_and_altitude(ent, loaded);
+                let clearance = crate::world::locomotors::unit_clearance_tiles(ent, loaded);
+                let is_chrono = matches!(&ent.kind, EntityKind::Unit { unit_id } if loaded.units.get(unit_id).is_some_and(|u| u.chrono_locomotion))
+                    || domain == rts_sdk::schema::MovementDomain::Chrono;
+
+                if is_sub {
+                    out.insert(
+                        ent_id,
+                        (
+                            None,
+                            None,
+                            self.grid.find_path_subterranean(start_tile, goal_tile),
+                        ),
+                    );
+                    continue;
+                }
+                if !is_chrono
+                    && !matches!(
+                        domain,
+                        rts_sdk::schema::MovementDomain::Air
+                            | rts_sdk::schema::MovementDomain::Jumpjet
+                    )
+                    && clearance <= crate::pathfinding::CollisionGrid::MAX_CLEARANCE
+                {
+                    let handle = crate::flow_field::FlowFieldHandle::new(
+                        common_goal_tile,
+                        domain,
+                        clearance,
+                        &allowed_gates,
+                    );
+                    let (flow, cache_hit) = self
+                        .flow_field_cache
+                        .get_or_compute_handle(&self.grid, handle);
+                    if cache_hit {
+                        hits += 1;
+                    }
+                    let flow_goal = flow.goal_tile;
+                    let cheb = (start_tile[0] - flow_goal[0])
+                        .abs()
+                        .max((start_tile[1] - flow_goal[1]).abs());
+                    if start_tile == flow_goal
+                        || (goal_tile != flow_goal
+                            && cheb <= 2
+                            && crate::flow_field::is_formation_offset_leg_clear(
+                                &self.grid,
+                                start_tile,
+                                goal_tile,
+                                domain,
+                                clearance,
+                                &allowed_gates,
+                            ))
+                    {
+                        let dest_tile = if crate::flow_field::is_formation_offset_leg_clear(
+                            &self.grid,
+                            start_tile,
+                            goal_tile,
+                            domain,
+                            clearance,
+                            &allowed_gates,
+                        ) {
+                            goal_tile
+                        } else {
+                            flow_goal
+                        };
+                        let wp = if start_tile == dest_tile {
+                            Vec::new()
+                        } else {
+                            vec![self.grid.tile_to_world_for_domain(dest_tile, domain)]
+                        };
+                        out.insert(ent_id, (None, None, wp));
+                        continue;
+                    }
+                    if let Some(dir) = flow.direction_at(start_tile) {
+                        let t1 = [start_tile[0] + dir[0] as i32, start_tile[1] + dir[1] as i32];
+                        let look_tile = if t1 != flow_goal && flow.direction_at(t1) == Some(dir) {
+                            [t1[0] + dir[0] as i32, t1[1] + dir[1] as i32]
+                        } else {
+                            t1
+                        };
+                        let look_world = self.grid.tile_to_world_for_domain(look_tile, domain);
+                        out.insert(ent_id, (Some(handle), Some(goal_tile), vec![look_world]));
+                        continue;
+                    }
+                }
+                let computed = self.hpa_cache.find_path(
+                    &self.grid,
+                    start_tile,
+                    goal_tile,
+                    domain,
+                    alt,
+                    &allowed_gates,
+                    clearance,
+                );
+                out.insert(ent_id, (None, None, computed));
+            }
+            return (out, hits);
+        }
+        let (paths, hits) = self.compute_group_paths_with_flow(
+            player_id,
+            entity_ids,
+            target_pos,
+            formation_goals,
+            loaded,
+        );
+        let mapped = paths
+            .into_iter()
+            .map(|(k, p)| (k, (None, None, p)))
+            .collect();
+        (mapped, hits)
+    }
+
+    /// Computes rank-and-line formation tile slots perpendicular to `facing_radians` spaced by
+    /// `line_spacing` (`Task 197a` RMB-drag formation move).
+    pub fn compute_custom_formation_targets(
+        &self,
+        entity_ids: &[u64],
+        target_pos: [f32; 3],
+        facing_radians: f32,
+        line_spacing: f32,
+        loaded: &LoadedMod,
+    ) -> BTreeMap<u64, [i32; 2]> {
+        use crate::det_math::{det_sin_cos_scalar, SimScalar};
+        let mut out = BTreeMap::new();
+        let valid: Vec<(u64, [i32; 2], u8, rts_sdk::schema::MovementDomain)> = entity_ids
+            .iter()
+            .filter_map(|&id| {
+                let e = self.entities.get(&id)?;
+                if !matches!(e.kind, EntityKind::Unit { .. }) || e.health <= 0.0 {
+                    return None;
+                }
+                let (dom, _) = self.unit_domain_and_altitude(e, loaded);
+                Some((id, self.grid.world_to_tile(e.position), e.player_id, dom))
+            })
+            .collect();
+        if valid.is_empty() {
+            return out;
+        }
+        let eff_spacing = line_spacing.clamp(2.0, 10.0);
+        let (sin_f, cos_f) = det_sin_cos_scalar(SimScalar::from_f32(facing_radians));
+        let fwd_x = sin_f.to_f32();
+        let fwd_z = cos_f.to_f32();
+        let right_x = cos_f.to_f32();
+        let right_z = -sin_f.to_f32();
+
+        let n = valid.len();
+        let max_cols = n.clamp(1, 8);
+        let mut claimed = BTreeSet::new();
+        for (idx, (id, start_tile, pid, dom)) in valid.into_iter().enumerate() {
+            let allowed_gates = self.allowed_gate_owners(pid);
+            if n == 1 {
+                let raw = self.grid.world_to_tile(target_pos);
+                let tile =
+                    self.grid
+                        .find_nearest_tile_for_domain(start_tile, raw, dom, &allowed_gates);
+                out.insert(id, tile);
+                continue;
+            }
+            let rank = idx / max_cols;
+            let col = idx % max_cols;
+            let cols_in_this_rank = (n - rank * max_cols).min(max_cols);
+            let lat = (col as f32 - (cols_in_this_rank as f32 - 1.0) * 0.5) * eff_spacing;
+            let depth = -(rank as f32) * eff_spacing;
+            let slot_world = [
+                target_pos[0] + right_x * lat + fwd_x * depth,
+                target_pos[1],
+                target_pos[2] + right_z * lat + fwd_z * depth,
+            ];
+            let raw_tile = self.grid.world_to_tile(slot_world);
+            let mut tile =
+                self.grid
+                    .find_nearest_tile_for_domain(start_tile, raw_tile, dom, &allowed_gates);
+            if claimed.contains(&tile) {
+                for off in [
+                    [1, 0],
+                    [-1, 0],
+                    [0, 1],
+                    [0, -1],
+                    [1, 1],
+                    [-1, 1],
+                    [1, -1],
+                    [-1, -1],
+                ] {
+                    let cand = [tile[0] + off[0], tile[1] + off[1]];
+                    if !claimed.contains(&cand)
+                        && self
+                            .grid
+                            .is_tile_traversable_for_domain(cand, dom, &allowed_gates)
+                    {
+                        tile = cand;
+                        break;
+                    }
+                }
+            }
+            claimed.insert(tile);
+            out.insert(id, tile);
+        }
+        out
     }
 
     /// Computes the shared formation speed cap (`Some(min_speed)`) for a moving group when
@@ -831,7 +1512,7 @@ impl SimWorld {
                 if let Some(u_def) = loaded.units.get(unit_id) {
                     let (buff_spd, _, _, _, _) = Self::entity_buff_multipliers(ent);
                     let (_, _, upg_spd, _) =
-                        self.player_upgrade_multipliers(player_id, Some(u_def.role), loaded);
+                        self.player_entity_upgrade_multipliers(player_id, ent, loaded);
                     let spd = u_def.speed
                         * ent.script_ctx.speed_multiplier.max(1.0)
                         * ent.veterancy.speed_bonus()
@@ -886,8 +1567,117 @@ impl SimWorld {
     }
 
     pub fn has_prerequisites(&self, player_id: u8, prereqs: &[String]) -> bool {
+        if prereqs.is_empty() {
+            return true;
+        }
         let owned = self.completed_building_ids(player_id);
-        prereqs.iter().all(|req| owned.contains(req))
+        let researched = self.players.get(&player_id).map(|e| &e.researched_upgrades);
+        let unlocked_nodes = self.unlocked_commander_nodes.get(&player_id);
+        prereqs.iter().all(|req| {
+            owned.contains(req)
+                || researched.is_some_and(|r| r.contains(req))
+                || unlocked_nodes.is_some_and(|nodes| nodes.contains(req))
+        })
+    }
+
+    /// Verifies `required_era` (`EraDef` Age I..IV progression, `Task 231`).
+    pub fn has_era_requirement(
+        &self,
+        player_id: u8,
+        required_era: Option<&str>,
+        loaded: &LoadedMod,
+    ) -> bool {
+        let Some(req_id) = required_era.filter(|s| !s.is_empty()) else {
+            return true;
+        };
+        let Some(econ) = self.players.get(&player_id) else {
+            return false;
+        };
+        let eras = &loaded.manifest.rules.eras;
+        let cur_era_id = econ
+            .current_era
+            .as_deref()
+            .or_else(|| eras.iter().min_by_key(|e| e.order).map(|e| e.id.as_str()));
+        let Some(cur_id) = cur_era_id else {
+            return false;
+        };
+        if cur_id == req_id {
+            return true;
+        }
+        if let (Some(cur_def), Some(req_def)) = (
+            eras.iter().find(|e| e.id == cur_id),
+            eras.iter().find(|e| e.id == req_id),
+        ) {
+            cur_def.order >= req_def.order
+        } else {
+            false
+        }
+    }
+
+    /// Full tech-tree prerequisite check verifying completed buildings/nodes (`prereqs`),
+    /// `prerequisite_upgrades` (`econ.researched_upgrades`), AND `required_era` (`Task 231`).
+    pub fn has_tech_and_era_prerequisites(
+        &self,
+        player_id: u8,
+        prereqs: &[String],
+        prereq_upgrades: &[String],
+        required_era: Option<&str>,
+        loaded: &LoadedMod,
+    ) -> bool {
+        if !self.has_prerequisites(player_id, prereqs) {
+            return false;
+        }
+        if !prereq_upgrades.is_empty() {
+            let Some(econ) = self.players.get(&player_id) else {
+                return false;
+            };
+            if !prereq_upgrades
+                .iter()
+                .all(|up_id| econ.researched_upgrades.contains(up_id))
+            {
+                return false;
+            }
+        }
+        self.has_era_requirement(player_id, required_era, loaded)
+    }
+
+    /// Resolves the active `CommanderPowerTreeDef` for `player_id`'s faction/sub-faction.
+    pub fn commander_tree_for_player<'a>(
+        &self,
+        player_id: u8,
+        loaded: &'a LoadedMod,
+    ) -> Option<&'a rts_sdk::schema::CommanderPowerTreeDef> {
+        let econ = self.players.get(&player_id)?;
+        if let Some(ref sub) = econ.sub_faction {
+            if let Some(tree) = loaded.commander_trees.values().find(|t| &t.faction == sub) {
+                return Some(tree);
+            }
+        }
+        loaded
+            .commander_trees
+            .values()
+            .find(|t| t.faction == econ.faction || t.faction == "shared")
+    }
+
+    /// Returns `true` if `player_id` has unlocked a `CommanderPowerNodeDef` whose `unlocks_def_id`
+    /// matches `def_id`.
+    pub fn is_commander_def_unlocked_for_player(
+        &self,
+        player_id: u8,
+        def_id: &str,
+        loaded: &LoadedMod,
+    ) -> bool {
+        let Some(unlocked_nodes) = self.unlocked_commander_nodes.get(&player_id) else {
+            return false;
+        };
+        if unlocked_nodes.is_empty() {
+            return false;
+        }
+        loaded.commander_trees.values().any(|tree| {
+            tree.nodes.iter().any(|node| {
+                unlocked_nodes.contains(&node.id) && node.unlocks_def_id.as_deref() == Some(def_id)
+            })
+        })
     }
 
     pub fn player_unit_count_including_queued(&self, player_id: u8, target_unit_id: &str) -> u32 {
@@ -967,11 +1757,7 @@ impl SimWorld {
         }
     }
 
-    pub fn available_buildings_for_player(
-        &self,
-        player_id: u8,
-        loaded: &LoadedMod,
-    ) -> Vec<String> {
+    pub fn available_buildings_for_player(&self, player_id: u8, loaded: &LoadedMod) -> Vec<String> {
         let Some(econ) = self.players.get(&player_id) else {
             return Vec::new();
         };
@@ -979,7 +1765,13 @@ impl SimWorld {
             .buildings
             .values()
             .filter(|b| {
-                let is_shared_map_landmark = b.faction == "shared"
+                if b.role == BuildingRole::BridgeRepairHut {
+                    return false;
+                }
+                let cmdr_unlocked =
+                    self.is_commander_def_unlocked_for_player(player_id, &b.id, loaded);
+                let is_shared_map_landmark = !cmdr_unlocked
+                    && b.faction == "shared"
                     && b.prerequisites.is_empty()
                     && !matches!(
                         b.role,
@@ -988,16 +1780,23 @@ impl SimWorld {
                 if is_shared_map_landmark {
                     return false;
                 }
-                let faction_ok = if b.prerequisites.is_empty() {
-                    b.is_available_to_faction(&econ.faction)
-                } else {
+                let faction_ok = if cmdr_unlocked || !b.prerequisites.is_empty() {
                     true
+                } else {
+                    b.is_available_to_faction(&econ.faction)
                 };
                 faction_ok
                     && b.is_available_to_sub_faction(&econ.faction, econ.sub_faction.as_deref())
                     && !self.is_building_build_limit_reached(player_id, b)
                     && b.role != BuildingRole::ConstructionYard
-                    && self.has_prerequisites(player_id, &b.prerequisites)
+                    && (cmdr_unlocked
+                        || self.has_tech_and_era_prerequisites(
+                            player_id,
+                            &b.prerequisites,
+                            &b.prerequisite_upgrades,
+                            b.required_era.as_deref(),
+                            loaded,
+                        ))
             })
             .collect();
         avail.sort_by_key(|b| (b.faction == "shared", b.cost, b.id.as_str()));
@@ -1023,8 +1822,17 @@ impl SimWorld {
 
     /// Resolves the default basic infantry unit for `faction` using `ModRules::default_infantry_by_faction`
     /// with a fallback to the first `UnitRole::Infantry` unit in `loaded.units`.
-    pub fn default_infantry_for_faction(&self, faction: &str, loaded: &LoadedMod) -> Option<String> {
-        if let Some(pref) = loaded.manifest.rules.default_infantry_by_faction.get(faction) {
+    pub fn default_infantry_for_faction(
+        &self,
+        faction: &str,
+        loaded: &LoadedMod,
+    ) -> Option<String> {
+        if let Some(pref) = loaded
+            .manifest
+            .rules
+            .default_infantry_by_faction
+            .get(faction)
+        {
             if loaded.units.contains_key(pref.as_str()) {
                 return Some(pref.clone());
             }
@@ -1042,8 +1850,8 @@ impl SimWorld {
             .map(|u| u.id.clone())
     }
 
-    /// Returns true if `player_id` owns a completed, operational Secret Lab (or other tech building)
-    /// that lists `u_def.id` in `unlocks_units`, AND owns an operational producer building for `u_def.role`.
+    /// Returns true if `player_id` owns a completed, operational Secret Lab (or other tech building / Commander Tree unlock)
+    /// that unlocks `u_def.id`, AND owns an operational producer building for `u_def.role`.
     pub fn is_secret_unit_unlocked_for_player(
         &self,
         player_id: u8,
@@ -1055,7 +1863,10 @@ impl SimWorld {
             .get(&player_id)
             .map(|p| p.stolen_tech_units.contains(&u_def.id))
             .unwrap_or(false);
+        let has_cmdr_unlock =
+            self.is_commander_def_unlocked_for_player(player_id, &u_def.id, loaded);
         let has_lab_unlock = has_stolen_tech
+            || has_cmdr_unlock
             || self.entities.values().any(|e| {
                 e.player_id == player_id
                     && self.is_building_online(e)
@@ -1082,7 +1893,16 @@ impl SimWorld {
                     EntityKind::Building { building_id } => loaded
                         .buildings
                         .get(building_id)
-                        .map(|b| b.role == required_producer_role)
+                        .map(|b| {
+                            b.role == required_producer_role
+                                || (u_def.movement_domain == rts_sdk::schema::MovementDomain::Air
+                                    && matches!(
+                                        b.role,
+                                        BuildingRole::Airfield
+                                            | BuildingRole::Support
+                                            | BuildingRole::WarFactory
+                                    ))
+                        })
                         .unwrap_or(false),
                     _ => false,
                 }
@@ -1107,7 +1927,15 @@ impl SimWorld {
                 };
                 let sub_ok =
                     u.is_available_to_sub_faction(&econ.faction, econ.sub_faction.as_deref());
-                (faction_ok && sub_ok && self.has_prerequisites(player_id, &u.prerequisites))
+                (faction_ok
+                    && sub_ok
+                    && self.has_tech_and_era_prerequisites(
+                        player_id,
+                        &u.prerequisites,
+                        &u.prerequisite_upgrades,
+                        u.required_era.as_deref(),
+                        loaded,
+                    ))
                     || self.is_secret_unit_unlocked_for_player(player_id, u, loaded)
             })
             .map(|u| u.id.clone())
@@ -1280,7 +2108,12 @@ impl SimWorld {
             .get(&player_id)
             .map(|ec| ec.is_low_power() || ec.power_sabotage_timer > 0.0)
             .unwrap_or(false)
-            || self.power_outage_timers.get(&player_id).copied().unwrap_or(0.0) > 0.0;
+            || self
+                .power_outage_timers
+                .get(&player_id)
+                .copied()
+                .unwrap_or(0.0)
+                > 0.0;
         if is_low_power {
             return 1.0;
         }
@@ -1325,7 +2158,12 @@ impl SimWorld {
             .get(&player_id)
             .map(|ec| ec.is_low_power() || ec.power_sabotage_timer > 0.0)
             .unwrap_or(false)
-            || self.power_outage_timers.get(&player_id).copied().unwrap_or(0.0) > 0.0;
+            || self
+                .power_outage_timers
+                .get(&player_id)
+                .copied()
+                .unwrap_or(0.0)
+                > 0.0;
         if is_low_power {
             return Vec::new();
         }
@@ -1426,7 +2264,10 @@ impl SimWorld {
                 continue;
             }
             match &e.kind {
-                EntityKind::Unit { unit_id } if e.parent_carrier_id.is_none() => {
+                EntityKind::Unit { unit_id }
+                    if self.trait_stores.parent_carrier_id(e).is_none()
+                        && !e.is_support_aircraft =>
+                {
                     if let Some(u_def) = loaded.units.get(unit_id) {
                         if u_def.movement_domain == rts_sdk::schema::MovementDomain::Air
                             && u_def.max_ammo > 0
@@ -1458,11 +2299,7 @@ impl SimWorld {
         player_id: u8,
         mission: &rts_sdk::schema::MissionDef,
     ) -> u32 {
-        let credits = self
-            .players
-            .get(&player_id)
-            .map(|p| p.credits)
-            .unwrap_or(0);
+        let credits = self.players.get(&player_id).map(|p| p.credits).unwrap_or(0);
         let ratio = mission.carry_over_credits_ratio.clamp(0.0, 1.0);
         ((credits as f32) * ratio).round() as u32
     }

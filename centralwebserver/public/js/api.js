@@ -53,15 +53,17 @@ export async function registerLobby(ann) {
         body: JSON.stringify(ann),
     });
 }
-export async function sendLobbyHeartbeat(lobbyId, hb) {
+export async function sendLobbyHeartbeat(lobbyId, hb, hostToken) {
     return requestJson(`/api/lobbies/${encodeURIComponent(lobbyId)}/heartbeat`, {
         method: 'POST',
+        headers: hostToken ? { 'X-Host-Token': hostToken } : {},
         body: JSON.stringify(hb),
     });
 }
-export async function deleteLobby(lobbyId) {
+export async function deleteLobby(lobbyId, hostToken) {
     const res = await requestJson(`/api/lobbies/${encodeURIComponent(lobbyId)}`, {
         method: 'DELETE',
+        headers: hostToken ? { 'X-Host-Token': hostToken } : {},
     });
     return res.deleted;
 }

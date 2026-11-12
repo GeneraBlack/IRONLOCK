@@ -1,0 +1,489 @@
+# ==============================================================================
+# Data-Driven 3D Particle & VFX Catalog (`VfxCatalog`)
+# ==============================================================================
+
+[[effects]]
+id = "vfx_citadel_beacon"
+name = "Citadel Sanctum Beacon"
+duration_secs = 2.5
+looping = true
+fallback_style = "laser"
+
+[[effects.emitters]]
+id = "beacon_ring"
+shape = "ring"
+blend_mode = "additive"
+burst_count = 0
+continuous_rate_per_sec = 18.0
+duration_secs = 2.5
+looping = true
+lifetime_range_secs = [0.6, 1.4]
+speed_range = [0.8, 2.2]
+sphere_radius = 1.4
+gravity = -0.8
+drag = 0.4
+size_ramp = [0.18, 0.42, 0.04]
+color_ramp_rgba = [
+    [2.2, 1.8, 0.65, 0.95],
+    [0.9, 1.5, 2.4, 0.65],
+    [0.2, 0.5, 1.2, 0.0],
+]
+local_offset = [0.0, 2.2, 0.0]
+
+[[effects]]
+id = "vfx_aether_siphon"
+name = "Aether Extractor Siphon"
+duration_secs = 2.0
+looping = true
+fallback_style = "tesla"
+
+[[effects.emitters]]
+id = "aether_motes"
+shape = "sphere"
+blend_mode = "additive"
+burst_count = 0
+continuous_rate_per_sec = 22.0
+duration_secs = 2.0
+looping = true
+lifetime_range_secs = [0.5, 1.2]
+speed_range = [1.0, 3.0]
+sphere_radius = 0.9
+gravity = -1.5
+drag = 0.6
+size_ramp = [0.14, 0.32, 0.04]
+color_ramp_rgba = [
+    [0.45, 1.9, 2.6, 0.95],
+    [0.25, 1.1, 2.0, 0.60],
+    [0.10, 0.3, 0.8, 0.0],
+]
+local_offset = [0.0, 1.6, 0.0]
+
+[[effects]]
+id = "vfx_arcane_collapse"
+name = "Arcane Structure Collapse"
+duration_secs = 1.8
+looping = false
+camera_shake_intensity = 0.45
+camera_shake_radius = 24.0
+fallback_style = "sonic"
+
+[effects.ground_decal]
+decal_kind = "scorch_crater"
+radius = 3.4
+fade_time_secs = 22.0
+
+[[effects.emitters]]
+id = "collapse_burst"
+shape = "sphere"
+blend_mode = "additive"
+burst_count = 36
+continuous_rate_per_sec = 0.0
+duration_secs = 1.2
+looping = false
+lifetime_range_secs = [0.45, 1.35]
+speed_range = [3.5, 10.0]
+sphere_radius = 1.2
+gravity = 6.5
+drag = 0.9
+size_ramp = [0.35, 0.95, 0.12]
+color_ramp_rgba = [
+    [2.6, 1.5, 0.55, 1.0],
+    [1.3, 0.45, 0.95, 0.75],
+    [0.2, 0.2, 0.25, 0.0],
+]
+
+[[effects]]
+id = "vfx_hero_aura"
+name = "Archon Command Aura"
+duration_secs = 2.0
+looping = true
+fallback_style = "sonic"
+
+[[effects.emitters]]
+id = "command_halo"
+shape = "ring"
+blend_mode = "additive"
+burst_count = 0
+continuous_rate_per_sec = 14.0
+duration_secs = 2.0
+looping = true
+lifetime_range_secs = [0.5, 1.0]
+speed_range = [0.4, 1.1]
+sphere_radius = 1.1
+gravity = -0.3
+drag = 0.5
+size_ramp = [0.12, 0.26, 0.04]
+color_ramp_rgba = [
+    [2.5, 2.0, 0.75, 0.85],
+    [1.8, 1.2, 0.35, 0.45],
+    [0.6, 0.4, 0.10, 0.0],
+]
+local_offset = [0.0, 0.2, 0.0]
+
+[[effects]]
+id = "vfx_hero_ascend"
+name = "Archon Astral Recall"
+duration_secs = 1.6
+looping = false
+camera_shake_intensity = 0.25
+camera_shake_radius = 16.0
+fallback_style = "laser"
+
+[[effects.emitters]]
+id = "ascend_pillar"
+shape = "cone"
+blend_mode = "additive"
+burst_count = 28
+continuous_rate_per_sec = 0.0
+duration_secs = 1.4
+looping = false
+lifetime_range_secs = [0.5, 1.3]
+speed_range = [2.5, 7.5]
+cone_angle_deg = 16.0
+gravity = -2.8
+drag = 0.4
+size_ramp = [0.25, 0.65, 0.08]
+color_ramp_rgba = [
+    [2.8, 2.3, 1.0, 1.0],
+    [0.9, 1.8, 2.6, 0.75],
+    [0.3, 0.7, 1.4, 0.0],
+]
+
+[[effects]]
+id = "vfx_solar_nova_cast"
+name = "Solar Nova Cast Sigil"
+duration_secs = 0.9
+looping = false
+fallback_style = "laser"
+
+[[effects.emitters]]
+id = "nova_cast_ring"
+shape = "ring"
+blend_mode = "additive"
+burst_count = 22
+continuous_rate_per_sec = 0.0
+duration_secs = 0.8
+looping = false
+lifetime_range_secs = [0.3, 0.75]
+speed_range = [1.8, 4.5]
+sphere_radius = 0.8
+gravity = -0.6
+drag = 0.7
+size_ramp = [0.20, 0.50, 0.05]
+color_ramp_rgba = [
+    [2.8, 2.1, 0.65, 1.0],
+    [2.2, 1.0, 0.25, 0.75],
+    [0.8, 0.2, 0.05, 0.0],
+]
+
+[[effects]]
+id = "vfx_solar_nova_blast"
+name = "Solar Nova Detonation"
+duration_secs = 1.4
+looping = false
+camera_shake_intensity = 0.35
+camera_shake_radius = 20.0
+fallback_style = "sonic"
+
+[effects.ground_decal]
+decal_kind = "solar_scorch"
+radius = 4.2
+fade_time_secs = 16.0
+
+[[effects.emitters]]
+id = "nova_shockwave"
+shape = "ring"
+blend_mode = "additive"
+burst_count = 34
+continuous_rate_per_sec = 0.0
+duration_secs = 1.0
+looping = false
+lifetime_range_secs = [0.35, 0.95]
+speed_range = [4.0, 9.5]
+sphere_radius = 0.6
+gravity = 0.5
+drag = 1.1
+size_ramp = [0.30, 0.85, 0.10]
+color_ramp_rgba = [
+    [3.0, 2.2, 0.75, 1.0],
+    [2.2, 0.85, 0.20, 0.80],
+    [0.5, 0.15, 0.05, 0.0],
+]
+
+[[effects]]
+id = "vfx_aegis_shield_cast"
+name = "Aegis Bulwark Ward"
+duration_secs = 1.2
+looping = false
+fallback_style = "tesla"
+
+[[effects.emitters]]
+id = "aegis_dome_sparks"
+shape = "sphere"
+blend_mode = "additive"
+burst_count = 24
+continuous_rate_per_sec = 0.0
+duration_secs = 1.0
+looping = false
+lifetime_range_secs = [0.4, 0.95]
+speed_range = [1.5, 4.0]
+sphere_radius = 1.5
+gravity = -0.5
+drag = 0.8
+size_ramp = [0.18, 0.45, 0.06]
+color_ramp_rgba = [
+    [0.7, 2.1, 2.8, 1.0],
+    [0.4, 1.3, 2.4, 0.70],
+    [0.1, 0.5, 1.2, 0.0],
+]
+
+[[effects]]
+id = "vfx_astral_blink_cast"
+name = "Astral Blink Departure"
+duration_secs = 0.7
+looping = false
+fallback_style = "mind_control"
+
+[[effects.emitters]]
+id = "blink_origin_implode"
+shape = "point"
+blend_mode = "additive"
+burst_count = 20
+continuous_rate_per_sec = 0.0
+duration_secs = 0.6
+looping = false
+lifetime_range_secs = [0.25, 0.60]
+speed_range = [2.0, 5.5]
+gravity = 0.0
+drag = 1.2
+size_ramp = [0.22, 0.48, 0.04]
+color_ramp_rgba = [
+    [1.9, 0.85, 2.9, 1.0],
+    [0.9, 0.45, 2.2, 0.70],
+    [0.3, 0.10, 0.9, 0.0],
+]
+
+[[effects]]
+id = "vfx_astral_blink_impact"
+name = "Astral Blink Rift Strike"
+duration_secs = 1.0
+looping = false
+camera_shake_intensity = 0.22
+camera_shake_radius = 14.0
+fallback_style = "sonic"
+
+[[effects.emitters]]
+id = "blink_rift_ring"
+shape = "ring"
+blend_mode = "additive"
+burst_count = 26
+continuous_rate_per_sec = 0.0
+duration_secs = 0.85
+looping = false
+lifetime_range_secs = [0.3, 0.75]
+speed_range = [3.0, 7.0]
+sphere_radius = 0.5
+gravity = 0.2
+drag = 1.0
+size_ramp = [0.24, 0.60, 0.06]
+color_ramp_rgba = [
+    [2.1, 1.1, 3.0, 1.0],
+    [1.1, 1.7, 2.8, 0.75],
+    [0.3, 0.4, 1.2, 0.0],
+]
+
+[[effects]]
+id = "vfx_sunlance_muzzle"
+name = "Sunlance Muzzle Flash"
+duration_secs = 0.35
+looping = false
+fallback_style = "laser"
+
+[[effects.emitters]]
+id = "muzzle_spark"
+shape = "cone"
+blend_mode = "additive"
+burst_count = 8
+continuous_rate_per_sec = 0.0
+duration_secs = 0.25
+looping = false
+lifetime_range_secs = [0.12, 0.28]
+speed_range = [3.0, 7.0]
+cone_angle_deg = 22.0
+gravity = 0.0
+drag = 1.4
+size_ramp = [0.12, 0.26, 0.03]
+color_ramp_rgba = [
+    [2.6, 2.1, 0.8, 1.0],
+    [1.8, 1.1, 0.3, 0.6],
+    [0.5, 0.2, 0.05, 0.0],
+]
+
+[[effects]]
+id = "vfx_sunlance_hit"
+name = "Sunlance Impact Sparks"
+duration_secs = 0.55
+looping = false
+fallback_style = "bullet"
+
+[[effects.emitters]]
+id = "hit_sparks"
+shape = "sphere"
+blend_mode = "additive"
+burst_count = 12
+continuous_rate_per_sec = 0.0
+duration_secs = 0.45
+looping = false
+lifetime_range_secs = [0.18, 0.45]
+speed_range = [2.2, 5.8]
+sphere_radius = 0.2
+gravity = 5.0
+drag = 0.9
+size_ramp = [0.10, 0.24, 0.03]
+color_ramp_rgba = [
+    [2.5, 1.9, 0.7, 1.0],
+    [1.5, 0.7, 0.2, 0.65],
+    [0.3, 0.1, 0.05, 0.0],
+]
+
+[[effects]]
+id = "vfx_pyre_cone_flame"
+name = "Pyre Warden Flame Cone"
+duration_secs = 0.9
+looping = false
+fallback_style = "radiation"
+
+[[effects.emitters]]
+id = "pyre_jet"
+shape = "cone"
+blend_mode = "additive"
+burst_count = 24
+continuous_rate_per_sec = 30.0
+duration_secs = 0.75
+looping = false
+lifetime_range_secs = [0.28, 0.65]
+speed_range = [5.5, 11.5]
+cone_angle_deg = 42.0
+gravity = -1.2
+drag = 1.3
+size_ramp = [0.22, 0.78, 0.15]
+color_ramp_rgba = [
+    [2.9, 1.6, 0.35, 0.95],
+    [2.1, 0.55, 0.12, 0.70],
+    [0.35, 0.12, 0.08, 0.0],
+]
+
+[[effects]]
+id = "vfx_sunbeam_lance"
+name = "Sunbeam Spire Coherent Beam"
+duration_secs = 0.65
+looping = false
+fallback_style = "laser"
+
+[[effects.emitters]]
+id = "beam_core"
+shape = "beam"
+blend_mode = "additive"
+burst_count = 14
+continuous_rate_per_sec = 0.0
+duration_secs = 0.55
+looping = false
+lifetime_range_secs = [0.20, 0.50]
+speed_range = [0.5, 2.0]
+gravity = 0.0
+drag = 0.5
+size_ramp = [0.20, 0.38, 0.04]
+beam_width = 0.34
+color_ramp_rgba = [
+    [2.8, 2.4, 0.95, 1.0],
+    [1.2, 2.0, 2.8, 0.80],
+    [0.3, 0.8, 1.8, 0.0],
+]
+
+[[effects]]
+id = "vfx_meteor_trail"
+name = "Meteor Siege Shell Trail"
+duration_secs = 1.2
+looping = true
+fallback_style = "missile"
+
+[[effects.emitters]]
+id = "meteor_ribbon"
+shape = "ribbon"
+blend_mode = "additive"
+burst_count = 0
+continuous_rate_per_sec = 32.0
+duration_secs = 1.2
+looping = true
+lifetime_range_secs = [0.25, 0.55]
+speed_range = [0.8, 2.2]
+gravity = 0.5
+drag = 0.8
+size_ramp = [0.24, 0.42, 0.06]
+ribbon_width = 0.28
+color_ramp_rgba = [
+    [2.7, 1.4, 0.45, 0.95],
+    [1.6, 0.5, 0.20, 0.65],
+    [0.3, 0.2, 0.20, 0.0],
+]
+
+[[effects]]
+id = "vfx_meteor_crater"
+name = "Meteor Siege Impact"
+duration_secs = 1.5
+looping = false
+camera_shake_intensity = 0.40
+camera_shake_radius = 22.0
+fallback_style = "sonic"
+
+[effects.ground_decal]
+decal_kind = "meteor_crater"
+radius = 3.0
+fade_time_secs = 20.0
+
+[[effects.emitters]]
+id = "meteor_blast"
+shape = "sphere"
+blend_mode = "additive"
+burst_count = 30
+continuous_rate_per_sec = 0.0
+duration_secs = 1.1
+looping = false
+lifetime_range_secs = [0.35, 1.0]
+speed_range = [3.5, 9.0]
+sphere_radius = 0.7
+gravity = 5.5
+drag = 0.9
+size_ramp = [0.30, 0.90, 0.10]
+color_ramp_rgba = [
+    [2.8, 1.5, 0.45, 1.0],
+    [1.5, 0.45, 0.15, 0.75],
+    [0.25, 0.20, 0.20, 0.0],
+]
+
+[[effects]]
+id = "vfx_aether_missile_trail"
+name = "Aether Seeker Exhaust"
+duration_secs = 1.0
+looping = true
+fallback_style = "missile"
+
+[[effects.emitters]]
+id = "seeker_plume"
+shape = "ribbon"
+blend_mode = "additive"
+burst_count = 0
+continuous_rate_per_sec = 28.0
+duration_secs = 1.0
+looping = true
+lifetime_range_secs = [0.20, 0.45]
+speed_range = [0.6, 1.8]
+gravity = 0.0
+drag = 0.7
+size_ramp = [0.16, 0.30, 0.04]
+ribbon_width = 0.20
+color_ramp_rgba = [
+    [0.6, 2.0, 2.9, 0.95],
+    [0.5, 1.0, 2.4, 0.65],
+    [0.2, 0.3, 1.0, 0.0],
+]

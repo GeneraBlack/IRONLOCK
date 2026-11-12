@@ -37,11 +37,7 @@ pub(super) fn add_tank_tracks(
             batches[dark].add_box([x, 0.035, lz], [width * 1.06, 0.025, 0.038], scale);
             batches[gunmetal].add_box([x, 0.015, lz], [width * 1.08, 0.012, 0.016], scale);
             // Top return track link
-            batches[dark].add_box(
-                [x, height * 0.88, lz],
-                [width * 1.04, 0.022, 0.038],
-                scale,
-            );
+            batches[dark].add_box([x, height * 0.88, lz], [width * 1.04, 0.022, 0.038], scale);
         }
 
         // Front drive sprocket & rear idler wheel with 8 gear teeth
@@ -146,7 +142,14 @@ pub(super) fn add_wheeled_axles(
     for &wz in z_positions {
         // Differential housing & axle shaft
         batches[gunmetal].add_cylinder_x([0.0, wheel_r, wz], wheel_r * 0.28, x_off, 16, scale);
-        batches[steel].add_dome_y([0.0, wheel_r * 0.82, wz], wheel_r * 0.36, wheel_r * 0.36, 6, 16, scale);
+        batches[steel].add_dome_y(
+            [0.0, wheel_r * 0.82, wz],
+            wheel_r * 0.36,
+            wheel_r * 0.36,
+            6,
+            16,
+            scale,
+        );
         for side in [-1.0f32, 1.0] {
             let x = side * x_off;
             // Heavy off-road tire with tread shoulder
@@ -156,7 +159,11 @@ pub(super) fn add_wheeled_axles(
                 let a = (lug as f32 / 12.0) * TAU;
                 let (sa, ca) = a.sin_cos();
                 batches[dark].add_box(
-                    [x, wheel_r + (wheel_r * 0.94) * sa, wz + (wheel_r * 0.94) * ca],
+                    [
+                        x,
+                        wheel_r + (wheel_r * 0.94) * sa,
+                        wz + (wheel_r * 0.94) * ca,
+                    ],
                     [wheel_w * 0.92, wheel_r * 0.11, wheel_r * 0.11],
                     scale,
                 );
@@ -278,7 +285,11 @@ pub(super) fn add_turret_cupola_and_details(
     }
     // Pintle-mounted AA machine gun on cupola
     batches[gunmetal].add_cylinder_z(
-        [cup_x + turret_radius * 0.15, turret_top_y + 0.14, cup_z + 0.16],
+        [
+            cup_x + turret_radius * 0.15,
+            turret_top_y + 0.14,
+            cup_z + 0.16,
+        ],
         0.022,
         0.16,
         14,
@@ -455,7 +466,11 @@ pub(super) fn add_hyperbolic_cooling_tower(
 
     // Top structural rim ring & dark throat interior
     batches[steel].add_cylinder_y(
-        [base_center[0], base_center[1] + height * 1.01, base_center[2]],
+        [
+            base_center[0],
+            base_center[1] + height * 1.01,
+            base_center[2],
+        ],
         base_radius * 0.85,
         base_radius * 0.85,
         height * 0.025,
@@ -463,7 +478,11 @@ pub(super) fn add_hyperbolic_cooling_tower(
         scale,
     );
     batches[dark].add_cylinder_y(
-        [base_center[0], base_center[1] + height * 0.96, base_center[2]],
+        [
+            base_center[0],
+            base_center[1] + height * 0.96,
+            base_center[2],
+        ],
         base_radius * 0.72,
         base_radius * 0.72,
         height * 0.03,
@@ -471,7 +490,11 @@ pub(super) fn add_hyperbolic_cooling_tower(
         scale,
     );
     batches[emissive].add_cylinder_y(
-        [base_center[0], base_center[1] + height * 0.99, base_center[2]],
+        [
+            base_center[0],
+            base_center[1] + height * 0.99,
+            base_center[2],
+        ],
         base_radius * 0.56,
         base_radius * 0.56,
         height * 0.025,
@@ -479,4 +502,3 @@ pub(super) fn add_hyperbolic_cooling_tower(
         scale,
     );
 }
-

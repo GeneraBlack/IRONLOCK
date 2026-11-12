@@ -1,85 +1,428 @@
 id = "yr_allied_05_cloning_around"
-name = "YR Allied 05: Cloning Around (Sydney)"
+name = "YR Op. 05: Cloning Around (Sydney)"
 width = 70
 height = 96
 tile_size = 2.0
 ore_regen_per_sec = 4.0
-mission_objective = "Yuri has established cloning facilities in Sydney, Australia. It is believed he plans to clone the world leaders. We must put an end to this operation at any cost. \n \n Objective 1: Find and destroy Yuri's Cloning Vats. \n Objective 2: Destroy Yuri's remaining forces."
+mission_objective = "Command Allied naval and Prism forces in Sydney Harbor, destroy Yuri's Cloning Vats, and raze his harbor fortress."
 
 [[ore_patches]]
-position = [31, 62]
+position = [23, 50]
 radius = 3
-amount_per_tile = 1400
+amount_per_tile = 1600
 
 [[ore_patches]]
-position = [41, 56]
+position = [42, 60]
 radius = 3
-amount_per_tile = 1400
+amount_per_tile = 1550
 
-[[ore_patches]]
+[[gem_patches]]
 position = [35, 48]
-radius = 4
-amount_per_tile = 2000
+radius = 2
+amount_per_tile = 2500
 
-[[ore_patches]]
-position = [40, 26]
-radius = 3
-amount_per_tile = 1500
+[[water_rects]]
+min = [6, 1]
+max = [34, 2]
 
-[[ore_patches]]
-position = [33, 38]
-radius = 3
-amount_per_tile = 1500
+[[water_rects]]
+min = [5, 3]
+max = [35, 3]
+
+[[water_rects]]
+min = [4, 4]
+max = [36, 5]
+
+[[water_rects]]
+min = [3, 6]
+max = [37, 6]
+
+[[water_rects]]
+min = [2, 7]
+max = [38, 8]
+
+[[water_rects]]
+min = [1, 9]
+max = [39, 9]
+
+[[water_rects]]
+min = [1, 10]
+max = [40, 13]
+
+[[water_rects]]
+min = [1, 14]
+max = [41, 16]
+
+[[water_rects]]
+min = [1, 17]
+max = [42, 18]
+
+[[water_rects]]
+min = [1, 19]
+max = [25, 21]
+
+[[water_rects]]
+min = [29, 19]
+max = [42, 19]
+
+[[water_rects]]
+min = [30, 20]
+max = [43, 20]
+
+[[water_rects]]
+min = [31, 21]
+max = [43, 21]
+
+[[water_rects]]
+min = [1, 22]
+max = [6, 22]
+
+[[water_rects]]
+min = [10, 22]
+max = [25, 22]
+
+[[water_rects]]
+min = [32, 22]
+max = [43, 22]
+
+[[water_rects]]
+min = [1, 23]
+max = [5, 28]
+
+[[water_rects]]
+min = [11, 23]
+max = [26, 23]
+
+[[water_rects]]
+min = [32, 23]
+max = [44, 23]
+
+[[water_rects]]
+min = [13, 24]
+max = [26, 24]
+
+[[water_rects]]
+min = [33, 24]
+max = [44, 24]
+
+[[water_rects]]
+min = [14, 25]
+max = [26, 25]
+
+[[water_rects]]
+min = [34, 25]
+max = [44, 25]
+
+[[water_rects]]
+min = [15, 26]
+max = [27, 27]
+
+[[water_rects]]
+min = [34, 26]
+max = [45, 26]
+
+[[water_rects]]
+min = [35, 27]
+max = [45, 28]
+
+[[water_rects]]
+min = [18, 28]
+max = [27, 28]
+
+[[water_rects]]
+min = [1, 29]
+max = [6, 29]
+
+[[water_rects]]
+min = [19, 29]
+max = [28, 29]
+
+[[water_rects]]
+min = [35, 29]
+max = [46, 31]
+
+[[water_rects]]
+min = [1, 30]
+max = [7, 32]
+
+[[water_rects]]
+min = [22, 30]
+max = [29, 30]
+
+[[water_rects]]
+min = [23, 31]
+max = [29, 31]
+
+[[water_rects]]
+min = [23, 32]
+max = [28, 32]
+
+[[water_rects]]
+min = [35, 32]
+max = [41, 33]
+
+[[water_rects]]
+min = [43, 32]
+max = [46, 36]
+
+[[water_rects]]
+min = [1, 33]
+max = [8, 35]
+
+[[water_rects]]
+min = [24, 33]
+max = [25, 34]
+
+[[water_rects]]
+min = [36, 34]
+max = [41, 35]
+
+[[water_rects]]
+min = [1, 36]
+max = [9, 38]
+
+[[water_rects]]
+min = [37, 36]
+max = [41, 36]
+
+[[water_rects]]
+min = [38, 37]
+max = [41, 37]
+
+[[water_rects]]
+min = [43, 37]
+max = [45, 37]
+
+[[water_rects]]
+min = [39, 38]
+max = [41, 39]
+
+[[water_rects]]
+min = [43, 38]
+max = [44, 38]
+
+[[water_rects]]
+min = [2, 39]
+max = [9, 39]
+
+[[water_rects]]
+min = [43, 39]
+max = [46, 39]
+
+[[water_rects]]
+min = [2, 40]
+max = [8, 40]
+
+[[water_rects]]
+min = [41, 40]
+max = [41, 40]
+
+[[water_rects]]
+min = [44, 40]
+max = [47, 40]
+
+[[water_rects]]
+min = [3, 41]
+max = [7, 42]
+
+[[water_rects]]
+min = [44, 41]
+max = [48, 41]
+
+[[water_rects]]
+min = [45, 42]
+max = [48, 42]
+
+[[water_rects]]
+min = [4, 43]
+max = [6, 43]
+
+[[water_rects]]
+min = [46, 43]
+max = [51, 44]
+
+[[water_rects]]
+min = [5, 44]
+max = [5, 44]
+
+[[water_rects]]
+min = [47, 45]
+max = [51, 47]
+
+[[elevation_rects]]
+min = [56, 45]
+max = [61, 50]
+
+[[ramp_rects]]
+min = [55, 46]
+max = [56, 48]
+
+[[ramp_rects]]
+min = [61, 46]
+max = [62, 48]
+
+[[obstacles]]
+min = [50, 37]
+max = [51, 38]
+
+[[obstacles]]
+min = [35, 51]
+max = [36, 51]
+
+[[obstacles]]
+min = [59, 56]
+max = [60, 57]
+
+[[obstacles]]
+min = [37, 64]
+max = [38, 65]
+
+[[obstacles]]
+min = [31, 67]
+max = [32, 68]
+
+[[obstacles]]
+min = [45, 71]
+max = [46, 72]
+
+[[obstacles]]
+min = [32, 72]
+max = [33, 73]
+
+[[obstacles]]
+min = [40, 72]
+max = [41, 73]
+
+[[obstacles]]
+min = [44, 83]
+max = [45, 84]
+
+[[props]]
+kind = "tree"
+tile_pos = [14, 44]
+
+[[props]]
+kind = "tree"
+tile_pos = [51, 35]
+
+[[props]]
+kind = "tree"
+tile_pos = [28, 55]
+
+[[props]]
+kind = "tree"
+tile_pos = [52, 77]
+
+[[props]]
+kind = "tree"
+tile_pos = [40, 77]
+
+[[props]]
+kind = "tree"
+tile_pos = [28, 35]
+
+[[props]]
+kind = "tree"
+tile_pos = [28, 36]
+
+[[props]]
+kind = "tree"
+tile_pos = [25, 42]
+
+[[props]]
+kind = "tree"
+tile_pos = [24, 40]
+
+[[props]]
+kind = "tree"
+tile_pos = [27, 60]
+
+[[props]]
+kind = "tree"
+tile_pos = [23, 58]
+
+[[props]]
+kind = "tree"
+tile_pos = [17, 52]
+
+[[props]]
+kind = "tree"
+tile_pos = [42, 53]
+
+[[props]]
+kind = "tree"
+tile_pos = [44, 71]
+
+[[props]]
+kind = "tree"
+tile_pos = [50, 51]
+
+[[props]]
+kind = "tree"
+tile_pos = [32, 40]
+
+[[props]]
+kind = "tree"
+tile_pos = [12, 26]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [9, 25]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [28, 50]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [41, 53]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [63, 61]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [38, 82]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [39, 72]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [48, 67]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [43, 52]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [44, 48]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [41, 54]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [40, 49]
 
 [[preplaced_entities]]
-player_id = 2
+player_id = 0
 building_id = "tech_hospital"
 tile_pos = [40, 83]
 
 [[preplaced_entities]]
-player_id = 2
+player_id = 0
 building_id = "tech_airport"
 tile_pos = [49, 79]
 
 [[preplaced_entities]]
-player_id = 2
+player_id = 0
 building_id = "tech_machine_shop"
 tile_pos = [32, 47]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "allied_naval_shipyard"
-tile_pos = [8, 46]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "allied_conyard"
-tile_pos = [12, 45]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "allied_power_plant"
-tile_pos = [12, 50]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "allied_power_plant"
-tile_pos = [13, 50]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "allied_power_plant"
-tile_pos = [13, 51]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "allied_barracks"
-tile_pos = [13, 42]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "allied_refinery"
-tile_pos = [12, 48]
 
 [[preplaced_entities]]
 player_id = 2
@@ -94,22 +437,22 @@ tile_pos = [44, 52]
 [[preplaced_entities]]
 player_id = 2
 building_id = "yuri_bio_reactor"
-tile_pos = [45, 53]
+tile_pos = [47, 51]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "yuri_bio_reactor"
-tile_pos = [45, 52]
+tile_pos = [43, 50]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "yuri_bio_reactor"
-tile_pos = [44, 51]
+tile_pos = [45, 50]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "yuri_barracks"
-tile_pos = [46, 49]
+tile_pos = [45, 48]
 
 [[preplaced_entities]]
 player_id = 2
@@ -119,7 +462,7 @@ tile_pos = [42, 54]
 [[preplaced_entities]]
 player_id = 2
 building_id = "yuri_tank_bunker"
-tile_pos = [42, 50]
+tile_pos = [41, 49]
 
 [[preplaced_entities]]
 player_id = 2
@@ -134,17 +477,17 @@ tile_pos = [40, 52]
 [[preplaced_entities]]
 player_id = 2
 building_id = "yuri_submarine_pen"
-tile_pos = [44, 45]
+tile_pos = [39, 37]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "yuri_submarine_pen"
-tile_pos = [39, 46]
+tile_pos = [43, 35]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "yuri_psychic_tower"
-tile_pos = [45, 51]
+tile_pos = [43, 49]
 
 [[preplaced_entities]]
 player_id = 2
@@ -170,31 +513,6 @@ tile_pos = [53, 49]
 player_id = 2
 unit_id = "yuri_slave_miner"
 tile_pos = [44, 63]
-
-[[preplaced_entities]]
-player_id = 1
-unit_id = "chrono_miner"
-tile_pos = [13, 48]
-
-[[preplaced_entities]]
-player_id = 1
-unit_id = "chrono_miner"
-tile_pos = [13, 49]
-
-[[preplaced_entities]]
-player_id = 1
-unit_id = "allied_destroyer"
-tile_pos = [15, 22]
-
-[[preplaced_entities]]
-player_id = 1
-unit_id = "allied_destroyer"
-tile_pos = [8, 44]
-
-[[preplaced_entities]]
-player_id = 1
-unit_id = "allied_destroyer"
-tile_pos = [16, 22]
 
 [[preplaced_entities]]
 player_id = 2
@@ -231,121 +549,217 @@ player_id = 2
 unit_id = "lasher_tank"
 tile_pos = [48, 65]
 
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_cloning_vats"
+tile_pos = [46, 56]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_cloning_vats"
+tile_pos = [52, 56]
+
+[[preplaced_entities]]
+player_id = 1
+unit_id = "tanya"
+tile_pos = [16, 45]
+tag = "tanya"
+
+[[objectives]]
+id = "obj_primary_main"
+tier = "primary"
+title = "Command Allied naval and Prism forces in Sydney Harbor, destroy Yuri's Cloning Vats..."
+marker_tile = [48, 60]
+
+[[objectives]]
+id = "obj_vip_tanya"
+tier = "secondary"
+title = "Keep Agent Tanya Alive Throughout the Operation"
+marker_tile = [16, 45]
+
+[[objectives]]
+id = "obj_secondary_strike"
+tier = "secondary"
+title = "Neutralize or Capture Enemy Strategic Facility"
+marker_tile = [48, 60]
+
+[[objectives]]
+id = "obj_bonus_tech"
+tier = "bonus"
+title = "Capture Neutral Tech Hospital with an Engineer"
+marker_tile = [40, 83]
+
+[[cutscenes]]
+id = "intro_flyover"
+skippable = true
+letterbox = true
+
+[[cutscenes.keyframes]]
+time_secs = 0.0
+focus = [97.0, 0.0, 121.0]
+distance = 46.0
+pitch_deg = 52.0
+yaw_deg = -22.0
+
+[[cutscenes.keyframes]]
+time_secs = 2.2
+focus = [65.0, 0.0, 105.0]
+distance = 42.0
+pitch_deg = 55.0
+yaw_deg = -10.0
+
+[[cutscenes.keyframes]]
+time_secs = 4.5
+focus = [33.0, 0.0, 91.0]
+distance = 36.0
+pitch_deg = 58.0
+yaw_deg = 0.0
+
 [[spawns]]
 player_id = 1
 faction = "allies"
-base_tile = [23, 62]
+sub_faction = "usa"
+base_tile = [14, 52]
+team_id = 1
 
 [[spawns.initial_buildings]]
 building_id = "allied_conyard"
-tile_pos = [23, 62]
+tile_pos = [14, 52]
 
 [[spawns.initial_buildings]]
 building_id = "allied_power_plant"
-tile_pos = [26, 62]
+tile_pos = [11, 52]
 
 [[spawns.initial_buildings]]
 building_id = "allied_refinery"
-tile_pos = [23, 59]
+tile_pos = [18, 52]
 
 [[spawns.initial_buildings]]
 building_id = "allied_barracks"
-tile_pos = [26, 59]
+tile_pos = [14, 48]
 
 [[spawns.initial_buildings]]
 building_id = "allied_war_factory"
-tile_pos = [29, 62]
-
-[[spawns.initial_units]]
-unit_id = "allied_gi"
-tile_pos = [25, 57]
-
-[[spawns.initial_units]]
-unit_id = "allied_gi"
-tile_pos = [27, 57]
-
-[[spawns.initial_units]]
-unit_id = "grizzly_tank"
-tile_pos = [29, 58]
+tile_pos = [18, 48]
 
 [[spawns.initial_units]]
 unit_id = "chrono_miner"
-tile_pos = [25, 58]
+tile_pos = [20, 51]
+
+[[spawns.initial_units]]
+unit_id = "guardian_gi"
+tile_pos = [14, 46]
+
+[[spawns.initial_units]]
+unit_id = "guardian_gi"
+tile_pos = [16, 46]
+
+[[spawns.initial_units]]
+unit_id = "grizzly_tank"
+tile_pos = [18, 46]
+
+[[spawns.initial_units]]
+unit_id = "prism_tank"
+tile_pos = [20, 46]
+
+[[spawns.initial_units]]
+unit_id = "battle_fortress"
+tile_pos = [14, 45]
 
 [[spawns]]
 player_id = 2
 faction = "yuri"
-base_tile = [33, 56]
-
-[[spawns.initial_buildings]]
-building_id = "yuri_conyard"
-tile_pos = [33, 56]
-
-[[spawns.initial_buildings]]
-building_id = "yuri_bio_reactor"
-tile_pos = [36, 56]
-
-[[spawns.initial_buildings]]
-building_id = "yuri_slave_refinery"
-tile_pos = [33, 53]
-
-[[spawns.initial_buildings]]
-building_id = "yuri_barracks"
-tile_pos = [36, 53]
-
-[[spawns.initial_buildings]]
-building_id = "yuri_war_factory"
-tile_pos = [39, 56]
-
-[[spawns.initial_units]]
-unit_id = "yuri_initiate"
-tile_pos = [35, 51]
-
-[[spawns.initial_units]]
-unit_id = "yuri_initiate"
-tile_pos = [37, 51]
-
-[[spawns.initial_units]]
-unit_id = "lasher_tank"
-tile_pos = [39, 52]
-
-[[spawns.initial_units]]
-unit_id = "yuri_slave_miner"
-tile_pos = [35, 52]
+sub_faction = "yuri"
+base_tile = [48, 60]
+team_id = 2
 
 [[trigger_zones]]
-id = "mission_stage_init"
-min = [6, 6]
-max = [12, 12]
+id = "yr_allied_05_cloning_around_init"
+min = [0, 0]
+max = [3, 3]
 once = true
 condition = { type = "timer_elapsed", secs = 1.0 }
 actions = [
+    { type = "play_cutscene", cutscene_id = "intro_flyover" },
+    { type = "set_objective_status", objective_id = "obj_primary_main", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_vip_tanya", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_secondary_strike", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_bonus_tech", status = "active" },
     { type = "set_variable", name = "mission_stage", value = 1 },
-    { type = "eva_transmission", speaker = "EVA", text = "Battle Control Online. Primary tactical objectives initialized." },
-    { type = "reveal_area", tile = [23, 62], radius = 14 }
+    { type = "reveal_area", tile = [48, 60], radius = 9 },
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Command Allied naval and Prism forces in Sydney Harbor, destroy Yuri's Cloning Vats, and raze his harbor fortress.", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "battle_control_online" },
 ]
 
 [[trigger_zones]]
-id = "tactical_reinforcement_wave"
-min = [22, 60]
-max = [26, 64]
+id = "yr_allied_05_cloning_around_stage2_reinf"
+min = [0, 0]
+max = [3, 3]
 once = true
-condition = { type = "all", conditions = [{ type = "timer_elapsed", secs = 45.0 }, { type = "variable_equals", name = "mission_stage", value = 1 }] }
+condition = { type = "timer_elapsed", secs = 60.0 }
 actions = [
+    { type = "play_radar_video", video_path = "assets/videos/radar_pip/yr_allied_05_pip_02.mp4" },
     { type = "set_variable", name = "mission_stage", value = 2 },
-    { type = "spawn_reinforcements", player_id = 1, unit_id = "tanya", count = 1, tile = [22, 60] },
-    { type = "grant_credits", player_id = 1, amount = 1500 },
-    { type = "eva_transmission", speaker = "EVA", text = "Reinforcements have arrived. Forward command has authorized 1500 bonus credits." }
+    { type = "grant_credits", player_id = 1, amount = 2000 },
+    { type = "spawn_reinforcements", player_id = 1, unit_id = "battle_fortress", count = 2, tile = [17, 53] },
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Heavy armored reinforcements have arrived at the staging area!", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "reinforcements_have_arrived", radar_video = "assets/videos/radar_pip/yr_allied_05_pip_02.mp4" },
 ]
 
 [[trigger_zones]]
-id = "decisive_campaign_victory"
-min = [2, 2]
-max = [6, 6]
+id = "yr_allied_05_cloning_around_target_down"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "building_destroyed", building_id = "yuri_cloning_vats", player_id = 2 }
+actions = [
+    { type = "set_objective_status", objective_id = "obj_secondary_strike", status = "completed" },
+    { type = "play_radar_video", video_path = "assets/videos/radar_pip/yr_allied_05_pip_03.mp4" },
+    { type = "grant_credits", player_id = 1, amount = 2000 },
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Key Psi-Corps structure destroyed! Press the assault and wipe out the rest of Yuri's base!", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "battle_control_online", radar_video = "assets/videos/radar_pip/yr_allied_05_pip_03.mp4" },
+]
+
+[[trigger_zones]]
+id = "yr_allied_05_cloning_around_victory"
+min = [0, 0]
+max = [3, 3]
 once = true
 condition = { type = "all_buildings_destroyed", player_id = 2 }
 actions = [
+    { type = "set_objective_status", objective_id = "obj_primary_main", status = "completed" },
+    { type = "set_objective_status", objective_id = "obj_vip_tanya", status = "completed" },
     { type = "set_variable", name = "mission_stage", value = 3 },
-    { type = "eva_transmission", speaker = "EVA", text = "Mission Accomplished. All primary hostile command structures neutralized." },
-    { type = "declare_winner", player_id = 1 }
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Yuri's forces in this sector have been completely eradicated! Victory is ours!", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "primary_objective_achieved" },
+    { type = "declare_winner", player_id = 1 },
+]
+
+[[trigger_zones]]
+id = "p22_vip_tanya_lost"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "tagged_entity_destroyed", tag = "tanya" }
+actions = [
+    { type = "set_objective_status", objective_id = "obj_vip_tanya", status = "failed" },
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Agent Tanya has fallen in combat!", portrait = "assets/ui/cameos/tanyicon.png", audio_cue = "unit_lost" },
+]
+
+[[trigger_zones]]
+id = "p22_bonus_tech_captured"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "building_captured", building_id = "tech_hospital", by_player_id = 1 }
+actions = [
+    { type = "set_objective_status", objective_id = "obj_bonus_tech", status = "completed" },
+    { type = "grant_credits", player_id = 1, amount = 750 },
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Bonus objective achieved: Neutral tech structure secured!", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "building_captured" },
+]
+
+[[trigger_zones]]
+id = "p22_periodic_skirmish_wave"
+min = [0, 0]
+max = [3, 3]
+once = false
+condition = { type = "periodic_timer", start_secs = 75, interval_secs = 75, max_repeats = 3 }
+actions = [
+    { type = "spawn_reinforcements", player_id = 2, unit_id = "yuri_initiate", count = 3, tile = [47, 59] },
 ]

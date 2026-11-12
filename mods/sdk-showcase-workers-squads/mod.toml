@@ -1,0 +1,25 @@
+id = "sdk-showcase-workers-squads"
+name = "IRONLOCK SDK Showcase: Workers, Multi-Resource & Tactical Squads"
+version = "0.1.0"
+authors = ["IRONLOCK Engine Team"]
+description = "Reference showcase mod demonstrating custom resources (credits/timber/alloy), on-site Dozer construction, multi-resource harvesting, 6-man infantry squads with directional cover & suppression, and deterministic world-query scripting."
+engine_version = "0.1.0"
+entry_map = "maps/timberline_valley.toml"
+scripts = [
+    "scripts/showcase_rules.rhai",
+    "scripts/showcase_events.lua",
+]
+
+[catalogs]
+factions = "factions/factions.toml"
+weapons = "weapons/weapons.toml"
+buildings = "buildings/buildings.toml"
+units = "units/units.toml"
+upgrades = "upgrades/upgrades.toml"
+
+[rules]
+sell_refund_ratio = 0.5
+
+[rules.default_infantry_by_faction]
+frontier_corps = "rifle_squad"
+iron_syndicate = "rifle_squad"

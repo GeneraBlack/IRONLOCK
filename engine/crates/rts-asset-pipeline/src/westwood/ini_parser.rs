@@ -1,5 +1,6 @@
 use rts_sdk::schema::{
-    ArmorType, BuildingDef, BuildingRole, FactionCatalog, FactionDef, UnitDef, UnitRole, VisualArchetype, WeaponDef,
+    ArmorType, BuildingDef, BuildingRole, FactionCatalog, FactionDef, UnitDef, UnitRole,
+    VisualArchetype, WeaponDef,
 };
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -315,10 +316,7 @@ pub(super) fn parse_bool(raw: Option<&str>) -> bool {
     let Some(s) = raw else {
         return false;
     };
-    matches!(
-        s.trim().to_ascii_lowercase().as_str(),
-        "yes" | "true" | "1"
-    )
+    matches!(s.trim().to_ascii_lowercase().as_str(), "yes" | "true" | "1")
 }
 
 pub(super) fn infer_building_role_and_archetype(
@@ -494,15 +492,16 @@ pub(super) fn extract_weapon_def(weapon_raw_name: &str, ini: &WestwoodIni) -> We
         projectile_style,
         on_hit_zone: (is_rad || w_lower.contains("rad"))
             .then(rts_sdk::schema::HazardZoneSpec::default),
-        on_hit_status: w_lower.contains("assaultbolt").then(|| rts_sdk::schema::StatusEffectDef {
-            id: "power_charge".to_string(),
-            duration_secs: 6.0,
-            power_charge_boost: true,
-            ..Default::default()
-        }),
+        on_hit_status: w_lower
+            .contains("assaultbolt")
+            .then(|| rts_sdk::schema::StatusEffectDef {
+                id: "power_charge".to_string(),
+                duration_secs: 6.0,
+                power_charge_boost: true,
+                ..Default::default()
+            }),
         mind_control: w_lower.contains("mind") || w_lower.contains("psychic"),
         warp_erase: w_lower.contains("chrono") || w_lower.contains("warp"),
         ..Default::default()
     }
 }
-

@@ -333,7 +333,8 @@ function renderMapsAtlasSection() {
         const totalOrePatches = activeMap.ore_patches.length;
         const totalTechBldgs = activeMap.structures_count ?? activeMap.tech_structures.length;
         const theaterName = (activeMap.theater || 'TEMPERATE').toUpperCase();
-        const hostMapCmd = `cargo run --manifest-path engine/Cargo.toml -p rts-client -- --mod-path rust-ra2 --map ${activeMap.id} --host 0.0.0.0:7878 --lobby-server https://rust-rts.bls-isp.net`;
+        const safeLobbyTitle = activeMap.name.replace(/["\\]/g, '').trim() || activeMap.id;
+        const hostMapCmd = `cargo run --manifest-path engine/Cargo.toml -p rts-client -- --mod-path rust-ra2 --host 0.0.0.0:7878 --lobby-server https://rust-rts.bls-isp.net --lobby-name "${safeLobbyTitle}"`;
         detailEl.innerHTML = `
       <div class="map-dossier-header">
         <div>

@@ -1,0 +1,651 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "BallisticSpec": {
+      "properties": {
+        "collides_with_structures": {
+          "default": false,
+          "type": "boolean"
+        },
+        "collides_with_terrain": {
+          "default": true,
+          "type": "boolean"
+        },
+        "cone_half_angle_deg": {
+          "default": 0.0,
+          "format": "float",
+          "type": "number"
+        },
+        "gravity": {
+          "default": 0.0,
+          "format": "float",
+          "type": "number"
+        },
+        "lead_factor": {
+          "default": 1.0,
+          "format": "float",
+          "type": "number"
+        },
+        "moving_scatter_multiplier": {
+          "default": 1.0,
+          "format": "float",
+          "type": "number"
+        },
+        "penetrating": {
+          "default": false,
+          "type": "boolean"
+        },
+        "scatter_radius": {
+          "default": 0.0,
+          "format": "float",
+          "type": "number"
+        },
+        "suppression_amount": {
+          "default": 0.0,
+          "format": "float",
+          "type": "number"
+        },
+        "turn_rate_deg_per_sec": {
+          "default": 0.0,
+          "format": "float",
+          "type": "number"
+        }
+      },
+      "type": "object"
+    },
+    "BuffModifierSpec": {
+      "properties": {
+        "armor_mult": {
+          "default": 1.0,
+          "format": "float",
+          "type": "number"
+        },
+        "build_speed_mult": {
+          "default": 1.0,
+          "format": "float",
+          "type": "number"
+        },
+        "damage_mult": {
+          "default": 1.0,
+          "format": "float",
+          "type": "number"
+        },
+        "dispel_category": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "fire_rate_mult": {
+          "default": 1.0,
+          "format": "float",
+          "type": "number"
+        },
+        "hp_regen_per_sec": {
+          "default": 0.0,
+          "format": "float",
+          "type": "number"
+        },
+        "max_stacks": {
+          "default": 1,
+          "format": "uint8",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "range_bonus": {
+          "default": 0.0,
+          "format": "float",
+          "type": "number"
+        },
+        "speed_mult": {
+          "default": 1.0,
+          "format": "float",
+          "type": "number"
+        },
+        "stack_policy": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/StackPolicy"
+            }
+          ],
+          "default": "refresh"
+        },
+        "vision_mult": {
+          "default": 1.0,
+          "format": "float",
+          "type": "number"
+        }
+      },
+      "type": "object"
+    },
+    "DeliveryKind": {
+      "enum": [
+        "instant",
+        "ballistic",
+        "missile",
+        "beam",
+        "cone"
+      ],
+      "type": "string"
+    },
+    "HazardZoneSpec": {
+      "properties": {
+        "dps": {
+          "default": 18.0,
+          "format": "float",
+          "type": "number"
+        },
+        "duration_secs": {
+          "default": 6.0,
+          "format": "float",
+          "type": "number"
+        },
+        "is_toxic_cloud": {
+          "default": false,
+          "type": "boolean"
+        },
+        "radius": {
+          "default": 3.0,
+          "format": "float",
+          "type": "number"
+        }
+      },
+      "type": "object"
+    },
+    "ProjectileStyle": {
+      "enum": [
+        "bullet",
+        "laser",
+        "tesla",
+        "radiation",
+        "sonic",
+        "mind_control",
+        "missile"
+      ],
+      "type": "string"
+    },
+    "StackPolicy": {
+      "enum": [
+        "refresh",
+        "stack_intensity",
+        "independent"
+      ],
+      "type": "string"
+    },
+    "StatusEffectDef": {
+      "properties": {
+        "armor_multiplier": {
+          "default": 1.0,
+          "format": "float",
+          "type": "number"
+        },
+        "build_speed_mult": {
+          "default": 1.0,
+          "format": "float",
+          "type": "number"
+        },
+        "confused": {
+          "default": false,
+          "type": "boolean"
+        },
+        "cure_at_service_depot": {
+          "default": false,
+          "type": "boolean"
+        },
+        "damage_multiplier": {
+          "default": 1.0,
+          "format": "float",
+          "type": "number"
+        },
+        "delayed_burst_damage": {
+          "default": 0.0,
+          "format": "float",
+          "type": "number"
+        },
+        "delayed_burst_splash": {
+          "default": 0.0,
+          "format": "float",
+          "type": "number"
+        },
+        "disarmed": {
+          "default": false,
+          "type": "boolean"
+        },
+        "dispel_category": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "display_label": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "dot_dps": {
+          "default": 0.0,
+          "format": "float",
+          "type": "number"
+        },
+        "duration_secs": {
+          "format": "float",
+          "type": "number"
+        },
+        "fire_rate_mult": {
+          "default": 1.0,
+          "format": "float",
+          "type": "number"
+        },
+        "hp_regen_per_sec": {
+          "default": 0.0,
+          "format": "float",
+          "type": "number"
+        },
+        "id": {
+          "type": "string"
+        },
+        "immobilized": {
+          "default": false,
+          "type": "boolean"
+        },
+        "invulnerable": {
+          "default": false,
+          "type": "boolean"
+        },
+        "max_stacks": {
+          "default": 1,
+          "format": "uint8",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "modifier": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/BuffModifierSpec"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "on_kill_spawn_unit": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "phased_out": {
+          "default": false,
+          "type": "boolean"
+        },
+        "power_charge_boost": {
+          "default": false,
+          "type": "boolean"
+        },
+        "range_bonus": {
+          "default": 0.0,
+          "format": "float",
+          "type": "number"
+        },
+        "speed_multiplier": {
+          "default": 1.0,
+          "format": "float",
+          "type": "number"
+        },
+        "stack_policy": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/StackPolicy"
+            }
+          ],
+          "default": "refresh"
+        },
+        "stunned": {
+          "default": false,
+          "type": "boolean"
+        },
+        "vfx_ring_color": {
+          "default": null,
+          "items": {
+            "format": "float",
+            "type": "number"
+          },
+          "maxItems": 4,
+          "minItems": 4,
+          "type": [
+            "array",
+            "null"
+          ]
+        },
+        "vfx_style": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/StatusVfxStyle"
+            }
+          ],
+          "default": "none"
+        },
+        "vision_mult": {
+          "default": 1.0,
+          "format": "float",
+          "type": "number"
+        }
+      },
+      "required": [
+        "duration_secs",
+        "id"
+      ],
+      "type": "object"
+    },
+    "StatusVfxStyle": {
+      "enum": [
+        "none",
+        "ring",
+        "electric_arcs",
+        "parasite_sparks",
+        "countdown_beacon",
+        "tentacle_grapple",
+        "temporal_vortex"
+      ],
+      "type": "string"
+    },
+    "WeaponDef": {
+      "properties": {
+        "airstrike_delay_secs": {
+          "default": 0.0,
+          "format": "float",
+          "type": "number"
+        },
+        "arc_height": {
+          "default": 0.0,
+          "format": "float",
+          "type": "number"
+        },
+        "armor_multipliers": {
+          "additionalProperties": {
+            "format": "float",
+            "type": "number"
+          },
+          "default": {},
+          "type": "object"
+        },
+        "ballistics": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BallisticSpec"
+            }
+          ],
+          "default": {
+            "collides_with_structures": false,
+            "collides_with_terrain": true,
+            "cone_half_angle_deg": 0.0,
+            "gravity": 0.0,
+            "lead_factor": 1.0,
+            "moving_scatter_multiplier": 1.0,
+            "penetrating": false,
+            "scatter_radius": 0.0,
+            "suppression_amount": 0.0,
+            "turn_rate_deg_per_sec": 0.0
+          }
+        },
+        "burst": {
+          "default": 1,
+          "format": "uint32",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "c4_demolition": {
+          "default": false,
+          "type": "boolean"
+        },
+        "calls_airstrike_damage": {
+          "default": 0.0,
+          "format": "float",
+          "type": "number"
+        },
+        "can_mind_control_buildings": {
+          "default": false,
+          "type": "boolean"
+        },
+        "clears_garrison": {
+          "default": false,
+          "type": "boolean"
+        },
+        "clears_grapple": {
+          "default": false,
+          "type": "boolean"
+        },
+        "cone_angle_deg": {
+          "default": 0.0,
+          "format": "float",
+          "type": "number"
+        },
+        "cooldown_secs": {
+          "format": "float",
+          "type": "number"
+        },
+        "damage": {
+          "format": "float",
+          "type": "number"
+        },
+        "delivery": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/DeliveryKind"
+            }
+          ],
+          "default": "instant"
+        },
+        "disables_building_duration_secs": {
+          "default": 0.0,
+          "format": "float",
+          "type": "number"
+        },
+        "friendly_fire": {
+          "default": false,
+          "type": "boolean"
+        },
+        "id": {
+          "type": "string"
+        },
+        "impact_vfx_id": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "interceptable_by_aa_health": {
+          "default": 0.0,
+          "format": "float",
+          "type": "number"
+        },
+        "kamikaze": {
+          "default": false,
+          "type": "boolean"
+        },
+        "max_spin_up_multiplier": {
+          "default": 0.0,
+          "format": "float",
+          "type": "number"
+        },
+        "min_range": {
+          "default": 0.0,
+          "format": "float",
+          "type": "number"
+        },
+        "mind_control": {
+          "default": false,
+          "type": "boolean"
+        },
+        "muzzle_vfx_id": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "name": {
+          "type": "string"
+        },
+        "naval_only": {
+          "default": false,
+          "type": "boolean"
+        },
+        "on_hit_status": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/StatusEffectDef"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "on_hit_statuses": {
+          "default": [],
+          "items": {
+            "$ref": "#/definitions/StatusEffectDef"
+          },
+          "type": "array"
+        },
+        "on_hit_zone": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/HazardZoneSpec"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "prism_support": {
+          "default": false,
+          "type": "boolean"
+        },
+        "projectile_speed": {
+          "default": 30.0,
+          "format": "float",
+          "type": "number"
+        },
+        "projectile_style": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/ProjectileStyle"
+            }
+          ],
+          "default": "bullet"
+        },
+        "projectile_vfx_id": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "range": {
+          "format": "float",
+          "type": "number"
+        },
+        "refraction_damage_ratio": {
+          "default": 0.0,
+          "format": "float",
+          "type": "number"
+        },
+        "refraction_range": {
+          "default": 0.0,
+          "format": "float",
+          "type": "number"
+        },
+        "refraction_targets": {
+          "default": 0,
+          "format": "uint32",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "spin_up_per_shot": {
+          "default": 0.0,
+          "format": "float",
+          "type": "number"
+        },
+        "splash_radius": {
+          "default": 0.0,
+          "format": "float",
+          "type": "number"
+        },
+        "steals_credits_per_hit": {
+          "default": 0,
+          "format": "uint32",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "targets_air": {
+          "default": false,
+          "type": "boolean"
+        },
+        "targets_ground": {
+          "default": true,
+          "type": "boolean"
+        },
+        "temporal_erase_dps": {
+          "default": 0.0,
+          "format": "float",
+          "type": "number"
+        },
+        "tractor_pull_distance": {
+          "default": 0.0,
+          "format": "float",
+          "type": "number"
+        },
+        "turn_rate_deg_per_sec": {
+          "default": null,
+          "format": "float",
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "warhead_tag": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "warp_erase": {
+          "default": false,
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "cooldown_secs",
+        "damage",
+        "id",
+        "name",
+        "range"
+      ],
+      "type": "object"
+    }
+  },
+  "properties": {
+    "weapons": {
+      "items": {
+        "$ref": "#/definitions/WeaponDef"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "weapons"
+  ],
+  "title": "WeaponCatalog",
+  "type": "object"
+}

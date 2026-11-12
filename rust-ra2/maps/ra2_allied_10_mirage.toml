@@ -1,40 +1,334 @@
 id = "ra2_allied_10_mirage"
-name = "RA2 Allied 10: Mirage (Black Forest Germany)"
+name = "Op. 10: Mirage (Black Forest, Germany)"
 width = 96
 height = 96
 tile_size = 2.0
 ore_regen_per_sec = 4.0
-mission_objective = "Desperate for some success, Soviet forces have counterattacked our European allies in Germany, moving deep into the Black Forest. No doubt their commanders hope that they will find and capture Einstein's laboratory. Your special talents have been asked for. The Germans fear they will be defeated without your strategic skills. \n \n Objective 1: Ensure the safety of Professor Einstein's laboratory. \n \n Objective 2: Destroy all Soviet forces."
+mission_objective = "Defend Professor Einstein's Black Forest Laboratory at all costs using Mirage Tanks and crush the three Soviet tank divisions."
 
 [[ore_patches]]
-position = [54, 86]
+position = [45, 62]
 radius = 3
-amount_per_tile = 1400
+amount_per_tile = 1600
 
 [[ore_patches]]
-position = [45, 28]
+position = [42, 20]
 radius = 3
-amount_per_tile = 1400
+amount_per_tile = 1550
 
-[[ore_patches]]
+[[gem_patches]]
 position = [48, 48]
-radius = 4
-amount_per_tile = 2000
+radius = 2
+amount_per_tile = 2300
 
-[[ore_patches]]
-position = [74, 34]
-radius = 3
-amount_per_tile = 1500
+[[water_rects]]
+min = [42, 1]
+max = [44, 1]
 
-[[ore_patches]]
-position = [53, 9]
-radius = 3
-amount_per_tile = 1500
+[[water_rects]]
+min = [41, 2]
+max = [44, 2]
+
+[[water_rects]]
+min = [40, 3]
+max = [44, 3]
+
+[[water_rects]]
+min = [39, 4]
+max = [43, 4]
+
+[[water_rects]]
+min = [38, 5]
+max = [42, 5]
+
+[[water_rects]]
+min = [37, 6]
+max = [41, 6]
+
+[[water_rects]]
+min = [36, 7]
+max = [40, 7]
+
+[[water_rects]]
+min = [35, 8]
+max = [39, 8]
+
+[[water_rects]]
+min = [33, 9]
+max = [39, 9]
+
+[[water_rects]]
+min = [32, 10]
+max = [39, 10]
+
+[[water_rects]]
+min = [34, 11]
+max = [39, 11]
+
+[[water_rects]]
+min = [90, 39]
+max = [90, 41]
+
+[[water_rects]]
+min = [89, 42]
+max = [90, 44]
+
+[[water_rects]]
+min = [88, 45]
+max = [90, 45]
+
+[[water_rects]]
+min = [86, 46]
+max = [89, 46]
+
+[[water_rects]]
+min = [85, 47]
+max = [89, 49]
+
+[[water_rects]]
+min = [86, 50]
+max = [86, 50]
+
+[[water_rects]]
+min = [7, 68]
+max = [8, 68]
+
+[[water_rects]]
+min = [7, 69]
+max = [10, 69]
+
+[[water_rects]]
+min = [7, 70]
+max = [11, 70]
+
+[[water_rects]]
+min = [7, 71]
+max = [13, 71]
+
+[[water_rects]]
+min = [6, 72]
+max = [14, 72]
+
+[[water_rects]]
+min = [6, 73]
+max = [15, 73]
+
+[[water_rects]]
+min = [7, 74]
+max = [13, 74]
+
+[[water_rects]]
+min = [16, 74]
+max = [17, 75]
+
+[[water_rects]]
+min = [9, 75]
+max = [13, 75]
+
+[[water_rects]]
+min = [10, 76]
+max = [16, 76]
+
+[[elevation_rects]]
+min = [33, 43]
+max = [47, 45]
+
+[[elevation_rects]]
+min = [33, 46]
+max = [45, 50]
+
+[[elevation_rects]]
+min = [33, 51]
+max = [47, 53]
+
+[[elevation_rects]]
+min = [82, 59]
+max = [91, 71]
+
+[[elevation_rects]]
+min = [32, 79]
+max = [46, 91]
+
+[[ramp_rects]]
+min = [32, 43]
+max = [33, 45]
+
+[[ramp_rects]]
+min = [47, 43]
+max = [48, 45]
+
+[[ramp_rects]]
+min = [32, 47]
+max = [33, 49]
+
+[[ramp_rects]]
+min = [45, 47]
+max = [46, 49]
+
+[[ramp_rects]]
+min = [32, 51]
+max = [33, 53]
+
+[[ramp_rects]]
+min = [47, 51]
+max = [48, 53]
+
+[[ramp_rects]]
+min = [81, 64]
+max = [82, 66]
+
+[[ramp_rects]]
+min = [91, 64]
+max = [92, 66]
+
+[[ramp_rects]]
+min = [31, 84]
+max = [32, 86]
+
+[[ramp_rects]]
+min = [46, 84]
+max = [47, 86]
+
+[[obstacles]]
+min = [45, 18]
+max = [46, 19]
+
+[[obstacles]]
+min = [51, 18]
+max = [52, 19]
+
+[[obstacles]]
+min = [26, 28]
+max = [27, 29]
+
+[[obstacles]]
+min = [68, 33]
+max = [69, 34]
+
+[[obstacles]]
+min = [13, 58]
+max = [14, 59]
+
+[[obstacles]]
+min = [10, 63]
+max = [11, 64]
+
+[[props]]
+kind = "tree"
+tile_pos = [12, 42]
+
+[[props]]
+kind = "tree"
+tile_pos = [68, 65]
+
+[[props]]
+kind = "tree"
+tile_pos = [82, 49]
+
+[[props]]
+kind = "tree"
+tile_pos = [67, 69]
+
+[[props]]
+kind = "tree"
+tile_pos = [79, 58]
+
+[[props]]
+kind = "tree"
+tile_pos = [83, 40]
+
+[[props]]
+kind = "tree"
+tile_pos = [73, 54]
+
+[[props]]
+kind = "tree"
+tile_pos = [31, 52]
+
+[[props]]
+kind = "tree"
+tile_pos = [53, 56]
+
+[[props]]
+kind = "tree"
+tile_pos = [59, 59]
+
+[[props]]
+kind = "tree"
+tile_pos = [50, 40]
+
+[[props]]
+kind = "tree"
+tile_pos = [31, 39]
+
+[[props]]
+kind = "tree"
+tile_pos = [22, 57]
+
+[[props]]
+kind = "tree"
+tile_pos = [41, 60]
+
+[[props]]
+kind = "tree"
+tile_pos = [41, 67]
+
+[[props]]
+kind = "tree"
+tile_pos = [16, 52]
+
+[[props]]
+kind = "tree"
+tile_pos = [51, 84]
+
+[[props]]
+kind = "tree"
+tile_pos = [13, 62]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [43, 86]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [15, 58]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [14, 66]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [35, 26]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [34, 26]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [44, 7]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [47, 8]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [51, 10]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [51, 12]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [41, 15]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "allied_power_plant"
-tile_pos = [45, 88]
+tile_pos = [47, 87]
 
 [[preplaced_entities]]
 player_id = 2
@@ -49,57 +343,7 @@ tile_pos = [50, 86]
 [[preplaced_entities]]
 player_id = 2
 building_id = "allied_pillbox"
-tile_pos = [50, 88]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "allied_conyard"
-tile_pos = [54, 62]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "allied_power_plant"
-tile_pos = [51, 60]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "allied_power_plant"
-tile_pos = [57, 60]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "allied_barracks"
-tile_pos = [57, 63]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "allied_war_factory"
-tile_pos = [51, 63]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "allied_airforce_command"
-tile_pos = [51, 65]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "allied_pillbox"
-tile_pos = [55, 67]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "allied_pillbox"
-tile_pos = [53, 67]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "allied_pillbox"
-tile_pos = [56, 59]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "allied_pillbox"
-tile_pos = [53, 59]
+tile_pos = [49, 87]
 
 [[preplaced_entities]]
 player_id = 2
@@ -132,84 +376,9 @@ building_id = "allied_pillbox"
 tile_pos = [36, 25]
 
 [[preplaced_entities]]
-player_id = 1
-building_id = "allied_power_plant"
-tile_pos = [57, 61]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "allied_power_plant"
-tile_pos = [51, 61]
-
-[[preplaced_entities]]
-player_id = 1
-building_id = "allied_patriot_missile"
-tile_pos = [52, 61]
-
-[[preplaced_entities]]
 player_id = 2
 building_id = "allied_barracks"
 tile_pos = [35, 27]
-
-[[preplaced_entities]]
-player_id = 1
-unit_id = "allied_mcv"
-tile_pos = [56, 65]
-
-[[preplaced_entities]]
-player_id = 1
-unit_id = "grizzly_tank"
-tile_pos = [52, 59]
-
-[[preplaced_entities]]
-player_id = 1
-unit_id = "grizzly_tank"
-tile_pos = [50, 60]
-
-[[preplaced_entities]]
-player_id = 1
-unit_id = "grizzly_tank"
-tile_pos = [59, 60]
-
-[[preplaced_entities]]
-player_id = 1
-unit_id = "allied_gi"
-tile_pos = [54, 60]
-
-[[preplaced_entities]]
-player_id = 1
-unit_id = "allied_gi"
-tile_pos = [55, 60]
-
-[[preplaced_entities]]
-player_id = 1
-unit_id = "allied_gi"
-tile_pos = [55, 69]
-
-[[preplaced_entities]]
-player_id = 1
-unit_id = "allied_gi"
-tile_pos = [54, 69]
-
-[[preplaced_entities]]
-player_id = 1
-unit_id = "allied_gi"
-tile_pos = [54, 70]
-
-[[preplaced_entities]]
-player_id = 1
-unit_id = "allied_engineer"
-tile_pos = [53, 62]
-
-[[preplaced_entities]]
-player_id = 1
-unit_id = "allied_engineer"
-tile_pos = [56, 63]
-
-[[preplaced_entities]]
-player_id = 1
-unit_id = "rocketeer"
-tile_pos = [55, 59]
 
 [[preplaced_entities]]
 player_id = 2
@@ -231,121 +400,235 @@ player_id = 2
 unit_id = "allied_engineer"
 tile_pos = [53, 19]
 
+[[preplaced_entities]]
+player_id = 2
+building_id = "soviet_conyard"
+tile_pos = [36, 20]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "soviet_tesla_reactor"
+tile_pos = [39, 20]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "soviet_barracks"
+tile_pos = [35, 23]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "soviet_war_factory"
+tile_pos = [40, 24]
+
+[[preplaced_entities]]
+player_id = 1
+building_id = "einstein_lab"
+tile_pos = [50, 68]
+tag = "einstein"
+
+[[objectives]]
+id = "obj_primary_main"
+tier = "primary"
+title = "Defend Professor Einstein's Black Forest Laboratory at all costs using Mirage Tanks a..."
+marker_tile = [36, 20]
+
+[[objectives]]
+id = "obj_holdout_timer"
+tier = "primary"
+title = "Hold Perimeter Until Einstein Lab Defense Completes"
+marker_tile = [50, 68]
+
+[[objectives]]
+id = "obj_vip_einstein"
+tier = "primary"
+title = "Protect Professor Einstein's Laboratory"
+marker_tile = [50, 68]
+
+[[objectives]]
+id = "obj_bonus_waves"
+tier = "bonus"
+title = "Weather Enemy Tactical Counterattack Waves"
+target_count = 2
+marker_tile = [54, 64]
+
+[[cutscenes]]
+id = "intro_flyover"
+skippable = true
+letterbox = true
+
+[[cutscenes.keyframes]]
+time_secs = 0.0
+focus = [101.0, 0.0, 137.0]
+distance = 46.0
+pitch_deg = 52.0
+yaw_deg = -22.0
+
+[[cutscenes.keyframes]]
+time_secs = 2.2
+focus = [105.0, 0.0, 133.0]
+distance = 42.0
+pitch_deg = 55.0
+yaw_deg = -10.0
+
+[[cutscenes.keyframes]]
+time_secs = 4.5
+focus = [109.0, 0.0, 129.0]
+distance = 36.0
+pitch_deg = 58.0
+yaw_deg = 0.0
+
 [[spawns]]
 player_id = 1
 faction = "allies"
-base_tile = [46, 86]
+sub_faction = "germany"
+base_tile = [54, 64]
+team_id = 1
 
 [[spawns.initial_buildings]]
 building_id = "allied_conyard"
-tile_pos = [46, 86]
+tile_pos = [54, 64]
 
 [[spawns.initial_buildings]]
 building_id = "allied_power_plant"
-tile_pos = [49, 86]
+tile_pos = [58, 64]
 
 [[spawns.initial_buildings]]
 building_id = "allied_refinery"
-tile_pos = [46, 83]
+tile_pos = [50, 64]
 
 [[spawns.initial_buildings]]
 building_id = "allied_barracks"
-tile_pos = [49, 83]
+tile_pos = [54, 60]
 
 [[spawns.initial_buildings]]
 building_id = "allied_war_factory"
-tile_pos = [52, 86]
+tile_pos = [50, 60]
 
-[[spawns.initial_units]]
-unit_id = "allied_gi"
-tile_pos = [48, 81]
-
-[[spawns.initial_units]]
-unit_id = "allied_gi"
-tile_pos = [50, 81]
-
-[[spawns.initial_units]]
-unit_id = "grizzly_tank"
-tile_pos = [52, 82]
+[[spawns.initial_buildings]]
+building_id = "allied_battle_lab"
+tile_pos = [52, 57]
 
 [[spawns.initial_units]]
 unit_id = "chrono_miner"
-tile_pos = [48, 82]
+tile_pos = [48, 63]
+
+[[spawns.initial_units]]
+unit_id = "mirage_tank"
+tile_pos = [54, 58]
+
+[[spawns.initial_units]]
+unit_id = "mirage_tank"
+tile_pos = [51, 57]
+
+[[spawns.initial_units]]
+unit_id = "mirage_tank"
+tile_pos = [50, 58]
+
+[[spawns.initial_units]]
+unit_id = "prism_tank"
+tile_pos = [48, 58]
+
+[[spawns.initial_units]]
+unit_id = "guardian_gi"
+tile_pos = [54, 57]
 
 [[spawns]]
 player_id = 2
 faction = "soviets"
-base_tile = [37, 28]
-
-[[spawns.initial_buildings]]
-building_id = "soviet_conyard"
-tile_pos = [37, 28]
-
-[[spawns.initial_buildings]]
-building_id = "soviet_tesla_reactor"
-tile_pos = [40, 28]
-
-[[spawns.initial_buildings]]
-building_id = "soviet_refinery"
-tile_pos = [37, 31]
-
-[[spawns.initial_buildings]]
-building_id = "soviet_barracks"
-tile_pos = [40, 31]
-
-[[spawns.initial_buildings]]
-building_id = "soviet_war_factory"
-tile_pos = [43, 28]
-
-[[spawns.initial_units]]
-unit_id = "soviet_conscript"
-tile_pos = [39, 33]
-
-[[spawns.initial_units]]
-unit_id = "soviet_conscript"
-tile_pos = [41, 33]
-
-[[spawns.initial_units]]
-unit_id = "rhino_tank"
-tile_pos = [43, 32]
-
-[[spawns.initial_units]]
-unit_id = "war_miner"
-tile_pos = [39, 32]
+sub_faction = "russia"
+base_tile = [36, 20]
+team_id = 2
 
 [[trigger_zones]]
-id = "mission_stage_init"
-min = [6, 6]
-max = [12, 12]
+id = "ra2_allied_10_mirage_init"
+min = [0, 0]
+max = [3, 3]
 once = true
 condition = { type = "timer_elapsed", secs = 1.0 }
 actions = [
+    { type = "play_cutscene", cutscene_id = "intro_flyover" },
+    { type = "set_objective_status", objective_id = "obj_primary_main", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_holdout_timer", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_vip_einstein", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_bonus_waves", status = "active" },
+    { type = "start_countdown", timer_id = "einstein_holdout", label = "Einstein Lab Defense", duration_secs = 180 },
     { type = "set_variable", name = "mission_stage", value = 1 },
-    { type = "eva_transmission", speaker = "EVA", text = "Battle Control Online. Primary tactical objectives initialized." },
-    { type = "reveal_area", tile = [46, 86], radius = 14 }
+    { type = "reveal_area", tile = [36, 20], radius = 9 },
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Defend Professor Einstein's Black Forest Laboratory at all costs using Mirage Tanks and crush the three Soviet tank divisions.", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "battle_control_online" },
 ]
 
 [[trigger_zones]]
-id = "tactical_reinforcement_wave"
-min = [45, 84]
-max = [49, 88]
+id = "ra2_allied_10_mirage_reinforcements"
+min = [0, 0]
+max = [3, 3]
 once = true
-condition = { type = "all", conditions = [{ type = "timer_elapsed", secs = 45.0 }, { type = "variable_equals", name = "mission_stage", value = 1 }] }
+condition = { type = "all", conditions = [{ type = "timer_elapsed", secs = 55.0 }, { type = "variable_equals", name = "mission_stage", value = 1 }] }
 actions = [
+    { type = "play_radar_video", video_path = "assets/videos/radar_pip/allied_10_pip_02.mp4" },
     { type = "set_variable", name = "mission_stage", value = 2 },
-    { type = "spawn_reinforcements", player_id = 1, unit_id = "mirage_tank", count = 2, tile = [45, 84] },
-    { type = "grant_credits", player_id = 1, amount = 1500 },
-    { type = "eva_transmission", speaker = "EVA", text = "Reinforcements have arrived. Forward command has authorized 1500 bonus credits." }
+    { type = "grant_credits", player_id = 1, amount = 2000 },
+    { type = "spawn_reinforcements", player_id = 1, unit_id = "prism_tank", count = 3, tile = [57, 65] },
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Command reserves and emergency war funds have arrived at your base!", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "reinforcements_have_arrived", radar_video = "assets/videos/radar_pip/allied_10_pip_02.mp4" },
 ]
 
 [[trigger_zones]]
-id = "decisive_campaign_victory"
-min = [2, 2]
-max = [6, 6]
+id = "ra2_allied_10_mirage_protect_fail"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "building_destroyed", building_id = "einstein_lab" }
+actions = [
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Critical structure lost! Mission failed.", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "unit_lost" },
+    { type = "declare_winner", player_id = 2 },
+]
+
+[[trigger_zones]]
+id = "ra2_allied_10_mirage_victory"
+min = [0, 0]
+max = [3, 3]
 once = true
 condition = { type = "all_buildings_destroyed", player_id = 2 }
 actions = [
+    { type = "set_objective_status", objective_id = "obj_primary_main", status = "completed" },
+    { type = "set_objective_status", objective_id = "obj_vip_einstein", status = "completed" },
+    { type = "set_objective_status", objective_id = "obj_holdout_timer", status = "completed" },
     { type = "set_variable", name = "mission_stage", value = 3 },
-    { type = "eva_transmission", speaker = "EVA", text = "Mission Accomplished. All primary hostile command structures neutralized." },
-    { type = "declare_winner", player_id = 1 }
+    { type = "eva_transmission", speaker = "LT. EVA", text = "All enemy structures neutralized. Mission accomplished, Commander!", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "primary_objective_achieved" },
+    { type = "declare_winner", player_id = 1 },
+]
+
+[[trigger_zones]]
+id = "p22_vip_einstein_lost"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "tagged_entity_destroyed", tag = "einstein" }
+actions = [
+    { type = "set_objective_status", objective_id = "obj_vip_einstein", status = "failed" },
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Critical protected asset (einstein) has been destroyed!", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "unit_lost" },
+    { type = "declare_winner", player_id = 2 },
+]
+
+[[trigger_zones]]
+id = "p22_holdout_expired"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "countdown_expired", timer_id = "einstein_holdout" }
+actions = [
+    { type = "set_objective_status", objective_id = "obj_holdout_timer", status = "completed" },
+    { type = "grant_credits", player_id = 1, amount = 2500 },
+    { type = "spawn_reinforcements", player_id = 1, unit_id = "prism_tank", count = 3, tile = [58, 67] },
+    { type = "eva_transmission", speaker = "GEN. CARVILLE", text = "Einstein Lab Defense succeeded! Heavy armored reinforcements have arrived on the battlefield!", portrait = "assets/ui/cameos/allied_conyard_icon.png", audio_cue = "primary_objective_achieved" },
+]
+
+[[trigger_zones]]
+id = "p22_periodic_skirmish_wave"
+min = [0, 0]
+max = [3, 3]
+once = false
+condition = { type = "periodic_timer", start_secs = 75, interval_secs = 75, max_repeats = 3 }
+actions = [
+    { type = "spawn_reinforcements", player_id = 2, unit_id = "soviet_conscript", count = 3, tile = [34, 18] },
+    { type = "add_objective_progress", objective_id = "obj_bonus_waves", delta = 1 },
 ]

@@ -46,7 +46,7 @@ yuri = "yuri_initiate"
 
 [rules.stolen_tech_commando_by_pair]
 "allies:soviets" = "chrono_ivan"
-"soviets:soviets" = "yuri_prime"
+"soviets:soviets" = "chrono_ivan"
 "*:allies" = "chrono_commando"
 "*:yuri" = "psi_commando"
 "*:soviets" = "chrono_ivan"

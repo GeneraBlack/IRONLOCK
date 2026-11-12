@@ -1,0 +1,8 @@
+# Delta overrides onto sdk-showcase-heroes-ages-mutators factions
+[[factions]]
+id = "solar_order"
+starting_credits = 5000
+
+[[factions]]
+id = "obsidian_pact"
+starting_credits = 5000

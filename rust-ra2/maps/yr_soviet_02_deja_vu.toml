@@ -1,55 +1,345 @@
 id = "yr_soviet_02_deja_vu"
-name = "YR Soviet 02: Deja Vu (Black Forest Germany)"
+name = "YR Op. 02: Deja Vu (Black Forest)"
 width = 96
 height = 96
 tile_size = 2.0
 ore_regen_per_sec = 4.0
-mission_objective = "We lost the battle here in the Black Forest the first time around and were eventually defeated by the Allies with the help of Einstein's Chronosphere. This time, we must not fail. Destroy Einstein's Laboratory and Chronosphere to ensure Soviet victory in our war against the Allies. \n \n Objective 1: Destroy the outposts guarding the German border. \n Objective 2: Destroy Einstein's Laboratory and Chronosphere."
+mission_objective = "Rewrite the Black Forest battle! Crush the Mirage Tank screen and destroy Einstein's Laboratory and Allied Chronosphere."
 
 [[ore_patches]]
-position = [45, 84]
+position = [59, 22]
 radius = 3
-amount_per_tile = 1400
+amount_per_tile = 1600
 
 [[ore_patches]]
-position = [45, 26]
+position = [36, 72]
 radius = 3
-amount_per_tile = 1400
+amount_per_tile = 1550
 
-[[ore_patches]]
+[[gem_patches]]
 position = [48, 48]
-radius = 4
-amount_per_tile = 2000
+radius = 2
+amount_per_tile = 2500
 
-[[ore_patches]]
-position = [57, 14]
-radius = 3
-amount_per_tile = 1500
+[[water_rects]]
+min = [48, 1]
+max = [50, 1]
 
-[[ore_patches]]
-position = [57, 21]
-radius = 3
-amount_per_tile = 1500
+[[water_rects]]
+min = [47, 2]
+max = [49, 2]
+
+[[water_rects]]
+min = [46, 3]
+max = [49, 3]
+
+[[water_rects]]
+min = [45, 4]
+max = [48, 4]
+
+[[water_rects]]
+min = [43, 5]
+max = [47, 5]
+
+[[water_rects]]
+min = [42, 6]
+max = [45, 6]
+
+[[water_rects]]
+min = [41, 7]
+max = [45, 7]
+
+[[water_rects]]
+min = [40, 8]
+max = [45, 9]
+
+[[water_rects]]
+min = [41, 10]
+max = [46, 10]
+
+[[water_rects]]
+min = [43, 11]
+max = [46, 11]
+
+[[water_rects]]
+min = [90, 37]
+max = [90, 39]
+
+[[water_rects]]
+min = [89, 40]
+max = [90, 42]
+
+[[water_rects]]
+min = [88, 43]
+max = [90, 43]
+
+[[water_rects]]
+min = [87, 44]
+max = [89, 44]
+
+[[water_rects]]
+min = [86, 45]
+max = [89, 47]
+
+[[water_rects]]
+min = [17, 65]
+max = [18, 65]
+
+[[water_rects]]
+min = [17, 66]
+max = [20, 66]
+
+[[water_rects]]
+min = [17, 67]
+max = [21, 67]
+
+[[water_rects]]
+min = [16, 68]
+max = [21, 69]
+
+[[water_rects]]
+min = [17, 70]
+max = [21, 70]
+
+[[water_rects]]
+min = [18, 71]
+max = [21, 71]
+
+[[water_rects]]
+min = [19, 72]
+max = [21, 72]
+
+[[water_rects]]
+min = [20, 73]
+max = [21, 73]
+
+[[elevation_rects]]
+min = [40, 41]
+max = [54, 45]
+
+[[elevation_rects]]
+min = [40, 46]
+max = [45, 50]
+
+[[elevation_rects]]
+min = [51, 46]
+max = [54, 50]
+
+[[elevation_rects]]
+min = [4, 47]
+max = [18, 61]
+
+[[elevation_rects]]
+min = [83, 56]
+max = [91, 68]
+
+[[elevation_rects]]
+min = [39, 76]
+max = [53, 90]
+
+[[ramp_rects]]
+min = [39, 42]
+max = [40, 44]
+
+[[ramp_rects]]
+min = [54, 42]
+max = [55, 44]
+
+[[ramp_rects]]
+min = [39, 47]
+max = [40, 49]
+
+[[ramp_rects]]
+min = [45, 47]
+max = [46, 49]
+
+[[ramp_rects]]
+min = [50, 47]
+max = [51, 49]
+
+[[ramp_rects]]
+min = [54, 47]
+max = [55, 49]
+
+[[ramp_rects]]
+min = [3, 53]
+max = [4, 55]
+
+[[ramp_rects]]
+min = [18, 53]
+max = [19, 55]
+
+[[ramp_rects]]
+min = [82, 61]
+max = [83, 63]
+
+[[ramp_rects]]
+min = [91, 61]
+max = [92, 63]
+
+[[ramp_rects]]
+min = [38, 82]
+max = [39, 84]
+
+[[ramp_rects]]
+min = [53, 82]
+max = [54, 84]
+
+[[obstacles]]
+min = [54, 19]
+max = [55, 20]
+
+[[obstacles]]
+min = [35, 24]
+max = [36, 25]
+
+[[obstacles]]
+min = [40, 26]
+max = [41, 27]
+
+[[obstacles]]
+min = [70, 36]
+max = [71, 37]
+
+[[obstacles]]
+min = [23, 55]
+max = [24, 56]
+
+[[obstacles]]
+min = [23, 61]
+max = [24, 62]
+
+[[props]]
+kind = "tree"
+tile_pos = [22, 40]
+
+[[props]]
+kind = "tree"
+tile_pos = [62, 60]
+
+[[props]]
+kind = "tree"
+tile_pos = [68, 73]
+
+[[props]]
+kind = "tree"
+tile_pos = [81, 53]
+
+[[props]]
+kind = "tree"
+tile_pos = [85, 37]
+
+[[props]]
+kind = "tree"
+tile_pos = [51, 51]
+
+[[props]]
+kind = "tree"
+tile_pos = [58, 47]
+
+[[props]]
+kind = "tree"
+tile_pos = [52, 35]
+
+[[props]]
+kind = "tree"
+tile_pos = [57, 35]
+
+[[props]]
+kind = "tree"
+tile_pos = [58, 39]
+
+[[props]]
+kind = "tree"
+tile_pos = [39, 37]
+
+[[props]]
+kind = "tree"
+tile_pos = [31, 45]
+
+[[props]]
+kind = "tree"
+tile_pos = [40, 62]
+
+[[props]]
+kind = "tree"
+tile_pos = [22, 50]
+
+[[props]]
+kind = "tree"
+tile_pos = [65, 75]
+
+[[props]]
+kind = "tree"
+tile_pos = [43, 79]
+
+[[props]]
+kind = "tree"
+tile_pos = [46, 74]
+
+[[props]]
+kind = "tree"
+tile_pos = [62, 28]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [49, 82]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [72, 36]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [91, 59]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [37, 24]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [38, 25]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [50, 6]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [52, 6]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [56, 9]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [56, 11]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [47, 13]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "allied_refinery"
-tile_pos = [87, 59]
+tile_pos = [82, 54]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "allied_pillbox"
-tile_pos = [50, 80]
+tile_pos = [54, 76]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "allied_pillbox"
-tile_pos = [50, 82]
+tile_pos = [54, 78]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "einstein_lab"
-tile_pos = [47, 81]
+tile_pos = [54, 85]
 
 [[preplaced_entities]]
 player_id = 2
@@ -69,32 +359,32 @@ tile_pos = [26, 74]
 [[preplaced_entities]]
 player_id = 2
 building_id = "allied_power_plant"
-tile_pos = [25, 74]
+tile_pos = [24, 73]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "allied_power_plant"
-tile_pos = [25, 73]
+tile_pos = [26, 72]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "allied_power_plant"
-tile_pos = [26, 73]
+tile_pos = [24, 71]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "allied_power_plant"
-tile_pos = [27, 76]
+tile_pos = [26, 77]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "allied_power_plant"
-tile_pos = [28, 76]
+tile_pos = [29, 75]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "allied_power_plant"
-tile_pos = [28, 75]
+tile_pos = [29, 73]
 
 [[preplaced_entities]]
 player_id = 2
@@ -129,7 +419,7 @@ tile_pos = [36, 23]
 [[preplaced_entities]]
 player_id = 2
 building_id = "allied_barracks"
-tile_pos = [35, 25]
+tile_pos = [34, 26]
 
 [[preplaced_entities]]
 player_id = 2
@@ -142,14 +432,14 @@ building_id = "allied_barracks"
 tile_pos = [50, 18]
 
 [[preplaced_entities]]
-player_id = 2
+player_id = 0
 building_id = "tech_outpost"
 tile_pos = [32, 70]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "allied_power_plant"
-tile_pos = [49, 82]
+tile_pos = [54, 79]
 
 [[preplaced_entities]]
 player_id = 2
@@ -189,7 +479,7 @@ tile_pos = [55, 78]
 [[preplaced_entities]]
 player_id = 2
 unit_id = "mirage_tank"
-tile_pos = [54, 78]
+tile_pos = [53, 77]
 
 [[preplaced_entities]]
 player_id = 2
@@ -231,121 +521,223 @@ player_id = 2
 unit_id = "grizzly_tank"
 tile_pos = [59, 84]
 
+[[preplaced_entities]]
+player_id = 2
+building_id = "allied_chronosphere"
+tile_pos = [28, 77]
+
+[[preplaced_entities]]
+player_id = 1
+unit_id = "boris"
+tile_pos = [68, 26]
+tag = "boris"
+
+[[objectives]]
+id = "obj_primary_main"
+tier = "primary"
+title = "Rewrite the Black Forest battle! Crush the Mirage Tank screen and destroy Einstein's..."
+marker_tile = [30, 72]
+
+[[objectives]]
+id = "obj_vip_boris"
+tier = "secondary"
+title = "Keep Hero Boris Alive Throughout the Operation"
+marker_tile = [68, 26]
+
+[[objectives]]
+id = "obj_secondary_strike"
+tier = "secondary"
+title = "Neutralize or Capture Enemy Strategic Facility"
+marker_tile = [30, 72]
+
+[[objectives]]
+id = "obj_bonus_waves"
+tier = "bonus"
+title = "Weather Enemy Tactical Counterattack Waves"
+target_count = 2
+marker_tile = [68, 20]
+
+[[cutscenes]]
+id = "intro_flyover"
+skippable = true
+letterbox = true
+
+[[cutscenes.keyframes]]
+time_secs = 0.0
+focus = [61.0, 0.0, 145.0]
+distance = 46.0
+pitch_deg = 52.0
+yaw_deg = -22.0
+
+[[cutscenes.keyframes]]
+time_secs = 2.2
+focus = [99.0, 0.0, 99.0]
+distance = 42.0
+pitch_deg = 55.0
+yaw_deg = -10.0
+
+[[cutscenes.keyframes]]
+time_secs = 4.5
+focus = [137.0, 0.0, 53.0]
+distance = 36.0
+pitch_deg = 58.0
+yaw_deg = 0.0
+
 [[spawns]]
 player_id = 1
 faction = "soviets"
-base_tile = [53, 84]
+sub_faction = "russia"
+base_tile = [68, 20]
+team_id = 1
 
 [[spawns.initial_buildings]]
 building_id = "soviet_conyard"
-tile_pos = [53, 84]
+tile_pos = [68, 20]
 
 [[spawns.initial_buildings]]
 building_id = "soviet_tesla_reactor"
-tile_pos = [50, 84]
+tile_pos = [72, 20]
 
 [[spawns.initial_buildings]]
 building_id = "soviet_refinery"
-tile_pos = [53, 81]
+tile_pos = [64, 20]
 
 [[spawns.initial_buildings]]
 building_id = "soviet_barracks"
-tile_pos = [50, 81]
+tile_pos = [68, 24]
 
 [[spawns.initial_buildings]]
 building_id = "soviet_war_factory"
-tile_pos = [47, 84]
-
-[[spawns.initial_units]]
-unit_id = "soviet_conscript"
-tile_pos = [51, 79]
-
-[[spawns.initial_units]]
-unit_id = "soviet_conscript"
-tile_pos = [49, 79]
-
-[[spawns.initial_units]]
-unit_id = "rhino_tank"
-tile_pos = [47, 80]
+tile_pos = [64, 24]
 
 [[spawns.initial_units]]
 unit_id = "war_miner"
-tile_pos = [51, 80]
+tile_pos = [62, 21]
+
+[[spawns.initial_units]]
+unit_id = "tesla_trooper"
+tile_pos = [67, 25]
+
+[[spawns.initial_units]]
+unit_id = "flak_trooper"
+tile_pos = [63, 25]
+
+[[spawns.initial_units]]
+unit_id = "rhino_tank"
+tile_pos = [62, 26]
+
+[[spawns.initial_units]]
+unit_id = "apocalypse_tank"
+tile_pos = [68, 27]
+
+[[spawns.initial_units]]
+unit_id = "siege_chopper"
+tile_pos = [66, 27]
 
 [[spawns]]
 player_id = 2
 faction = "allies"
-base_tile = [37, 26]
-
-[[spawns.initial_buildings]]
-building_id = "allied_conyard"
-tile_pos = [37, 26]
-
-[[spawns.initial_buildings]]
-building_id = "allied_power_plant"
-tile_pos = [40, 26]
-
-[[spawns.initial_buildings]]
-building_id = "allied_refinery"
-tile_pos = [37, 29]
-
-[[spawns.initial_buildings]]
-building_id = "allied_barracks"
-tile_pos = [40, 29]
-
-[[spawns.initial_buildings]]
-building_id = "allied_war_factory"
-tile_pos = [43, 26]
-
-[[spawns.initial_units]]
-unit_id = "allied_gi"
-tile_pos = [39, 31]
-
-[[spawns.initial_units]]
-unit_id = "allied_gi"
-tile_pos = [41, 31]
-
-[[spawns.initial_units]]
-unit_id = "grizzly_tank"
-tile_pos = [43, 30]
-
-[[spawns.initial_units]]
-unit_id = "chrono_miner"
-tile_pos = [39, 30]
+sub_faction = "germany"
+base_tile = [30, 72]
+team_id = 2
 
 [[trigger_zones]]
-id = "mission_stage_init"
-min = [6, 6]
-max = [12, 12]
+id = "yr_soviet_02_deja_vu_init"
+min = [0, 0]
+max = [3, 3]
 once = true
 condition = { type = "timer_elapsed", secs = 1.0 }
 actions = [
+    { type = "play_cutscene", cutscene_id = "intro_flyover" },
+    { type = "set_objective_status", objective_id = "obj_primary_main", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_vip_boris", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_secondary_strike", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_bonus_waves", status = "active" },
+    { type = "start_countdown", timer_id = "black_forest_chrono_timer", label = "Allied Chrono Invasion Prep", duration_secs = 220 },
     { type = "set_variable", name = "mission_stage", value = 1 },
-    { type = "eva_transmission", speaker = "ZOFIA", text = "Battle Control Online. Primary tactical objectives initialized." },
-    { type = "reveal_area", tile = [53, 84], radius = 14 }
+    { type = "reveal_area", tile = [30, 72], radius = 9 },
+    { type = "eva_transmission", speaker = "LT. ZOFIA", text = "Rewrite the Black Forest battle! Crush the Mirage Tank screen and destroy Einstein's Laboratory and Allied Chronosphere.", portrait = "assets/ui/cameos/nradicon.png", audio_cue = "battle_control_online" },
 ]
 
 [[trigger_zones]]
-id = "tactical_reinforcement_wave"
-min = [52, 82]
-max = [56, 86]
+id = "yr_soviet_02_deja_vu_stage2_reinf"
+min = [0, 0]
+max = [3, 3]
 once = true
-condition = { type = "all", conditions = [{ type = "timer_elapsed", secs = 45.0 }, { type = "variable_equals", name = "mission_stage", value = 1 }] }
+condition = { type = "timer_elapsed", secs = 60.0 }
 actions = [
     { type = "set_variable", name = "mission_stage", value = 2 },
-    { type = "spawn_reinforcements", player_id = 1, unit_id = "apocalypse_tank", count = 2, tile = [52, 82] },
-    { type = "grant_credits", player_id = 1, amount = 1500 },
-    { type = "eva_transmission", speaker = "ZOFIA", text = "Reinforcements have arrived. Forward command has authorized 1500 bonus credits." }
+    { type = "grant_credits", player_id = 1, amount = 2000 },
+    { type = "spawn_reinforcements", player_id = 1, unit_id = "apocalypse_tank", count = 2, tile = [71, 21] },
+    { type = "eva_transmission", speaker = "LT. ZOFIA", text = "Heavy armored reinforcements have arrived at the staging area!", portrait = "assets/ui/cameos/nradicon.png", audio_cue = "reinforcements_have_arrived" },
 ]
 
 [[trigger_zones]]
-id = "decisive_campaign_victory"
-min = [2, 2]
-max = [6, 6]
+id = "yr_soviet_02_deja_vu_target_down"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "building_destroyed", building_id = "allied_chronosphere", player_id = 2 }
+actions = [
+    { type = "set_objective_status", objective_id = "obj_secondary_strike", status = "completed" },
+    { type = "stop_countdown", timer_id = "black_forest_chrono_timer" },
+    { type = "grant_credits", player_id = 1, amount = 2000 },
+    { type = "eva_transmission", speaker = "LT. ZOFIA", text = "Key Psi-Corps structure destroyed! Press the assault and wipe out the rest of Yuri's base!", portrait = "assets/ui/cameos/nradicon.png", audio_cue = "battle_control_online" },
+]
+
+[[trigger_zones]]
+id = "yr_soviet_02_deja_vu_victory"
+min = [0, 0]
+max = [3, 3]
 once = true
 condition = { type = "all_buildings_destroyed", player_id = 2 }
 actions = [
+    { type = "set_objective_status", objective_id = "obj_primary_main", status = "completed" },
+    { type = "set_objective_status", objective_id = "obj_vip_boris", status = "completed" },
     { type = "set_variable", name = "mission_stage", value = 3 },
-    { type = "eva_transmission", speaker = "ZOFIA", text = "Mission Accomplished. All primary hostile command structures neutralized." },
-    { type = "declare_winner", player_id = 1 }
+    { type = "eva_transmission", speaker = "LT. ZOFIA", text = "Yuri's forces in this sector have been completely eradicated! Victory is ours!", portrait = "assets/ui/cameos/nradicon.png", audio_cue = "primary_objective_achieved" },
+    { type = "declare_winner", player_id = 1 },
+]
+
+[[trigger_zones]]
+id = "p22_vip_boris_lost"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "tagged_entity_destroyed", tag = "boris" }
+actions = [
+    { type = "set_objective_status", objective_id = "obj_vip_boris", status = "failed" },
+    { type = "eva_transmission", speaker = "LT. ZOFIA", text = "Hero Boris has fallen in combat!", portrait = "assets/ui/cameos/nradicon.png", audio_cue = "unit_lost" },
+]
+
+[[trigger_zones]]
+id = "p22_crisis_countdown_expired"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "countdown_expired", timer_id = "black_forest_chrono_timer" }
+actions = [
+    { type = "spawn_reinforcements", player_id = 2, unit_id = "grizzly_tank", count = 4, tile = [28, 70] },
+    { type = "eva_transmission", speaker = "LT. ZOFIA", text = "Warning: Allied Chrono Invasion Prep reached zero! Enemy heavy armor strike group deployed!", portrait = "assets/ui/cameos/nradicon.png", audio_cue = "base_under_attack" },
+]
+
+[[trigger_zones]]
+id = "p22_crisis_target_neutralized"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "building_destroyed", building_id = "allied_chronosphere", player_id = 2 }
+actions = [
+    { type = "stop_countdown", timer_id = "black_forest_chrono_timer" },
+]
+
+[[trigger_zones]]
+id = "p22_periodic_skirmish_wave"
+min = [0, 0]
+max = [3, 3]
+once = false
+condition = { type = "periodic_timer", start_secs = 75, interval_secs = 75, max_repeats = 3 }
+actions = [
+    { type = "spawn_reinforcements", player_id = 2, unit_id = "allied_gi", count = 3, tile = [29, 71] },
+    { type = "add_objective_progress", objective_id = "obj_bonus_waves", delta = 1 },
 ]

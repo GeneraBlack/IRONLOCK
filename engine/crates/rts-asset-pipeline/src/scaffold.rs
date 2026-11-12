@@ -66,8 +66,9 @@ pub fn scaffold_new_mod_project(
         "scripts",
         "assets/models",
     ] {
-        fs::create_dir_all(root.join(subdir))
-            .with_context(|| format!("Failed to create directory {}", root.join(subdir).display()))?;
+        fs::create_dir_all(root.join(subdir)).with_context(|| {
+            format!("Failed to create directory {}", root.join(subdir).display())
+        })?;
     }
 
     if let Some(parent_mod) = extends {

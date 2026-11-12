@@ -3,10 +3,10 @@ use crate::mesh_builder::generate_mod_models;
 use anyhow::Result;
 use rts_sdk::loader::LoadedMod;
 use rts_sdk::schema::{
-    BuildingDef, BuildingRole, MapDef,
-    ObstacleRectDef, OrePatchDef, PlayerSpawnDef, UnitDef, UnitRole,
+    BuildingDef, BuildingRole, MapDef, ObstacleRectDef, OrePatchDef, PlayerSpawnDef, UnitDef,
+    UnitRole,
 };
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 use std::fs;
 use std::path::{Path, PathBuf};
 
@@ -205,6 +205,35 @@ fn on_custom_deploy(ctx) {
 }
 "#;
 
+fn synthesize_cameo_badge_png(color: [f32; 3]) -> Result<Vec<u8>> {
+    let w = 64u32;
+    let h = 48u32;
+    let mut rgba = Vec::with_capacity((w * h * 4) as usize);
+    let r_base = (color[0].clamp(0.0, 1.0) * 215.0) as u8;
+    let g_base = (color[1].clamp(0.0, 1.0) * 215.0) as u8;
+    let b_base = (color[2].clamp(0.0, 1.0) * 215.0) as u8;
+
+    for y in 0..h {
+        for x in 0..w {
+            let border = x < 2 || x >= w - 2 || y < 2 || y >= h - 2;
+            let inner = x >= 12 && x < w - 12 && y >= 10 && y < h - 10;
+            if border {
+                rgba.extend_from_slice(&[210, 215, 225, 255]);
+            } else if inner {
+                rgba.extend_from_slice(&[
+                    r_base.saturating_add(30),
+                    g_base.saturating_add(30),
+                    b_base.saturating_add(30),
+                    255,
+                ]);
+            } else {
+                rgba.extend_from_slice(&[r_base / 3 + 18, g_base / 3 + 20, b_base / 3 + 24, 255]);
+            }
+        }
+    }
+    encode_rgba_to_png(w, h, &rgba)
+}
+
 pub fn write_converted_bundle_to_dir(
     bundle: &ConvertedModBundle,
     out_dir: impl AsRef<Path>,
@@ -254,27 +283,25 @@ pub fn write_converted_bundle_to_dir(
         toml::to_string_pretty(&bundle.map)?,
     )?;
 
-    // Generate procedural .glb models for all buildings/units first, then overwrite with any .vxl/.hva or .shp meshes
-    let loaded = LoadedMod::load_from_dir(root)?;
-    let mut written_models = generate_mod_models(&loaded, true)?;
+    let mut vxl_files: BTreeMap<String, PathBuf> = BTreeMap::new();
+    let mut hva_files: BTreeMap<String, PathBuf> = BTreeMap::new();
+    let mut shp_files: BTreeMap<String, PathBuf> = BTreeMap::new();
+    let mut csf_files: Vec<PathBuf> = Vec::new();
+    let mut audio_files: BTreeMap<String, PathBuf> = BTreeMap::new();
+    let mut idx_path: Option<PathBuf> = None;
+    let mut bag_path: Option<PathBuf> = None;
+    let mut pal_bytes: Option<Vec<u8>> = None;
+    let mut cameo_pal_bytes: Option<Vec<u8>> = None;
 
     if let Some(vdir) = vxl_dir {
         if vdir.is_dir() {
-            let mut vxl_files: BTreeMap<String, PathBuf> = BTreeMap::new();
-            let mut hva_files: BTreeMap<String, PathBuf> = BTreeMap::new();
-            let mut shp_files: BTreeMap<String, PathBuf> = BTreeMap::new();
-            let mut pal_bytes: Option<Vec<u8>> = None;
-
             for entry in fs::read_dir(vdir)? {
                 let entry = entry?;
                 let path = entry.path();
                 let Some(ext) = path.extension().and_then(|e| e.to_str()) else {
                     continue;
                 };
-                let stem = path
-                    .file_stem()
-                    .and_then(|s| s.to_str())
-                    .unwrap_or("asset");
+                let stem = path.file_stem().and_then(|s| s.to_str()).unwrap_or("asset");
                 let id = normalize_id(stem);
                 if ext.eq_ignore_ascii_case("vxl") {
                     vxl_files.insert(id, path);
@@ -282,7 +309,22 @@ pub fn write_converted_bundle_to_dir(
                     hva_files.insert(id, path);
                 } else if ext.eq_ignore_ascii_case("shp") {
                     shp_files.insert(id, path);
+                } else if ext.eq_ignore_ascii_case("csf") {
+                    csf_files.push(path);
+                } else if ext.eq_ignore_ascii_case("aud") || ext.eq_ignore_ascii_case("wav") {
+                    audio_files.insert(id, path);
+                } else if ext.eq_ignore_ascii_case("idx") {
+                    idx_path = Some(path);
+                } else if ext.eq_ignore_ascii_case("bag") {
+                    bag_path = Some(path);
                 } else if ext.eq_ignore_ascii_case("pal") {
+                    if id == "cameo" || id == "cameomd" {
+                        if let Ok(bytes) = fs::read(&path) {
+                            if bytes.len() >= 768 {
+                                cameo_pal_bytes = Some(bytes);
+                            }
+                        }
+                    }
                     let is_preferred_pal = matches!(
                         id.as_str(),
                         "unittem" | "temperat" | "isotem" | "isotemp" | "unitsno" | "uniturb"
@@ -296,123 +338,266 @@ pub fn write_converted_bundle_to_dir(
                     }
                 }
             }
+        }
+    }
 
-            let mut team_colors: BTreeMap<String, [f32; 3]> = BTreeMap::new();
-            for b in &bundle.buildings.buildings {
-                team_colors.insert(b.id.clone(), b.visual.primary_color);
+    // Export any `.csf` string tables into `<out_dir>/locales/<lang>.toml`
+    if !csf_files.is_empty() {
+        let locales_dir = root.join("locales");
+        fs::create_dir_all(&locales_dir)?;
+        for csf_path in &csf_files {
+            if let Ok(raw_csf) = fs::read(csf_path) {
+                if let Ok((lang, toml_str)) = convert_csf_bytes_to_locale_toml(&raw_csf, None) {
+                    fs::write(locales_dir.join(format!("{lang}.toml")), toml_str)?;
+                }
             }
-            for u in &bundle.units.units {
-                team_colors.insert(u.id.clone(), u.visual.primary_color);
-            }
+        }
+    }
 
-            let mut consumed_subparts = std::collections::BTreeSet::new();
-            for id in vxl_files.keys() {
-                if (id.ends_with("tur") || id.ends_with("barl")) && id.len() > 3 {
-                    let base = id
-                        .trim_end_matches("tur")
-                        .trim_end_matches("barl")
-                        .to_string();
-                    if vxl_files.contains_key(&base) {
-                        consumed_subparts.insert(id.clone());
+    // Export `audio/audio.toml` and convert/materialize all referenced `.wav` cues
+    if let Some(ref audio_cat) = bundle.audio {
+        fs::create_dir_all(root.join("audio"))?;
+        let audio_assets_dir = root.join("assets/audio");
+        fs::create_dir_all(&audio_assets_dir)?;
+        fs::write(
+            root.join("audio/audio.toml"),
+            toml::to_string_pretty(audio_cat)?,
+        )?;
+
+        for (stem, src_audio) in &audio_files {
+            if let Ok(raw) = fs::read(src_audio) {
+                if let Ok(pcm) = convert_westwood_wav_to_pcm16(&raw) {
+                    let _ = fs::write(audio_assets_dir.join(format!("{stem}.wav")), pcm);
+                }
+            }
+        }
+        if let (Some(ip), Some(bp)) = (&idx_path, &bag_path) {
+            if let (Ok(ib), Ok(bb)) = (fs::read(ip), fs::read(bp)) {
+                if let Ok(idx_entries) = parse_westwood_audio_idx(&ib) {
+                    for e in &idx_entries {
+                        if let Ok(pcm) = extract_westwood_bag_entry_to_pcm16_wav(&bb, e) {
+                            let stem = normalize_id(&e.name);
+                            let _ = fs::write(audio_assets_dir.join(format!("{stem}.wav")), pcm);
+                        }
                     }
                 }
             }
+        }
 
-            for (id, path) in &vxl_files {
-                if consumed_subparts.contains(id) {
+        let mut referenced_audio_rels: BTreeSet<&str> = BTreeSet::new();
+        for rel in audio_cat.weapon_sfx.values() {
+            referenced_audio_rels.insert(rel.as_str());
+        }
+        for v in audio_cat.unit_voices.values() {
+            for rel in v
+                .select
+                .iter()
+                .chain(v.move_order.iter())
+                .chain(v.attack_order.iter())
+                .chain(v.death.iter())
+            {
+                referenced_audio_rels.insert(rel.as_str());
+            }
+        }
+        for rel in audio_cat.eva_cues.values() {
+            referenced_audio_rels.insert(rel.as_str());
+        }
+        for cues in audio_cat.faction_eva_cues.values() {
+            for rel in cues.values() {
+                referenced_audio_rels.insert(rel.as_str());
+            }
+        }
+
+        let fallback_wav = encode_pcm16_to_riff_wav(&[0i16; 220], 22_050, 1);
+        for rel in referenced_audio_rels {
+            let full = root.join(rel);
+            if !full.exists() {
+                if let Some(parent) = full.parent() {
+                    fs::create_dir_all(parent)?;
+                }
+                fs::write(&full, &fallback_wav)?;
+            }
+        }
+    }
+
+    // Export cameo `.png` icons for any building or unit declaring `visual.icon`
+    let icon_pal = cameo_pal_bytes.as_deref().or(pal_bytes.as_deref());
+    for (icon_opt, color) in bundle
+        .buildings
+        .buildings
+        .iter()
+        .map(|b| (&b.visual.icon, b.visual.primary_color))
+        .chain(
+            bundle
+                .units
+                .units
+                .iter()
+                .map(|u| (&u.visual.icon, u.visual.primary_color)),
+        )
+    {
+        if let Some(rel_icon) = icon_opt {
+            if rel_icon.is_empty() {
+                continue;
+            }
+            let full_icon = root.join(rel_icon);
+            if full_icon.exists() {
+                continue;
+            }
+            if let Some(parent) = full_icon.parent() {
+                fs::create_dir_all(parent)?;
+            }
+            let icon_stem = Path::new(rel_icon)
+                .file_stem()
+                .and_then(|s| s.to_str())
+                .map(normalize_id)
+                .unwrap_or_default();
+            let png_bytes = if let Some(shp_path) = shp_files.get(&icon_stem) {
+                fs::read(shp_path)
+                    .ok()
+                    .and_then(|b| {
+                        convert_shp_cameo_to_png(&b, icon_pal, Some(color), &icon_stem).ok()
+                    })
+                    .unwrap_or_else(|| synthesize_cameo_badge_png(color).unwrap_or_default())
+            } else {
+                synthesize_cameo_badge_png(color)?
+            };
+            fs::write(&full_icon, png_bytes)?;
+        }
+    }
+
+    // Generate procedural .glb models for all buildings/units first, then overwrite with any .vxl/.hva or .shp meshes
+    let loaded = LoadedMod::load_from_dir(root)?;
+    let mut written_models = generate_mod_models(&loaded, true)?;
+
+    if !vxl_files.is_empty() || !shp_files.is_empty() {
+        let mut team_colors: BTreeMap<String, [f32; 3]> = BTreeMap::new();
+        for b in &bundle.buildings.buildings {
+            team_colors.insert(b.id.clone(), b.visual.primary_color);
+        }
+        for u in &bundle.units.units {
+            team_colors.insert(u.id.clone(), u.visual.primary_color);
+        }
+
+        let mut consumed_subparts = BTreeSet::new();
+        for id in vxl_files.keys() {
+            if (id.ends_with("tur") || id.ends_with("barl")) && id.len() > 3 {
+                let base = id
+                    .trim_end_matches("tur")
+                    .trim_end_matches("barl")
+                    .to_string();
+                if vxl_files.contains_key(&base) {
+                    consumed_subparts.insert(id.clone());
+                }
+            }
+        }
+
+        for (id, path) in &vxl_files {
+            if consumed_subparts.contains(id) {
+                continue;
+            }
+            let hull_bytes = fs::read(path)?;
+            let hull_hva = hva_files.get(id).and_then(|p| fs::read(p).ok());
+            let hull_offset = hull_hva
+                .as_deref()
+                .and_then(|b| parse_hva_offsets(b).into_iter().next())
+                .unwrap_or([0.0, 0.0, 0.0]);
+
+            type OwnedVxlPart = (Vec<u8>, Option<Vec<u8>>, [f32; 3]);
+            let mut parts: Vec<OwnedVxlPart> = vec![(hull_bytes, hull_hva, hull_offset)];
+
+            let tur_id = format!("{id}tur");
+            if let Some(tur_path) = vxl_files.get(&tur_id) {
+                if let Ok(tur_bytes) = fs::read(tur_path) {
+                    let tur_hva = hva_files.get(&tur_id).and_then(|p| fs::read(p).ok());
+                    let tur_off = tur_hva
+                        .as_deref()
+                        .and_then(|b| parse_hva_offsets(b).into_iter().next())
+                        .unwrap_or([0.0, 0.35, 0.0]);
+                    parts.push((tur_bytes, tur_hva, tur_off));
+                }
+            }
+
+            let barl_id = format!("{id}barl");
+            if let Some(barl_path) = vxl_files.get(&barl_id) {
+                if let Ok(barl_bytes) = fs::read(barl_path) {
+                    let barl_hva = hva_files.get(&barl_id).and_then(|p| fs::read(p).ok());
+                    let barl_off = barl_hva
+                        .as_deref()
+                        .and_then(|b| parse_hva_offsets(b).into_iter().next())
+                        .unwrap_or([0.0, 0.42, 0.45]);
+                    parts.push((barl_bytes, barl_hva, barl_off));
+                }
+            }
+
+            let team_col = team_colors.get(id).copied();
+            let refs: Vec<VxlHvaPartRef<'_>> = parts
+                .iter()
+                .map(|(v, h, off)| (v.as_slice(), h.as_deref(), *off))
+                .collect();
+            let glb_bytes =
+                convert_multipart_vxl_with_hva_to_glb(&refs, pal_bytes.as_deref(), team_col, id)?;
+
+            let out_glb = root.join(format!("assets/models/{id}.glb"));
+            fs::write(&out_glb, glb_bytes)?;
+            if !written_models.contains(&out_glb) {
+                written_models.push(out_glb);
+            }
+        }
+
+        // Convert 2D .shp sprites into volumetric 3D .glb models if no .vxl model exists for that ID
+        for (id, shp_path) in &shp_files {
+            if vxl_files.contains_key(id) {
+                continue;
+            }
+            if id.contains("icon")
+                || id.contains("pip")
+                || matches!(
+                    id.as_str(),
+                    "mpspawn"
+                        | "camera"
+                        | "waypoint"
+                        | "clock"
+                        | "assaultmove"
+                        | "undeploy"
+                        | "isodepth"
+                )
+            {
+                continue;
+            }
+            let out_glb = root.join(format!("assets/models/{id}.glb"));
+            if let Ok(shp_bytes) = fs::read(shp_path) {
+                let is_tiny_placeholder = shp_bytes.len() >= 8
+                    && u16::from_le_bytes(shp_bytes[0..2].try_into().unwrap()) == 0
+                    && u16::from_le_bytes(shp_bytes[2..4].try_into().unwrap()) < 12
+                    && u16::from_le_bytes(shp_bytes[4..6].try_into().unwrap()) < 12
+                    && u16::from_le_bytes(shp_bytes[6..8].try_into().unwrap()) < 8;
+                if written_models.contains(&out_glb) && is_tiny_placeholder {
                     continue;
                 }
-                let hull_bytes = fs::read(path)?;
-                let mut parts: Vec<(Vec<u8>, [f32; 3])> = Vec::new();
-                let hull_offset = hva_files
-                    .get(id)
-                    .and_then(|p| fs::read(p).ok())
-                    .and_then(|b| parse_hva_offsets(&b).into_iter().next())
-                    .unwrap_or([0.0, 0.0, 0.0]);
-                parts.push((hull_bytes, hull_offset));
-
-                let tur_id = format!("{id}tur");
-                if let Some(tur_path) = vxl_files.get(&tur_id) {
-                    if let Ok(tur_bytes) = fs::read(tur_path) {
-                        let tur_off = hva_files
-                            .get(&tur_id)
-                            .and_then(|p| fs::read(p).ok())
-                            .and_then(|b| parse_hva_offsets(&b).into_iter().next())
-                            .unwrap_or([0.0, 0.35, 0.0]);
-                        parts.push((tur_bytes, tur_off));
-                    }
-                }
-
-                let barl_id = format!("{id}barl");
-                if let Some(barl_path) = vxl_files.get(&barl_id) {
-                    if let Ok(barl_bytes) = fs::read(barl_path) {
-                        let barl_off = hva_files
-                            .get(&barl_id)
-                            .and_then(|p| fs::read(p).ok())
-                            .and_then(|b| parse_hva_offsets(&b).into_iter().next())
-                            .unwrap_or([0.0, 0.42, 0.45]);
-                        parts.push((barl_bytes, barl_off));
-                    }
-                }
-
                 let team_col = team_colors.get(id).copied();
-                let refs: Vec<(&[u8], [f32; 3])> =
-                    parts.iter().map(|(b, off)| (b.as_slice(), *off)).collect();
-                let glb_bytes = convert_multipart_vxl_to_glb_with_team_color(
-                    &refs,
+                if let Ok(glb_bytes) = convert_shp_bytes_to_glb_with_team_color(
+                    &shp_bytes,
                     pal_bytes.as_deref(),
                     team_col,
                     id,
-                )?;
-
-                let out_glb = root.join(format!("assets/models/{id}.glb"));
-                fs::write(&out_glb, glb_bytes)?;
-                if !written_models.contains(&out_glb) {
-                    written_models.push(out_glb);
+                ) {
+                    fs::write(&out_glb, glb_bytes)?;
+                    if !written_models.contains(&out_glb) {
+                        written_models.push(out_glb);
+                    }
                 }
             }
+        }
 
-            // Convert 2D .shp sprites into volumetric 3D .glb models if no .vxl model exists for that ID
-            for (id, shp_path) in &shp_files {
-                if vxl_files.contains_key(id) {
-                    continue;
-                }
-                if id.contains("icon")
-                    || id.contains("pip")
-                    || matches!(
-                        id.as_str(),
-                        "mpspawn"
-                            | "camera"
-                            | "waypoint"
-                            | "clock"
-                            | "assaultmove"
-                            | "undeploy"
-                            | "isodepth"
-                    )
-                {
-                    continue;
-                }
-                let out_glb = root.join(format!("assets/models/{id}.glb"));
-                if let Ok(shp_bytes) = fs::read(shp_path) {
-                    let is_tiny_placeholder = shp_bytes.len() >= 8
-                        && u16::from_le_bytes(shp_bytes[0..2].try_into().unwrap()) == 0
-                        && u16::from_le_bytes(shp_bytes[2..4].try_into().unwrap()) < 12
-                        && u16::from_le_bytes(shp_bytes[4..6].try_into().unwrap()) < 12
-                        && u16::from_le_bytes(shp_bytes[6..8].try_into().unwrap()) < 8;
-                    if written_models.contains(&out_glb) && is_tiny_placeholder {
-                        continue;
-                    }
-                    let team_col = team_colors.get(id).copied();
-                    if let Ok(glb_bytes) = convert_shp_bytes_to_glb_with_team_color(
-                        &shp_bytes,
-                        pal_bytes.as_deref(),
-                        team_col,
-                        id,
-                    ) {
-                        fs::write(&out_glb, glb_bytes)?;
-                        if !written_models.contains(&out_glb) {
-                            written_models.push(out_glb);
-                        }
+        // Apply `Image=` model overrides (`entity_id -> asset_id`) from `rules.ini` / `art.ini`
+        for (entity_id, asset_id) in &bundle.model_asset_overrides {
+            if vxl_files.contains_key(asset_id) || shp_files.contains_key(asset_id) {
+                let src_glb = root.join(format!("assets/models/{asset_id}.glb"));
+                let dst_glb = root.join(format!("assets/models/{entity_id}.glb"));
+                if src_glb.is_file() && src_glb != dst_glb {
+                    fs::copy(&src_glb, &dst_glb)?;
+                    if !written_models.contains(&dst_glb) {
+                        written_models.push(dst_glb);
                     }
                 }
             }
@@ -421,4 +606,3 @@ pub fn write_converted_bundle_to_dir(
 
     Ok(written_models)
 }
-

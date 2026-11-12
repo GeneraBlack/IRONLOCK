@@ -100,8 +100,9 @@ impl ReplayFile {
     }
 
     pub fn load_from_file(path: impl AsRef<Path>) -> Result<Self> {
-        let raw = fs::read_to_string(path.as_ref())
-            .with_context(|| format!("Failed to read replay file at {}", path.as_ref().display()))?;
+        let raw = fs::read_to_string(path.as_ref()).with_context(|| {
+            format!("Failed to read replay file at {}", path.as_ref().display())
+        })?;
         let replay: Self = serde_json::from_str(&raw)?;
         Ok(replay)
     }

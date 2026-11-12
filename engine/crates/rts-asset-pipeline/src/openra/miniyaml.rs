@@ -1,7 +1,5 @@
 use crate::westwood::normalize_id;
-use rts_sdk::schema::{
-    ArmorType, ProjectileStyle, WeaponDef,
-};
+use rts_sdk::schema::{ArmorType, ProjectileStyle, WeaponDef};
 use std::collections::{BTreeMap, BTreeSet};
 
 /// A node in an OpenRA MiniYAML document tree.
@@ -430,7 +428,8 @@ pub(super) fn parse_openra_weapon_node(node: &MiniYamlNode) -> WeaponDef {
     let mut armor_multipliers = BTreeMap::new();
     let mut splash_radius = 0.0f32;
     let mut leaves_radiation = proj_type.contains("rad") || id_lower.contains("rad");
-    let mut mind_control = id_lower.contains("mind") || id_lower.contains("psychic") || id_lower.contains("psi");
+    let mut mind_control =
+        id_lower.contains("mind") || id_lower.contains("psychic") || id_lower.contains("psi");
     let mut warp_erase = id_lower.contains("chrono") || id_lower.contains("warp");
     let mut tesla_charge_boost = valid_targets.contains("teslaboost");
 
@@ -481,11 +480,20 @@ pub(super) fn parse_openra_weapon_node(node: &MiniYamlNode) -> WeaponDef {
         ProjectileStyle::MindControl
     } else if leaves_radiation {
         ProjectileStyle::Radiation
-    } else if proj_type.contains("electric") || id_lower.contains("bolt") || id_lower.contains("tesla") {
+    } else if proj_type.contains("electric")
+        || id_lower.contains("bolt")
+        || id_lower.contains("tesla")
+    {
         ProjectileStyle::Tesla
-    } else if proj_type.contains("laser") || id_lower.contains("prism") || id_lower.contains("laser") {
+    } else if proj_type.contains("laser")
+        || id_lower.contains("prism")
+        || id_lower.contains("laser")
+    {
         ProjectileStyle::Laser
-    } else if proj_type.contains("areabeam") || id_lower.contains("sonic") || id_lower.contains("wave") {
+    } else if proj_type.contains("areabeam")
+        || id_lower.contains("sonic")
+        || id_lower.contains("wave")
+    {
         ProjectileStyle::Sonic
     } else if proj_type.contains("missile") || targets_air {
         ProjectileStyle::Missile
@@ -518,4 +526,3 @@ pub(super) fn parse_openra_weapon_node(node: &MiniYamlNode) -> WeaponDef {
         ..Default::default()
     }
 }
-

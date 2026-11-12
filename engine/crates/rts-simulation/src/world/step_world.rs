@@ -3,15 +3,17 @@ use crate::combat::step_combat;
 use crate::command::GameCommand;
 use crate::production::step_production_and_harvesters;
 use rts_sdk::loader::LoadedMod;
-use rts_sdk::schema::{
-    BuildingRole, CrateKind, MovementDomain, PropKind, UnitRole,
-};
+use rts_sdk::schema::{BuildingRole, CrateKind, MovementDomain, PropKind, UnitRole};
 use std::collections::BTreeSet;
 
 impl SimWorld {
     pub fn step(&mut self, loaded: &LoadedMod) {
         let t_total_start = std::time::Instant::now();
         let t_cmd_start = std::time::Instant::now();
+        self.intern_table.ensure_synced(loaded);
+        if self.grid.has_valid_vertex_heights() && !self.grid.has_synced_height_cache() {
+            self.grid.rebuild_height_cache();
+        }
         self.combat_events.clear();
         self.destruction_events.clear();
         let commands: Vec<GameCommand> = self.pending_commands.drain(..).collect();
@@ -19,6 +21,17 @@ impl SimWorld {
         for cmd in commands {
             self.apply_command(cmd, loaded);
         }
+        if self.winner_player_id.is_none() && !self.ai_takeover_players.is_empty() {
+            let takeover_slots: Vec<(u8, crate::ai::AiDifficulty)> = self
+                .ai_takeover_players
+                .iter()
+                .map(|(&pid, &diff)| (pid, diff))
+                .collect();
+            for (pid, diff) in takeover_slots {
+                crate::ai::step_ai_player_in_world(self, pid, loaded, diff, None);
+            }
+        }
+        self.recalculate_power_if_dirty(loaded);
         let commands_us = t_cmd_start.elapsed().as_micros() as u64;
 
         // Tick player upgrade research timers & support power cooldowns
@@ -48,17 +61,6 @@ impl SimWorld {
             } else {
                 1.0
             };
-            let mut completed_upg: Option<String> = None;
-            if let Some((upg_id, rem, _total)) = &mut econ.active_upgrade {
-                *rem -= dt * speed_factor;
-                if *rem <= 0.0 {
-                    completed_upg = Some(upg_id.clone());
-                }
-            }
-            if let Some(done_id) = completed_upg {
-                econ.researched_upgrades.insert(done_id);
-                econ.active_upgrade = None;
-            }
             for (sp_id, cd) in econ.support_power_cooldowns.iter_mut() {
                 if *cd > 0.0 {
                     let sp_rate = if low_pwr && superweapon_power_ids.contains(sp_id) {
@@ -76,16 +78,38 @@ impl SimWorld {
         for rz in &mut self.temporary_reveal_zones {
             rz.remaining_secs -= dt;
         }
-        self.temporary_reveal_zones.retain(|rz| rz.remaining_secs > 0.0);
+        self.temporary_reveal_zones
+            .retain(|rz| rz.remaining_secs > 0.0);
         for scar in &mut self.battlefield_scars {
             scar.remaining_secs -= dt;
         }
         self.battlefield_scars.retain(|s| s.remaining_secs > 0.0);
 
         let t_move_start = std::time::Instant::now();
+        crate::world::economy::step_streaming_and_research_economy(self, loaded);
         step_production_and_harvesters(self, loaded);
+        crate::world::economy::step_economy_traits(self, loaded);
+        crate::world::squads::step_squad_morale_and_reinforcement(self, loaded);
+        self.step_heroes_and_items(loaded);
+        if self.tick.is_multiple_of(20) {
+            self.refresh_visibility_grids(loaded);
+            let pids: Vec<u8> = self.players.keys().copied().collect();
+            let mw = self.grid.width;
+            let mh = self.grid.height;
+            for pid in pids {
+                let mut cmdr = self
+                    .ai_commanders
+                    .get(&pid)
+                    .cloned()
+                    .unwrap_or_else(|| crate::ai::AiCommanderState::new(pid, mw, mh));
+                cmdr.refresh_intelligence(self, loaded);
+                self.ai_commanders.insert(pid, cmdr);
+            }
+        }
         self.step_building_repairs(loaded);
         self.step_movement(loaded);
+        self.step_gates(loaded);
+        self.step_support_aircraft_and_missiles(loaded);
         let movement_us = t_move_start.elapsed().as_micros() as u64;
 
         let t_proj_start = std::time::Instant::now();
@@ -99,17 +123,30 @@ impl SimWorld {
         let projectiles_us = t_proj_start.elapsed().as_micros() as u64;
 
         let t_combat_start = std::time::Instant::now();
+        self.refresh_visibility_grids(loaded);
         step_combat(self, loaded);
         let combat_us = t_combat_start.elapsed().as_micros() as u64;
 
         let t_trig_start = std::time::Instant::now();
+        for ct in &mut self.countdown_timers {
+            if ct.remaining_ticks > 0 {
+                ct.remaining_ticks -= 1;
+            }
+        }
+        self.step_entity_on_tick_hooks(loaded);
         self.update_explored_tiles(loaded);
         self.step_trigger_zones(loaded);
+        self.step_trigger_graphs(loaded);
+        self.step_capture_zones_and_survival_waves(loaded);
         self.evaluate_victory_condition(loaded);
         self.invoke_global_event("on_tick", "world_tick", 0, 1, loaded);
         let triggers_fow_us = t_trig_start.elapsed().as_micros() as u64;
 
         self.tick += 1;
+        if self.tick.is_multiple_of(200) {
+            self.record_telemetry_sample(loaded);
+        }
+        self.canonicalize_sim_scalars();
         self.last_tick_profile = SimTickProfile {
             total_us: t_total_start.elapsed().as_micros() as u64,
             commands_us,
@@ -123,21 +160,274 @@ impl SimWorld {
         };
     }
 
+    pub(crate) fn step_gates(&mut self, loaded: &LoadedMod) {
+        if self.gate_states.is_empty() {
+            return;
+        }
+        let dt = self.dt;
+        let ts = self.grid.tile_size.max(1.0);
+        let detect_radius = 2.5 * ts;
+        let half_ts = 0.65 * ts;
+        self.spatial_index.rebuild_from_iter(
+            self.entities
+                .values()
+                .filter(|e| {
+                    e.is_targetable()
+                        && matches!(e.kind, EntityKind::Unit { .. })
+                        && !e.is_airborne(loaded)
+                        && e.parachute_timer <= 0.0
+                })
+                .map(|e| (e.id, e.player_id, e.position)),
+        );
+        let gate_tiles: Vec<([i32; 2], u8)> = self
+            .gate_states
+            .iter()
+            .map(|(&tile, gs)| (tile, gs.owner_player_id))
+            .collect();
+        for (tile, gate_owner) in gate_tiles {
+            let center = self.grid.tile_to_world(tile);
+            let mut occupied = false;
+            let mut friendly_near = false;
+            self.spatial_index.for_each_in_radius_xz(
+                [center[0], center[2]],
+                detect_radius,
+                |_uid, u_pid, u_pos| {
+                    let dx = (u_pos[0] - center[0]).abs();
+                    let dz = (u_pos[2] - center[2]).abs();
+                    if dx <= half_ts && dz <= half_ts {
+                        occupied = true;
+                    }
+                    if !self.are_hostile(gate_owner, u_pid) {
+                        friendly_near = true;
+                    }
+                },
+            );
+            if let Some(gs) = self.gate_states.get_mut(&tile) {
+                gs.occupied = occupied;
+                if occupied || friendly_near {
+                    gs.openness_01 = (gs.openness_01 + 3.5 * dt).min(1.0);
+                    if occupied {
+                        gs.openness_01 = 1.0;
+                    }
+                } else {
+                    gs.openness_01 = (gs.openness_01 - 2.5 * dt).max(0.0);
+                }
+            }
+        }
+    }
+
+    pub(crate) fn step_support_aircraft_and_missiles(&mut self, loaded: &LoadedMod) {
+        if self.active_support_aircraft.is_empty() && self.pending_missile_strikes.is_empty() {
+            return;
+        }
+        let dt = self.dt;
+        let weather_mult = if self.environment_preset == EnvironmentPreset::IonStorm {
+            0.70
+        } else {
+            1.0
+        };
+
+        let mut drops_to_deliver: Vec<(u8, SupportAircraftPayload, [f32; 3])> = Vec::new();
+        let mut exited_entity_ids: Vec<u64> = Vec::new();
+        let mut surviving_aircraft: Vec<SimSupportAircraft> =
+            Vec::with_capacity(self.active_support_aircraft.len());
+
+        for mut ac in std::mem::take(&mut self.active_support_aircraft) {
+            let Some(ent_pos_hp) = self
+                .entities
+                .get(&ac.entity_id)
+                .map(|e| (e.position, e.health))
+            else {
+                continue;
+            };
+            if ent_pos_hp.1 <= 0.0 {
+                // Shot down by AA before drop point -> payload is lost!
+                continue;
+            }
+            let goal = if !ac.dropped {
+                ac.target_pos
+            } else {
+                ac.exit_pos
+            };
+            let step_dist = ac.speed * weather_mult * dt;
+            let dx = goal[0] - ent_pos_hp.0[0];
+            let dz = goal[2] - ent_pos_hp.0[2];
+            let dist = crate::det_math::det_sqrt_f32(dx * dx + dz * dz);
+            let new_pos = if dist <= step_dist.max(0.25) {
+                [goal[0], ac.target_pos[1], goal[2]]
+            } else {
+                [
+                    ent_pos_hp.0[0] + (dx / dist) * step_dist,
+                    ac.target_pos[1],
+                    ent_pos_hp.0[2] + (dz / dist) * step_dist,
+                ]
+            };
+            let new_tile = self.grid.world_to_tile(new_pos);
+            if let Some(ent_mut) = self.entities.get_mut(&ac.entity_id) {
+                ent_mut.position = new_pos;
+                ent_mut.tile_origin = new_tile;
+                if dist > 0.05 {
+                    let yaw = crate::det_math::det_atan2(dx, dz);
+                    ent_mut.facing_radians = yaw;
+                    ent_mut.turret_facing_radians = yaw;
+                }
+            }
+            if !ac.dropped && dist <= step_dist.max(0.85) {
+                ac.dropped = true;
+                drops_to_deliver.push((ac.owner_player_id, ac.payload.clone(), ac.target_pos));
+                surviving_aircraft.push(ac);
+            } else if ac.dropped && dist <= step_dist.max(1.2) {
+                exited_entity_ids.push(ac.entity_id);
+            } else {
+                surviving_aircraft.push(ac);
+            }
+        }
+        self.active_support_aircraft = surviving_aircraft;
+
+        for (owner_pid, payload, drop_pos) in drops_to_deliver {
+            let ground_target = [
+                drop_pos[0],
+                self.grid.sample_world_height(drop_pos[0], drop_pos[2]),
+                drop_pos[2],
+            ];
+            match payload {
+                SupportAircraftPayload::Paradrop {
+                    drop_unit_id,
+                    count,
+                } => {
+                    self.deliver_paradrop_payload(
+                        owner_pid,
+                        &drop_unit_id,
+                        count,
+                        ground_target,
+                        loaded,
+                    );
+                }
+                SupportAircraftPayload::Airstrike { damage, radius } => {
+                    self.deliver_airstrike_payload(
+                        owner_pid,
+                        "support_airstrike",
+                        damage,
+                        radius,
+                        ground_target,
+                    );
+                }
+            }
+        }
+        for eid in exited_entity_ids {
+            self.entities.remove(&eid);
+            self.cleanup_references_to_removed_entity(eid);
+        }
+
+        if !self.pending_missile_strikes.is_empty() {
+            let mut detonated_missiles: Vec<PendingMissileStrike> = Vec::new();
+            let mut remaining_missiles: Vec<PendingMissileStrike> =
+                Vec::with_capacity(self.pending_missile_strikes.len());
+            for mut ms in std::mem::take(&mut self.pending_missile_strikes) {
+                ms.remaining_secs -= dt;
+                if ms.remaining_secs <= 0.0 {
+                    detonated_missiles.push(ms);
+                } else {
+                    remaining_missiles.push(ms);
+                }
+            }
+            self.pending_missile_strikes = remaining_missiles;
+            for ms in detonated_missiles {
+                self.detonate_nuclear_strike(
+                    ms.owner_player_id,
+                    "nuclear_missile",
+                    ms.target_pos,
+                    ms.damage,
+                    ms.radius,
+                    ms.radiation_duration_secs,
+                );
+            }
+        }
+    }
+
+    pub(crate) fn step_entity_on_tick_hooks(&mut self, loaded: &LoadedMod) {
+        let any_entity_tick_hook = loaded.units.values().any(|u| {
+            u.script_hooks
+                .get("on_tick")
+                .is_some_and(|h| !h.is_empty() && loaded.script_host.has_hook(h))
+        }) || loaded.buildings.values().any(|b| {
+            b.script_hooks
+                .get("on_tick")
+                .is_some_and(|h| !h.is_empty() && loaded.script_host.has_hook(h))
+        });
+        if !any_entity_tick_hook {
+            return;
+        }
+        let mut hooked_ids: Vec<(u64, String)> = Vec::new();
+        for ent in self.entities.values() {
+            if ent.health <= 0.0 || ent.is_phased_out() {
+                continue;
+            }
+            let hook_opt = match &ent.kind {
+                EntityKind::Unit { unit_id } => loaded
+                    .units
+                    .get(unit_id)
+                    .and_then(|u| u.script_hooks.get("on_tick")),
+                EntityKind::Building { building_id } => {
+                    if ent.construction_progress < 1.0 {
+                        None
+                    } else {
+                        loaded
+                            .buildings
+                            .get(building_id)
+                            .and_then(|b| b.script_hooks.get("on_tick"))
+                    }
+                }
+            };
+            if let Some(hook) = hook_opt {
+                if !hook.is_empty() && loaded.script_host.has_hook(hook) {
+                    hooked_ids.push((ent.id, hook.clone()));
+                }
+            }
+        }
+        let mut pending_actions: Vec<(u64, u8, Vec<rts_sdk::scripting::ScriptAction>)> = Vec::new();
+        for (eid, hook) in hooked_ids {
+            if let Some(ent) = self.entities.get_mut(&eid) {
+                let target_pos = ent.attack_ground_pos;
+                let target_id = ent.target_entity_id;
+                Self::sync_entity_script_ctx_pre_hook(ent, target_pos, target_id, None);
+                if loaded
+                    .script_host
+                    .invoke_hook(&hook, &mut ent.script_ctx)
+                    .is_ok()
+                {
+                    ent.health = ent.script_ctx.health.clamp(0.0, ent.max_health);
+                    ent.script_ctx.health = ent.health;
+                    if !ent.script_ctx.emitted_actions.is_empty() {
+                        pending_actions.push((
+                            eid,
+                            ent.player_id,
+                            std::mem::take(&mut ent.script_ctx.emitted_actions),
+                        ));
+                    }
+                }
+            }
+        }
+        for (eid, pid, actions) in pending_actions {
+            self.execute_emitted_script_actions(Some(eid), pid, actions, loaded);
+        }
+    }
+
     pub(crate) fn step_crates(&mut self, loaded: &LoadedMod) {
         let spawn_interval = loaded.manifest.rules.crate_spawn_interval_ticks.max(1);
         let max_crates = loaded.manifest.rules.crate_max_active;
-        if self.tick > 0
+        if self.crates_enabled
+            && self.tick > 0
             && self.tick.is_multiple_of(spawn_interval)
             && self.crates.len() < max_crates
         {
             let w = self.grid.width.max(4);
             let h = self.grid.height.max(4);
-            let h_val = self
-                .tick
-                .wrapping_mul(6364136223846793005)
-                .wrapping_add(1442695040888963407);
-            let raw_tx = 2 + ((h_val >> 16) as i32).abs() % (w - 4).max(1);
-            let raw_tz = 2 + ((h_val >> 32) as i32).abs() % (h - 4).max(1);
+            let h_val = self.next_rng_u64();
+            let w_span = (w - 4).max(1) as u32;
+            let h_span = (h - 4).max(1) as u32;
+            let raw_tx = 2 + (((h_val >> 16) as u32) % w_span) as i32;
+            let raw_tz = 2 + (((h_val >> 32) as u32) % h_span) as i32;
             let cand_tile = self.grid.find_nearest_walkable([raw_tx, raw_tz]);
             if self.grid.is_walkable(cand_tile) && !self.grid.water_tiles.contains(&cand_tile) {
                 let random_kinds = [
@@ -174,14 +464,11 @@ impl SimWorld {
                         .unwrap_or(false),
                     _ => false,
                 };
-                can_collect
-                    && e.player_id != 0
-                    && self.can_entity_act(e, loaded)
-                    && {
-                        let dx = e.position[0] - crate_item.position[0];
-                        let dz = e.position[2] - crate_item.position[2];
-                        dx * dx + dz * dz <= 3.24
-                    }
+                can_collect && e.player_id != 0 && self.can_entity_act(e, loaded) && {
+                    let dx = e.position[0] - crate_item.position[0];
+                    let dz = e.position[2] - crate_item.position[2];
+                    dx * dx + dz * dz <= 3.24
+                }
             }) {
                 collected.push((idx, ent.id, ent.player_id, crate_item.tile, crate_item.kind));
             }
@@ -205,8 +492,16 @@ impl SimWorld {
                 CrateKind::VeterancyPromo => {
                     if let Some(e) = self.entities.get_mut(&collector_id) {
                         e.veterancy = match e.veterancy {
-                            VeterancyRank::Rookie => VeterancyRank::Veteran,
-                            VeterancyRank::Veteran | VeterancyRank::Elite => VeterancyRank::Elite,
+                            VeterancyRank::Rookie => {
+                                e.experience =
+                                    e.experience.max(loaded.manifest.rules.veteran_xp_threshold);
+                                VeterancyRank::Veteran
+                            }
+                            VeterancyRank::Veteran | VeterancyRank::Elite => {
+                                e.experience =
+                                    e.experience.max(loaded.manifest.rules.elite_xp_threshold);
+                                VeterancyRank::Elite
+                            }
                         };
                     }
                 }
@@ -251,8 +546,8 @@ impl SimWorld {
                                 .unwrap_or(false),
                             _ => false,
                         };
-                        if is_vehicle && !e.salvage_upgraded {
-                            e.salvage_upgraded = true;
+                        if is_vehicle && !self.trait_stores.salvage_upgraded(e) {
+                            self.trait_stores.set_salvage_upgraded_on(e, true);
                             e.script_ctx.damage_multiplier *= 1.15;
                             e.max_health = (e.max_health * 1.10).round();
                             e.health = (e.health + e.max_health * 0.25).min(e.max_health);
@@ -345,8 +640,7 @@ impl SimWorld {
                 }
                 EntityKind::Building { building_id } => {
                     if let Some(b_def) = loaded.buildings.get(building_id) {
-                        if b_def.stealth.detects_cloak
-                            && self.is_building_detector_online(e, b_def)
+                        if b_def.stealth.detects_cloak && self.is_building_detector_online(e, b_def)
                         {
                             detectors.push((
                                 e.player_id,
@@ -403,30 +697,56 @@ impl SimWorld {
             return;
         }
 
-        // 2. Check hostile ground unit contact and detonate
+        // 2. Check hostile ground unit contact and detonate (using WorldSpatialIndex + bridge plane separation)
+        self.spatial_index.rebuild_from_iter(
+            self.entities
+                .values()
+                .filter(|e| {
+                    e.is_targetable()
+                        && e.parachute_timer <= 0.0
+                        && !e.is_airborne(loaded)
+                        && e.position[1] <= 2.0
+                        && matches!(e.kind, EntityKind::Unit { .. })
+                })
+                .map(|e| (e.id, e.player_id, e.position)),
+        );
         let mut detonated: Vec<(usize, SimMine)> = Vec::new();
         for (idx, mine) in self.mines.iter().enumerate() {
-            let triggered = self.entities.values().any(|e| {
-                if !e.is_targetable()
-                    || e.parachute_timer > 0.0
-                    || e.is_airborne(loaded)
-                    || e.position[1] > 2.0
-                    || !self.are_hostile(mine.owner_player_id, e.player_id)
-                    || !matches!(e.kind, EntityKind::Unit { .. })
-                {
-                    return false;
-                }
-                let (domain, _) = self.unit_domain_and_altitude(e, loaded);
-                if matches!(domain, MovementDomain::Air | MovementDomain::Jumpjet) {
-                    return false;
-                }
-                if e.tile_origin == mine.tile {
-                    return true;
-                }
-                let dx = e.position[0] - mine.position[0];
-                let dz = e.position[2] - mine.position[2];
-                dx * dx + dz * dz <= 3.6
-            });
+            let mine_y = if mine.position[1].abs() > 1e-4 {
+                mine.position[1]
+            } else {
+                self.grid
+                    .sample_world_height(mine.position[0], mine.position[2])
+            };
+            let mut triggered = false;
+            self.spatial_index.for_each_in_radius_xz(
+                [mine.position[0], mine.position[2]],
+                self.grid.tile_size.max(2.0) + 1.5,
+                |eid, e_pid, e_pos| {
+                    if triggered || !self.are_hostile(mine.owner_player_id, e_pid) {
+                        return;
+                    }
+                    if (e_pos[1] - mine_y).abs() > 0.60 {
+                        return;
+                    }
+                    let Some(e) = self.entities.get(&eid) else {
+                        return;
+                    };
+                    let (domain, _) = self.unit_domain_and_altitude(e, loaded);
+                    if matches!(domain, MovementDomain::Air | MovementDomain::Jumpjet) {
+                        return;
+                    }
+                    if e.tile_origin == mine.tile {
+                        triggered = true;
+                        return;
+                    }
+                    let dx = e_pos[0] - mine.position[0];
+                    let dz = e_pos[2] - mine.position[2];
+                    if dx * dx + dz * dz <= 3.6 {
+                        triggered = true;
+                    }
+                },
+            );
             if triggered {
                 detonated.push((idx, mine.clone()));
             }
@@ -434,14 +754,25 @@ impl SimWorld {
 
         for (idx, mine) in detonated.into_iter().rev() {
             self.mines.remove(idx);
+            let mine_y = if mine.position[1].abs() > 1e-4 {
+                mine.position[1]
+            } else {
+                self.grid
+                    .sample_world_height(mine.position[0], mine.position[2])
+            };
             let r_sq = mine.splash_radius * mine.splash_radius;
+            let mut total_dealt = 0.0_f32;
             for ent in self.entities.values_mut() {
                 if !ent.is_targetable()
                     || ent.is_invulnerable()
                     || ent.parachute_timer > 0.0
                     || ent.is_airborne(loaded)
                     || ent.position[1] > 2.0
-                    || !matches!(ent.kind, EntityKind::Unit { .. } | EntityKind::Building { .. })
+                    || (ent.position[1] - mine_y).abs() > 0.65
+                    || !matches!(
+                        ent.kind,
+                        EntityKind::Unit { .. } | EntityKind::Building { .. }
+                    )
                 {
                     continue;
                 }
@@ -459,11 +790,20 @@ impl SimWorld {
                 let dz = ent.position[2] - mine.position[2];
                 let dist_sq = dx * dx + dz * dz;
                 if dist_sq <= r_sq {
-                    let dist = dist_sq.sqrt();
+                    let dist = crate::det_math::det_sqrt_f32(dist_sq);
                     let falloff = (1.0 - (dist / mine.splash_radius) * 0.6).clamp(0.35, 1.0);
+                    let prev_hp = ent.health;
                     ent.health = (ent.health - mine.damage * falloff).max(0.0);
                     ent.script_ctx.health = ent.health;
+                    let dealt = (prev_hp - ent.health).max(0.0);
+                    if dealt > 0.0 && mine.owner_player_id != 0 {
+                        ent.last_damaged_by_player = mine.owner_player_id;
+                        total_dealt += dealt;
+                    }
                 }
+            }
+            if mine.owner_player_id != 0 && total_dealt > 0.0 {
+                self.record_damage_dealt(mine.owner_player_id, Some("landmine"), total_dealt);
             }
             self.destruction_events.push(DestructionEvent {
                 entity_id: mine.id,
@@ -584,30 +924,49 @@ impl SimWorld {
             })
             .collect();
 
-        let unit_ids: Vec<u64> = self
+        let candidate_ids: Vec<u64> = self
             .entities
             .values()
-            .filter(|e| matches!(e.kind, EntityKind::Unit { .. }) && e.health > 0.0)
+            .filter(|e| {
+                matches!(e.kind, EntityKind::Unit { .. })
+                    && e.health > 0.0
+                    && !e.is_phased_out()
+                    && (self.trait_stores.service_depot_target_id(e).is_some()
+                        || e.active_buffs.iter().any(|b| {
+                            b.remaining_secs > 0.0
+                                && (b.cure_at_service_depot
+                                    || b.id == "parasite"
+                                    || b.on_kill_spawn_unit.is_some())
+                        }))
+            })
             .map(|e| e.id)
             .collect();
 
-        for uid in unit_ids {
-            let Some(ent_snap) = self.entities.get(&uid).cloned() else {
-                continue;
+        let mut parasite_damage_ledger: Vec<(u8, f32)> = Vec::new();
+        for uid in candidate_ids {
+            let (u_pid, u_pos, can_be_cured, u_airborne, u_role, u_domain) = {
+                let Some(ent_ref) = self.entities.get(&uid) else {
+                    continue;
+                };
+                let (role, domain) = match &ent_ref.kind {
+                    EntityKind::Unit { unit_id } => loaded
+                        .units
+                        .get(unit_id)
+                        .map(|u| (u.role, u.movement_domain))
+                        .unwrap_or((UnitRole::Infantry, MovementDomain::Ground)),
+                    EntityKind::Building { .. } => continue,
+                };
+                let curable =
+                    ent_ref.chrono_disable_remaining() <= 0.0 && ent_ref.transported_by.is_none();
+                (
+                    ent_ref.player_id,
+                    ent_ref.position,
+                    curable,
+                    ent_ref.is_airborne(loaded),
+                    role,
+                    domain,
+                )
             };
-            if ent_snap.is_phased_out() {
-                continue;
-            }
-            let (u_role, u_domain) = match &ent_snap.kind {
-                EntityKind::Unit { unit_id } => loaded
-                    .units
-                    .get(unit_id)
-                    .map(|u| (u.role, u.movement_domain))
-                    .unwrap_or((UnitRole::Infantry, MovementDomain::Ground)),
-                EntityKind::Building { .. } => continue,
-            };
-            let can_be_cured =
-                ent_snap.chrono_disable_remaining() <= 0.0 && ent_snap.transported_by.is_none();
             let eligible_for_shipyard = can_be_cured
                 && (u_domain == MovementDomain::Naval
                     || (u_domain == MovementDomain::Amphibious
@@ -616,7 +975,7 @@ impl SimWorld {
                 && matches!(u_role, UnitRole::Vehicle | UnitRole::Harvester)
                 && u_domain != MovementDomain::Naval
                 && u_domain != MovementDomain::Air
-                && !ent_snap.is_airborne(loaded);
+                && !u_airborne;
 
             let mut cured = false;
 
@@ -627,10 +986,8 @@ impl SimWorld {
                     } else {
                         eligible_for_service_depot
                     };
-                    if domain_ok && !self.are_hostile(ent_snap.player_id, d_pid) {
-                        let dist = self
-                            .grid
-                            .distance_to_footprint(ent_snap.position, d_origin, d_fp);
+                    if domain_ok && !self.are_hostile(u_pid, d_pid) {
+                        let dist = self.grid.distance_to_footprint(u_pos, d_origin, d_fp);
                         if dist <= 5.2 {
                             cured = true;
                         }
@@ -643,11 +1000,11 @@ impl SimWorld {
                     let target_ok = if vehicles_only {
                         eligible_for_service_depot
                     } else {
-                        u_domain != MovementDomain::Naval && !ent_snap.is_airborne(loaded)
+                        u_domain != MovementDomain::Naval && !u_airborne
                     };
-                    if target_ok && !self.are_hostile(ent_snap.player_id, h_pid) {
-                        let dx = ent_snap.position[0] - h_pos[0];
-                        let dz = ent_snap.position[2] - h_pos[2];
+                    if target_ok && !self.are_hostile(u_pid, h_pid) {
+                        let dx = u_pos[0] - h_pos[0];
+                        let dz = u_pos[2] - h_pos[2];
                         if dx * dx + dz * dz <= 16.0 {
                             cured = true;
                         }
@@ -659,56 +1016,213 @@ impl SimWorld {
                 if cured {
                     ent.cure_depot_statuses();
                     if ent.health >= ent.max_health {
-                        ent.service_depot_target_id = None;
+                        self.trait_stores.set_service_depot_target_id_on(ent, None);
                     }
-                } else {
-                    let p_dps = ent.parasite_dps();
+                } else if let Some((p_dps, _, attacker_pid)) = ent.parasite_info() {
                     if p_dps > 0.0 && !ent.is_invulnerable() {
+                        let prev_hp = ent.health;
                         ent.health = (ent.health - p_dps * dt).max(0.0);
                         ent.script_ctx.health = ent.health;
+                        let dealt = (prev_hp - ent.health).max(0.0);
+                        if dealt > 0.0 && attacker_pid != 0 {
+                            ent.last_damaged_by_player = attacker_pid;
+                            parasite_damage_ledger.push((attacker_pid, dealt));
+                        }
                     }
                 }
             }
         }
+        for (attacker_pid, dealt) in parasite_damage_ledger {
+            self.record_damage_dealt(attacker_pid, None, dealt);
+        }
 
-        // 1b. Engineer rebuilding of destroyed bridge spans (`destroyed_bridges`)
-        if !self.destroyed_bridges.is_empty() {
-            let mut rebuilt_bridge_indices: Vec<(usize, u64)> = Vec::new();
+        // 1b. Engineer rebuilding of destroyed bridge spans (`destroyed_bridges` & `BridgeRepairHut`s)
+        {
             let mut used_engineers: BTreeSet<u64> = BTreeSet::new();
-            for (b_idx, span) in self.destroyed_bridges.iter().enumerate() {
-                if let Some(eng) = self.entities.values().find(|e| {
-                    e.player_id != 0
-                        && !used_engineers.contains(&e.id)
-                        && self.can_entity_act(e, loaded)
-                        && e.path_waypoints.is_empty()
-                        && match &e.kind {
-                            EntityKind::Unit { unit_id } => loaded
-                                .units
-                                .get(unit_id)
-                                .map(|u| u.role == UnitRole::Engineer)
-                                .unwrap_or(false),
-                            _ => false,
+
+            // Check `BridgeRepairHut` entities and auto-registered bankside `bridge_repair_hut_tiles`
+            let mut hut_tiles: BTreeSet<[i32; 2]> = self.bridge_repair_hut_tiles.clone();
+            for e in self.entities.values() {
+                if e.health > 0.0 {
+                    if let EntityKind::Building { building_id } = &e.kind {
+                        if loaded
+                            .buildings
+                            .get(building_id)
+                            .is_some_and(|b| b.role == BuildingRole::BridgeRepairHut)
+                        {
+                            hut_tiles.insert(e.tile_origin);
                         }
-                        && self
-                            .grid
-                            .distance_to_footprint(e.position, span.tile_origin, span.footprint)
-                            <= 2.8
-                }) {
-                    used_engineers.insert(eng.id);
-                    rebuilt_bridge_indices.push((b_idx, eng.id));
+                    }
                 }
             }
-            for (b_idx, eng_id) in rebuilt_bridge_indices.into_iter().rev() {
-                let span = self.destroyed_bridges.remove(b_idx);
-                self.entities.remove(&eng_id);
-                self.spawn_building_with_rotation(
-                    0,
-                    &span.building_id,
-                    span.tile_origin,
-                    loaded,
-                    false,
-                    span.rotated,
-                );
+
+            if !hut_tiles.is_empty()
+                && (!self.destroyed_bridges.is_empty()
+                    || self
+                        .grid
+                        .bridge_seed_tiles
+                        .iter()
+                        .any(|bt| !self.grid.bridge_tiles.contains(bt)))
+            {
+                let mut hut_repairs: Vec<(u64, BTreeSet<[i32; 2]>, Vec<usize>)> = Vec::new();
+                for &hut_tile in &hut_tiles {
+                    let hut_world = self.grid.tile_to_world(hut_tile);
+                    // Gather contiguous `bridge_seed_tiles` component adjacent (within 2 tiles) to `hut_tile`
+                    let mut component: BTreeSet<[i32; 2]> = BTreeSet::new();
+                    let mut queue: std::collections::VecDeque<[i32; 2]> =
+                        std::collections::VecDeque::new();
+                    for dz in -2i32..=2 {
+                        for dx in -2i32..=2 {
+                            let adj = [hut_tile[0] + dx, hut_tile[1] + dz];
+                            if self.grid.bridge_seed_tiles.contains(&adj) && component.insert(adj) {
+                                queue.push_back(adj);
+                            }
+                        }
+                    }
+                    while let Some(cur) = queue.pop_front() {
+                        for [ox, oz] in [[1, 0], [-1, 0], [0, 1], [0, -1]] {
+                            let nxt = [cur[0] + ox, cur[1] + oz];
+                            if self.grid.bridge_seed_tiles.contains(&nxt) && component.insert(nxt) {
+                                queue.push_back(nxt);
+                            }
+                        }
+                    }
+
+                    let mut matching_spans: Vec<usize> = Vec::new();
+                    for (s_idx, span) in self.destroyed_bridges.iter().enumerate() {
+                        let span_near_hut = (span.tile_origin[0] - hut_tile[0]).abs() <= 4
+                            && (span.tile_origin[1] - hut_tile[1]).abs() <= 4;
+                        let mut overlaps_comp = false;
+                        for dz in 0..span.footprint[1] as i32 {
+                            for dx in 0..span.footprint[0] as i32 {
+                                let st = [span.tile_origin[0] + dx, span.tile_origin[1] + dz];
+                                if component.contains(&st) {
+                                    overlaps_comp = true;
+                                }
+                            }
+                        }
+                        if span_near_hut || overlaps_comp {
+                            matching_spans.push(s_idx);
+                            for dz in 0..span.footprint[1] as i32 {
+                                for dx in 0..span.footprint[0] as i32 {
+                                    component.insert([
+                                        span.tile_origin[0] + dx,
+                                        span.tile_origin[1] + dz,
+                                    ]);
+                                }
+                            }
+                        }
+                    }
+
+                    let needs_repair = !matching_spans.is_empty()
+                        || component
+                            .iter()
+                            .any(|bt| !self.grid.bridge_tiles.contains(bt));
+                    if !needs_repair {
+                        continue;
+                    }
+
+                    if let Some(eng) = self.entities.values().find(|e| {
+                        e.player_id != 0
+                            && !used_engineers.contains(&e.id)
+                            && self.can_entity_act(e, loaded)
+                            && match &e.kind {
+                                EntityKind::Unit { unit_id } => loaded
+                                    .units
+                                    .get(unit_id)
+                                    .is_some_and(|u| u.role == UnitRole::Engineer),
+                                _ => false,
+                            }
+                            && crate::det_math::det_distance_xz_f32(e.position, hut_world) <= 2.8
+                    }) {
+                        used_engineers.insert(eng.id);
+                        hut_repairs.push((eng.id, component, matching_spans));
+                    }
+                }
+
+                if !hut_repairs.is_empty() {
+                    let mut spans_to_remove: BTreeSet<usize> = BTreeSet::new();
+                    for (eng_id, comp_tiles, span_indices) in hut_repairs {
+                        self.entities.remove(&eng_id);
+                        self.cleanup_references_to_removed_entity(eng_id);
+                        for bt in comp_tiles {
+                            self.grid.set_footprint_bridge(bt, [1, 1], true);
+                        }
+                        for s_idx in span_indices {
+                            spans_to_remove.insert(s_idx);
+                        }
+                    }
+                    for s_idx in spans_to_remove.into_iter().rev() {
+                        if s_idx < self.destroyed_bridges.len() {
+                            let span = self.destroyed_bridges.remove(s_idx);
+                            if self
+                                .spawn_building_with_rotation(
+                                    0,
+                                    &span.building_id,
+                                    span.tile_origin,
+                                    loaded,
+                                    false,
+                                    span.rotated,
+                                )
+                                .is_none()
+                            {
+                                self.grid.set_footprint_bridge(
+                                    span.tile_origin,
+                                    span.footprint,
+                                    true,
+                                );
+                            }
+                        }
+                    }
+                    self.grid.rebuild_clearance_map();
+                }
+            }
+
+            if !self.destroyed_bridges.is_empty() {
+                let mut rebuilt_bridge_indices: Vec<(usize, u64)> = Vec::new();
+                for (b_idx, span) in self.destroyed_bridges.iter().enumerate() {
+                    if let Some(eng) = self.entities.values().find(|e| {
+                        e.player_id != 0
+                            && !used_engineers.contains(&e.id)
+                            && self.can_entity_act(e, loaded)
+                            && e.path_waypoints.is_empty()
+                            && match &e.kind {
+                                EntityKind::Unit { unit_id } => loaded
+                                    .units
+                                    .get(unit_id)
+                                    .map(|u| u.role == UnitRole::Engineer)
+                                    .unwrap_or(false),
+                                _ => false,
+                            }
+                            && self.grid.distance_to_footprint(
+                                e.position,
+                                span.tile_origin,
+                                span.footprint,
+                            ) <= 2.8
+                    }) {
+                        used_engineers.insert(eng.id);
+                        rebuilt_bridge_indices.push((b_idx, eng.id));
+                    }
+                }
+                for (b_idx, eng_id) in rebuilt_bridge_indices.into_iter().rev() {
+                    let span = self.destroyed_bridges.remove(b_idx);
+                    self.entities.remove(&eng_id);
+                    self.cleanup_references_to_removed_entity(eng_id);
+                    if self
+                        .spawn_building_with_rotation(
+                            0,
+                            &span.building_id,
+                            span.tile_origin,
+                            loaded,
+                            false,
+                            span.rotated,
+                        )
+                        .is_none()
+                    {
+                        self.grid
+                            .set_footprint_bridge(span.tile_origin, span.footprint, true);
+                    }
+                }
             }
         }
 
@@ -741,6 +1255,9 @@ impl SimWorld {
             for prop in &mut self.props {
                 if prop.kind != PropKind::ExplosiveBarrel {
                     for c_pos in &crusher_positions {
+                        if (prop.position[1] - c_pos[1]).abs() > 0.65 {
+                            continue;
+                        }
                         let dx = prop.position[0] - c_pos[0];
                         let dz = prop.position[2] - c_pos[2];
                         if dx * dx + dz * dz <= 1.44 {
@@ -755,14 +1272,23 @@ impl SimWorld {
         // Resolve destroyed props (including chain-reaction ExplosiveBarrel detonations)
         while let Some(dead_idx) = self.props.iter().position(|p| p.health <= 0.0) {
             let dead_prop = self.props.remove(dead_idx);
+            let killer_pid = dead_prop.last_damaged_by_player;
             if dead_prop.kind == PropKind::ExplosiveBarrel {
+                let prop_y = if dead_prop.position[1].abs() > 1e-4 {
+                    dead_prop.position[1]
+                } else {
+                    self.grid
+                        .sample_world_height(dead_prop.position[0], dead_prop.position[2])
+                };
                 let splash_r = 4.5_f32;
                 let r_sq = splash_r * splash_r;
+                let mut total_dealt = 0.0_f32;
                 for ent in self.entities.values_mut() {
                     if !ent.is_targetable()
                         || ent.is_invulnerable()
                         || ent.is_airborne(loaded)
                         || ent.position[1] > 2.0
+                        || (ent.position[1] - prop_y).abs() > 0.65
                     {
                         continue;
                     }
@@ -770,21 +1296,44 @@ impl SimWorld {
                     let dz = ent.position[2] - dead_prop.position[2];
                     let dist_sq = dx * dx + dz * dz;
                     if dist_sq <= r_sq {
-                        let falloff = (1.0 - (dist_sq.sqrt() / splash_r) * 0.5).clamp(0.4, 1.0);
+                        let falloff = (1.0
+                            - (crate::det_math::det_sqrt_f32(dist_sq) / splash_r) * 0.5)
+                            .clamp(0.4, 1.0);
+                        let prev_hp = ent.health;
                         ent.health = (ent.health - 160.0 * falloff).max(0.0);
                         ent.script_ctx.health = ent.health;
+                        let dealt = (prev_hp - ent.health).max(0.0);
+                        if dealt > 0.0 && killer_pid != 0 {
+                            ent.last_damaged_by_player = killer_pid;
+                            total_dealt += dealt;
+                        }
                     }
                 }
+                if killer_pid != 0 && total_dealt > 0.0 {
+                    self.record_damage_dealt(killer_pid, None, total_dealt);
+                }
                 for other_prop in &mut self.props {
+                    let other_y = if other_prop.position[1].abs() > 1e-4 {
+                        other_prop.position[1]
+                    } else {
+                        self.grid
+                            .sample_world_height(other_prop.position[0], other_prop.position[2])
+                    };
+                    if (other_y - prop_y).abs() > 0.65 {
+                        continue;
+                    }
                     let dx = other_prop.position[0] - dead_prop.position[0];
                     let dz = other_prop.position[2] - dead_prop.position[2];
                     if dx * dx + dz * dz <= r_sq {
                         other_prop.health = 0.0;
+                        if other_prop.last_damaged_by_player == 0 {
+                            other_prop.last_damaged_by_player = killer_pid;
+                        }
                     }
                 }
                 self.destruction_events.push(DestructionEvent {
                     entity_id: dead_prop.id + 900_000,
-                    player_id: 0,
+                    player_id: killer_pid,
                     position: dead_prop.position,
                     is_building: false,
                     radius: 4.2,
@@ -793,7 +1342,7 @@ impl SimWorld {
             } else {
                 self.destruction_events.push(DestructionEvent {
                     entity_id: dead_prop.id + 900_000,
-                    player_id: 0,
+                    player_id: killer_pid,
                     position: dead_prop.position,
                     is_building: false,
                     radius: 1.2,
@@ -852,7 +1401,7 @@ impl SimWorld {
             _ => {}
         }
 
-        if is_multiplayer {
+        if is_multiplayer || self.multiplayer_mode {
             return Err(
                 "Dev-Console is in Read-Only Profiler & Desync-Diagnostic Mode during active Multiplayer Lockstep"
                     .to_string(),
@@ -939,7 +1488,13 @@ impl SimWorld {
                     self.execute_trigger_action(act.clone(), default_player_id, loaded);
                 }
                 if !zone.script_hook.trim().is_empty() {
-                    self.invoke_global_event("on_trigger_zone", &zone.script_hook, 0, default_player_id, loaded);
+                    self.invoke_global_event(
+                        &zone.script_hook,
+                        &zone.id,
+                        0,
+                        default_player_id,
+                        loaded,
+                    );
                 }
                 Ok(format!("Triggered zone '{zone_id}'"))
             }
@@ -959,8 +1514,8 @@ impl SimWorld {
                 Ok(format!("Healed {healed} entities for P{pid}"))
             }
             "kill" => {
-                let Some(eid) = tokens.get(1).and_then(|s| s.parse::<u64>().ok()) else {
-                    return Err("Usage: kill <entity_id>".to_string());
+                let Some(eid) = tokens.get(1).and_then(|s| self.resolve_console_entity_id(s)) else {
+                    return Err("Usage: kill <entity_id|@tag>".to_string());
                 };
                 let Some(ent) = self.entities.get_mut(&eid) else {
                     return Err(format!("Entity {eid} not found"));
@@ -1008,9 +1563,284 @@ impl SimWorld {
                 }
                 Ok(format!("Stepped {steps} tick(s) -> tick {}", self.tick))
             }
+            "move" => {
+                let (Some(eid), Some(tx), Some(tz)) = (
+                    tokens.get(1).and_then(|s| self.resolve_console_entity_id(s)),
+                    tokens.get(2).and_then(|s| s.parse::<i32>().ok()),
+                    tokens.get(3).and_then(|s| s.parse::<i32>().ok()),
+                ) else {
+                    return Err("Usage: move <entity_id|@tag> <tile_x> <tile_z>".to_string());
+                };
+                let pid = self
+                    .entities
+                    .get(&eid)
+                    .map(|e| e.player_id)
+                    .unwrap_or(default_player_id);
+                let target_pos = self.grid.tile_to_world([tx, tz]);
+                self.apply_command(
+                    crate::world::GameCommand::MoveUnits {
+                        player_id: pid,
+                        entity_ids: vec![eid],
+                        target_pos,
+                    },
+                    loaded,
+                );
+                Ok(format!("Ordered entity {eid} to move to [{tx}, {tz}]"))
+            }
+            "attack_move" => {
+                let (Some(eid), Some(tx), Some(tz)) = (
+                    tokens.get(1).and_then(|s| self.resolve_console_entity_id(s)),
+                    tokens.get(2).and_then(|s| s.parse::<i32>().ok()),
+                    tokens.get(3).and_then(|s| s.parse::<i32>().ok()),
+                ) else {
+                    return Err(
+                        "Usage: attack_move <entity_id|@tag> <tile_x> <tile_z>".to_string(),
+                    );
+                };
+                let pid = self
+                    .entities
+                    .get(&eid)
+                    .map(|e| e.player_id)
+                    .unwrap_or(default_player_id);
+                let target_pos = self.grid.tile_to_world([tx, tz]);
+                self.apply_command(
+                    crate::world::GameCommand::AttackMove {
+                        player_id: pid,
+                        entity_ids: vec![eid],
+                        target_pos,
+                    },
+                    loaded,
+                );
+                Ok(format!("Ordered entity {eid} to attack-move to [{tx}, {tz}]"))
+            }
+            "attack" => {
+                let (Some(eid), Some(tid)) = (
+                    tokens.get(1).and_then(|s| self.resolve_console_entity_id(s)),
+                    tokens.get(2).and_then(|s| self.resolve_console_entity_id(s)),
+                ) else {
+                    return Err("Usage: attack <entity_id|@tag> <target_id|@tag>".to_string());
+                };
+                let pid = self
+                    .entities
+                    .get(&eid)
+                    .map(|e| e.player_id)
+                    .unwrap_or(default_player_id);
+                self.apply_command(
+                    crate::world::GameCommand::AttackTarget {
+                        player_id: pid,
+                        attacker_ids: vec![eid],
+                        target_entity_id: tid,
+                    },
+                    loaded,
+                );
+                Ok(format!("Ordered entity {eid} to attack {tid}"))
+            }
+            "damage" => {
+                let (Some(eid), Some(amount)) = (
+                    tokens.get(1).and_then(|s| self.resolve_console_entity_id(s)),
+                    tokens.get(2).and_then(|s| s.parse::<f32>().ok()),
+                ) else {
+                    return Err("Usage: damage <entity_id|@tag> <amount>".to_string());
+                };
+                let Some(ent) = self.entities.get_mut(&eid) else {
+                    return Err(format!("Entity {eid} not found"));
+                };
+                ent.health = (ent.health - amount.max(0.0)).max(0.0);
+                ent.script_ctx.health = ent.health;
+                Ok(format!("Damaged entity {eid} -> {:.1} HP", ent.health))
+            }
+            "demolish_bridge" => {
+                let (Some(tx), Some(tz)) = (
+                    tokens.get(1).and_then(|s| s.parse::<i32>().ok()),
+                    tokens.get(2).and_then(|s| s.parse::<i32>().ok()),
+                ) else {
+                    return Err("Usage: demolish_bridge <tile_x> <tile_z>".to_string());
+                };
+                let seed = [tx, tz];
+                let mut component: BTreeSet<[i32; 2]> = BTreeSet::new();
+                let mut queue = std::collections::VecDeque::new();
+                if self.grid.bridge_tiles.contains(&seed) {
+                    component.insert(seed);
+                    queue.push_back(seed);
+                }
+                while let Some(cur) = queue.pop_front() {
+                    for [ox, oz] in [[1, 0], [-1, 0], [0, 1], [0, -1]] {
+                        let nxt = [cur[0] + ox, cur[1] + oz];
+                        if self.grid.bridge_tiles.contains(&nxt) && component.insert(nxt) {
+                            queue.push_back(nxt);
+                        }
+                    }
+                }
+                let bridge_b_id = loaded
+                    .buildings
+                    .values()
+                    .find(|b| b.role == BuildingRole::Bridge)
+                    .map(|b| b.id.clone())
+                    .unwrap_or_else(|| "map_bridge_span".to_string());
+                for bt in &component {
+                    self.grid.bridge_seed_tiles.insert(*bt);
+                    self.grid.set_footprint_bridge(*bt, [1, 1], false);
+                    if !self.destroyed_bridges.iter().any(|b| b.tile_origin == *bt) {
+                        self.destroyed_bridges.push(crate::world::DestroyedBridgeSpan {
+                            building_id: bridge_b_id.clone(),
+                            tile_origin: *bt,
+                            footprint: [1, 1],
+                            rotated: false,
+                            destroyed_by_player_id: 0,
+                        });
+                    }
+                }
+                self.grid.rebuild_clearance_map();
+                Ok(format!(
+                    "Demolished {} bridge tile(s) connected to [{tx}, {tz}]",
+                    component.len()
+                ))
+            }
+            "ai_takeover" => {
+                let Some(pid) = tokens.get(1).and_then(|s| s.parse::<u8>().ok()) else {
+                    return Err("Usage: ai_takeover <player_id> [easy|medium|hard]".to_string());
+                };
+                let difficulty = match tokens
+                    .get(2)
+                    .map(|s| s.to_ascii_lowercase())
+                    .as_deref()
+                    .unwrap_or("medium")
+                {
+                    "easy" => crate::ai::AiDifficulty::Easy,
+                    "hard" => crate::ai::AiDifficulty::Hard,
+                    _ => crate::ai::AiDifficulty::Medium,
+                };
+                self.apply_command(
+                    crate::world::GameCommand::EnableAiTakeover {
+                        player_id: pid,
+                        difficulty,
+                    },
+                    loaded,
+                );
+                Ok(format!("Enabled AI takeover ({difficulty:?}) for P{pid}"))
+            }
+            "retreat_squad" => {
+                let Some(eid) = tokens.get(1).and_then(|s| self.resolve_console_entity_id(s)) else {
+                    return Err("Usage: retreat_squad <squad_id|@tag>".to_string());
+                };
+                let pid = self
+                    .entities
+                    .get(&eid)
+                    .map(|e| e.player_id)
+                    .unwrap_or(default_player_id);
+                self.apply_command(
+                    crate::world::GameCommand::RetreatSquad {
+                        player_id: pid,
+                        squad_ids: vec![eid],
+                    },
+                    loaded,
+                );
+                Ok(format!("Retreated squad {eid}"))
+            }
+            "reinforce_squad" => {
+                let Some(eid) = tokens.get(1).and_then(|s| self.resolve_console_entity_id(s)) else {
+                    return Err("Usage: reinforce_squad <squad_id|@tag>".to_string());
+                };
+                let pid = self
+                    .entities
+                    .get(&eid)
+                    .map(|e| e.player_id)
+                    .unwrap_or(default_player_id);
+                self.apply_command(
+                    crate::world::GameCommand::ReinforceSquadNow {
+                        player_id: pid,
+                        squad_ids: vec![eid],
+                    },
+                    loaded,
+                );
+                Ok(format!("Reinforced squad {eid}"))
+            }
+            "upgrade_squad" => {
+                let (Some(eid), Some(&upgrade_id)) = (
+                    tokens.get(1).and_then(|s| self.resolve_console_entity_id(s)),
+                    tokens.get(2),
+                ) else {
+                    return Err(
+                        "Usage: upgrade_squad <squad_id|@tag> <upgrade_id>".to_string(),
+                    );
+                };
+                let pid = self
+                    .entities
+                    .get(&eid)
+                    .map(|e| e.player_id)
+                    .unwrap_or(default_player_id);
+                self.apply_command(
+                    crate::world::GameCommand::UpgradeSquadWeapon {
+                        player_id: pid,
+                        squad_id: eid,
+                        upgrade_id: upgrade_id.to_string(),
+                    },
+                    loaded,
+                );
+                Ok(format!("Upgraded squad {eid} with '{upgrade_id}'"))
+            }
+            "worker_build" => {
+                let (Some(worker_id), Some(&building_id), Some(tx), Some(tz)) = (
+                    tokens.get(1).and_then(|s| {
+                        if *s == "0" {
+                            Some(0)
+                        } else {
+                            self.resolve_console_entity_id(s)
+                        }
+                    }),
+                    tokens.get(2),
+                    tokens.get(3).and_then(|s| s.parse::<i32>().ok()),
+                    tokens.get(4).and_then(|s| s.parse::<i32>().ok()),
+                ) else {
+                    return Err(
+                        "Usage: worker_build <worker_id|@tag|0> <building_id> <tile_x> <tile_z> [player_id]"
+                            .to_string(),
+                    );
+                };
+                let pid = tokens
+                    .get(5)
+                    .and_then(|s| s.parse::<u8>().ok())
+                    .or_else(|| self.entities.get(&worker_id).map(|e| e.player_id))
+                    .unwrap_or(default_player_id);
+                if worker_id == 0 {
+                    self.apply_command(
+                        crate::world::GameCommand::PlaceBuilding {
+                            player_id: pid,
+                            building_id: building_id.to_string(),
+                            tile_pos: [tx, tz],
+                        },
+                        loaded,
+                    );
+                } else {
+                    self.apply_command(
+                        crate::world::GameCommand::OrderWorkerConstruct {
+                            player_id: pid,
+                            worker_ids: vec![worker_id],
+                            building_id: building_id.to_string(),
+                            tile_pos: [tx, tz],
+                        },
+                        loaded,
+                    );
+                }
+                Ok(format!(
+                    "Ordered construction of '{}' at [{tx}, {tz}] for P{pid} (worker={worker_id})",
+                    building_id
+                ))
+            }
             _ => Err(format!(
-                "Unknown dev command '{verb}'. Supported: status, hashes, spawn, credits, var, trigger, heal, kill, instant_build, reveal, step"
+                "Unknown dev command '{verb}'. Supported: status, hashes, spawn, credits, var, trigger, heal, kill, instant_build, reveal, step, move, attack_move, attack, damage, demolish_bridge, ai_takeover, retreat_squad, reinforce_squad, upgrade_squad, worker_build"
             )),
+        }
+    }
+
+    fn resolve_console_entity_id(&self, token: &str) -> Option<u64> {
+        if let Some(tag_name) = token.strip_prefix('@') {
+            self.entity_tags
+                .iter()
+                .find(|(_, v)| v.as_str() == tag_name)
+                .map(|(eid, _)| *eid)
+        } else {
+            token.parse::<u64>().ok()
         }
     }
 }

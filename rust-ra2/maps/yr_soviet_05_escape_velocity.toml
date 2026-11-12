@@ -1,50 +1,908 @@
 id = "yr_soviet_05_escape_velocity"
-name = "YR Soviet 05: Escape Velocity (Easter Island)"
+name = "YR Op. 05: Escape Velocity (Easter Island)"
 width = 96
 height = 96
 tile_size = 2.0
 ore_regen_per_sec = 4.0
-mission_objective = "We have uncovered Yuri's secret Submarine Base on an uncharted island in the Pacific Ocean. The threat of Yuri's Boomer Subs must be neutralized! \n \n Objective 1: Pick a landing zone and construct a base. \n Objective 2: Locate and destroy Yuri's Submarine Pen. \n Objective 3: Finish off all remaining Yuri forces."
+mission_objective = "Sink Yuri's Boomer Submarine pack off Easter Island, breach the Moai defense line, and raze Yuri's Submarine Pens and launch complex."
 
 [[ore_patches]]
-position = [16, 8]
+position = [27, 20]
 radius = 3
-amount_per_tile = 1400
+amount_per_tile = 1600
 
 [[ore_patches]]
-position = [78, 86]
+position = [58, 68]
 radius = 3
-amount_per_tile = 1400
+amount_per_tile = 1550
 
-[[ore_patches]]
+[[gem_patches]]
 position = [48, 48]
-radius = 4
-amount_per_tile = 2000
+radius = 2
+amount_per_tile = 2500
 
-[[ore_patches]]
-position = [45, 11]
-radius = 3
-amount_per_tile = 1500
+[[water_rects]]
+min = [7, 1]
+max = [26, 1]
 
-[[ore_patches]]
-position = [45, 11]
-radius = 3
-amount_per_tile = 1500
+[[water_rects]]
+min = [59, 1]
+max = [77, 1]
+
+[[water_rects]]
+min = [6, 2]
+max = [25, 2]
+
+[[water_rects]]
+min = [59, 2]
+max = [78, 2]
+
+[[water_rects]]
+min = [4, 3]
+max = [24, 3]
+
+[[water_rects]]
+min = [60, 3]
+max = [79, 3]
+
+[[water_rects]]
+min = [3, 4]
+max = [23, 4]
+
+[[water_rects]]
+min = [60, 4]
+max = [80, 5]
+
+[[water_rects]]
+min = [3, 5]
+max = [19, 5]
+
+[[water_rects]]
+min = [2, 6]
+max = [19, 6]
+
+[[water_rects]]
+min = [60, 6]
+max = [81, 6]
+
+[[water_rects]]
+min = [1, 7]
+max = [18, 7]
+
+[[water_rects]]
+min = [60, 7]
+max = [82, 7]
+
+[[water_rects]]
+min = [1, 8]
+max = [15, 9]
+
+[[water_rects]]
+min = [59, 8]
+max = [83, 8]
+
+[[water_rects]]
+min = [59, 9]
+max = [84, 9]
+
+[[water_rects]]
+min = [1, 10]
+max = [9, 21]
+
+[[water_rects]]
+min = [59, 10]
+max = [85, 10]
+
+[[water_rects]]
+min = [59, 11]
+max = [86, 11]
+
+[[water_rects]]
+min = [59, 12]
+max = [87, 12]
+
+[[water_rects]]
+min = [59, 13]
+max = [88, 13]
+
+[[water_rects]]
+min = [34, 14]
+max = [34, 14]
+
+[[water_rects]]
+min = [62, 14]
+max = [89, 15]
+
+[[water_rects]]
+min = [34, 15]
+max = [37, 15]
+
+[[water_rects]]
+min = [40, 15]
+max = [40, 15]
+
+[[water_rects]]
+min = [37, 16]
+max = [41, 16]
+
+[[water_rects]]
+min = [62, 16]
+max = [90, 16]
+
+[[water_rects]]
+min = [41, 17]
+max = [41, 17]
+
+[[water_rects]]
+min = [63, 17]
+max = [92, 17]
+
+[[water_rects]]
+min = [64, 18]
+max = [93, 18]
+
+[[water_rects]]
+min = [36, 19]
+max = [37, 19]
+
+[[water_rects]]
+min = [64, 19]
+max = [94, 19]
+
+[[water_rects]]
+min = [35, 20]
+max = [37, 21]
+
+[[water_rects]]
+min = [67, 20]
+max = [94, 20]
+
+[[water_rects]]
+min = [68, 21]
+max = [94, 21]
+
+[[water_rects]]
+min = [1, 22]
+max = [7, 22]
+
+[[water_rects]]
+min = [33, 22]
+max = [37, 22]
+
+[[water_rects]]
+min = [68, 22]
+max = [71, 22]
+
+[[water_rects]]
+min = [76, 22]
+max = [94, 22]
+
+[[water_rects]]
+min = [1, 23]
+max = [6, 29]
+
+[[water_rects]]
+min = [33, 23]
+max = [34, 23]
+
+[[water_rects]]
+min = [36, 23]
+max = [37, 23]
+
+[[water_rects]]
+min = [71, 23]
+max = [71, 23]
+
+[[water_rects]]
+min = [77, 23]
+max = [94, 23]
+
+[[water_rects]]
+min = [36, 24]
+max = [40, 24]
+
+[[water_rects]]
+min = [80, 24]
+max = [94, 24]
+
+[[water_rects]]
+min = [39, 25]
+max = [41, 26]
+
+[[water_rects]]
+min = [82, 25]
+max = [94, 27]
+
+[[water_rects]]
+min = [40, 27]
+max = [43, 27]
+
+[[water_rects]]
+min = [35, 28]
+max = [35, 32]
+
+[[water_rects]]
+min = [43, 28]
+max = [43, 28]
+
+[[water_rects]]
+min = [47, 28]
+max = [47, 28]
+
+[[water_rects]]
+min = [83, 28]
+max = [94, 28]
+
+[[water_rects]]
+min = [38, 29]
+max = [38, 29]
+
+[[water_rects]]
+min = [46, 29]
+max = [47, 29]
+
+[[water_rects]]
+min = [49, 29]
+max = [49, 33]
+
+[[water_rects]]
+min = [85, 29]
+max = [94, 29]
+
+[[water_rects]]
+min = [1, 30]
+max = [7, 33]
+
+[[water_rects]]
+min = [38, 30]
+max = [39, 30]
+
+[[water_rects]]
+min = [45, 30]
+max = [47, 30]
+
+[[water_rects]]
+min = [86, 30]
+max = [94, 30]
+
+[[water_rects]]
+min = [38, 31]
+max = [47, 32]
+
+[[water_rects]]
+min = [87, 31]
+max = [94, 31]
+
+[[water_rects]]
+min = [88, 32]
+max = [94, 32]
+
+[[water_rects]]
+min = [35, 33]
+max = [40, 33]
+
+[[water_rects]]
+min = [42, 33]
+max = [44, 33]
+
+[[water_rects]]
+min = [46, 33]
+max = [47, 33]
+
+[[water_rects]]
+min = [89, 33]
+max = [94, 33]
+
+[[water_rects]]
+min = [1, 34]
+max = [1, 34]
+
+[[water_rects]]
+min = [5, 34]
+max = [6, 34]
+
+[[water_rects]]
+min = [36, 34]
+max = [44, 34]
+
+[[water_rects]]
+min = [46, 34]
+max = [49, 34]
+
+[[water_rects]]
+min = [91, 34]
+max = [94, 34]
+
+[[water_rects]]
+min = [6, 35]
+max = [6, 35]
+
+[[water_rects]]
+min = [36, 35]
+max = [48, 35]
+
+[[water_rects]]
+min = [94, 35]
+max = [94, 35]
+
+[[water_rects]]
+min = [30, 36]
+max = [30, 36]
+
+[[water_rects]]
+min = [36, 36]
+max = [40, 36]
+
+[[water_rects]]
+min = [43, 36]
+max = [48, 36]
+
+[[water_rects]]
+min = [55, 36]
+max = [56, 36]
+
+[[water_rects]]
+min = [29, 37]
+max = [47, 37]
+
+[[water_rects]]
+min = [54, 37]
+max = [56, 37]
+
+[[water_rects]]
+min = [27, 38]
+max = [43, 38]
+
+[[water_rects]]
+min = [46, 38]
+max = [47, 39]
+
+[[water_rects]]
+min = [49, 38]
+max = [57, 38]
+
+[[water_rects]]
+min = [26, 39]
+max = [41, 39]
+
+[[water_rects]]
+min = [49, 39]
+max = [58, 39]
+
+[[water_rects]]
+min = [26, 40]
+max = [39, 40]
+
+[[water_rects]]
+min = [46, 40]
+max = [61, 41]
+
+[[water_rects]]
+min = [26, 41]
+max = [40, 41]
+
+[[water_rects]]
+min = [26, 42]
+max = [61, 42]
+
+[[water_rects]]
+min = [28, 43]
+max = [62, 43]
+
+[[water_rects]]
+min = [28, 44]
+max = [39, 44]
+
+[[water_rects]]
+min = [46, 44]
+max = [50, 44]
+
+[[water_rects]]
+min = [55, 44]
+max = [62, 44]
+
+[[water_rects]]
+min = [28, 45]
+max = [32, 46]
+
+[[water_rects]]
+min = [36, 45]
+max = [39, 45]
+
+[[water_rects]]
+min = [41, 45]
+max = [62, 45]
+
+[[water_rects]]
+min = [34, 46]
+max = [39, 51]
+
+[[water_rects]]
+min = [41, 46]
+max = [45, 50]
+
+[[water_rects]]
+min = [51, 46]
+max = [62, 47]
+
+[[water_rects]]
+min = [26, 47]
+max = [32, 50]
+
+[[water_rects]]
+min = [51, 48]
+max = [59, 50]
+
+[[water_rects]]
+min = [94, 49]
+max = [94, 50]
+
+[[water_rects]]
+min = [27, 51]
+max = [32, 51]
+
+[[water_rects]]
+min = [41, 51]
+max = [50, 51]
+
+[[water_rects]]
+min = [54, 51]
+max = [58, 51]
+
+[[water_rects]]
+min = [93, 51]
+max = [94, 51]
+
+[[water_rects]]
+min = [1, 52]
+max = [3, 52]
+
+[[water_rects]]
+min = [28, 52]
+max = [58, 52]
+
+[[water_rects]]
+min = [89, 52]
+max = [94, 54]
+
+[[water_rects]]
+min = [1, 53]
+max = [4, 53]
+
+[[water_rects]]
+min = [28, 53]
+max = [37, 53]
+
+[[water_rects]]
+min = [39, 53]
+max = [47, 53]
+
+[[water_rects]]
+min = [49, 53]
+max = [58, 53]
+
+[[water_rects]]
+min = [1, 54]
+max = [5, 54]
+
+[[water_rects]]
+min = [28, 54]
+max = [57, 54]
+
+[[water_rects]]
+min = [1, 55]
+max = [7, 58]
+
+[[water_rects]]
+min = [28, 55]
+max = [55, 55]
+
+[[water_rects]]
+min = [86, 55]
+max = [94, 55]
+
+[[water_rects]]
+min = [29, 56]
+max = [55, 57]
+
+[[water_rects]]
+min = [85, 56]
+max = [94, 58]
+
+[[water_rects]]
+min = [33, 58]
+max = [52, 58]
+
+[[water_rects]]
+min = [1, 59]
+max = [9, 59]
+
+[[water_rects]]
+min = [34, 59]
+max = [51, 59]
+
+[[water_rects]]
+min = [84, 59]
+max = [94, 60]
+
+[[water_rects]]
+min = [1, 60]
+max = [10, 64]
+
+[[water_rects]]
+min = [36, 60]
+max = [51, 60]
+
+[[water_rects]]
+min = [37, 61]
+max = [51, 61]
+
+[[water_rects]]
+min = [82, 61]
+max = [94, 62]
+
+[[water_rects]]
+min = [37, 62]
+max = [38, 62]
+
+[[water_rects]]
+min = [43, 62]
+max = [51, 62]
+
+[[water_rects]]
+min = [44, 63]
+max = [51, 63]
+
+[[water_rects]]
+min = [81, 63]
+max = [94, 65]
+
+[[water_rects]]
+min = [44, 64]
+max = [52, 64]
+
+[[water_rects]]
+min = [1, 65]
+max = [11, 65]
+
+[[water_rects]]
+min = [44, 65]
+max = [53, 67]
+
+[[water_rects]]
+min = [1, 66]
+max = [12, 67]
+
+[[water_rects]]
+min = [79, 66]
+max = [94, 67]
+
+[[water_rects]]
+min = [1, 68]
+max = [13, 68]
+
+[[water_rects]]
+min = [43, 68]
+max = [55, 70]
+
+[[water_rects]]
+min = [77, 68]
+max = [94, 68]
+
+[[water_rects]]
+min = [1, 69]
+max = [14, 69]
+
+[[water_rects]]
+min = [77, 69]
+max = [93, 69]
+
+[[water_rects]]
+min = [2, 70]
+max = [14, 70]
+
+[[water_rects]]
+min = [74, 70]
+max = [92, 70]
+
+[[water_rects]]
+min = [3, 71]
+max = [15, 71]
+
+[[water_rects]]
+min = [42, 71]
+max = [55, 73]
+
+[[water_rects]]
+min = [73, 71]
+max = [90, 72]
+
+[[water_rects]]
+min = [4, 72]
+max = [16, 72]
+
+[[water_rects]]
+min = [5, 73]
+max = [16, 73]
+
+[[water_rects]]
+min = [73, 73]
+max = [89, 73]
+
+[[water_rects]]
+min = [6, 74]
+max = [20, 74]
+
+[[water_rects]]
+min = [43, 74]
+max = [55, 76]
+
+[[water_rects]]
+min = [73, 74]
+max = [88, 74]
+
+[[water_rects]]
+min = [7, 75]
+max = [20, 75]
+
+[[water_rects]]
+min = [73, 75]
+max = [87, 75]
+
+[[water_rects]]
+min = [8, 76]
+max = [21, 76]
+
+[[water_rects]]
+min = [73, 76]
+max = [86, 76]
+
+[[water_rects]]
+min = [9, 77]
+max = [23, 77]
+
+[[water_rects]]
+min = [43, 77]
+max = [85, 77]
+
+[[water_rects]]
+min = [10, 78]
+max = [28, 78]
+
+[[water_rects]]
+min = [31, 78]
+max = [31, 78]
+
+[[water_rects]]
+min = [43, 78]
+max = [84, 78]
+
+[[water_rects]]
+min = [11, 79]
+max = [32, 79]
+
+[[water_rects]]
+min = [36, 79]
+max = [37, 79]
+
+[[water_rects]]
+min = [41, 79]
+max = [83, 79]
+
+[[water_rects]]
+min = [12, 80]
+max = [82, 80]
+
+[[water_rects]]
+min = [13, 81]
+max = [81, 82]
+
+[[water_rects]]
+min = [14, 83]
+max = [80, 83]
+
+[[water_rects]]
+min = [15, 84]
+max = [79, 84]
+
+[[water_rects]]
+min = [16, 85]
+max = [78, 85]
+
+[[water_rects]]
+min = [17, 86]
+max = [77, 86]
+
+[[water_rects]]
+min = [18, 87]
+max = [76, 87]
+
+[[water_rects]]
+min = [19, 88]
+max = [75, 88]
+
+[[water_rects]]
+min = [20, 89]
+max = [74, 89]
+
+[[water_rects]]
+min = [21, 90]
+max = [73, 90]
+
+[[water_rects]]
+min = [22, 91]
+max = [72, 91]
+
+[[water_rects]]
+min = [23, 92]
+max = [70, 92]
+
+[[water_rects]]
+min = [24, 93]
+max = [70, 93]
+
+[[water_rects]]
+min = [25, 94]
+max = [69, 94]
+
+[[elevation_rects]]
+min = [8, 45]
+max = [13, 50]
+
+[[ramp_rects]]
+min = [7, 46]
+max = [8, 48]
+
+[[ramp_rects]]
+min = [13, 46]
+max = [14, 48]
+
+[[obstacles]]
+min = [38, 5]
+max = [39, 6]
+
+[[obstacles]]
+min = [55, 17]
+max = [56, 18]
+
+[[obstacles]]
+min = [56, 31]
+max = [57, 32]
+
+[[obstacles]]
+min = [67, 44]
+max = [68, 45]
+
+[[obstacles]]
+min = [37, 73]
+max = [38, 74]
+
+[[props]]
+kind = "tree"
+tile_pos = [64, 71]
+
+[[props]]
+kind = "tree"
+tile_pos = [2, 42]
+
+[[props]]
+kind = "tree"
+tile_pos = [49, 2]
+
+[[props]]
+kind = "tree"
+tile_pos = [41, 10]
+
+[[props]]
+kind = "tree"
+tile_pos = [76, 43]
+
+[[props]]
+kind = "tree"
+tile_pos = [86, 53]
+
+[[props]]
+kind = "tree"
+tile_pos = [74, 37]
+
+[[props]]
+kind = "tree"
+tile_pos = [30, 21]
+
+[[props]]
+kind = "tree"
+tile_pos = [12, 49]
+
+[[props]]
+kind = "tree"
+tile_pos = [56, 27]
+
+[[props]]
+kind = "tree"
+tile_pos = [31, 67]
+
+[[props]]
+kind = "tree"
+tile_pos = [25, 44]
+
+[[props]]
+kind = "tree"
+tile_pos = [30, 78]
+
+[[props]]
+kind = "tree"
+tile_pos = [4, 38]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [43, 63]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [41, 19]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [23, 17]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [42, 28]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [19, 42]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [58, 31]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [10, 23]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [51, 2]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [56, 3]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [45, 5]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [38, 8]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [57, 8]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [17, 9]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [36, 9]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "yuri_psychic_tower"
-tile_pos = [45, 57]
+tile_pos = [48, 53]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "yuri_psychic_tower"
-tile_pos = [47, 55]
+tile_pos = [51, 51]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "yuri_psychic_tower"
-tile_pos = [42, 55]
+tile_pos = [40, 51]
 
 [[preplaced_entities]]
 player_id = 2
@@ -54,27 +912,27 @@ tile_pos = [44, 59]
 [[preplaced_entities]]
 player_id = 2
 building_id = "yuri_gatling_cannon"
-tile_pos = [48, 61]
+tile_pos = [52, 59]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "yuri_gatling_cannon"
-tile_pos = [42, 61]
+tile_pos = [41, 62]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "yuri_gatling_cannon"
-tile_pos = [47, 58]
+tile_pos = [52, 60]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "yuri_gatling_cannon"
-tile_pos = [42, 58]
+tile_pos = [39, 62]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "yuri_gatling_cannon"
-tile_pos = [49, 64]
+tile_pos = [52, 61]
 
 [[preplaced_entities]]
 player_id = 2
@@ -84,32 +942,32 @@ tile_pos = [41, 64]
 [[preplaced_entities]]
 player_id = 2
 building_id = "yuri_barracks"
-tile_pos = [48, 57]
+tile_pos = [53, 58]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "yuri_bio_reactor"
-tile_pos = [47, 49]
+tile_pos = [41, 40]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "yuri_bio_reactor"
-tile_pos = [42, 52]
+tile_pos = [34, 60]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "yuri_gatling_cannon"
-tile_pos = [39, 52]
+tile_pos = [38, 53]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "yuri_gatling_cannon"
-tile_pos = [49, 52]
+tile_pos = [52, 51]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "yuri_gatling_cannon"
-tile_pos = [48, 48]
+tile_pos = [44, 44]
 
 [[preplaced_entities]]
 player_id = 2
@@ -119,22 +977,22 @@ tile_pos = [40, 48]
 [[preplaced_entities]]
 player_id = 2
 building_id = "yuri_war_factory"
-tile_pos = [37, 57]
+tile_pos = [32, 62]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "yuri_bio_reactor"
-tile_pos = [53, 57]
+tile_pos = [55, 58]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "yuri_bio_reactor"
-tile_pos = [52, 57]
+tile_pos = [53, 60]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "yuri_bio_reactor"
-tile_pos = [50, 57]
+tile_pos = [55, 60]
 
 [[preplaced_entities]]
 player_id = 2
@@ -144,12 +1002,12 @@ tile_pos = [53, 62]
 [[preplaced_entities]]
 player_id = 2
 building_id = "yuri_bio_reactor"
-tile_pos = [52, 62]
+tile_pos = [54, 64]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "yuri_bio_reactor"
-tile_pos = [50, 62]
+tile_pos = [54, 66]
 
 [[preplaced_entities]]
 player_id = 2
@@ -219,7 +1077,7 @@ tile_pos = [39, 61]
 [[preplaced_entities]]
 player_id = 2
 unit_id = "boomer_sub"
-tile_pos = [39, 63]
+tile_pos = [38, 62]
 
 [[preplaced_entities]]
 player_id = 2
@@ -229,123 +1087,219 @@ tile_pos = [34, 56]
 [[preplaced_entities]]
 player_id = 2
 unit_id = "boomer_sub"
-tile_pos = [52, 59]
+tile_pos = [51, 58]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_conyard"
+tile_pos = [64, 68]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_bio_reactor"
+tile_pos = [68, 68]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_barracks"
+tile_pos = [64, 72]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "yuri_war_factory"
+tile_pos = [68, 72]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "maya_prism_pyramid"
+tile_pos = [56, 62]
+
+[[preplaced_entities]]
+player_id = 2
+building_id = "maya_prism_pyramid"
+tile_pos = [60, 66]
+
+[[preplaced_entities]]
+player_id = 1
+unit_id = "dreadnought"
+tile_pos = [35, 22]
+
+[[preplaced_entities]]
+player_id = 1
+unit_id = "typhoon_sub"
+tile_pos = [33, 23]
+
+[[preplaced_entities]]
+player_id = 0
+building_id = "tech_communications_center"
+tile_pos = [33, 34]
+
+[[objectives]]
+id = "obj_primary_main"
+tier = "primary"
+title = "Sink Yuri's Boomer Submarine pack off Easter Island, breach the Moai defense line, an..."
+marker_tile = [64, 68]
+
+[[objectives]]
+id = "obj_capture_comms"
+tier = "secondary"
+title = "Capture Neutral Tech Communications Center for Tactical Radar"
+marker_tile = [33, 34]
+
+[[objectives]]
+id = "obj_bonus_waves"
+tier = "bonus"
+title = "Weather Enemy Tactical Counterattack Waves"
+target_count = 2
+marker_tile = [18, 18]
+
+[[cutscenes]]
+id = "intro_flyover"
+skippable = true
+letterbox = true
+
+[[cutscenes.keyframes]]
+time_secs = 0.0
+focus = [129.0, 0.0, 137.0]
+distance = 46.0
+pitch_deg = 52.0
+yaw_deg = -22.0
+
+[[cutscenes.keyframes]]
+time_secs = 2.2
+focus = [83.0, 0.0, 87.0]
+distance = 42.0
+pitch_deg = 55.0
+yaw_deg = -10.0
+
+[[cutscenes.keyframes]]
+time_secs = 4.5
+focus = [37.0, 0.0, 37.0]
+distance = 36.0
+pitch_deg = 58.0
+yaw_deg = 0.0
 
 [[spawns]]
 player_id = 1
 faction = "soviets"
-base_tile = [8, 8]
+sub_faction = "russia"
+base_tile = [18, 18]
+team_id = 1
 
 [[spawns.initial_buildings]]
 building_id = "soviet_conyard"
-tile_pos = [8, 8]
+tile_pos = [18, 18]
 
 [[spawns.initial_buildings]]
 building_id = "soviet_tesla_reactor"
-tile_pos = [11, 8]
+tile_pos = [15, 18]
 
 [[spawns.initial_buildings]]
 building_id = "soviet_refinery"
-tile_pos = [8, 11]
+tile_pos = [22, 18]
 
 [[spawns.initial_buildings]]
 building_id = "soviet_barracks"
-tile_pos = [11, 11]
+tile_pos = [18, 22]
 
 [[spawns.initial_buildings]]
 building_id = "soviet_war_factory"
-tile_pos = [14, 8]
-
-[[spawns.initial_units]]
-unit_id = "soviet_conscript"
-tile_pos = [10, 13]
-
-[[spawns.initial_units]]
-unit_id = "soviet_conscript"
-tile_pos = [12, 13]
-
-[[spawns.initial_units]]
-unit_id = "rhino_tank"
-tile_pos = [14, 12]
+tile_pos = [22, 22]
 
 [[spawns.initial_units]]
 unit_id = "war_miner"
-tile_pos = [10, 12]
+tile_pos = [25, 18]
+
+[[spawns.initial_units]]
+unit_id = "soviet_conscript"
+tile_pos = [18, 24]
+
+[[spawns.initial_units]]
+unit_id = "flak_trooper"
+tile_pos = [20, 24]
+
+[[spawns.initial_units]]
+unit_id = "tesla_trooper"
+tile_pos = [21, 23]
+
+[[spawns.initial_units]]
+unit_id = "rhino_tank"
+tile_pos = [25, 23]
+
+[[spawns.initial_units]]
+unit_id = "soviet_zubr_transport"
+tile_pos = [18, 25]
 
 [[spawns]]
 player_id = 2
 faction = "yuri"
-base_tile = [86, 86]
-
-[[spawns.initial_buildings]]
-building_id = "yuri_conyard"
-tile_pos = [86, 86]
-
-[[spawns.initial_buildings]]
-building_id = "yuri_bio_reactor"
-tile_pos = [83, 86]
-
-[[spawns.initial_buildings]]
-building_id = "yuri_slave_refinery"
-tile_pos = [86, 83]
-
-[[spawns.initial_buildings]]
-building_id = "yuri_barracks"
-tile_pos = [83, 83]
-
-[[spawns.initial_buildings]]
-building_id = "yuri_war_factory"
-tile_pos = [80, 86]
-
-[[spawns.initial_units]]
-unit_id = "yuri_initiate"
-tile_pos = [84, 81]
-
-[[spawns.initial_units]]
-unit_id = "yuri_initiate"
-tile_pos = [82, 81]
-
-[[spawns.initial_units]]
-unit_id = "lasher_tank"
-tile_pos = [80, 82]
-
-[[spawns.initial_units]]
-unit_id = "yuri_slave_miner"
-tile_pos = [84, 82]
+sub_faction = "yuri"
+base_tile = [64, 68]
+team_id = 2
 
 [[trigger_zones]]
-id = "mission_stage_init"
-min = [6, 6]
-max = [12, 12]
+id = "yr_soviet_05_escape_velocity_init"
+min = [0, 0]
+max = [3, 3]
 once = true
 condition = { type = "timer_elapsed", secs = 1.0 }
 actions = [
+    { type = "play_cutscene", cutscene_id = "intro_flyover" },
+    { type = "set_objective_status", objective_id = "obj_primary_main", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_capture_comms", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_bonus_waves", status = "active" },
     { type = "set_variable", name = "mission_stage", value = 1 },
-    { type = "eva_transmission", speaker = "ZOFIA", text = "Battle Control Online. Primary tactical objectives initialized." },
-    { type = "reveal_area", tile = [8, 8], radius = 14 }
+    { type = "reveal_area", tile = [64, 68], radius = 9 },
+    { type = "eva_transmission", speaker = "LT. ZOFIA", text = "Sink Yuri's Boomer Submarine pack off Easter Island, breach the Moai defense line, and raze Yuri's Submarine Pens and launch complex.", portrait = "assets/ui/cameos/nradicon.png", audio_cue = "battle_control_online" },
 ]
 
 [[trigger_zones]]
-id = "tactical_reinforcement_wave"
-min = [7, 6]
-max = [11, 10]
+id = "yr_soviet_05_escape_velocity_stage2_reinf"
+min = [0, 0]
+max = [3, 3]
 once = true
-condition = { type = "all", conditions = [{ type = "timer_elapsed", secs = 45.0 }, { type = "variable_equals", name = "mission_stage", value = 1 }] }
+condition = { type = "timer_elapsed", secs = 60.0 }
 actions = [
+    { type = "play_radar_video", video_path = "assets/videos/radar_pip/yr_soviet_05_pip_02.mp4" },
     { type = "set_variable", name = "mission_stage", value = 2 },
-    { type = "spawn_reinforcements", player_id = 1, unit_id = "apocalypse_tank", count = 2, tile = [7, 6] },
-    { type = "grant_credits", player_id = 1, amount = 1500 },
-    { type = "eva_transmission", speaker = "ZOFIA", text = "Reinforcements have arrived. Forward command has authorized 1500 bonus credits." }
+    { type = "grant_credits", player_id = 1, amount = 2000 },
+    { type = "spawn_reinforcements", player_id = 1, unit_id = "apocalypse_tank", count = 2, tile = [21, 19] },
+    { type = "eva_transmission", speaker = "LT. ZOFIA", text = "Heavy armored reinforcements have arrived at the staging area!", portrait = "assets/ui/cameos/nradicon.png", audio_cue = "reinforcements_have_arrived", radar_video = "assets/videos/radar_pip/yr_soviet_05_pip_02.mp4" },
 ]
 
 [[trigger_zones]]
-id = "decisive_campaign_victory"
-min = [2, 2]
-max = [6, 6]
+id = "yr_soviet_05_escape_velocity_victory"
+min = [0, 0]
+max = [3, 3]
 once = true
 condition = { type = "all_buildings_destroyed", player_id = 2 }
 actions = [
+    { type = "set_objective_status", objective_id = "obj_primary_main", status = "completed" },
     { type = "set_variable", name = "mission_stage", value = 3 },
-    { type = "eva_transmission", speaker = "ZOFIA", text = "Mission Accomplished. All primary hostile command structures neutralized." },
-    { type = "declare_winner", player_id = 1 }
+    { type = "eva_transmission", speaker = "LT. ZOFIA", text = "Yuri's forces in this sector have been completely eradicated! Victory is ours!", portrait = "assets/ui/cameos/nradicon.png", audio_cue = "primary_objective_achieved" },
+    { type = "declare_winner", player_id = 1 },
+]
+
+[[trigger_zones]]
+id = "p22_tech_comms_captured"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "building_captured", building_id = "tech_communications_center", by_player_id = 1 }
+actions = [
+    { type = "set_objective_status", objective_id = "obj_capture_comms", status = "completed" },
+    { type = "grant_credits", player_id = 1, amount = 1000 },
+    { type = "reveal_area_for_player", player_id = 1, center = [129.0, 0.0, 137.0], radius = 24.0, duration_secs = 45 },
+    { type = "eva_transmission", speaker = "LT. ZOFIA", text = "Tech Communications Center online! Satellite radar sweep active.", portrait = "assets/ui/cameos/nradicon.png", audio_cue = "building_captured" },
+]
+
+[[trigger_zones]]
+id = "p22_periodic_skirmish_wave"
+min = [0, 0]
+max = [3, 3]
+once = false
+condition = { type = "periodic_timer", start_secs = 75, interval_secs = 75, max_repeats = 3 }
+actions = [
+    { type = "spawn_reinforcements", player_id = 2, unit_id = "yuri_initiate", count = 3, tile = [64, 66] },
+    { type = "add_objective_progress", objective_id = "obj_bonus_waves", delta = 1 },
 ]

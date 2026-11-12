@@ -8,14 +8,85 @@ vulcan_turret_gun = "assets/audio/sfx/pillbox_mg_fire.wav"
 tesla_bolt = "assets/audio/sfx/tesla_coil_zap.wav"
 prism_beam = "assets/audio/sfx/prism_tank_beam.wav"
 apocalypse_twin_120mm = "assets/audio/sfx/apocalypse_cannon.wav"
+guardian_missile = "assets/audio/sfx/patriot_missile_fire.wav"
+rocketeer_20mm = "assets/audio/sfx/gi_machinegun.wav"
+mp5_seal_c4 = "assets/audio/sfx/tanya_colt45_fire.wav"
+tanya_colts = "assets/audio/sfx/tanya_colt45_fire.wav"
+awp_sniper_rifle = "assets/audio/sfx/sniper_rifle.wav"
+neutron_eraser = "assets/audio/sfx/chrono_legionnaire_beam.wav"
+dog_bite = "assets/audio/sfx/terror_drone_jump.wav"
+mirage_spectrum_cannon = "assets/audio/sfx/mirage_tank_weapon.wav"
+hover_missile = "assets/audio/sfx/patriot_missile_fire.wav"
+robot_laser_gun = "assets/audio/sfx/laser_zap.wav"
+fortress_gatling = "assets/audio/sfx/gatling_gun_stage3.wav"
+pak_88mm_gun = "assets/audio/sfx/cannon_fire.wav"
+maverick_missile = "assets/audio/sfx/patriot_missile_fire.wav"
+sea_gun_155mm = "assets/audio/sfx/cannon_fire.wav"
+medusa_sam = "assets/audio/sfx/aegis_missile_volley.wav"
+hornet_strike = "assets/audio/sfx/patriot_missile_fire.wav"
+sonic_pulse = "assets/audio/sfx/magnetron_beam.wav"
+prism_tower_beam = "assets/audio/sfx/prism_tower_beam.wav"
+patriot_sam = "assets/audio/sfx/patriot_missile_fire.wav"
+grand_cannon_155mm = "assets/audio/sfx/cannon_fire.wav"
+flak_scattergun = "assets/audio/sfx/flak_cannon_fire.wav"
+flak_aa_gun = "assets/audio/sfx/flak_cannon_fire.wav"
+portable_tesla_bolt = "assets/audio/sfx/tesla_trooper_zap.wav"
+rad_beam = "assets/audio/sfx/desolator_rad_beam.wav"
+ivan_dynamite = "assets/audio/sfx/crazy_ivan_dynamite.wav"
+akm_hero_rifle = "assets/audio/sfx/boris_akm_fire.wav"
+drone_claws = "assets/audio/sfx/terror_drone_jump.wav"
+v3_ballistic_rocket = "assets/audio/sfx/v3_rocket_launch.wav"
+nuclear_demolition = "assets/audio/sfx/nuke_explosion.wav"
+blimp_heavy_bomb = "assets/audio/sfx/kirov_bomb_drop.wav"
+chopper_nose_gun = "assets/audio/sfx/sentry_gun_fire.wav"
+chopper_130mm = "assets/audio/sfx/cannon_fire.wav"
+torpedo_tube = "assets/audio/sfx/explosion_water.wav"
+dreadnought_missile = "assets/audio/sfx/dreadnought_missile_launch.wav"
+squid_tentacle = "assets/audio/sfx/explosion_water.wav"
+pyrokinesis_bolt = "assets/audio/sfx/laser_zap.wav"
+brute_smash = "assets/audio/sfx/brute_attack.wav"
+toxin_dart_rifle = "assets/audio/sfx/virus_attack.wav"
+psi_mind_control = "assets/audio/sfx/yuri_mind_control.wav"
+psi_prime_control = "assets/audio/sfx/yuri_mind_control.wav"
+gatling_aa_cannon = "assets/audio/sfx/gatling_gun_stage1.wav"
+chaos_gas_projector = "assets/audio/sfx/desolator_deploy.wav"
+magnetic_levitation_beam = "assets/audio/sfx/magnetron_beam.wav"
+mastermind_psi_wave = "assets/audio/sfx/yuri_psi_wave.wav"
+saucer_laser_beam = "assets/audio/sfx/floating_disc_laser.wav"
+boomer_torpedo_cruise = "assets/audio/sfx/dreadnought_missile_launch.wav"
+psychic_tower_mind_beam = "assets/audio/sfx/yuri_mind_control.wav"
+boris_laser_flare = "assets/audio/sfx/laser_zap.wav"
+elite_tesla_bolt = "assets/audio/sfx/tesla_tank_zap.wav"
+elite_apocalypse_120mm = "assets/audio/sfx/apocalypse_cannon.wav"
+elite_prism_beam = "assets/audio/sfx/prism_tank_beam.wav"
+boomer_torpedo = "assets/audio/sfx/explosion_water.wav"
+boomer_cruise_missile = "assets/audio/sfx/dreadnought_missile_launch.wav"
+terrorist_bomb = "assets/audio/sfx/explosion_medium.wav"
 
 [eva_cues]
 battle_control_online = "assets/audio/eva/allied_battle_control_online.wav"
 construction_complete = "assets/audio/eva/allied_construction_complete.wav"
+new_construction_options = "assets/audio/eva/allied_new_construction_options.wav"
 unit_ready = "assets/audio/eva/allied_unit_ready.wav"
 unit_lost = "assets/audio/eva/allied_unit_lost.wav"
 unit_promoted = "assets/audio/eva/allied_unit_promoted.wav"
 base_under_attack = "assets/audio/eva/allied_base_under_attack.wav"
+ore_miner_under_attack = "assets/audio/eva/allied_ore_miner_under_attack.wav"
+building_captured = "assets/audio/eva/allied_building_captured.wav"
+building_infiltrated = "assets/audio/eva/allied_building_infiltrated.wav"
+reinforcements_have_arrived = "assets/audio/eva/allied_reinforcements_have_arrived.wav"
+primary_objective_achieved = "assets/audio/eva/allied_primary_objective_achieved.wav"
+repairing = "assets/audio/eva/allied_repairing.wav"
+structure_sold = "assets/audio/eva/allied_structure_sold.wav"
+chronosphere_ready = "assets/audio/eva/allied_chronosphere_ready.wav"
+chronosphere_activated = "assets/audio/eva/allied_chronosphere_activated.wav"
+lightning_storm_ready = "assets/audio/eva/allied_lightning_storm_ready.wav"
+lightning_storm_created = "assets/audio/eva/allied_lightning_storm_created.wav"
+iron_curtain_ready = "assets/audio/eva/soviet_iron_curtain_ready.wav"
+iron_curtain_activated = "assets/audio/eva/soviet_iron_curtain_activated.wav"
+nuclear_missile_ready = "assets/audio/eva/soviet_nuclear_missile_ready.wav"
+nuclear_missile_launched = "assets/audio/eva/soviet_nuclear_missile_launched.wav"
+genetic_mutator_ready = "assets/audio/eva/yuri_genetic_mutator_ready.wav"
 insufficient_funds = "assets/audio/eva/allied_insufficient_funds.wav"
 low_power = "assets/audio/eva/allied_low_power.wav"
 mission_accomplished = "assets/audio/eva/allied_mission_accomplished.wav"
@@ -26,10 +97,15 @@ select = ["assets/audio/sfx/gi_select.wav"]
 move_order = ["assets/audio/sfx/gi_move.wav"]
 attack_order = ["assets/audio/sfx/gi_attack.wav"]
 
+[unit_voices.guardian_gi]
+select = ["assets/audio/sfx/gi_select.wav"]
+move_order = ["assets/audio/sfx/gi_move.wav"]
+attack_order = ["assets/audio/sfx/gi_attack.wav"]
+
 [unit_voices.grizzly_tank]
 select = ["assets/audio/sfx/grizzly_attack.wav"]
 move_order = ["assets/audio/sfx/grizzly_attack.wav"]
-attack_order = ["assets/audio/sfx/grizzly_attack.wav"]
+attack_order = ["assets/audio/sfx/grizzly_cannon.wav"]
 
 [unit_voices.prism_tank]
 select = ["assets/audio/sfx/prism_tank_select.wav"]
@@ -46,6 +122,20 @@ select = ["assets/audio/sfx/tanya_select.wav"]
 move_order = ["assets/audio/sfx/tanya_select.wav"]
 attack_order = ["assets/audio/sfx/tanya_attack.wav"]
 
+[unit_voices.chrono_legionnaire]
+select = ["assets/audio/sfx/chrono_legionnaire_teleport.wav"]
+move_order = ["assets/audio/sfx/chrono_legionnaire_teleport.wav"]
+attack_order = ["assets/audio/sfx/chrono_legionnaire_erase.wav"]
+
+[unit_voices.sniper]
+select = ["assets/audio/sfx/gi_select.wav"]
+move_order = ["assets/audio/sfx/gi_move.wav"]
+attack_order = ["assets/audio/sfx/sniper_rifle.wav"]
+
+[unit_voices.aegis_cruiser]
+select = ["assets/audio/sfx/aegis_missile_volley.wav"]
+attack_order = ["assets/audio/sfx/aegis_missile_volley.wav"]
+
 [unit_voices.chrono_miner]
 select = ["assets/audio/sfx/chrono_miner_select.wav"]
 move_order = ["assets/audio/sfx/chrono_miner_teleport.wav"]
@@ -58,12 +148,43 @@ attack_order = ["assets/audio/sfx/conscript_attack.wav"]
 [unit_voices.rhino_tank]
 select = ["assets/audio/sfx/rhino_attack.wav"]
 move_order = ["assets/audio/sfx/rhino_attack.wav"]
-attack_order = ["assets/audio/sfx/rhino_attack.wav"]
+attack_order = ["assets/audio/sfx/rhino_cannon.wav"]
 
 [unit_voices.apocalypse_tank]
 select = ["assets/audio/sfx/apocalypse_select.wav"]
 move_order = ["assets/audio/sfx/apocalypse_select.wav"]
 attack_order = ["assets/audio/sfx/apocalypse_attack.wav"]
+
+[unit_voices.tesla_tank]
+select = ["assets/audio/sfx/tesla_tank_select.wav"]
+move_order = ["assets/audio/sfx/tesla_tank_select.wav"]
+attack_order = ["assets/audio/sfx/tesla_tank_attack.wav"]
+
+[unit_voices.tesla_trooper]
+select = ["assets/audio/sfx/conscript_select.wav"]
+move_order = ["assets/audio/sfx/conscript_move.wav"]
+attack_order = ["assets/audio/sfx/tesla_trooper_zap.wav"]
+
+[unit_voices.desolator]
+select = ["assets/audio/sfx/desolator_deploy.wav"]
+move_order = ["assets/audio/sfx/conscript_move.wav"]
+attack_order = ["assets/audio/sfx/desolator_rad_beam.wav"]
+
+[unit_voices.crazy_ivan]
+select = ["assets/audio/sfx/crazy_ivan_bomb_tick.wav"]
+attack_order = ["assets/audio/sfx/crazy_ivan_dynamite.wav"]
+
+[unit_voices.terror_drone]
+select = ["assets/audio/sfx/terror_drone_jump.wav"]
+attack_order = ["assets/audio/sfx/terror_drone_jump.wav"]
+
+[unit_voices.v3_rocket_launcher]
+select = ["assets/audio/sfx/v3_rocket_launch.wav"]
+attack_order = ["assets/audio/sfx/v3_rocket_launch.wav"]
+
+[unit_voices.dreadnought]
+select = ["assets/audio/sfx/dreadnought_missile_launch.wav"]
+attack_order = ["assets/audio/sfx/dreadnought_missile_launch.wav"]
 
 [unit_voices.kirov_airship]
 select = ["assets/audio/sfx/kirov_reporting.wav"]
@@ -77,6 +198,17 @@ attack_order = ["assets/audio/sfx/boris_attack.wav"]
 
 [unit_voices.war_miner]
 select = ["assets/audio/sfx/war_miner_select.wav"]
+move_order = ["assets/audio/sfx/war_miner_select.wav"]
+
+[unit_voices.yuri_brute]
+select = ["assets/audio/sfx/brute_select.wav"]
+move_order = ["assets/audio/sfx/brute_select.wav"]
+attack_order = ["assets/audio/sfx/brute_attack.wav"]
+
+[unit_voices.yuri_virus]
+select = ["assets/audio/sfx/virus_select.wav"]
+move_order = ["assets/audio/sfx/virus_select.wav"]
+attack_order = ["assets/audio/sfx/virus_attack.wav"]
 
 [unit_voices.yuri_clone]
 select = ["assets/audio/sfx/yuri_clone_select.wav"]
@@ -87,31 +219,234 @@ select = ["assets/audio/sfx/yuri_prime_select.wav"]
 move_order = ["assets/audio/sfx/yuri_prime_move.wav"]
 attack_order = ["assets/audio/sfx/yuri_prime_attack.wav"]
 
+[unit_voices.lasher_tank]
+select = ["assets/audio/sfx/lasher_tank_select.wav"]
+move_order = ["assets/audio/sfx/lasher_tank_select.wav"]
+attack_order = ["assets/audio/sfx/grizzly_cannon.wav"]
+
 [unit_voices.gattling_tank]
 select = ["assets/audio/sfx/gatling_tank_select.wav"]
+move_order = ["assets/audio/sfx/gatling_tank_select.wav"]
+attack_order = ["assets/audio/sfx/gatling_gun_stage1.wav"]
 
 [unit_voices.magnetron]
 select = ["assets/audio/sfx/magnetron_select.wav"]
+move_order = ["assets/audio/sfx/magnetron_select.wav"]
 attack_order = ["assets/audio/sfx/magnetron_attack.wav"]
+
+[unit_voices.mastermind]
+select = ["assets/audio/sfx/yuri_mind_control.wav"]
+attack_order = ["assets/audio/sfx/yuri_psi_wave.wav"]
 
 [unit_voices.floating_disc]
 select = ["assets/audio/sfx/floating_disc_select.wav"]
+move_order = ["assets/audio/sfx/floating_disc_select.wav"]
 attack_order = ["assets/audio/sfx/floating_disc_attack.wav"]
 
 [[music_tracks]]
-id = "hell_march_2"
-display_name = "Hell March 2"
-path = "assets/audio/music/hell_march_2.wav"
+id = "200_meters"
+display_name = "200 Meters"
+path = "assets/audio/music/200_meters.ogg"
+mood = "combat"
 factions = ["allies", "soviets", "yuri"]
+faction_tags = ["allies", "soviets", "yuri"]
 
 [[music_tracks]]
-id = "grinder"
-display_name = "Grinder"
-path = "assets/audio/music/grinder.wav"
-factions = ["allies", "soviets"]
+id = "blow_it_up"
+display_name = "Blow It Up!"
+path = "assets/audio/music/blow_it_up.ogg"
+mood = "combat"
+factions = ["allies", "soviets", "yuri"]
+faction_tags = ["allies", "soviets", "yuri"]
 
 [[music_tracks]]
 id = "brain_freeze"
 display_name = "Brain Freeze"
-path = "assets/audio/music/brain_freeze.wav"
+path = "assets/audio/music/brain_freeze.ogg"
+mood = "combat"
+factions = ["yuri", "soviets"]
+faction_tags = ["yuri", "soviets"]
+
+[[music_tracks]]
+id = "bully"
+display_name = "Bully"
+path = "assets/audio/music/bully.ogg"
+mood = "combat"
+factions = ["soviets", "yuri"]
+faction_tags = ["soviets", "yuri"]
+
+[[music_tracks]]
+id = "burn"
+display_name = "Burn"
+path = "assets/audio/music/burn.ogg"
+mood = "combat"
+factions = ["soviets", "allies"]
+faction_tags = ["soviets", "allies"]
+
+[[music_tracks]]
+id = "deceiver"
+display_name = "Deceiver"
+path = "assets/audio/music/deceiver.ogg"
+mood = "peace"
 factions = ["yuri"]
+faction_tags = ["yuri"]
+
+[[music_tracks]]
+id = "defend_the_base"
+display_name = "Defend the Base"
+path = "assets/audio/music/defend_the_base.ogg"
+mood = "combat"
+factions = ["allies", "soviets", "yuri"]
+faction_tags = ["allies", "soviets", "yuri"]
+
+[[music_tracks]]
+id = "destroy"
+display_name = "Destroy"
+path = "assets/audio/music/destroy.ogg"
+mood = "combat"
+factions = ["allies", "soviets"]
+faction_tags = ["allies", "soviets"]
+
+[[music_tracks]]
+id = "drok"
+display_name = "Drok"
+path = "assets/audio/music/drok.ogg"
+mood = "combat"
+factions = ["yuri", "soviets"]
+faction_tags = ["yuri", "soviets"]
+
+[[music_tracks]]
+id = "eagle_hunter"
+display_name = "Eagle Hunter"
+path = "assets/audio/music/eagle_hunter.ogg"
+mood = "combat"
+factions = ["soviets", "allies"]
+faction_tags = ["soviets", "allies"]
+
+[[music_tracks]]
+id = "fortification"
+display_name = "Fortification"
+path = "assets/audio/music/fortification.ogg"
+mood = "peace"
+factions = ["allies", "soviets"]
+faction_tags = ["allies", "soviets"]
+
+[[music_tracks]]
+id = "grinder"
+display_name = "Grinder"
+path = "assets/audio/music/grinder.ogg"
+mood = "combat"
+factions = ["allies", "soviets"]
+faction_tags = ["allies", "soviets"]
+
+[[music_tracks]]
+id = "hell_march_2"
+display_name = "Hell March 2"
+path = "assets/audio/music/hell_march_2.ogg"
+mood = "combat"
+factions = ["allies", "soviets", "yuri"]
+faction_tags = ["allies", "soviets", "yuri"]
+
+[[music_tracks]]
+id = "in_deep"
+display_name = "In Deep"
+path = "assets/audio/music/in_deep.ogg"
+mood = "peace"
+factions = ["allies", "soviets"]
+faction_tags = ["allies", "soviets"]
+
+[[music_tracks]]
+id = "industro_funk"
+display_name = "Industro Funk"
+path = "assets/audio/music/industro_funk.ogg"
+mood = "peace"
+factions = ["allies", "soviets"]
+faction_tags = ["allies", "soviets"]
+
+[[music_tracks]]
+id = "jank"
+display_name = "Jank"
+path = "assets/audio/music/jank.ogg"
+mood = "peace"
+factions = ["allies", "yuri"]
+faction_tags = ["allies", "yuri"]
+
+[[music_tracks]]
+id = "motorized"
+display_name = "Motorized"
+path = "assets/audio/music/motorized.ogg"
+mood = "combat"
+factions = ["soviets", "allies"]
+faction_tags = ["soviets", "allies"]
+
+[[music_tracks]]
+id = "phat_attack"
+display_name = "Phat Attack"
+path = "assets/audio/music/phat_attack.ogg"
+mood = "combat"
+factions = ["yuri", "allies"]
+faction_tags = ["yuri", "allies"]
+
+[[music_tracks]]
+id = "power"
+display_name = "Power"
+path = "assets/audio/music/power.ogg"
+mood = "combat"
+factions = ["allies", "soviets"]
+faction_tags = ["allies", "soviets"]
+
+[[music_tracks]]
+id = "ra2_options"
+display_name = "Red Alert 2 Main Menu Theme"
+path = "assets/audio/music/ra2_options.ogg"
+mood = "menu"
+factions = ["allies", "soviets", "yuri"]
+faction_tags = ["allies", "soviets", "yuri"]
+
+[[music_tracks]]
+id = "ra2_score"
+display_name = "Red Alert 2 Debriefing & Score"
+path = "assets/audio/music/ra2_score.ogg"
+mood = "score"
+factions = ["allies", "soviets"]
+faction_tags = ["allies", "soviets"]
+
+[[music_tracks]]
+id = "tactics"
+display_name = "Tactics"
+path = "assets/audio/music/tactics.ogg"
+mood = "peace"
+factions = ["allies", "soviets", "yuri"]
+faction_tags = ["allies", "soviets", "yuri"]
+
+[[music_tracks]]
+id = "tension"
+display_name = "Tension"
+path = "assets/audio/music/tension.ogg"
+mood = "peace"
+factions = ["allies", "soviets"]
+faction_tags = ["allies", "soviets"]
+
+[[music_tracks]]
+id = "trance_lvania"
+display_name = "Trance Lvania"
+path = "assets/audio/music/trance_lvania.ogg"
+mood = "peace"
+factions = ["yuri"]
+faction_tags = ["yuri"]
+
+[[music_tracks]]
+id = "yr_options"
+display_name = "Yuri's Revenge Main Menu Theme"
+path = "assets/audio/music/yr_options.ogg"
+mood = "menu"
+factions = ["yuri", "allies", "soviets"]
+faction_tags = ["yuri", "allies", "soviets"]
+
+[[music_tracks]]
+id = "yr_score"
+display_name = "Yuri's Revenge Debriefing & Score"
+path = "assets/audio/music/yr_score.ogg"
+mood = "score"
+factions = ["yuri", "allies", "soviets"]
+faction_tags = ["yuri", "allies", "soviets"]

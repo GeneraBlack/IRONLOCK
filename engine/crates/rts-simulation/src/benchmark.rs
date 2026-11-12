@@ -35,8 +35,13 @@ pub struct BalanceMatrixReport {
 
 impl BalanceMatrixReport {
     pub fn to_markdown_table(&self) -> String {
-        let mut out = format!("# Balance Duel Matrix & Cost-Efficiency Report (`{}`)\n\n", self.mod_id);
-        out.push_str("| Attacker | Defender | Winner | Ticks | Winner HP % | Attacker Cost-Eff |\n");
+        let mut out = format!(
+            "# Balance Duel Matrix & Cost-Efficiency Report (`{}`)\n\n",
+            self.mod_id
+        );
+        out.push_str(
+            "| Attacker | Defender | Winner | Ticks | Winner HP % | Attacker Cost-Eff |\n",
+        );
         out.push_str("|---|---|---|---|---|---|\n");
         for d in &self.duels {
             let winner = if d.attacker_wins {
@@ -174,8 +179,16 @@ pub fn run_unit_duel_matrix(loaded: &LoadedMod, max_ticks_per_duel: u64) -> Bala
             let max_t = max_ticks_per_duel.max(40);
             while world.tick < max_t {
                 world.step(loaded);
-                let a_alive = world.entities.get(&id_a).map(|e| e.health > 0.0).unwrap_or(false);
-                let b_alive = world.entities.get(&id_b).map(|e| e.health > 0.0).unwrap_or(false);
+                let a_alive = world
+                    .entities
+                    .get(&id_a)
+                    .map(|e| e.health > 0.0)
+                    .unwrap_or(false);
+                let b_alive = world
+                    .entities
+                    .get(&id_b)
+                    .map(|e| e.health > 0.0)
+                    .unwrap_or(false);
                 if !a_alive || !b_alive {
                     break;
                 }

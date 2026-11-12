@@ -1,0 +1,148 @@
+id = "timberline_valley"
+name = "Timberline Valley (3-Resource & Squad Showcase)"
+width = 64
+height = 64
+tile_size = 2.0
+
+[[spawns]]
+player_id = 1
+faction = "frontier_corps"
+base_tile = [8, 8]
+
+[[spawns.initial_buildings]]
+building_id = "command_hq"
+tile_pos = [8, 8]
+
+[[spawns.initial_buildings]]
+building_id = "resource_mill"
+tile_pos = [13, 8]
+
+[[spawns.initial_units]]
+unit_id = "combat_dozer"
+tile_pos = [12, 12]
+
+[[spawns.initial_units]]
+unit_id = "multi_harvester"
+tile_pos = [15, 11]
+
+[[spawns.initial_units]]
+unit_id = "rifle_squad"
+tile_pos = [14, 14]
+
+[[spawns]]
+player_id = 2
+faction = "iron_syndicate"
+base_tile = [52, 52]
+
+[[spawns.initial_buildings]]
+building_id = "command_hq"
+tile_pos = [52, 52]
+
+[[spawns.initial_buildings]]
+building_id = "resource_mill"
+tile_pos = [48, 52]
+
+[[spawns.initial_units]]
+unit_id = "combat_dozer"
+tile_pos = [50, 49]
+
+[[spawns.initial_units]]
+unit_id = "multi_harvester"
+tile_pos = [47, 50]
+
+[[spawns.initial_units]]
+unit_id = "rifle_squad"
+tile_pos = [48, 47]
+
+[[ore_patches]]
+position = [18, 10]
+radius = 2
+amount_per_tile = 900
+
+[[ore_patches]]
+position = [44, 52]
+radius = 2
+amount_per_tile = 900
+
+[[resource_patches]]
+resource_id = "timber"
+position = [10, 20]
+radius = 3
+amount_per_tile = 800
+
+[[resource_patches]]
+resource_id = "timber"
+position = [52, 42]
+radius = 3
+amount_per_tile = 800
+
+[[resource_patches]]
+resource_id = "alloy"
+position = [24, 24]
+radius = 2
+amount_per_tile = 1200
+
+[[resource_patches]]
+resource_id = "alloy"
+position = [39, 39]
+radius = 2
+amount_per_tile = 1200
+
+[[elevation_rects]]
+min = [26, 26]
+max = [37, 37]
+
+[[ramp_rects]]
+min = [25, 30]
+max = [26, 33]
+
+[[ramp_rects]]
+min = [37, 30]
+max = [38, 33]
+
+[[water_rects]]
+min = [0, 30]
+max = [12, 33]
+
+[[bridge_rects]]
+min = [6, 30]
+max = [8, 33]
+
+[[civilian_structures]]
+id = "valley_watchtower"
+tile_pos = [30, 30]
+footprint = [2, 2]
+max_health = 900.0
+cover_bonus = 0.45
+leaves_ruin = true
+
+[[civilian_structures]]
+id = "lumber_storehouse"
+tile_pos = [33, 33]
+footprint = [2, 2]
+max_health = 1100.0
+cover_bonus = 0.50
+leaves_ruin = true
+
+[[trigger_zones]]
+id = "central_depot_supply"
+min = [28, 28]
+max = [35, 35]
+once = true
+script_hook = "on_supply_convoy_zone"
+
+[[props]]
+kind = "tree"
+tile_pos = [19, 19]
+
+[[props]]
+kind = "tree"
+tile_pos = [20, 19]
+
+[[props]]
+kind = "tree"
+tile_pos = [43, 44]
+
+[[props]]
+kind = "tree"
+tile_pos = [44, 44]

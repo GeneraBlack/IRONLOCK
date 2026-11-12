@@ -22,7 +22,14 @@
     "no_volumes": "No volumes",
     "not_configured": "Not configured",
     "open_webapp": "Open Portal & Lobby Registry",
-    "configure": "Configure"
+    "configure": "Configure",
+    "service_running": "Active (systemd running)",
+    "service_inactive": "Stopped / Inactive",
+    "service_failed": "Failed",
+    "module_update_title": "Module Update via NethServer 8 UI",
+    "current_version": "Installed SemVer version",
+    "target_version": "Target SemVer version (no latest)",
+    "update_now": "Update to SemVer"
   },
   "settings": {
     "title": "Settings",
@@ -53,7 +60,8 @@
     "get-name": "Get name",
     "list-backup-repositories": "List backup repositories",
     "list-backups": "List backups",
-    "list-installed-modules": "List installed modules"
+    "list-installed-modules": "List installed modules",
+    "update-module": "Update module"
   },
   "error": {
     "error": "Error",
@@ -68,6 +76,7 @@
     "cannot_retrieve_installed_modules": "Cannot retrieve installed modules",
     "cannot_retrieve_configuration": "Cannot retrieve configuration",
     "domain_already_used_in_traefik": "Domain is already in use in Traefik",
-    "relay_port_range_invalid": "End port must be greater than or equal to start port"
+    "relay_port_range_invalid": "End port must be greater than or equal to start port",
+    "invalid_semver": "Please enter a valid SemVer version (e.g. 1.0.1, never 'latest')"
   }
 }

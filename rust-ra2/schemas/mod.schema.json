@@ -1,0 +1,477 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "DamageMatrixDef": {
+      "properties": {
+        "warhead_vs_armor": {
+          "additionalProperties": {
+            "additionalProperties": {
+              "format": "float",
+              "type": "number"
+            },
+            "type": "object"
+          },
+          "default": {},
+          "type": "object"
+        }
+      },
+      "type": "object"
+    },
+    "EconomyModel": {
+      "enum": [
+        "lump_sum",
+        "streaming"
+      ],
+      "type": "string"
+    },
+    "EraDef": {
+      "properties": {
+        "cost": {
+          "default": 0,
+          "format": "uint32",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "display_name_key": {
+          "default": "",
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "order": {
+          "default": 0,
+          "format": "uint32",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "prerequisite_buildings": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "prerequisite_upgrades": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "research_time_secs": {
+          "default": 0.0,
+          "format": "float",
+          "type": "number"
+        },
+        "resource_costs": {
+          "additionalProperties": {
+            "format": "uint32",
+            "minimum": 0.0,
+            "type": "integer"
+          },
+          "default": {},
+          "type": "object"
+        },
+        "unlocks_tech_tier": {
+          "default": 0,
+          "format": "uint32",
+          "minimum": 0.0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "type": "object"
+    },
+    "GamemodeRulesDef": {
+      "properties": {
+        "annihilation_enabled": {
+          "default": true,
+          "type": "boolean"
+        },
+        "capture_zones_to_bleed": {
+          "default": 1,
+          "format": "uint32",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "initial_tickets": {
+          "default": 500,
+          "format": "uint32",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "multi_capture_points": {
+          "default": false,
+          "type": "boolean"
+        },
+        "survival_waves": {
+          "default": [],
+          "items": {
+            "$ref": "#/definitions/SurvivalWaveDef"
+          },
+          "type": "array"
+        },
+        "ticket_bleed_per_sec": {
+          "default": 2.0,
+          "format": "float",
+          "type": "number"
+        },
+        "victory_ticket_bleed": {
+          "default": false,
+          "type": "boolean"
+        }
+      },
+      "type": "object"
+    },
+    "HudLayoutPreset": {
+      "enum": [
+        "classic_right_sidebar",
+        "modern_bottom_command_card",
+        "compact_bar_overlay"
+      ],
+      "type": "string"
+    },
+    "ModCatalogPaths": {
+      "properties": {
+        "buildings": {
+          "default": "",
+          "type": "string"
+        },
+        "factions": {
+          "default": "",
+          "type": "string"
+        },
+        "items": {
+          "default": "",
+          "type": "string"
+        },
+        "units": {
+          "default": "",
+          "type": "string"
+        },
+        "vfx": {
+          "default": "",
+          "type": "string"
+        },
+        "weapons": {
+          "default": "",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "ModDependency": {
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "optional": {
+          "default": false,
+          "type": "boolean"
+        },
+        "version_req": {
+          "default": "*",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "type": "object"
+    },
+    "ModRules": {
+      "properties": {
+        "building_repair_credits_per_cycle": {
+          "default": 2,
+          "format": "uint32",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "building_repair_hp_per_sec": {
+          "default": 28.0,
+          "format": "float",
+          "type": "number"
+        },
+        "commander_rank_xp_thresholds": {
+          "default": [
+            150.0,
+            500.0,
+            1100.0,
+            2000.0
+          ],
+          "items": {
+            "format": "float",
+            "type": "number"
+          },
+          "maxItems": 4,
+          "minItems": 4,
+          "type": "array"
+        },
+        "crate_max_active": {
+          "default": 8,
+          "format": "uint",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "crate_spawn_interval_ticks": {
+          "default": 600,
+          "format": "uint64",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "damage_matrix": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/DamageMatrixDef"
+            }
+          ],
+          "default": {
+            "warhead_vs_armor": {}
+          }
+        },
+        "default_infantry_by_faction": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "default": {},
+          "type": "object"
+        },
+        "default_liberated_worker_unit": {
+          "default": "",
+          "type": "string"
+        },
+        "default_mutant_unit": {
+          "default": "",
+          "type": "string"
+        },
+        "economy_model": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/EconomyModel"
+            }
+          ],
+          "default": "lump_sum"
+        },
+        "elite_xp_threshold": {
+          "default": 550.0,
+          "format": "float",
+          "type": "number"
+        },
+        "eras": {
+          "default": [],
+          "items": {
+            "$ref": "#/definitions/EraDef"
+          },
+          "type": "array"
+        },
+        "free_unit_by_faction": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "default": {},
+          "type": "object"
+        },
+        "gamemode": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/GamemodeRulesDef"
+            }
+          ],
+          "default": {
+            "annihilation_enabled": true,
+            "capture_zones_to_bleed": 1,
+            "initial_tickets": 500,
+            "multi_capture_points": false,
+            "survival_waves": [],
+            "ticket_bleed_per_sec": 2.0,
+            "victory_ticket_bleed": false
+          }
+        },
+        "low_power_speed_factor": {
+          "default": 0.5,
+          "format": "float",
+          "type": "number"
+        },
+        "sell_refund_ratio": {
+          "default": 0.5,
+          "format": "float",
+          "type": "number"
+        },
+        "stolen_tech_commando_by_pair": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "default": {},
+          "type": "object"
+        },
+        "veteran_xp_threshold": {
+          "default": 220.0,
+          "format": "float",
+          "type": "number"
+        }
+      },
+      "type": "object"
+    },
+    "SurvivalWaveDef": {
+      "properties": {
+        "count": {
+          "default": 1,
+          "format": "uint32",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "delay_secs": {
+          "default": 0.0,
+          "format": "float",
+          "type": "number"
+        },
+        "spawn_tile": {
+          "default": null,
+          "items": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "maxItems": 2,
+          "minItems": 2,
+          "type": [
+            "array",
+            "null"
+          ]
+        },
+        "unit_id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "unit_id"
+      ],
+      "type": "object"
+    }
+  },
+  "properties": {
+    "authors": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "catalogs": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/ModCatalogPaths"
+        }
+      ],
+      "default": {
+        "buildings": "",
+        "factions": "",
+        "items": "",
+        "units": "",
+        "vfx": "",
+        "weapons": ""
+      }
+    },
+    "default_hud_layout": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/HudLayoutPreset"
+        }
+      ],
+      "default": "classic_right_sidebar"
+    },
+    "depends_on": {
+      "default": [],
+      "items": {
+        "$ref": "#/definitions/ModDependency"
+      },
+      "type": "array"
+    },
+    "description": {
+      "default": "",
+      "type": "string"
+    },
+    "engine_version": {
+      "type": "string"
+    },
+    "entry_map": {
+      "default": "",
+      "type": "string"
+    },
+    "extends": {
+      "default": null,
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "rules": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/ModRules"
+        }
+      ],
+      "default": {
+        "building_repair_credits_per_cycle": 2,
+        "building_repair_hp_per_sec": 28.0,
+        "commander_rank_xp_thresholds": [
+          150.0,
+          500.0,
+          1100.0,
+          2000.0
+        ],
+        "crate_max_active": 8,
+        "crate_spawn_interval_ticks": 600,
+        "damage_matrix": {
+          "warhead_vs_armor": {}
+        },
+        "default_infantry_by_faction": {},
+        "default_liberated_worker_unit": "",
+        "default_mutant_unit": "",
+        "economy_model": "lump_sum",
+        "elite_xp_threshold": 550.0,
+        "eras": [],
+        "free_unit_by_faction": {},
+        "gamemode": {
+          "annihilation_enabled": true,
+          "capture_zones_to_bleed": 1,
+          "initial_tickets": 500,
+          "multi_capture_points": false,
+          "survival_waves": [],
+          "ticket_bleed_per_sec": 2.0,
+          "victory_ticket_bleed": false
+        },
+        "low_power_speed_factor": 0.5,
+        "sell_refund_ratio": 0.5,
+        "stolen_tech_commando_by_pair": {},
+        "veteran_xp_threshold": 220.0
+      }
+    },
+    "scripts": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "version": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "engine_version",
+    "id",
+    "name",
+    "version"
+  ],
+  "title": "ModManifest",
+  "type": "object"
+}

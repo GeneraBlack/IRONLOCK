@@ -13,8 +13,11 @@ export interface LobbyAnnouncement {
   max_players: number;
   game_mode: string;
   password_protected?: boolean;
+  password?: string | null;
   allocate_relay?: boolean;
   upnp_external_addr?: string | null;
+  host_token?: string | null;
+  hostToken?: string | null;
 }
 
 export interface LobbyEntry {
@@ -40,12 +43,19 @@ export interface LobbyEntry {
   last_heartbeat_unix_ms: number;
 }
 
+export interface RegisteredLobbyResponse extends LobbyEntry {
+  hostToken: string;
+  host_token: string;
+}
+
 export interface LobbyHeartbeatRequest {
   current_players: number;
   max_players: number;
   status?: LobbyStatus | null;
   map_id?: string | null;
   map_name?: string | null;
+  host_token?: string | null;
+  hostToken?: string | null;
 }
 
 export interface LobbyListResponse {
@@ -55,11 +65,13 @@ export interface LobbyListResponse {
 export interface MatchPlayerRecord {
   name: string;
   faction: string;
+  team?: number;
   is_winner: boolean;
 }
 
 export interface MatchRecord {
   match_id: string;
+  lobby_id?: string | null;
   lobby_name: string;
   mod_id: string;
   mod_name: string;
@@ -75,27 +87,32 @@ export interface MatchRecord {
   final_state_hash: string;
   total_commands: number;
   desync_detected: boolean;
-  replay_file?: string;
+  replay_file?: string | null;
+  replay_url?: string | null;
+  replayUrl?: string | null;
   completed_at_unix_ms: number;
 }
 
 export interface CreateMatchRequest {
-  lobby_name: string;
-  mod_id: string;
+  lobby_id?: string | null;
+  lobby_name?: string;
+  mod_id?: string;
   mod_name?: string;
   mod_version?: string;
-  map_id: string;
+  map_id?: string;
   map_name?: string;
   game_mode?: string;
   players?: MatchPlayerRecord[];
-  winner_player: string;
-  winner_faction: string;
+  winner_player?: string;
+  winner_faction?: string;
   duration_secs?: number;
-  final_tick: number;
-  final_state_hash: string | number;
+  final_tick?: number;
+  final_state_hash?: string | number;
   total_commands?: number;
   desync_detected?: boolean;
   replay_file?: string;
+  replay_url?: string | null;
+  replayUrl?: string | null;
 }
 
 export interface MatchListResponse {

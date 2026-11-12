@@ -1,35 +1,348 @@
 id = "ra2_allied_05_dark_night"
-name = "RA2 Allied 05: Dark Night (Polish Border)"
+name = "Op. 05: Dark Night (Polish Border)"
 width = 50
 height = 96
 tile_size = 2.0
-ore_regen_per_sec = 4.0
-mission_objective = "European forces still refuse to fight with us, fearing a Soviet nuclear counterattack. We have discovered the location of their medium-range missiles in Poland. Special agent Tanya has secretly crossed the Polish border. You will direct her to destroy the Soviet Nuclear Missiles. \n \n Objective 1: Infiltrate the Soviet Battle Lab. \n \n Objective 2: Neutralize the 2 Soviet Nuclear Missile Silos. \n \n Objective 3: Keep Tanya alive."
+ore_regen_per_sec = 3.0
+mission_objective = "Infiltrate the Soviet border complex under cover of night with Agent Tanya and Allied Spies, locate the Nuclear Missile Silos, and demolish both silos."
 
 [[ore_patches]]
-position = [16, 8]
-radius = 3
+position = [14, 80]
+radius = 2
 amount_per_tile = 1400
 
 [[ore_patches]]
-position = [32, 86]
-radius = 3
-amount_per_tile = 1400
-
-[[ore_patches]]
-position = [25, 48]
-radius = 4
-amount_per_tile = 2000
-
-[[ore_patches]]
-position = [30, 48]
+position = [34, 24]
 radius = 3
 amount_per_tile = 1500
 
-[[ore_patches]]
-position = [27, 48]
-radius = 3
-amount_per_tile = 1500
+[[water_rects]]
+min = [27, 20]
+max = [27, 21]
+
+[[water_rects]]
+min = [27, 22]
+max = [28, 23]
+
+[[water_rects]]
+min = [27, 24]
+max = [29, 25]
+
+[[water_rects]]
+min = [28, 26]
+max = [29, 27]
+
+[[water_rects]]
+min = [27, 28]
+max = [30, 30]
+
+[[water_rects]]
+min = [20, 31]
+max = [21, 32]
+
+[[water_rects]]
+min = [26, 31]
+max = [30, 32]
+
+[[water_rects]]
+min = [20, 33]
+max = [20, 33]
+
+[[water_rects]]
+min = [29, 33]
+max = [30, 33]
+
+[[water_rects]]
+min = [30, 34]
+max = [30, 34]
+
+[[water_rects]]
+min = [22, 38]
+max = [22, 39]
+
+[[water_rects]]
+min = [21, 40]
+max = [22, 41]
+
+[[water_rects]]
+min = [20, 42]
+max = [22, 42]
+
+[[water_rects]]
+min = [19, 43]
+max = [24, 43]
+
+[[water_rects]]
+min = [19, 44]
+max = [19, 44]
+
+[[water_rects]]
+min = [18, 45]
+max = [19, 45]
+
+[[water_rects]]
+min = [18, 46]
+max = [18, 47]
+
+[[water_rects]]
+min = [15, 48]
+max = [17, 48]
+
+[[water_rects]]
+min = [14, 49]
+max = [17, 49]
+
+[[water_rects]]
+min = [13, 50]
+max = [17, 50]
+
+[[water_rects]]
+min = [13, 51]
+max = [15, 51]
+
+[[water_rects]]
+min = [14, 52]
+max = [15, 53]
+
+[[water_rects]]
+min = [15, 54]
+max = [15, 54]
+
+[[water_rects]]
+min = [15, 55]
+max = [16, 55]
+
+[[bridge_rects]]
+min = [26, 24]
+max = [30, 27]
+
+[[bridge_rects]]
+min = [25, 28]
+max = [31, 30]
+
+[[bridge_rects]]
+min = [18, 29]
+max = [22, 31]
+
+[[elevation_rects]]
+min = [4, 4]
+max = [18, 13]
+
+[[elevation_rects]]
+min = [4, 14]
+max = [9, 18]
+
+[[elevation_rects]]
+min = [34, 37]
+max = [45, 43]
+
+[[elevation_rects]]
+min = [35, 44]
+max = [45, 51]
+
+[[elevation_rects]]
+min = [20, 61]
+max = [27, 71]
+
+[[elevation_rects]]
+min = [41, 80]
+max = [45, 89]
+
+[[ramp_rects]]
+min = [3, 7]
+max = [4, 9]
+
+[[ramp_rects]]
+min = [18, 7]
+max = [19, 9]
+
+[[ramp_rects]]
+min = [3, 15]
+max = [4, 17]
+
+[[ramp_rects]]
+min = [9, 15]
+max = [10, 17]
+
+[[ramp_rects]]
+min = [33, 39]
+max = [34, 41]
+
+[[ramp_rects]]
+min = [45, 39]
+max = [46, 41]
+
+[[ramp_rects]]
+min = [34, 46]
+max = [35, 48]
+
+[[ramp_rects]]
+min = [45, 46]
+max = [46, 48]
+
+[[ramp_rects]]
+min = [19, 65]
+max = [20, 67]
+
+[[ramp_rects]]
+min = [27, 65]
+max = [28, 67]
+
+[[ramp_rects]]
+min = [40, 83]
+max = [41, 85]
+
+[[ramp_rects]]
+min = [45, 83]
+max = [46, 85]
+
+[[obstacles]]
+min = [10, 36]
+max = [11, 37]
+
+[[obstacles]]
+min = [28, 40]
+max = [29, 41]
+
+[[obstacles]]
+min = [31, 59]
+max = [32, 60]
+
+[[obstacles]]
+min = [34, 67]
+max = [35, 68]
+
+[[obstacles]]
+min = [39, 68]
+max = [40, 69]
+
+[[props]]
+kind = "tree"
+tile_pos = [38, 88]
+
+[[props]]
+kind = "tree"
+tile_pos = [32, 75]
+
+[[props]]
+kind = "tree"
+tile_pos = [25, 56]
+
+[[props]]
+kind = "tree"
+tile_pos = [25, 50]
+
+[[props]]
+kind = "tree"
+tile_pos = [34, 63]
+
+[[props]]
+kind = "tree"
+tile_pos = [44, 66]
+
+[[props]]
+kind = "tree"
+tile_pos = [43, 88]
+
+[[props]]
+kind = "tree"
+tile_pos = [30, 39]
+
+[[props]]
+kind = "tree"
+tile_pos = [25, 34]
+
+[[props]]
+kind = "tree"
+tile_pos = [38, 46]
+
+[[props]]
+kind = "tree"
+tile_pos = [43, 66]
+
+[[props]]
+kind = "tree"
+tile_pos = [21, 13]
+
+[[props]]
+kind = "tree"
+tile_pos = [12, 40]
+
+[[props]]
+kind = "tree"
+tile_pos = [25, 38]
+
+[[props]]
+kind = "tree"
+tile_pos = [7, 13]
+
+[[props]]
+kind = "tree"
+tile_pos = [5, 29]
+
+[[props]]
+kind = "tree"
+tile_pos = [9, 8]
+
+[[props]]
+kind = "tree"
+tile_pos = [44, 67]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [30, 40]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [31, 68]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [36, 67]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [14, 45]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [29, 65]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [24, 21]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [28, 48]
+
+[[props]]
+kind = "streetlight"
+tile_pos = [41, 68]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [10, 4]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [11, 4]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [10, 5]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [9, 6]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [7, 8]
+
+[[props]]
+kind = "explosive_barrel"
+tile_pos = [7, 10]
 
 [[preplaced_entities]]
 player_id = 2
@@ -59,17 +372,17 @@ tile_pos = [28, 53]
 [[preplaced_entities]]
 player_id = 2
 building_id = "soviet_war_factory"
-tile_pos = [31, 53]
+tile_pos = [32, 52]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "soviet_refinery"
-tile_pos = [26, 54]
+tile_pos = [25, 53]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "soviet_refinery"
-tile_pos = [32, 45]
+tile_pos = [31, 44]
 
 [[preplaced_entities]]
 player_id = 2
@@ -94,7 +407,7 @@ tile_pos = [16, 18]
 [[preplaced_entities]]
 player_id = 2
 building_id = "soviet_nuclear_silo"
-tile_pos = [18, 18]
+tile_pos = [17, 17]
 
 [[preplaced_entities]]
 player_id = 2
@@ -104,12 +417,12 @@ tile_pos = [15, 20]
 [[preplaced_entities]]
 player_id = 2
 building_id = "soviet_barracks"
-tile_pos = [16, 16]
+tile_pos = [15, 15]
 
 [[preplaced_entities]]
 player_id = 2
 building_id = "soviet_barracks"
-tile_pos = [15, 16]
+tile_pos = [14, 17]
 
 [[preplaced_entities]]
 player_id = 2
@@ -149,7 +462,7 @@ tile_pos = [28, 44]
 [[preplaced_entities]]
 player_id = 2
 building_id = "soviet_tesla_coil"
-tile_pos = [17, 13]
+tile_pos = [16, 14]
 
 [[preplaced_entities]]
 player_id = 2
@@ -189,7 +502,7 @@ tile_pos = [22, 19]
 [[preplaced_entities]]
 player_id = 2
 unit_id = "soviet_attack_dog"
-tile_pos = [16, 20]
+tile_pos = [15, 19]
 
 [[preplaced_entities]]
 player_id = 2
@@ -231,121 +544,205 @@ player_id = 2
 unit_id = "soviet_conscript"
 tile_pos = [29, 58]
 
+[[preplaced_entities]]
+player_id = 1
+unit_id = "tanya"
+tile_pos = [10, 84]
+tag = "tanya"
+
+[[objectives]]
+id = "obj_primary_main"
+tier = "primary"
+title = "Infiltrate the Soviet border complex under cover of night with Agent Tanya and Allied..."
+marker_tile = [20, 20]
+
+[[objectives]]
+id = "obj_vip_tanya"
+tier = "primary"
+title = "Keep Agent Tanya Alive Throughout the Operation"
+marker_tile = [10, 84]
+
+[[objectives]]
+id = "obj_secondary_strike"
+tier = "secondary"
+title = "Neutralize or Capture Enemy Strategic Facility"
+marker_tile = [20, 20]
+
+[[objectives]]
+id = "obj_bonus_waves"
+tier = "bonus"
+title = "Weather Enemy Tactical Counterattack Waves"
+target_count = 2
+marker_tile = [10, 84]
+
+[[cutscenes]]
+id = "intro_flyover"
+skippable = true
+letterbox = true
+
+[[cutscenes.keyframes]]
+time_secs = 0.0
+focus = [41.0, 0.0, 41.0]
+distance = 46.0
+pitch_deg = 52.0
+yaw_deg = -22.0
+
+[[cutscenes.keyframes]]
+time_secs = 2.2
+focus = [31.0, 0.0, 105.0]
+distance = 42.0
+pitch_deg = 55.0
+yaw_deg = -10.0
+
+[[cutscenes.keyframes]]
+time_secs = 4.5
+focus = [21.0, 0.0, 169.0]
+distance = 36.0
+pitch_deg = 58.0
+yaw_deg = 0.0
+
 [[spawns]]
 player_id = 1
 faction = "allies"
-base_tile = [8, 8]
-
-[[spawns.initial_buildings]]
-building_id = "allied_conyard"
-tile_pos = [8, 8]
-
-[[spawns.initial_buildings]]
-building_id = "allied_power_plant"
-tile_pos = [11, 8]
-
-[[spawns.initial_buildings]]
-building_id = "allied_refinery"
-tile_pos = [8, 11]
-
-[[spawns.initial_buildings]]
-building_id = "allied_barracks"
-tile_pos = [11, 11]
-
-[[spawns.initial_buildings]]
-building_id = "allied_war_factory"
-tile_pos = [14, 8]
+sub_faction = "great_britain"
+base_tile = [10, 84]
+team_id = 1
 
 [[spawns.initial_units]]
-unit_id = "allied_gi"
-tile_pos = [10, 13]
+unit_id = "allied_spy"
+tile_pos = [11, 84]
 
 [[spawns.initial_units]]
-unit_id = "allied_gi"
-tile_pos = [12, 13]
+unit_id = "allied_spy"
+tile_pos = [12, 84]
 
 [[spawns.initial_units]]
-unit_id = "grizzly_tank"
-tile_pos = [14, 12]
+unit_id = "navy_seal"
+tile_pos = [10, 86]
 
 [[spawns.initial_units]]
-unit_id = "chrono_miner"
-tile_pos = [10, 12]
+unit_id = "navy_seal"
+tile_pos = [12, 86]
+
+[[spawns.initial_units]]
+unit_id = "sniper"
+tile_pos = [9, 85]
+
+[[spawns.initial_units]]
+unit_id = "allied_engineer"
+tile_pos = [13, 85]
 
 [[spawns]]
 player_id = 2
 faction = "soviets"
-base_tile = [40, 86]
-
-[[spawns.initial_buildings]]
-building_id = "soviet_conyard"
-tile_pos = [40, 86]
-
-[[spawns.initial_buildings]]
-building_id = "soviet_tesla_reactor"
-tile_pos = [37, 86]
-
-[[spawns.initial_buildings]]
-building_id = "soviet_refinery"
-tile_pos = [40, 83]
-
-[[spawns.initial_buildings]]
-building_id = "soviet_barracks"
-tile_pos = [37, 83]
-
-[[spawns.initial_buildings]]
-building_id = "soviet_war_factory"
-tile_pos = [34, 86]
-
-[[spawns.initial_units]]
-unit_id = "soviet_conscript"
-tile_pos = [38, 81]
-
-[[spawns.initial_units]]
-unit_id = "soviet_conscript"
-tile_pos = [36, 81]
-
-[[spawns.initial_units]]
-unit_id = "rhino_tank"
-tile_pos = [34, 82]
-
-[[spawns.initial_units]]
-unit_id = "war_miner"
-tile_pos = [38, 82]
+sub_faction = "russia"
+base_tile = [20, 20]
+team_id = 2
 
 [[trigger_zones]]
-id = "mission_stage_init"
-min = [6, 6]
-max = [12, 12]
+id = "dark_night_init"
+min = [0, 0]
+max = [3, 3]
 once = true
 condition = { type = "timer_elapsed", secs = 1.0 }
 actions = [
+    { type = "play_cutscene", cutscene_id = "intro_flyover" },
+    { type = "set_objective_status", objective_id = "obj_primary_main", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_vip_tanya", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_secondary_strike", status = "active" },
+    { type = "set_objective_status", objective_id = "obj_bonus_waves", status = "active" },
+    { type = "start_countdown", timer_id = "silo_launch_prep", label = "Nuclear Silo Launch Prep", duration_secs = 240 },
+    { type = "set_weather", preset = "night" },
     { type = "set_variable", name = "mission_stage", value = 1 },
-    { type = "eva_transmission", speaker = "EVA", text = "Battle Control Online. Primary tactical objectives initialized." },
-    { type = "reveal_area", tile = [8, 8], radius = 14 }
+    { type = "reveal_area", tile = [28, 49], radius = 8 },
+    { type = "eva_transmission", speaker = "GEN. VON ESLING", text = "Use Allied Spies to shut down Tesla Reactors and infiltrate the Soviet Battle Lab, then send Tanya to C4 both Nuclear Missile Silos!", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "battle_control_online" },
 ]
 
 [[trigger_zones]]
-id = "tactical_reinforcement_wave"
-min = [7, 6]
-max = [11, 10]
+id = "battle_lab_recon_zone"
+min = [23, 44]
+max = [34, 55]
 once = true
-condition = { type = "all", conditions = [{ type = "timer_elapsed", secs = 45.0 }, { type = "variable_equals", name = "mission_stage", value = 1 }] }
+condition = { type = "entered_zone", player_id = 1 }
 actions = [
-    { type = "set_variable", name = "mission_stage", value = 2 },
-    { type = "spawn_reinforcements", player_id = 1, unit_id = "tanya", count = 1, tile = [7, 6] },
-    { type = "grant_credits", player_id = 1, amount = 1500 },
-    { type = "eva_transmission", speaker = "EVA", text = "Reinforcements have arrived. Forward command has authorized 1500 bonus credits." }
+    { type = "set_objective_status", objective_id = "obj_secondary_strike", status = "completed" },
+    { type = "stop_countdown", timer_id = "silo_launch_prep" },
+    { type = "play_radar_video", video_path = "assets/videos/radar_pip/allied_05_pip_02.mp4" },
+    { type = "set_variable", name = "silos_located", value = 1 },
+    { type = "reveal_area", tile = [18, 18], radius = 10 },
+    { type = "reveal_area", tile = [15, 31], radius = 10 },
+    { type = "spawn_reinforcements", player_id = 1, unit_id = "navy_seal", count = 3, tile = [12, 82] },
+    { type = "spawn_reinforcements", player_id = 1, unit_id = "chrono_legionnaire", count = 2, tile = [14, 82] },
+    { type = "set_objective", text = "Both Soviet Nuclear Missile Silos revealed! Destroy every Soviet Nuclear Silo before launch." },
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Nuclear Silo coordinates downloaded! Chrono Legionnaires and SEALs have reinforced your strike team.", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "reinforcements_have_arrived", radar_video = "assets/videos/radar_pip/allied_05_pip_02.mp4" },
 ]
 
 [[trigger_zones]]
-id = "decisive_campaign_victory"
-min = [2, 2]
-max = [6, 6]
+id = "commando_team_lost_defeat"
+min = [0, 0]
+max = [3, 3]
 once = true
-condition = { type = "all_buildings_destroyed", player_id = 2 }
+condition = { type = "player_units_below", player_id = 1, max_count = 0 }
 actions = [
+    { type = "eva_transmission", speaker = "GEN. VON ESLING", text = "Tanya's infiltration team has been wiped out! Europe will never join us now.", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "unit_lost" },
+    { type = "declare_winner", player_id = 2 },
+]
+
+[[trigger_zones]]
+id = "dark_night_silos_destroyed_victory"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "building_destroyed", building_id = "soviet_nuclear_silo", player_id = 2 }
+actions = [
+    { type = "set_objective_status", objective_id = "obj_primary_main", status = "completed" },
+    { type = "set_objective_status", objective_id = "obj_vip_tanya", status = "completed" },
+    { type = "play_radar_video", video_path = "assets/videos/radar_pip/allied_05_pip_03.mp4" },
     { type = "set_variable", name = "mission_stage", value = 3 },
-    { type = "eva_transmission", speaker = "EVA", text = "Mission Accomplished. All primary hostile command structures neutralized." },
-    { type = "declare_winner", player_id = 1 }
+    { type = "eva_transmission", speaker = "GEN. VON ESLING", text = "Both Soviet Nuclear Silos are destroyed! Germany, France, and Great Britain formally join the Allied cause!", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "primary_objective_achieved", radar_video = "assets/videos/radar_pip/allied_05_pip_03.mp4" },
+    { type = "declare_winner", player_id = 1 },
+]
+
+[[trigger_zones]]
+id = "p22_vip_tanya_lost"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "tagged_entity_destroyed", tag = "tanya" }
+actions = [
+    { type = "set_objective_status", objective_id = "obj_vip_tanya", status = "failed" },
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Agent Tanya has fallen in combat!", portrait = "assets/ui/cameos/tanyicon.png", audio_cue = "unit_lost" },
+    { type = "declare_winner", player_id = 2 },
+]
+
+[[trigger_zones]]
+id = "p22_crisis_countdown_expired"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "countdown_expired", timer_id = "silo_launch_prep" }
+actions = [
+    { type = "spawn_reinforcements", player_id = 2, unit_id = "rhino_tank", count = 4, tile = [18, 15] },
+    { type = "eva_transmission", speaker = "LT. EVA", text = "Warning: Nuclear Silo Launch Prep reached zero! Enemy heavy armor strike group deployed!", portrait = "assets/ui/cameos/asaticon.png", audio_cue = "base_under_attack" },
+]
+
+[[trigger_zones]]
+id = "p22_crisis_target_neutralized"
+min = [0, 0]
+max = [3, 3]
+once = true
+condition = { type = "building_destroyed", building_id = "soviet_nuclear_silo", player_id = 2 }
+actions = [
+    { type = "stop_countdown", timer_id = "silo_launch_prep" },
+]
+
+[[trigger_zones]]
+id = "p22_periodic_skirmish_wave"
+min = [0, 0]
+max = [3, 3]
+once = false
+condition = { type = "periodic_timer", start_secs = 75, interval_secs = 75, max_repeats = 3 }
+actions = [
+    { type = "spawn_reinforcements", player_id = 2, unit_id = "soviet_conscript", count = 3, tile = [21, 20] },
+    { type = "add_objective_progress", objective_id = "obj_bonus_waves", delta = 1 },
 ]

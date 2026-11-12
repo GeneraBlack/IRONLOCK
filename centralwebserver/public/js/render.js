@@ -42,9 +42,11 @@ const CRATES_EN = {
     },
 };
 const MOD_DESC_DE = {
-    'rust-ra2': 'Referenz-Total-Conversion-Mod auf Basis von rts-sdk mit 3 asymmetrischen Fraktionen, 10 Sub-Fraktionen, 70 Einheiten, 76 Gebäuden und 54 Karten.',
+    'rust-ra2': 'Referenz-Total-Conversion-Mod auf Basis von rts-sdk mit 3 asymmetrischen Fraktionen, 10 Sub-Fraktionen, 77 Einheiten, 76 Gebäuden und 54 Karten.',
+    'openra-classic': 'Aus OpenRA-MiniYAML-Definitionen konvertiertes Regelwerk inklusive Waffen-Tabellen und klassischer Skirmish-Karte.',
     openra_classic: 'Aus OpenRA-MiniYAML-Definitionen konvertiertes Regelwerk inklusive Waffen-Tabellen und klassischer Skirmish-Karte.',
     openra2: 'Erweiterte OpenRA-2-Konvertierung mit 3 Fraktionen, 48 Einheiten, 42 Gebäuden und automatisch generierten Rhai-Trait-Skripten.',
+    'westwood-classic': 'Direkt aus klassischen INI-, VXL- und SHP-Archiven mittels rts-asset-pipeline konvertiertes Referenzpaket.',
     westwood_classic: 'Direkt aus klassischen INI-, VXL- und SHP-Archiven mittels rts-asset-pipeline konvertiertes Referenzpaket.',
 };
 export function escapeHtml(raw) {
@@ -55,6 +57,49 @@ export function escapeHtml(raw) {
         '"': '&quot;',
         "'": '&#39;',
     })[ch] ?? ch);
+}
+export function sanitizeSafeUrl(raw) {
+    if (raw === undefined || raw === null)
+        return null;
+    const trimmed = String(raw).trim();
+    if (!trimmed || trimmed.length > 2048)
+        return null;
+    if (/[\u0000-\u001F\u007F\s<>"'`\\]/.test(trimmed))
+        return null;
+    if (trimmed.startsWith('//'))
+        return null;
+    const schemeMatch = trimmed.match(/^([a-zA-Z][a-zA-Z0-9+.-]*):/);
+    if (schemeMatch) {
+        const scheme = schemeMatch[1].toLowerCase();
+        if (scheme !== 'https' && scheme !== 'http') {
+            return null;
+        }
+        try {
+            const parsed = new URL(trimmed);
+            if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') {
+                return null;
+            }
+            if (parsed.username || parsed.password) {
+                return null;
+            }
+            return trimmed;
+        }
+        catch {
+            return null;
+        }
+    }
+    if (trimmed.includes(':'))
+        return null;
+    const segments = trimmed.split('/');
+    if (segments.some((seg) => seg === '..'))
+        return null;
+    if (!trimmed.startsWith('/') && !/^[a-zA-Z0-9._-]+(\/[a-zA-Z0-9._-]+)*$/.test(trimmed)) {
+        return null;
+    }
+    return trimmed;
+}
+function sanitizeAssetSrc(raw, fallback) {
+    return escapeHtml(sanitizeSafeUrl(raw) ?? fallback);
 }
 export function formatRelativeTime(unixMs, nowMs = Date.now(), lang = 'de') {
     const diffSec = Math.max(0, Math.floor((nowMs - unixMs) / 1000));
@@ -172,13 +217,13 @@ export function renderPipelineSpecTabHtml(tab, lang = 'de') {
                 'Vollständige Entkopplung: Die Engine kompiliert ohne ein einziges hardcodiertes Fraktions- oder Einheiten-Symbol.',
                 'Deterministische Rüstungs- & Schadensmatrix (none, light, medium, heavy, structure) mit expliziten Splash-Radien.',
                 'Mehrstufige Produktionsvoraussetzungen (prerequisites), Tech-Stufen, Strombilanzen und Garnisonskapazitäten.',
-                'CLI-Prüfung via rts-asset-pipeline validate & balance für automatisierte CI-Qualitätssicherung von Mods.',
+                'CLI-Prüfung via rts-asset-pipeline validate & benchmark-balance für automatisierte CI-Qualitätssicherung von Mods.',
             ]
             : [
                 'Total decoupling: The engine compiles without a single hardcoded faction, unit, or weapon identifier.',
                 'Deterministic armor & damage matrix (none, light, medium, heavy, structure) with explicit splash falloff radii.',
                 'Multi-stage production prerequisites, tech levels, power grid deltas, and garrison capacities.',
-                'CLI verification via rts-asset-pipeline validate & balance for automated CI quality gates on mod repositories.',
+                'CLI verification via rts-asset-pipeline validate & benchmark-balance for automated CI quality gates on mod repositories.',
             ];
         const codeSample = `# mod.toml — Declarative Mod Package Manifest
 [mod]
@@ -284,8 +329,8 @@ fn on_ability(ctx) {
           <div class="pipeline-cli-box">
             <span class="cli-box-label">${lang === 'de' ? 'DPS- & Balance-Bericht inkl. Skripten prüfen:' : 'Inspect DPS & balance report including scripts:'}</span>
             <div class="cli-box-row">
-              <code>cargo run --manifest-path engine/Cargo.toml -p rts-asset-pipeline -- balance --mod-path rust-ra2</code>
-              <button type="button" class="btn btn-xs btn-secondary" data-copy="cargo run --manifest-path engine/Cargo.toml -p rts-asset-pipeline -- balance --mod-path rust-ra2">${escapeHtml(t(lang, 'btn_copy'))}</button>
+              <code>cargo run --manifest-path engine/Cargo.toml -p rts-asset-pipeline -- benchmark-balance --mod-path rust-ra2</code>
+              <button type="button" class="btn btn-xs btn-secondary" data-copy="cargo run --manifest-path engine/Cargo.toml -p rts-asset-pipeline -- benchmark-balance --mod-path rust-ra2">${escapeHtml(t(lang, 'btn_copy'))}</button>
             </div>
           </div>
         </div>
@@ -310,26 +355,26 @@ fn on_ability(ctx) {
             ? [
                 'Hierarchische glTF-2.0-Knoten: Hull -> Turret -> Barrel für präzises Anvisieren in Bevy 0.15 ohne Mesh-Deformation.',
                 'PBR-Materialattribute (BaseColorFactor, MetallicRoughness, Fraktions-Teamfarben) direkt im .glb eingebettet.',
-                'Automatischer Konverter (import-mod) für bestehende OpenRA-MiniYAML- und klassische INI/VXL/SHP-Bestände.',
+                'Automatischer Konverter (import) für bestehende OpenRA-MiniYAML- und klassische INI/VXL/SHP-Bestände.',
                 'Headless-kompatibel: Der Simulationskern benötigt keine 3D-Assets und läuft auf Servern mit minimalem Speicherprofil.',
             ]
             : [
                 'Hierarchical glTF 2.0 nodes: Hull -> Turret -> Barrel for accurate target tracking in Bevy 0.15 without skinning overhead.',
                 'PBR material attributes (BaseColorFactor, MetallicRoughness, faction team-color tinting) embedded directly in .glb.',
-                'Automated importer (import-mod) for existing OpenRA MiniYAML and classic INI/VXL/SHP asset repositories.',
+                'Automated importer (import) for existing OpenRA MiniYAML and classic INI/VXL/SHP asset repositories.',
                 'Headless-compatible: The simulation core requires zero 3D assets to run on dedicated servers.',
             ];
         const codeSample = `# 1. Generate articulated 3D .glb models for all mod entities
 cargo run --manifest-path engine/Cargo.toml -p rts-asset-pipeline -- \\
-  generate-3d-assets --mod-path rust-ra2
+  generate-models --mod-path rust-ra2
 
 # 2. Import legacy Westwood (.ini/.vxl/.shp) or OpenRA mod directory
 cargo run --manifest-path engine/Cargo.toml -p rts-asset-pipeline -- \\
-  import-mod --source ./legacy-mod --output ./mods/custom-mod
+  import ./legacy-mod --output ./mods/custom-mod
 
 # 3. Scaffold a new unit with TOML definition, Rhai hook & .glb model
 cargo run --manifest-path engine/Cargo.toml -p rts-asset-pipeline -- \\
-  new-unit --mod-path rust-ra2 --id siege_mech --role tank`;
+  scaffold-unit --mod-path rust-ra2 --id siege_mech --name "Siege Mech" --faction allies`;
         return `
       <div class="pipeline-grid">
         <div class="pipeline-info-col">
@@ -342,8 +387,8 @@ cargo run --manifest-path engine/Cargo.toml -p rts-asset-pipeline -- \\
           <div class="pipeline-cli-box">
             <span class="cli-box-label">${lang === 'de' ? '3D-.glb-Assets für Mod generieren:' : 'Generate 3D .glb assets for mod:'}</span>
             <div class="cli-box-row">
-              <code>cargo run --manifest-path engine/Cargo.toml -p rts-asset-pipeline -- generate-3d-assets --mod-path rust-ra2</code>
-              <button type="button" class="btn btn-xs btn-secondary" data-copy="cargo run --manifest-path engine/Cargo.toml -p rts-asset-pipeline -- generate-3d-assets --mod-path rust-ra2">${escapeHtml(t(lang, 'btn_copy'))}</button>
+              <code>cargo run --manifest-path engine/Cargo.toml -p rts-asset-pipeline -- generate-models --mod-path rust-ra2</code>
+              <button type="button" class="btn btn-xs btn-secondary" data-copy="cargo run --manifest-path engine/Cargo.toml -p rts-asset-pipeline -- generate-models --mod-path rust-ra2">${escapeHtml(t(lang, 'btn_copy'))}</button>
             </div>
           </div>
         </div>
@@ -442,7 +487,10 @@ export function renderLobbyRowsHtml(lobbies, ttlSecs, nowMs = Date.now(), lang =
         const ageSec = Math.max(0, Math.floor((nowMs - lobby.last_heartbeat_unix_ms) / 1000));
         const remainingTtl = Math.max(0, ttlSecs - ageSec);
         const primaryEndpoint = lobby.external_addr || lobby.relay_addr || lobby.host_addr;
-        const connectCmd = `cargo run --manifest-path engine/Cargo.toml -p rts-client -- --mod-path ${lobby.mod_id} --connect ${primaryEndpoint}`;
+        const lobbyModPath = lobby.mod_id === 'rust-ra2'
+            ? 'rust-ra2'
+            : `mods/${lobby.mod_id.replace(/_/g, '-')}`;
+        const connectCmd = `cargo run --manifest-path engine/Cargo.toml -p rts-client -- --mod-path ${lobbyModPath} --connect ${primaryEndpoint}`;
         const lockBadge = lobby.password_protected
             ? `<span class="tag tag-warn" title="${lang === 'de' ? 'Passwortgeschützt' : 'Password Protected'}">AUTH</span>`
             : '';
@@ -603,6 +651,23 @@ export function renderMatchesRowsHtml(matches, nowMs = Date.now(), lang = 'de') 
         const playersList = m.players
             .map((p) => `<span class="player-chip ${p.is_winner ? 'player-winner' : ''}">${escapeHtml(p.name)} (${escapeHtml(p.faction)})</span>`)
             .join(' ');
+        const rawReplayUrl = m.replayUrl ?? m.replay_url;
+        const safeReplayUrl = sanitizeSafeUrl(rawReplayUrl);
+        const rawReplayFile = m.replay_file ? String(m.replay_file).trim() : '';
+        const hasUnsafeFileScheme = /^(javascript|data|vbscript|file|blob):/i.test(rawReplayFile);
+        const safeReplayFile = rawReplayFile && !hasUnsafeFileScheme ? rawReplayFile : null;
+        let replayCellHtml = '<span class="cell-sub">BLS-ISP Live Registry</span>';
+        if (safeReplayUrl) {
+            const label = safeReplayFile || safeReplayUrl;
+            replayCellHtml = `<a class="replay-link" href="${escapeHtml(safeReplayUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(label)}</a>`;
+        }
+        else if ((rawReplayUrl && String(rawReplayUrl).trim().length > 0) ||
+            hasUnsafeFileScheme) {
+            replayCellHtml = `<span class="cell-sub tag-danger">${lang === 'de' ? 'Ungültige Replay-URL blockiert' : 'Unsafe replay URL blocked'}</span>`;
+        }
+        else if (safeReplayFile) {
+            replayCellHtml = `<code class="replay-path">${escapeHtml(safeReplayFile)}</code>`;
+        }
         return `
         <tr>
           <td>
@@ -634,7 +699,7 @@ export function renderMatchesRowsHtml(matches, nowMs = Date.now(), lang = 'de') 
           <td>${syncBadge}</td>
           <td>
             <div class="cell-sub">${formatRelativeTime(m.completed_at_unix_ms, nowMs, lang)}</div>
-            ${m.replay_file ? `<code class="replay-path">${escapeHtml(m.replay_file)}</code>` : '<span class="cell-sub">BLS-ISP Live Registry</span>'}
+            ${replayCellHtml}
           </td>
         </tr>
       `;
@@ -660,7 +725,7 @@ export function renderCountriesStripHtml(countries, selectedCountryId, lang = 'd
             <strong>${escapeHtml(dispName)}</strong>
             <span class="country-tab-unit">${escapeHtml(dispUnit)}</span>
           </div>
-          <img src="${escapeHtml(c.special_cameo)}" alt="" class="country-tab-cameo" loading="lazy">
+          <img src="${sanitizeAssetSrc(c.special_cameo, '/assets/cameos/techicon.webp')}" alt="" class="country-tab-cameo" loading="lazy">
         </button>
       `;
     })
@@ -676,7 +741,7 @@ export function renderCountryDetailHtml(country, lang = 'de') {
     <div class="country-showcase-card ${fClass}">
       <div class="country-artwork-wrap">
         <img
-          src="${escapeHtml(country.artwork)}"
+          src="${sanitizeAssetSrc(country.artwork, '/assets/screens/country_usa.webp')}"
           alt="${escapeHtml(dispName)}"
           class="country-artwork-img"
         >
@@ -691,7 +756,7 @@ export function renderCountryDetailHtml(country, lang = 'de') {
             <span class="country-special-label">${escapeHtml(t(lang, 'country_special_kicker'))}</span>
             <h4 class="country-special-title">${escapeHtml(dispUnit)}</h4>
           </div>
-          <img src="${escapeHtml(country.special_cameo)}" alt="${escapeHtml(dispUnit)}" class="cameo-thumb-lg">
+          <img src="${sanitizeAssetSrc(country.special_cameo, '/assets/cameos/techicon.webp')}" alt="${escapeHtml(dispUnit)}" class="cameo-thumb-lg">
         </div>
         <p class="country-dossier-desc">${escapeHtml(dispDoctrine)}</p>
         <div class="country-meta-grid">
@@ -737,7 +802,7 @@ export function renderArsenalGridHtml(items, selectedId, kind, lang = 'de') {
           aria-pressed="${isSelected}"
         >
           <div class="cameo-img-frame">
-            <img src="${escapeHtml(item.cameo)}" alt="${escapeHtml(item.name)}" class="cameo-img" loading="lazy">
+            <img src="${sanitizeAssetSrc(item.cameo, '/assets/cameos/techicon.webp')}" alt="${escapeHtml(item.name)}" class="cameo-img" loading="lazy">
             <span class="cameo-cost-badge">$${item.cost}</span>
           </div>
           <div class="cameo-card-info">
@@ -773,7 +838,7 @@ export function renderArsenalInspectorHtml(item, kind, db, lang = 'de') {
             const ref = findEntityNameAndCameo(pid);
             return `
               <button type="button" class="tech-pill" data-arsenal-kind="${ref.kind}" data-arsenal-id="${escapeHtml(ref.id)}">
-                <img src="${escapeHtml(ref.cameo)}" alt="" class="tech-pill-img">
+                <img src="${sanitizeAssetSrc(ref.cameo, '/assets/cameos/techicon.webp')}" alt="" class="tech-pill-img">
                 <span>${escapeHtml(ref.name)}</span>
               </button>
             `;
@@ -791,7 +856,7 @@ export function renderArsenalInspectorHtml(item, kind, db, lang = 'de') {
             .slice(0, 8)
             .map((un) => `
               <button type="button" class="tech-pill" data-arsenal-kind="${un.kind}" data-arsenal-id="${escapeHtml(un.id)}">
-                <img src="${escapeHtml(un.cameo)}" alt="" class="tech-pill-img">
+                <img src="${sanitizeAssetSrc(un.cameo, '/assets/cameos/techicon.webp')}" alt="" class="tech-pill-img">
                 <span>${escapeHtml(un.name)}</span>
               </button>
             `)
@@ -879,7 +944,7 @@ export function renderArsenalInspectorHtml(item, kind, db, lang = 'de') {
     return `
     <div class="inspector-card ${fClass}">
       <div class="inspector-header">
-        <img src="${escapeHtml(item.cameo)}" alt="${escapeHtml(item.name)}" class="inspector-cameo-lg">
+        <img src="${sanitizeAssetSrc(item.cameo, '/assets/cameos/techicon.webp')}" alt="${escapeHtml(item.name)}" class="inspector-cameo-lg">
         <div class="inspector-title-block">
           <div class="inspector-badges">
             <span class="faction-badge ${fClass}">${escapeHtml(factionDisplayName(item.faction, lang))}</span>

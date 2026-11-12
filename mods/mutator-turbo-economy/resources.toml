@@ -1,0 +1,12 @@
+# Delta overrides onto sdk-showcase-heroes-ages-mutators resources
+[[resources]]
+id = "credits"
+starting_amount = 5000
+
+[[resources]]
+id = "aether"
+starting_amount = 1500
+
+[[resources]]
+id = "relic_flux"
+starting_amount = 400
