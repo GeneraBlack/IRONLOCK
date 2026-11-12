@@ -14,17 +14,33 @@ env:
 
 jobs:
   rust-workspace:
-    name: Rust Engine (${{ matrix.os }})
+    name: Rust Engine (${{ matrix.label }})
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-    runs-on: ${{ matrix.os }}
+        include:
+          - target_id: debian-deb
+            label: "Debian (.deb)"
+            runner: ubuntu-latest
+            pkg_format: deb
+          - target_id: redhat-rpm
+            label: "RedHat (.rpm)"
+            runner: ubuntu-latest
+            pkg_format: rpm
+          - target_id: windows
+            label: "Windows (x86_64)"
+            runner: windows-latest
+            pkg_format: zip
+          - target_id: macos
+            label: "macOS (ARM64)"
+            runner: macos-latest
+            pkg_format: zip
+    runs-on: ${{ matrix.runner }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install Linux system libraries for Bevy (ALSA / udev / X11 / Wayland)
+      - name: Install Linux system & packaging libraries (ALSA / X11 / Wayland / DEB / RPM)
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
@@ -39,7 +55,9 @@ jobs:
             libudev-dev \
             libxkbcommon-dev \
             libxkbcommon-x11-0 \
-            libwayland-dev
+            libwayland-dev \
+            dpkg-dev \
+            rpm
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@master
@@ -51,9 +69,10 @@ jobs:
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: engine
+          key: ${{ matrix.target_id }}
 
       - name: Cargo Format Check (rustfmt)
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.target_id == 'debian-deb'
         run: cargo fmt --manifest-path engine/Cargo.toml --all -- --check
 
       - name: Cargo Clippy (-D warnings)
@@ -66,16 +85,31 @@ jobs:
         run: cargo test --manifest-path engine/Cargo.toml -p rts-simulation --release
 
       - name: Deep Binary & Schema Validate Mods (rust-ra2 & sdk-showcase-workers-squads)
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.target_id == 'debian-deb'
         run: |
           cargo run --manifest-path engine/Cargo.toml -p rts-asset-pipeline -- validate --mod-path rust-ra2
           cargo run --manifest-path engine/Cargo.toml -p rts-asset-pipeline -- validate --mod-path mods/sdk-showcase-workers-squads
 
       - name: Run Declarative Gameplay Scenario Suites (test-mod)
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.target_id == 'debian-deb'
         run: |
           cargo run --manifest-path engine/Cargo.toml -p rts-asset-pipeline -- test-mod --mod-path rust-ra2
           cargo run --manifest-path engine/Cargo.toml -p rts-asset-pipeline -- test-mod --mod-path mods/sdk-showcase-workers-squads
+
+      - name: Build & Verify Debian (.deb) Package
+        if: matrix.target_id == 'debian-deb'
+        run: |
+          cargo run --manifest-path engine/Cargo.toml -p rts-asset-pipeline -- cook-standalone --mod-path mods/sdk-showcase-workers-squads --output-dir dist/ironlock-sdk-showcase --lock-player-mode
+          cp engine/target/debug/rts-client dist/ironlock-sdk-showcase/rts-client
+          bash ./scripts/package_linux.sh deb ironlock-sdk-showcase 0.2.0 dist/ironlock-sdk-showcase dist/packages
+
+      - name: Build & Verify RedHat (.rpm) Package
+        if: matrix.target_id == 'redhat-rpm'
+        run: |
+          cargo build --manifest-path engine/Cargo.toml -p rts-client -p rts-asset-pipeline
+          ./engine/target/debug/rts-asset-pipeline cook-standalone --mod-path mods/sdk-showcase-workers-squads --output-dir dist/ironlock-sdk-showcase --lock-player-mode
+          cp engine/target/debug/rts-client dist/ironlock-sdk-showcase/rts-client
+          bash ./scripts/package_linux.sh rpm ironlock-sdk-showcase 0.2.0 dist/ironlock-sdk-showcase dist/packages
 
   centralwebserver:
     name: Central Webserver & NS8 Module

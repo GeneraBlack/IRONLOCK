@@ -53,5 +53,7 @@ bevy = { version = "0.15", default-features = false, features = [
     "tonemapping_luts",
     "vorbis",
     "wav",
+    "wayland",
+    "x11",
 ] }
 

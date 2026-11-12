@@ -1,4 +1,4 @@
-name: IRONLOCK // Standalone Release Cooker
+name: IRONLOCK // Standalone Release Cooker (Debian .deb, RedHat .rpm, Windows, macOS)
 
 on:
   push:
@@ -14,23 +14,33 @@ env:
 
 jobs:
   build-and-cook:
-    name: Build & Cook Standalone (${{ matrix.platform }})
+    name: Build & Package (${{ matrix.label }})
     strategy:
       fail-fast: false
       matrix:
         include:
-          - os: ubuntu-latest
-            platform: linux-x86_64
-          - os: windows-latest
-            platform: windows-x86_64
-          - os: macos-latest
-            platform: macos-arm64
+          - platform: debian-amd64
+            label: "Debian (.deb)"
+            os: ubuntu-latest
+            pkg_format: deb
+          - platform: redhat-x86_64
+            label: "RedHat (.rpm)"
+            os: ubuntu-latest
+            pkg_format: rpm
+          - platform: windows-x86_64
+            label: "Windows (x86_64 .zip)"
+            os: windows-latest
+            pkg_format: zip
+          - platform: macos-arm64
+            label: "macOS (ARM64 .zip)"
+            os: macos-latest
+            pkg_format: zip
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install Linux system libraries for Bevy
+      - name: Install Linux system & packaging libraries
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
@@ -45,7 +55,9 @@ jobs:
             libudev-dev \
             libxkbcommon-dev \
             libxkbcommon-x11-0 \
-            libwayland-dev
+            libwayland-dev \
+            dpkg-dev \
+            rpm
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@master
@@ -56,6 +68,7 @@ jobs:
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: engine
+          key: release-${{ matrix.platform }}
 
       - name: Build Release Engine & SDK Binaries
         run: cargo build --manifest-path engine/Cargo.toml --workspace --release
@@ -65,30 +78,44 @@ jobs:
           cargo run --manifest-path engine/Cargo.toml --release -p rts-asset-pipeline -- cook-standalone --mod-path rust-ra2 --output-dir dist/ironlock-rust-ra2-${{ matrix.platform }} --lock-player-mode
           cargo run --manifest-path engine/Cargo.toml --release -p rts-asset-pipeline -- cook-standalone --mod-path mods/sdk-showcase-workers-squads --output-dir dist/ironlock-sdk-showcase-${{ matrix.platform }} --lock-player-mode
 
-      - name: Package ZIP Archives (POSIX)
-        if: runner.os != 'Windows'
+      - name: Package Debian (.deb) Archives
+        if: matrix.pkg_format == 'deb'
         run: |
-          mkdir -p release_zips
-          (cd dist && zip -r "../release_zips/ironlock-rust-ra2-${{ matrix.platform }}.zip" "ironlock-rust-ra2-${{ matrix.platform }}")
-          (cd dist && zip -r "../release_zips/ironlock-sdk-showcase-${{ matrix.platform }}.zip" "ironlock-sdk-showcase-${{ matrix.platform }}")
+          mkdir -p release_pkgs
+          bash ./scripts/package_linux.sh deb ironlock-rust-ra2 0.2.0 "dist/ironlock-rust-ra2-${{ matrix.platform }}" release_pkgs
+          bash ./scripts/package_linux.sh deb ironlock-sdk-showcase 0.2.0 "dist/ironlock-sdk-showcase-${{ matrix.platform }}" release_pkgs
 
-      - name: Package ZIP Archives (Windows)
+      - name: Package RedHat (.rpm) Archives
+        if: matrix.pkg_format == 'rpm'
+        run: |
+          mkdir -p release_pkgs
+          bash ./scripts/package_linux.sh rpm ironlock-rust-ra2 0.2.0 "dist/ironlock-rust-ra2-${{ matrix.platform }}" release_pkgs
+          bash ./scripts/package_linux.sh rpm ironlock-sdk-showcase 0.2.0 "dist/ironlock-sdk-showcase-${{ matrix.platform }}" release_pkgs
+
+      - name: Package macOS (.zip) Archives
+        if: runner.os == 'macOS'
+        run: |
+          mkdir -p release_pkgs
+          (cd dist && zip -r "../release_pkgs/ironlock-rust-ra2-${{ matrix.platform }}.zip" "ironlock-rust-ra2-${{ matrix.platform }}")
+          (cd dist && zip -r "../release_pkgs/ironlock-sdk-showcase-${{ matrix.platform }}.zip" "ironlock-sdk-showcase-${{ matrix.platform }}")
+
+      - name: Package Windows (.zip) Archives
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          New-Item -ItemType Directory -Force -Path release_zips | Out-Null
-          Compress-Archive -Path "dist/ironlock-rust-ra2-${{ matrix.platform }}" -DestinationPath "release_zips/ironlock-rust-ra2-${{ matrix.platform }}.zip" -Force
-          Compress-Archive -Path "dist/ironlock-sdk-showcase-${{ matrix.platform }}" -DestinationPath "release_zips/ironlock-sdk-showcase-${{ matrix.platform }}.zip" -Force
+          New-Item -ItemType Directory -Force -Path release_pkgs | Out-Null
+          Compress-Archive -Path "dist/ironlock-rust-ra2-${{ matrix.platform }}" -DestinationPath "release_pkgs/ironlock-rust-ra2-${{ matrix.platform }}.zip" -Force
+          Compress-Archive -Path "dist/ironlock-sdk-showcase-${{ matrix.platform }}" -DestinationPath "release_pkgs/ironlock-sdk-showcase-${{ matrix.platform }}.zip" -Force
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ironlock-standalone-${{ matrix.platform }}
-          path: release_zips/*.zip
+          path: release_pkgs/*
 
-      - name: Attach Cooked Standalone ZIPs to GitHub Release
+      - name: Attach Cooked Standalone Packages (.deb, .rpm, .zip) to GitHub Release
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
-          files: release_zips/*.zip
+          files: release_pkgs/*
           generate_release_notes: true
