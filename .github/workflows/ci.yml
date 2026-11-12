@@ -99,7 +99,8 @@ jobs:
       - name: Build & Verify Debian (.deb) Package
         if: matrix.target_id == 'debian-deb'
         run: |
-          cargo run --manifest-path engine/Cargo.toml -p rts-asset-pipeline -- cook-standalone --mod-path mods/sdk-showcase-workers-squads --output-dir dist/ironlock-sdk-showcase --lock-player-mode
+          cargo build --manifest-path engine/Cargo.toml -p rts-client -p rts-asset-pipeline
+          ./engine/target/debug/rts-asset-pipeline cook-standalone --mod-path mods/sdk-showcase-workers-squads --output-dir dist/ironlock-sdk-showcase --lock-player-mode
           cp engine/target/debug/rts-client dist/ironlock-sdk-showcase/rts-client
           bash ./scripts/package_linux.sh deb ironlock-sdk-showcase 0.2.0 dist/ironlock-sdk-showcase dist/packages
 
