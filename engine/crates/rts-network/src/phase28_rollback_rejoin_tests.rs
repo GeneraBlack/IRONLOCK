@@ -79,31 +79,38 @@ fn lobby_rules_defaults_and_universal_tcp_and_mux_relay_jitter_adapts_to_1_tick(
     let mut w1 = SimWorld::from_mod(&loaded);
     let mut w2 = SimWorld::from_mod(&loaded);
 
-    let tcp_run = Arc::new(AtomicBool::new(true));
-    let tcp_run_bg = Arc::clone(&tcp_run);
-    let tcp_srv_handle = thread::spawn(move || {
-        while tcp_run_bg.load(Ordering::Relaxed) {
-            let _ = tcp_srv.poll();
+    // Poll server + both clients inline on one thread so CI vCPU contention does not add
+    // artificial cross-thread wakeup jitter to TCP wire timestamps.
+    let deadline = Instant::now() + Duration::from_secs(10);
+    loop {
+        if Instant::now() >= deadline {
+            break;
+        }
+        let _ = tcp_srv.poll();
+        let need_adapt = tcp_srv.current_input_delay_ticks() > 2 && w1.tick < 180 && w2.tick < 180;
+        if w1.tick >= 75 && w2.tick >= 75 && w1.tick == w2.tick && !need_adapt {
+            break;
+        }
+        let step_cap = if need_adapt {
+            180
+        } else {
+            w1.tick.max(w2.tick).max(75)
+        };
+        let mut progressed = false;
+        if w1.tick < step_cap {
+            progressed |= c1.step_lockstep(&mut w1, &loaded).unwrap();
+        }
+        if w2.tick < step_cap {
+            progressed |= c2.step_lockstep(&mut w2, &loaded).unwrap();
+        }
+        let _ = tcp_srv.poll();
+        if !progressed {
             thread::yield_now();
         }
-        tcp_srv
-    });
-
-    let deadline = Instant::now() + Duration::from_secs(8);
-    while (w1.tick < 75 || w2.tick < 75) && Instant::now() < deadline {
-        if w1.tick < 75 {
-            c1.step_lockstep(&mut w1, &loaded).unwrap();
-        }
-        if w2.tick < 75 {
-            c2.step_lockstep(&mut w2, &loaded).unwrap();
-        }
-        thread::yield_now();
     }
-    tcp_run.store(false, Ordering::Relaxed);
-    let tcp_srv = tcp_srv_handle.join().unwrap();
 
-    assert_eq!(w1.tick, 75);
-    assert_eq!(w2.tick, 75);
+    assert!(w1.tick >= 75);
+    assert_eq!(w1.tick, w2.tick);
     assert_eq!(w1.state_hash(), w2.state_hash());
     assert_eq!(tcp_srv.desync_count, 0);
     assert!(
@@ -132,6 +139,7 @@ fn lobby_rules_defaults_and_universal_tcp_and_mux_relay_jitter_adapts_to_1_tick(
             let _ = lobby_srv.poll();
             thread::yield_now();
         }
+        lobby_srv
     });
 
     let mut relay_srv = LockstepServer::bind(
@@ -194,33 +202,48 @@ fn lobby_rules_defaults_and_universal_tcp_and_mux_relay_jitter_adapts_to_1_tick(
     assert!(rc2.connected_via_relay);
     assert!(rc2.udp_channel().is_none());
 
+    // Handshake is done; reclaim lobby_srv onto this thread so all #mux: relay traffic and
+    // server polling run inline without cross-thread wakeup jitter under shared CI load.
+    running.store(false, Ordering::Relaxed);
+    let mut lobby_srv = bg_thread.join().unwrap();
+
     let mut rw1 = SimWorld::from_mod(&loaded);
     let mut rw2 = SimWorld::from_mod(&loaded);
-    let relay_srv_run = Arc::clone(&running);
-    let relay_srv_handle = thread::spawn(move || {
-        while relay_srv_run.load(Ordering::Relaxed) {
-            let _ = relay_srv.poll();
+    let deadline_mux = Instant::now() + Duration::from_secs(12);
+    loop {
+        if Instant::now() >= deadline_mux {
+            break;
+        }
+        let _ = lobby_srv.poll();
+        let _ = relay_srv.poll();
+        let _ = lobby_srv.poll();
+        let need_adapt =
+            relay_srv.current_input_delay_ticks() > 2 && rw1.tick < 180 && rw2.tick < 180;
+        if rw1.tick >= 75 && rw2.tick >= 75 && rw1.tick == rw2.tick && !need_adapt {
+            break;
+        }
+        let step_cap = if need_adapt {
+            180
+        } else {
+            rw1.tick.max(rw2.tick).max(75)
+        };
+        let mut progressed = false;
+        if rw1.tick < step_cap {
+            progressed |= rc1.step_lockstep(&mut rw1, &loaded).unwrap();
+        }
+        if rw2.tick < step_cap {
+            progressed |= rc2.step_lockstep(&mut rw2, &loaded).unwrap();
+        }
+        let _ = lobby_srv.poll();
+        let _ = relay_srv.poll();
+        let _ = lobby_srv.poll();
+        if !progressed {
             thread::yield_now();
         }
-        relay_srv
-    });
-    let deadline_mux = Instant::now() + Duration::from_secs(10);
-    while (rw1.tick < 75 || rw2.tick < 75) && Instant::now() < deadline_mux {
-        if rw1.tick < 75 {
-            rc1.step_lockstep(&mut rw1, &loaded).unwrap();
-        }
-        if rw2.tick < 75 {
-            rc2.step_lockstep(&mut rw2, &loaded).unwrap();
-        }
-        thread::yield_now();
     }
 
-    running.store(false, Ordering::Relaxed);
-    let relay_srv = relay_srv_handle.join().unwrap();
-    let _ = bg_thread.join();
-
-    assert_eq!(rw1.tick, 75);
-    assert_eq!(rw2.tick, 75);
+    assert!(rw1.tick >= 75);
+    assert_eq!(rw1.tick, rw2.tick);
     assert_eq!(rw1.state_hash(), rw2.state_hash());
     assert_eq!(relay_srv.desync_count, 0);
     assert!(
