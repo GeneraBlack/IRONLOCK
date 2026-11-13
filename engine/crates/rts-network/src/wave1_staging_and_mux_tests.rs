@@ -323,8 +323,9 @@ fn relay_disables_udp_blackhole_reconnect_auto_upnp_raii_guard_and_desync_forens
     let lobby_thread = thread::spawn(move || {
         while run_lobby.load(Ordering::Relaxed) {
             let _ = lobby_srv.poll();
-            thread::sleep(Duration::from_millis(2));
+            thread::yield_now();
         }
+        lobby_srv
     });
 
     let mut host_srv = LockstepServer::bind_with_udp(
@@ -395,16 +396,13 @@ fn relay_disables_udp_blackhole_reconnect_auto_upnp_raii_guard_and_desync_forens
         .enable_relay_uplink(entry.relay_uplink_endpoint().unwrap())
         .unwrap();
 
-    let srv_arc = Arc::new(Mutex::new(host_srv));
-    let srv_bg = Arc::clone(&srv_arc);
     let run_host = Arc::clone(&running);
     let host_thread = thread::spawn(move || {
         while run_host.load(Ordering::Relaxed) {
-            if let Ok(mut guard) = srv_bg.lock() {
-                let _ = guard.poll();
-            }
-            thread::sleep(Duration::from_millis(2));
+            let _ = host_srv.poll();
+            thread::yield_now();
         }
+        host_srv
     });
 
     let candidates = entry.candidate_connect_addrs();
@@ -431,15 +429,18 @@ fn relay_disables_udp_blackhole_reconnect_auto_upnp_raii_guard_and_desync_forens
 
     let mut w1 = SimWorld::from_mod(&loaded);
     let mut w2 = SimWorld::from_mod(&loaded);
-    let d1 = Instant::now() + Duration::from_secs(5);
+    let d1 = Instant::now() + Duration::from_secs(12);
     while (w1.tick < 25 || w2.tick < 25) && Instant::now() < d1 {
+        let mut progressed = false;
         if w1.tick < 25 {
-            c1.step_lockstep(&mut w1, &loaded).unwrap();
+            progressed |= c1.step_lockstep(&mut w1, &loaded).unwrap();
         }
         if w2.tick < 25 {
-            c2.step_lockstep(&mut w2, &loaded).unwrap();
+            progressed |= c2.step_lockstep(&mut w2, &loaded).unwrap();
         }
-        thread::sleep(Duration::from_millis(2));
+        if !progressed {
+            thread::yield_now();
+        }
     }
     assert_eq!(w1.tick, 25);
     assert_eq!(w2.tick, 25);
@@ -454,31 +455,58 @@ fn relay_disables_udp_blackhole_reconnect_auto_upnp_raii_guard_and_desync_forens
     assert!(c2_rejoined.udp_channel().is_none());
     assert_eq!(c2_rejoined.connected_endpoint, winning_ep);
 
+    // Reclaim lobby + host onto this thread once blocking reconnect finishes so macOS CI
+    // timer coalescing cannot starve step catch-up loops.
+    running.store(false, Ordering::Relaxed);
+    let mut host_srv = host_thread.join().unwrap();
+    let mut lobby_srv = lobby_thread.join().unwrap();
+
     let mut w2_rejoined = SimWorld::from_mod(&loaded);
-    c2_rejoined
+    let applied_snap = c2_rejoined
         .apply_pending_reconnect_snapshot(&mut w2_rejoined, &loaded)
         .unwrap();
+    assert!(
+        applied_snap,
+        "reconnect_auto must deliver CompressedWorldSnapshot before resuming"
+    );
 
     // 3. Step to tick 35 cleanly, then inject an economy-only divergence on P2 at tick 35 to verify
     // `DesyncDetected { host_subsystem_hashes: Some([u64; 6]) }` + `write_desync_forensics_report`!
-    let d2 = Instant::now() + Duration::from_secs(5);
+    let d2 = Instant::now() + Duration::from_secs(12);
     while (w1.tick < 35 || w2_rejoined.tick < 35) && Instant::now() < d2 {
+        let _ = lobby_srv.poll();
+        let _ = host_srv.poll();
+        let _ = lobby_srv.poll();
+        let mut progressed = false;
         if w1.tick < 35 {
-            c1.step_lockstep(&mut w1, &loaded).unwrap();
+            progressed |= c1.step_lockstep(&mut w1, &loaded).unwrap();
         }
         if w2_rejoined.tick < 35 {
-            c2_rejoined
+            progressed |= c2_rejoined
                 .step_lockstep(&mut w2_rejoined, &loaded)
                 .unwrap();
         }
-        thread::sleep(Duration::from_millis(2));
+        let _ = lobby_srv.poll();
+        let _ = host_srv.poll();
+        let _ = lobby_srv.poll();
+        if !progressed {
+            thread::yield_now();
+        }
     }
+    assert_eq!(
+        w1.tick, 35,
+        "Host must reach tick 35 after P2 mux reconnect"
+    );
+    assert_eq!(
+        w2_rejoined.tick, 35,
+        "Rejoined P2 must reach tick 35 after mux reconnect"
+    );
     assert_eq!(w1.state_hash(), w2_rejoined.state_hash());
 
     // Corrupt ONLY P2's local credits -> economy subsystem diverges!
     w2_rejoined.players.get_mut(&2).unwrap().credits += 9999;
 
-    let d3 = Instant::now() + Duration::from_secs(5);
+    let d3 = Instant::now() + Duration::from_secs(12);
     while !c2_rejoined
         .schedule
         .desync_alerts
@@ -486,19 +514,28 @@ fn relay_disables_udp_blackhole_reconnect_auto_upnp_raii_guard_and_desync_forens
         .any(|a| a.host_subsystem_hashes.is_some())
         && Instant::now() < d3
     {
+        let _ = lobby_srv.poll();
+        let _ = host_srv.poll();
+        let _ = lobby_srv.poll();
+        let mut progressed = false;
         if w1.tick < 45 {
-            c1.step_lockstep(&mut w1, &loaded).unwrap();
+            progressed |= c1.step_lockstep(&mut w1, &loaded).unwrap();
         } else {
             c1.poll_network().unwrap();
         }
         if w2_rejoined.tick < 45 {
-            c2_rejoined
+            progressed |= c2_rejoined
                 .step_lockstep(&mut w2_rejoined, &loaded)
                 .unwrap();
         } else {
             c2_rejoined.poll_network().unwrap();
         }
-        thread::sleep(Duration::from_millis(2));
+        let _ = lobby_srv.poll();
+        let _ = host_srv.poll();
+        let _ = lobby_srv.poll();
+        if !progressed {
+            thread::yield_now();
+        }
     }
 
     let alert = c2_rejoined
@@ -530,10 +567,6 @@ fn relay_disables_udp_blackhole_reconnect_auto_upnp_raii_guard_and_desync_forens
         parsed_forensics.diverged_subsystems
     );
     let _ = std::fs::remove_dir_all(&forensics_dir);
-
-    running.store(false, Ordering::Relaxed);
-    let _ = host_thread.join();
-    let _ = lobby_thread.join();
 }
 
 #[test]
