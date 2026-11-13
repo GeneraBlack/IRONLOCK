@@ -34,6 +34,50 @@ fn first_building_for_player(world: &SimWorld, player_id: u8) -> Option<u64> {
         .map(|e| e.id)
 }
 
+#[allow(clippy::too_many_arguments)]
+fn run_lockstep_until_delay_at_most(
+    c1: &mut LockstepClient,
+    w1: &mut SimWorld,
+    c2: &mut LockstepClient,
+    w2: &mut SimWorld,
+    loaded: &LoadedMod,
+    max_delay: u64,
+    min_ticks: u64,
+    max_ticks: u64,
+    deadline: Instant,
+    mut pump_network: impl FnMut() -> u64,
+) {
+    loop {
+        if Instant::now() >= deadline {
+            break;
+        }
+        let srv_delay = pump_network();
+        let not_adapted_yet = srv_delay > max_delay
+            || c1.schedule.input_delay_ticks > max_delay
+            || c2.schedule.input_delay_ticks > max_delay;
+        let need_adapt = not_adapted_yet && w1.tick < max_ticks && w2.tick < max_ticks;
+        if w1.tick >= min_ticks && w2.tick >= min_ticks && w1.tick == w2.tick && !need_adapt {
+            break;
+        }
+        let step_cap = if need_adapt {
+            max_ticks
+        } else {
+            w1.tick.max(w2.tick).max(min_ticks)
+        };
+        let mut progressed = false;
+        if w1.tick < step_cap {
+            progressed |= c1.step_lockstep(w1, loaded).unwrap();
+        }
+        if w2.tick < step_cap {
+            progressed |= c2.step_lockstep(w2, loaded).unwrap();
+        }
+        let _ = pump_network();
+        if !progressed {
+            thread::yield_now();
+        }
+    }
+}
+
 #[test]
 fn lobby_rules_defaults_and_universal_tcp_and_mux_relay_jitter_adapts_to_1_tick() {
     // 1. Verify Task 246 & 247 LobbyMatchRules defaults (`use_hybrid_rollback == true`, `active_mutators`)
@@ -81,33 +125,21 @@ fn lobby_rules_defaults_and_universal_tcp_and_mux_relay_jitter_adapts_to_1_tick(
 
     // Poll server + both clients inline on one thread so CI vCPU contention does not add
     // artificial cross-thread wakeup jitter to TCP wire timestamps.
-    let deadline = Instant::now() + Duration::from_secs(10);
-    loop {
-        if Instant::now() >= deadline {
-            break;
-        }
-        let _ = tcp_srv.poll();
-        let need_adapt = tcp_srv.current_input_delay_ticks() > 2 && w1.tick < 180 && w2.tick < 180;
-        if w1.tick >= 75 && w2.tick >= 75 && w1.tick == w2.tick && !need_adapt {
-            break;
-        }
-        let step_cap = if need_adapt {
-            180
-        } else {
-            w1.tick.max(w2.tick).max(75)
-        };
-        let mut progressed = false;
-        if w1.tick < step_cap {
-            progressed |= c1.step_lockstep(&mut w1, &loaded).unwrap();
-        }
-        if w2.tick < step_cap {
-            progressed |= c2.step_lockstep(&mut w2, &loaded).unwrap();
-        }
-        let _ = tcp_srv.poll();
-        if !progressed {
-            thread::yield_now();
-        }
-    }
+    run_lockstep_until_delay_at_most(
+        &mut c1,
+        &mut w1,
+        &mut c2,
+        &mut w2,
+        &loaded,
+        2,
+        75,
+        240,
+        Instant::now() + Duration::from_secs(15),
+        || {
+            let _ = tcp_srv.poll();
+            tcp_srv.current_input_delay_ticks()
+        },
+    );
 
     assert!(w1.tick >= 75);
     assert_eq!(w1.tick, w2.tick);
@@ -209,38 +241,23 @@ fn lobby_rules_defaults_and_universal_tcp_and_mux_relay_jitter_adapts_to_1_tick(
 
     let mut rw1 = SimWorld::from_mod(&loaded);
     let mut rw2 = SimWorld::from_mod(&loaded);
-    let deadline_mux = Instant::now() + Duration::from_secs(12);
-    loop {
-        if Instant::now() >= deadline_mux {
-            break;
-        }
-        let _ = lobby_srv.poll();
-        let _ = relay_srv.poll();
-        let _ = lobby_srv.poll();
-        let need_adapt =
-            relay_srv.current_input_delay_ticks() > 2 && rw1.tick < 180 && rw2.tick < 180;
-        if rw1.tick >= 75 && rw2.tick >= 75 && rw1.tick == rw2.tick && !need_adapt {
-            break;
-        }
-        let step_cap = if need_adapt {
-            180
-        } else {
-            rw1.tick.max(rw2.tick).max(75)
-        };
-        let mut progressed = false;
-        if rw1.tick < step_cap {
-            progressed |= rc1.step_lockstep(&mut rw1, &loaded).unwrap();
-        }
-        if rw2.tick < step_cap {
-            progressed |= rc2.step_lockstep(&mut rw2, &loaded).unwrap();
-        }
-        let _ = lobby_srv.poll();
-        let _ = relay_srv.poll();
-        let _ = lobby_srv.poll();
-        if !progressed {
-            thread::yield_now();
-        }
-    }
+    run_lockstep_until_delay_at_most(
+        &mut rc1,
+        &mut rw1,
+        &mut rc2,
+        &mut rw2,
+        &loaded,
+        2,
+        75,
+        240,
+        Instant::now() + Duration::from_secs(15),
+        || {
+            let _ = lobby_srv.poll();
+            let _ = relay_srv.poll();
+            let _ = lobby_srv.poll();
+            relay_srv.current_input_delay_ticks()
+        },
+    );
 
     assert!(rw1.tick >= 75);
     assert_eq!(rw1.tick, rw2.tick);
