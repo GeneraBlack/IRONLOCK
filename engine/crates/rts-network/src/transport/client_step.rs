@@ -373,11 +373,24 @@ impl LockstepClient {
         world: &mut SimWorld,
         loaded: &LoadedMod,
     ) -> Result<bool> {
-        let Some((snap_tick, compressed, trailing_bundles)) =
+        let Some((snap_tick, compressed, mut trailing_bundles)) =
             self.pending_reconnect_snapshot.take()
         else {
             return Ok(false);
         };
+
+        // Preserve any wire-received `ServerTickBundle`s that arrived concurrently alongside or
+        // right after `CompressedWorldSnapshot` inside `reconnect()`, so catch-up never drops a
+        // tick that the server already broadcast between building the snapshot and resuming.
+        let mut pre_received_bundles = self.schedule.drain_received_server_bundles();
+        let mut next_expected = trailing_bundles
+            .last()
+            .map(|(t, _)| t.saturating_add(1))
+            .unwrap_or(snap_tick);
+        while let Some(cmds) = pre_received_bundles.remove(&next_expected) {
+            trailing_bundles.push((next_expected, cmds));
+            next_expected = next_expected.saturating_add(1);
+        }
 
         let mut restored = decompress_world_snapshot(&compressed)?;
         restored.tick = snap_tick;
@@ -413,15 +426,30 @@ impl LockstepClient {
         let synced_sub = restored.subsystem_hashes();
         *world = restored;
 
+        let remaining_delay_changes = std::mem::take(&mut self.schedule.pending_delay_changes);
         self.schedule.reset_for_reconnect_catchup(
             synced_tick,
             latest_broadcast_tick,
             ready_window.clone(),
         );
+        for (eff_tick, new_delay) in remaining_delay_changes {
+            self.schedule.schedule_turn_delay_change(TurnDelayChange {
+                effective_from_tick: eff_tick,
+                new_delay_ticks: new_delay,
+            });
+        }
         self.rollback.reset_to_tick(synced_tick, 0);
         for (b_tick, cmds) in ready_window {
             self.rollback
                 .insert_authoritative_bundle(b_tick, cmds, None);
+        }
+        for (b_tick, cmds) in pre_received_bundles {
+            if b_tick >= next_expected {
+                self.schedule
+                    .insert_server_bundle(b_tick, cmds.clone(), None);
+                self.rollback
+                    .insert_authoritative_bundle(b_tick, cmds, None);
+            }
         }
         if let Some(prev_t) = synced_tick.checked_sub(1) {
             self.schedule

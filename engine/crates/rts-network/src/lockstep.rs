@@ -406,6 +406,7 @@ pub struct LockstepSchedule {
     highest_sent_tick: Option<u64>,
     min_pruned_sent_tick: u64,
     ready_bundles: BTreeMap<u64, Vec<GameCommand>>,
+    server_received_ticks: BTreeSet<u64>,
     pub local_hashes: BTreeMap<u64, u64>,
     pub local_subsystems: BTreeMap<u64, SubsystemHashes>,
     pub last_completed_hash: Option<(u64, u64)>,
@@ -431,6 +432,7 @@ impl LockstepSchedule {
             highest_sent_tick: input_delay_ticks.checked_sub(1),
             min_pruned_sent_tick: 0,
             ready_bundles,
+            server_received_ticks: BTreeSet::new(),
             local_hashes: BTreeMap::new(),
             local_subsystems: BTreeMap::new(),
             last_completed_hash: None,
@@ -471,6 +473,7 @@ impl LockstepSchedule {
         self.pending_delay_changes.clear();
         self.min_pruned_sent_tick = sync_tick;
         self.ready_bundles.clear();
+        self.server_received_ticks.clear();
         let end_preseed = sync_tick.saturating_add(self.input_delay_ticks);
         for t in sync_tick..end_preseed {
             self.ready_bundles.insert(t, Vec::new());
@@ -602,6 +605,7 @@ impl LockstepSchedule {
         commands: Vec<GameCommand>,
         verified_tick_hash: Option<(u64, u64)>,
     ) {
+        self.server_received_ticks.insert(tick);
         self.ready_bundles.entry(tick).or_insert(commands);
         if let Some((h_tick, auth_hash)) = verified_tick_hash {
             if let Some(&local_h) = self.local_hashes.get(&h_tick) {
@@ -639,7 +643,22 @@ impl LockstepSchedule {
     }
 
     pub fn take_ready_bundle(&mut self, tick: u64) -> Option<Vec<GameCommand>> {
+        self.server_received_ticks.remove(&tick);
         self.ready_bundles.remove(&tick)
+    }
+
+    /// Drains genuinely wire-received `ServerTickBundle` entries (excluding initial empty
+    /// pre-seeded `[0..input_delay]` ticks) so reconnect catch-up never discards live bundles
+    /// that arrived right alongside `CompressedWorldSnapshot`.
+    pub(crate) fn drain_received_server_bundles(&mut self) -> BTreeMap<u64, Vec<GameCommand>> {
+        let received_ticks = std::mem::take(&mut self.server_received_ticks);
+        let mut out = BTreeMap::new();
+        for t in received_ticks {
+            if let Some(cmds) = self.ready_bundles.remove(&t) {
+                out.insert(t, cmds);
+            }
+        }
+        out
     }
 
     fn prune_hash_history(&mut self, completed_tick: u64) {
@@ -786,5 +805,21 @@ mod tests {
                 let _ = sched_b.take_outgoing_for_tick(t);
             }
         }
+    }
+
+    #[test]
+    fn drain_received_server_bundles_excludes_preseeded_ticks_and_preserves_wire_bundles() {
+        let mut sched = LockstepSchedule::new(2);
+        assert!(sched.has_ready_bundle(0));
+        assert!(sched.has_ready_bundle(1));
+        assert!(sched.drain_received_server_bundles().is_empty());
+
+        sched.insert_server_bundle(2, Vec::new(), None);
+        sched.insert_server_bundle(26, Vec::new(), None);
+        let drained = sched.drain_received_server_bundles();
+        assert_eq!(drained.keys().copied().collect::<Vec<_>>(), vec![2, 26]);
+        assert!(!sched.has_ready_bundle(2));
+        assert!(!sched.has_ready_bundle(26));
+        assert!(sched.drain_received_server_bundles().is_empty());
     }
 }

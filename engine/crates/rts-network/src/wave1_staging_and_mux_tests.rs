@@ -323,7 +323,7 @@ fn relay_disables_udp_blackhole_reconnect_auto_upnp_raii_guard_and_desync_forens
     let lobby_thread = thread::spawn(move || {
         while run_lobby.load(Ordering::Relaxed) {
             let _ = lobby_srv.poll();
-            thread::yield_now();
+            thread::sleep(Duration::from_millis(1));
         }
         lobby_srv
     });
@@ -400,7 +400,7 @@ fn relay_disables_udp_blackhole_reconnect_auto_upnp_raii_guard_and_desync_forens
     let host_thread = thread::spawn(move || {
         while run_host.load(Ordering::Relaxed) {
             let _ = host_srv.poll();
-            thread::yield_now();
+            thread::sleep(Duration::from_millis(1));
         }
         host_srv
     });
@@ -439,7 +439,7 @@ fn relay_disables_udp_blackhole_reconnect_auto_upnp_raii_guard_and_desync_forens
             progressed |= c2.step_lockstep(&mut w2, &loaded).unwrap();
         }
         if !progressed {
-            thread::yield_now();
+            thread::sleep(Duration::from_millis(1));
         }
     }
     assert_eq!(w1.tick, 25);
