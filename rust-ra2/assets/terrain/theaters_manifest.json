@@ -1,0 +1,494 @@
+{
+  "version": 1,
+  "resolution": [
+    512,
+    512
+  ],
+  "layers": [
+    "layer_0_clear.png",
+    "layer_1_rough.png",
+    "layer_2_shore.png",
+    "layer_3_pavement.png",
+    "layer_4_cliff.png"
+  ],
+  "theaters": {
+    "temperate": {
+      "archive": "isotemp.mix",
+      "palette": "isotem.pal",
+      "extension": ".tem",
+      "layers": {
+        "layer_0_clear": {
+          "source_tmps": [
+            "clear01.tem",
+            "clear01a.tem",
+            "clear01b.tem",
+            "clear01c.tem",
+            "clear01d.tem"
+          ],
+          "decoded_patches": 5,
+          "mean_rgb": [
+            122.1,
+            166.8,
+            59.3
+          ],
+          "bytes": 259038
+        },
+        "layer_1_rough": {
+          "source_tmps": [
+            "ruff01.tem",
+            "ruff01a.tem",
+            "ruff01b.tem",
+            "clat01.tem",
+            "sandy01.tem"
+          ],
+          "decoded_patches": 5,
+          "mean_rgb": [
+            127.3,
+            110.1,
+            39.9
+          ],
+          "bytes": 316716
+        },
+        "layer_2_shore": {
+          "source_tmps": [
+            "green01.tem",
+            "green01a.tem",
+            "green01b.tem",
+            "glat01.tem"
+          ],
+          "decoded_patches": 4,
+          "mean_rgb": [
+            219.6,
+            186.2,
+            109.0
+          ],
+          "bytes": 260224
+        },
+        "layer_3_pavement": {
+          "source_tmps": [
+            "pave01.tem",
+            "pave02.tem",
+            "pave03.tem",
+            "pvclr01.tem"
+          ],
+          "decoded_patches": 4,
+          "mean_rgb": [
+            172.9,
+            164.8,
+            144.2
+          ],
+          "bytes": 309479
+        },
+        "layer_4_cliff": {
+          "source_tmps": [
+            "cliff01.tem",
+            "cliff02.tem",
+            "cliff09.tem",
+            "wcliff01.tem"
+          ],
+          "decoded_patches": 22,
+          "mean_rgb": [
+            145.4,
+            112.6,
+            60.6
+          ],
+          "bytes": 425465
+        }
+      }
+    },
+    "snow": {
+      "archive": "isosnow.mix",
+      "palette": "isosno.pal",
+      "extension": ".sno",
+      "layers": {
+        "layer_0_clear": {
+          "source_tmps": [
+            "clear01.sno",
+            "clear01a.sno",
+            "clear01b.sno",
+            "clear01c.sno",
+            "clear01d.sno"
+          ],
+          "decoded_patches": 5,
+          "mean_rgb": [
+            220.0,
+            233.3,
+            240.8
+          ],
+          "bytes": 223075
+        },
+        "layer_1_rough": {
+          "source_tmps": [
+            "rough01.sno",
+            "ruff01.sno",
+            "clat01.sno"
+          ],
+          "decoded_patches": 30,
+          "mean_rgb": [
+            152.5,
+            160.3,
+            160.8
+          ],
+          "bytes": 320133
+        },
+        "layer_2_shore": {
+          "source_tmps": [
+            "green01.sno",
+            "glat01.sno",
+            "shore02.sno"
+          ],
+          "decoded_patches": 6,
+          "mean_rgb": [
+            175.0,
+            211.1,
+            243.0
+          ],
+          "bytes": 269243
+        },
+        "layer_3_pavement": {
+          "source_tmps": [
+            "pave01.sno",
+            "pave02.sno",
+            "pave03.sno",
+            "pvclr01.sno"
+          ],
+          "decoded_patches": 4,
+          "mean_rgb": [
+            195.3,
+            192.7,
+            183.1
+          ],
+          "bytes": 301200
+        },
+        "layer_4_cliff": {
+          "source_tmps": [
+            "cliff01.sno",
+            "cliff02.sno",
+            "cliff09.sno",
+            "wcliff01.sno"
+          ],
+          "decoded_patches": 20,
+          "mean_rgb": [
+            137.8,
+            144.7,
+            144.8
+          ],
+          "bytes": 446698
+        }
+      }
+    },
+    "urban": {
+      "archive": "isourb.mix",
+      "palette": "isourb.pal",
+      "extension": ".urb",
+      "layers": {
+        "layer_0_clear": {
+          "source_tmps": [
+            "clear01.urb",
+            "clear01a.urb",
+            "clear01b.urb",
+            "pave01.urb"
+          ],
+          "decoded_patches": 4,
+          "mean_rgb": [
+            189.6,
+            181.1,
+            165.4
+          ],
+          "bytes": 283013
+        },
+        "layer_1_rough": {
+          "source_tmps": [
+            "ruff01.urb",
+            "clat01.urb",
+            "rough01.urb"
+          ],
+          "decoded_patches": 30,
+          "mean_rgb": [
+            102.5,
+            98.3,
+            91.2
+          ],
+          "bytes": 336386
+        },
+        "layer_2_shore": {
+          "source_tmps": [
+            "sandy01.urb",
+            "shore01.urb",
+            "pave03.urb"
+          ],
+          "decoded_patches": 6,
+          "mean_rgb": [
+            110.6,
+            114.7,
+            88.0
+          ],
+          "bytes": 275595
+        },
+        "layer_3_pavement": {
+          "source_tmps": [
+            "pave01.urb",
+            "pave02.urb",
+            "proad01.urb"
+          ],
+          "decoded_patches": 5,
+          "mean_rgb": [
+            91.8,
+            89.9,
+            84.8
+          ],
+          "bytes": 262915
+        },
+        "layer_4_cliff": {
+          "source_tmps": [
+            "cliffa01.urb",
+            "cliff01.urb",
+            "cliff02.urb",
+            "wcliff01.urb"
+          ],
+          "decoded_patches": 24,
+          "mean_rgb": [
+            143.8,
+            139.0,
+            123.6
+          ],
+          "bytes": 275990
+        }
+      }
+    },
+    "newurban": {
+      "archive": "isoubn.mix",
+      "palette": "isoubn.pal",
+      "extension": ".ubn",
+      "layers": {
+        "layer_0_clear": {
+          "source_tmps": [
+            "clear01.ubn",
+            "clear01a.ubn",
+            "clear01b.ubn",
+            "clear01c.ubn"
+          ],
+          "decoded_patches": 4,
+          "mean_rgb": [
+            119.3,
+            165.9,
+            57.9
+          ],
+          "bytes": 259019
+        },
+        "layer_1_rough": {
+          "source_tmps": [
+            "ruff01.ubn",
+            "clat01.ubn",
+            "sandy01.ubn"
+          ],
+          "decoded_patches": 3,
+          "mean_rgb": [
+            140.9,
+            140.1,
+            62.2
+          ],
+          "bytes": 338091
+        },
+        "layer_2_shore": {
+          "source_tmps": [
+            "green01.ubn",
+            "glat01.ubn"
+          ],
+          "decoded_patches": 2,
+          "mean_rgb": [
+            205.5,
+            180.1,
+            102.5
+          ],
+          "bytes": 267352
+        },
+        "layer_3_pavement": {
+          "source_tmps": [
+            "pave01.ubn",
+            "pave02.ubn",
+            "pave03.ubn"
+          ],
+          "decoded_patches": 3,
+          "mean_rgb": [
+            171.2,
+            162.4,
+            142.6
+          ],
+          "bytes": 296781
+        },
+        "layer_4_cliff": {
+          "source_tmps": [
+            "cliffa01.ubn",
+            "cliff01.ubn",
+            "cliff02.ubn",
+            "wcliff01.ubn"
+          ],
+          "decoded_patches": 24,
+          "mean_rgb": [
+            147.8,
+            140.5,
+            126.2
+          ],
+          "bytes": 272874
+        }
+      }
+    },
+    "desert": {
+      "archive": "isodes.mix",
+      "palette": "isodes.pal",
+      "extension": ".des",
+      "layers": {
+        "layer_0_clear": {
+          "source_tmps": [
+            "clear01.des",
+            "clear01a.des",
+            "clear01b.des",
+            "clear01c.des"
+          ],
+          "decoded_patches": 4,
+          "mean_rgb": [
+            214.1,
+            179.1,
+            108.5
+          ],
+          "bytes": 322368
+        },
+        "layer_1_rough": {
+          "source_tmps": [
+            "ruff01.des",
+            "clat01.des",
+            "sandy01.des"
+          ],
+          "decoded_patches": 3,
+          "mean_rgb": [
+            174.8,
+            150.9,
+            86.7
+          ],
+          "bytes": 332365
+        },
+        "layer_2_shore": {
+          "source_tmps": [
+            "green01.des",
+            "glat01.des"
+          ],
+          "decoded_patches": 2,
+          "mean_rgb": [
+            226.2,
+            187.0,
+            112.6
+          ],
+          "bytes": 262821
+        },
+        "layer_3_pavement": {
+          "source_tmps": [
+            "pave01.des",
+            "pave02.des",
+            "pave03.des",
+            "plat01.des"
+          ],
+          "decoded_patches": 4,
+          "mean_rgb": [
+            177.4,
+            166.4,
+            139.7
+          ],
+          "bytes": 306670
+        },
+        "layer_4_cliff": {
+          "source_tmps": [
+            "cliff01.des",
+            "cliff02.des",
+            "cliff09.des",
+            "wcliff01.des"
+          ],
+          "decoded_patches": 22,
+          "mean_rgb": [
+            158.4,
+            118.6,
+            66.0
+          ],
+          "bytes": 431258
+        }
+      }
+    },
+    "lunar": {
+      "archive": "isolun.mix",
+      "palette": "isolun.pal",
+      "extension": ".lun",
+      "layers": {
+        "layer_0_clear": {
+          "source_tmps": [
+            "clear01.lun",
+            "clear01a.lun",
+            "clear01b.lun"
+          ],
+          "decoded_patches": 3,
+          "mean_rgb": [
+            168.5,
+            172.4,
+            181.1
+          ],
+          "bytes": 247288
+        },
+        "layer_1_rough": {
+          "source_tmps": [
+            "ruff01.lun",
+            "clat01.lun",
+            "crtr01.lun"
+          ],
+          "decoded_patches": 6,
+          "mean_rgb": [
+            144.7,
+            148.0,
+            157.8
+          ],
+          "bytes": 312945
+        },
+        "layer_2_shore": {
+          "source_tmps": [
+            "sandy01.lun",
+            "green01.lun",
+            "pvclr01.lun"
+          ],
+          "decoded_patches": 3,
+          "mean_rgb": [
+            165.8,
+            168.8,
+            177.1
+          ],
+          "bytes": 284302
+        },
+        "layer_3_pavement": {
+          "source_tmps": [
+            "pvclr01.lun",
+            "pvclr01a.lun",
+            "plat01.lun"
+          ],
+          "decoded_patches": 3,
+          "mean_rgb": [
+            190.4,
+            191.5,
+            196.2
+          ],
+          "bytes": 293918
+        },
+        "layer_4_cliff": {
+          "source_tmps": [
+            "clat01.lun",
+            "ruff01.lun",
+            "crtr01.lun"
+          ],
+          "decoded_patches": 6,
+          "mean_rgb": [
+            141.1,
+            144.5,
+            154.6
+          ],
+          "bytes": 424863
+        }
+      }
+    }
+  }
+}

@@ -287,15 +287,34 @@ pub fn decode_westwood_map_packs(
         for vx in 0..vw {
             let mut sum = 0.0f32;
             let mut cnt = 0u32;
+            let mut max_elev_h = f32::NEG_INFINITY;
+            let mut touches_elev = false;
+            let mut touches_ramp = false;
             for &(ox, oz) in &[(-1i32, -1i32), (0, -1), (-1, 0), (0, 0)] {
                 let tx = vx as i32 + ox;
                 let tz = vz as i32 + oz;
                 if tx >= 0 && tx < w as i32 && tz >= 0 && tz < h as i32 {
-                    sum += tile_world_h[(tz as u32 * w + tx as u32) as usize];
+                    let th = tile_world_h[(tz as u32 * w + tx as u32) as usize];
+                    sum += th;
                     cnt += 1;
+                    let c = [tx, tz];
+                    if elev_set.contains(&c) {
+                        touches_elev = true;
+                        max_elev_h = max_elev_h.max(th);
+                    }
+                    if ramp_set.contains(&c) {
+                        touches_ramp = true;
+                    }
                 }
             }
-            heights[(vz * vw + vx) as usize] = if cnt > 0 { sum / cnt as f32 } else { 0.0 };
+            // Keep RA2 stepped plateaus flat right up to their top rim when not bordering a ramp
+            heights[(vz * vw + vx) as usize] = if touches_elev && !touches_ramp {
+                max_elev_h
+            } else if cnt > 0 {
+                sum / cnt as f32
+            } else {
+                0.0
+            };
         }
     }
     let heightmap = HeightmapDef {
