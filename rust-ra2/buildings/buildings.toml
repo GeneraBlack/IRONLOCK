@@ -20,7 +20,10 @@ transforms_into_unit = "allied_mcv"
 model = "assets/models/allied_conyard.glb"
 icon = "assets/ui/cameos/allied_conyard_icon.png"
 archetype = "construction_yard"
-scale = [2.6, 1.8, 2.6]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.34
+roughness = 0.52
 primary_color = [0.18, 0.45, 0.88]
 
 [[buildings.support_powers]]
@@ -55,7 +58,11 @@ death_effect = { survivor_unit = "allied_gi", survivor_chance = 0.75 }
 model = "assets/models/allied_power_plant.glb"
 icon = "assets/ui/cameos/powricon.png"
 archetype = "power_plant"
-scale = [1.8, 1.6, 1.8]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.34
+roughness = 0.52
+emissive_boost = 1.25
 primary_color = [0.18, 0.45, 0.88]
 
 [[buildings]]
@@ -78,7 +85,11 @@ death_effect = { survivor_unit = "allied_engineer", survivor_chance = 0.85 }
 model = "assets/models/allied_power_plant.glb"
 icon = "assets/ui/cameos/powricon.png"
 archetype = "power_plant"
-scale = [1.95, 1.8, 1.95]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.42
+roughness = 0.42
+emissive_boost = 1.50
 primary_color = [0.22, 0.58, 1.0]
 
 [[buildings]]
@@ -100,7 +111,10 @@ container = { capacity = 5 }
 model = "assets/models/allied_barracks.glb"
 icon = "assets/ui/cameos/brrkicon.png"
 archetype = "barracks"
-scale = [1.9, 1.4, 1.9]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.34
+roughness = 0.52
 primary_color = [0.18, 0.45, 0.88]
 
 [[buildings]]
@@ -122,7 +136,10 @@ spawns_unit_on_complete = "chrono_miner"
 model = "assets/models/allied_refinery.glb"
 icon = "assets/ui/cameos/reficon.png"
 archetype = "refinery"
-scale = [2.4, 1.6, 2.0]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.34
+roughness = 0.52
 primary_color = [0.18, 0.45, 0.88]
 
 [[buildings]]
@@ -143,7 +160,10 @@ prerequisites = ["allied_refinery"]
 model = "assets/models/allied_war_factory.glb"
 icon = "assets/ui/cameos/gwepicon.png"
 archetype = "war_factory"
-scale = [2.5, 1.8, 2.5]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.34
+roughness = 0.52
 primary_color = [0.18, 0.45, 0.88]
 
 [[buildings]]
@@ -170,7 +190,10 @@ death_effect = { survivor_unit = "allied_gi", survivor_chance = 0.65 }
 model = "assets/models/allied_pillbox.glb"
 icon = "assets/ui/cameos/pillicon.png"
 archetype = "turret"
-scale = [1.2, 1.2, 1.2]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.34
+roughness = 0.52
 primary_color = [0.18, 0.45, 0.88]
 has_turret = true
 barrel_recoil_distance = 0.25
@@ -194,7 +217,11 @@ prerequisites = ["allied_war_factory"]
 model = "assets/models/allied_battle_lab.glb"
 icon = "assets/ui/cameos/techicon.png"
 archetype = "power_plant"
-scale = [2.1, 2.2, 2.1]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.34
+roughness = 0.52
+emissive_boost = 1.35
 primary_color = [0.18, 0.45, 0.88]
 spin_speed_deg_per_sec = 90.0
 
@@ -220,7 +247,10 @@ transforms_into_unit = "soviet_mcv"
 model = "assets/models/soviet_conyard.glb"
 icon = "assets/ui/cameos/soviet_conyard.png"
 archetype = "construction_yard"
-scale = [2.6, 1.8, 2.6]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.34
+roughness = 0.52
 primary_color = [0.85, 0.16, 0.16]
 
 [[buildings]]
@@ -246,7 +276,11 @@ death_effect = { survivor_unit = "soviet_conscript", survivor_chance = 0.75 }
 model = "assets/models/soviet_tesla_reactor.glb"
 icon = "assets/ui/cameos/npwricon.png"
 archetype = "power_plant"
-scale = [1.8, 1.6, 1.8]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.42
+roughness = 0.42
+emissive_boost = 1.65
 primary_color = [0.85, 0.16, 0.16]
 
 [[buildings]]
@@ -269,7 +303,10 @@ death_effect = { survivor_unit = "soviet_engineer", survivor_chance = 0.85 }
 model = "assets/models/soviet_tesla_reactor.glb"
 icon = "assets/ui/cameos/soviet_tesla_reactor_overcharged.png"
 archetype = "power_plant"
-scale = [1.95, 1.8, 1.95]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.34
+roughness = 0.52
 primary_color = [0.95, 0.22, 0.18]
 
 [[buildings]]
@@ -291,7 +328,10 @@ container = { capacity = 5 }
 model = "assets/models/soviet_barracks.glb"
 icon = "assets/ui/cameos/handicon.png"
 archetype = "barracks"
-scale = [1.9, 1.4, 1.9]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.34
+roughness = 0.52
 primary_color = [0.85, 0.16, 0.16]
 
 [[buildings]]
@@ -313,7 +353,10 @@ spawns_unit_on_complete = "war_miner"
 model = "assets/models/soviet_refinery.glb"
 icon = "assets/ui/cameos/nreficon.png"
 archetype = "refinery"
-scale = [2.4, 1.6, 2.0]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.34
+roughness = 0.52
 primary_color = [0.85, 0.16, 0.16]
 
 [[buildings]]
@@ -334,7 +377,10 @@ prerequisites = ["soviet_refinery"]
 model = "assets/models/soviet_war_factory.glb"
 icon = "assets/ui/cameos/nwepicon.png"
 archetype = "war_factory"
-scale = [2.5, 1.8, 2.5]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.34
+roughness = 0.52
 primary_color = [0.85, 0.16, 0.16]
 
 [[buildings]]
@@ -356,7 +402,11 @@ prerequisites = ["soviet_barracks", "soviet_tesla_reactor"]
 model = "assets/models/soviet_tesla_coil.glb"
 icon = "assets/ui/cameos/tslaicon.png"
 archetype = "turret"
-scale = [1.3, 1.8, 1.3]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.42
+roughness = 0.42
+emissive_boost = 1.80
 primary_color = [0.85, 0.16, 0.16]
 
 [[buildings]]
@@ -387,7 +437,11 @@ damage = 65.0
 model = "assets/models/soviet_battle_lab.glb"
 icon = "assets/ui/cameos/ntchicon.png"
 archetype = "power_plant"
-scale = [2.1, 2.2, 2.1]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.34
+roughness = 0.52
+emissive_boost = 1.35
 primary_color = [0.85, 0.16, 0.16]
 
 # === Extended Allied RA2 & Yuri's Revenge Buildings ===
@@ -430,7 +484,10 @@ duration_secs = 20.0
 model = "assets/models/allied_airforce_command.glb"
 icon = "assets/ui/cameos/allied_airforce_command.png"
 archetype = "power_plant"
-scale = [2.2, 1.8, 2.0]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.34
+roughness = 0.52
 primary_color = [0.18, 0.45, 0.88]
 spin_speed_deg_per_sec = 90.0
 
@@ -454,7 +511,10 @@ support_aura = { repairs_ships_per_sec = 45.0 }
 model = "assets/models/allied_naval_shipyard.glb"
 icon = "assets/ui/cameos/yardicon.png"
 archetype = "refinery"
-scale = [2.6, 1.8, 2.6]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.34
+roughness = 0.52
 primary_color = [0.18, 0.45, 0.88]
 
 [[buildings]]
@@ -476,7 +536,10 @@ support_aura = { repairs_vehicles_per_sec = 45.0 }
 model = "assets/models/allied_service_depot.glb"
 icon = "assets/ui/cameos/fixicon.png"
 archetype = "war_factory"
-scale = [2.4, 1.6, 2.4]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.34
+roughness = 0.52
 primary_color = [0.18, 0.45, 0.88]
 
 [[buildings]]
@@ -499,7 +562,11 @@ support_aura = { cash_trickle_per_sec = 20, ore_refine_multiplier = 0.25 }
 model = "assets/models/allied_ore_purifier.glb"
 icon = "assets/ui/cameos/gorep.png"
 archetype = "refinery"
-scale = [2.5, 1.9, 2.5]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.34
+roughness = 0.52
+emissive_boost = 1.45
 primary_color = [0.18, 0.45, 0.88]
 
 [[buildings]]
@@ -521,7 +588,11 @@ stealth = { cloak_field_radius = 14.0 }
 model = "assets/models/allied_gap_generator.glb"
 icon = "assets/ui/cameos/gapicon.png"
 archetype = "turret"
-scale = [1.4, 2.2, 1.4]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.42
+roughness = 0.42
+emissive_boost = 1.55
 primary_color = [0.18, 0.58, 0.96]
 
 [[buildings]]
@@ -543,7 +614,11 @@ prerequisites = ["allied_airforce_command"]
 model = "assets/models/allied_prism_tower.glb"
 icon = "assets/ui/cameos/prisicon.png"
 archetype = "turret"
-scale = [1.3, 1.9, 1.3]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.42
+roughness = 0.42
+emissive_boost = 1.75
 primary_color = [0.18, 0.45, 0.88]
 
 [[buildings]]
@@ -567,7 +642,10 @@ point_defense = { intercept_radius = 12.0, cooldown_secs = 2.0 }
 model = "assets/models/allied_patriot_missile.glb"
 icon = "assets/ui/cameos/plticon.png"
 archetype = "turret"
-scale = [1.2, 1.4, 1.2]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.34
+roughness = 0.52
 primary_color = [0.18, 0.45, 0.88]
 has_turret = true
 barrel_recoil_distance = 0.15
@@ -592,7 +670,10 @@ prerequisites = ["allied_airforce_command"]
 model = "assets/models/allied_grand_cannon.glb"
 icon = "assets/ui/cameos/gcanicon.png"
 archetype = "turret"
-scale = [1.8, 1.6, 1.8]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.34
+roughness = 0.52
 primary_color = [0.18, 0.45, 0.88]
 has_turret = true
 barrel_recoil_distance = 0.40
@@ -615,7 +696,10 @@ prerequisites = ["allied_war_factory"]
 model = "assets/models/allied_robot_control.glb"
 icon = "assets/ui/cameos/rbccicon.png"
 archetype = "power_plant"
-scale = [1.9, 1.7, 1.9]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.34
+roughness = 0.52
 primary_color = [0.18, 0.45, 0.88]
 
 [[buildings]]
@@ -645,7 +729,11 @@ radius = 6.0
 model = "assets/models/allied_chronosphere.glb"
 icon = "assets/ui/cameos/csphicon.png"
 archetype = "power_plant"
-scale = [2.5, 2.0, 2.5]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.42
+roughness = 0.42
+emissive_boost = 1.80
 primary_color = [0.18, 0.45, 0.88]
 
 [[buildings]]
@@ -676,7 +764,11 @@ radius = 7.5
 model = "assets/models/allied_weather_controller.glb"
 icon = "assets/ui/cameos/wethicon.png"
 archetype = "power_plant"
-scale = [2.6, 2.2, 2.6]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.42
+roughness = 0.42
+emissive_boost = 1.75
 primary_color = [0.18, 0.45, 0.88]
 
 # === Extended Soviet RA2 & Yuri's Revenge Buildings ===
@@ -717,7 +809,10 @@ radius = 5.0
 model = "assets/models/soviet_radar_tower.glb"
 icon = "assets/ui/cameos/nradicon.png"
 archetype = "power_plant"
-scale = [2.0, 2.0, 2.0]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.34
+roughness = 0.52
 primary_color = [0.85, 0.16, 0.16]
 spin_speed_deg_per_sec = 75.0
 
@@ -741,7 +836,10 @@ support_aura = { repairs_ships_per_sec = 45.0 }
 model = "assets/models/soviet_naval_shipyard.glb"
 icon = "assets/ui/cameos/yardicon.png"
 archetype = "refinery"
-scale = [2.6, 1.8, 2.6]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.34
+roughness = 0.52
 primary_color = [0.85, 0.16, 0.16]
 
 [[buildings]]
@@ -763,7 +861,10 @@ support_aura = { repairs_vehicles_per_sec = 45.0 }
 model = "assets/models/soviet_service_depot.glb"
 icon = "assets/ui/cameos/rfixicon.png"
 archetype = "war_factory"
-scale = [2.4, 1.6, 2.4]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.34
+roughness = 0.52
 primary_color = [0.85, 0.16, 0.16]
 
 [[buildings]]
@@ -785,7 +886,11 @@ death_effect = { explosion_damage = 420.0, explosion_radius = 6.5, leaves_radiat
 model = "assets/models/soviet_nuclear_reactor.glb"
 icon = "assets/ui/cameos/nrcticon.png"
 archetype = "power_plant"
-scale = [2.5, 2.1, 2.5]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.42
+roughness = 0.42
+emissive_boost = 1.70
 primary_color = [0.85, 0.16, 0.16]
 
 [[buildings]]
@@ -807,7 +912,10 @@ prerequisites = ["soviet_barracks"]
 model = "assets/models/soviet_sentry_gun.glb"
 icon = "assets/ui/cameos/ggunicon.png"
 archetype = "turret"
-scale = [1.2, 1.2, 1.2]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.34
+roughness = 0.52
 primary_color = [0.85, 0.16, 0.16]
 has_turret = true
 barrel_recoil_distance = 0.20
@@ -832,7 +940,10 @@ stealth = { detects_cloak = true }
 model = "assets/models/soviet_flak_cannon.glb"
 icon = "assets/ui/cameos/flakicon.png"
 archetype = "turret"
-scale = [1.2, 1.5, 1.2]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.34
+roughness = 0.52
 primary_color = [0.85, 0.16, 0.16]
 has_turret = true
 barrel_recoil_distance = 0.20
@@ -857,7 +968,10 @@ container = { capacity = 5, passengers_can_fire = true, tunnel_network = true }
 model = "assets/models/soviet_battle_bunker.glb"
 icon = "assets/ui/cameos/bnkricon.png"
 archetype = "turret"
-scale = [1.6, 1.3, 1.6]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.34
+roughness = 0.52
 primary_color = [0.85, 0.16, 0.16]
 
 [[buildings]]
@@ -880,7 +994,10 @@ support_aura = { cash_trickle_per_sec = 20, ore_refine_multiplier = 0.25, vehicl
 model = "assets/models/soviet_industrial_plant.glb"
 icon = "assets/ui/cameos/indpicon.png"
 archetype = "war_factory"
-scale = [2.5, 1.9, 2.5]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.34
+roughness = 0.52
 primary_color = [0.85, 0.16, 0.16]
 
 [[buildings]]
@@ -911,7 +1028,11 @@ radius = 5.5
 model = "assets/models/soviet_iron_curtain.glb"
 icon = "assets/ui/cameos/ironicon.png"
 archetype = "power_plant"
-scale = [2.5, 2.0, 2.5]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.42
+roughness = 0.42
+emissive_boost = 1.80
 primary_color = [0.85, 0.16, 0.16]
 
 [[buildings]]
@@ -943,7 +1064,11 @@ duration_secs = 15.0
 model = "assets/models/soviet_nuclear_silo.glb"
 icon = "assets/ui/cameos/msslicon.png"
 archetype = "power_plant"
-scale = [2.6, 2.3, 2.6]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.42
+roughness = 0.42
+emissive_boost = 1.65
 primary_color = [0.85, 0.16, 0.16]
 
 # === Yuri's Revenge Buildings ===
@@ -968,7 +1093,10 @@ transforms_into_unit = "yuri_mcv"
 model = "assets/models/yuri_conyard.glb"
 icon = "assets/ui/cameos/yconicon.png"
 archetype = "construction_yard"
-scale = [2.6, 1.9, 2.6]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.34
+roughness = 0.52
 primary_color = [0.68, 0.22, 0.88]
 
 [[buildings]]
@@ -991,7 +1119,11 @@ container = { capacity = 5, power_per_occupant = 100 }
 model = "assets/models/yuri_bio_reactor.glb"
 icon = "assets/ui/cameos/ypwricon.png"
 archetype = "power_plant"
-scale = [1.8, 1.7, 1.8]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.42
+roughness = 0.42
+emissive_boost = 1.60
 primary_color = [0.68, 0.22, 0.88]
 
 [[buildings]]
@@ -1012,7 +1144,11 @@ prerequisites = ["yuri_bio_reactor"]
 model = "assets/models/yuri_barracks.glb"
 icon = "assets/ui/cameos/brckicon.png"
 archetype = "barracks"
-scale = [1.9, 1.6, 1.9]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.34
+roughness = 0.52
+emissive_boost = 1.35
 primary_color = [0.68, 0.22, 0.88]
 
 [[buildings]]
@@ -1034,7 +1170,10 @@ spawns_unit_on_complete = "yuri_slave_miner"
 model = "assets/models/yuri_slave_refinery.glb"
 icon = "assets/ui/cameos/sreficon.png"
 archetype = "refinery"
-scale = [2.4, 1.6, 2.0]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.34
+roughness = 0.52
 primary_color = [0.68, 0.22, 0.88]
 
 [[buildings]]
@@ -1055,7 +1194,10 @@ prerequisites = ["yuri_slave_refinery"]
 model = "assets/models/yuri_war_factory.glb"
 icon = "assets/ui/cameos/ywepicon.png"
 archetype = "war_factory"
-scale = [2.5, 1.8, 2.5]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.34
+roughness = 0.52
 primary_color = [0.68, 0.22, 0.88]
 
 [[buildings]]
@@ -1078,7 +1220,10 @@ support_aura = { repairs_ships_per_sec = 45.0 }
 model = "assets/models/yuri_submarine_pen.glb"
 icon = "assets/ui/cameos/yyrdicon.png"
 archetype = "refinery"
-scale = [2.6, 1.8, 2.6]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.34
+roughness = 0.52
 primary_color = [0.68, 0.22, 0.88]
 
 [[buildings]]
@@ -1100,7 +1245,10 @@ stealth = { detects_cloak = true, detects_disguise = true, psychic_sensor_radius
 model = "assets/models/yuri_psychic_sensor.glb"
 icon = "assets/ui/cameos/psisicon.png"
 archetype = "power_plant"
-scale = [2.0, 2.0, 2.0]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.34
+roughness = 0.52
 primary_color = [0.68, 0.22, 0.88]
 spin_speed_deg_per_sec = 80.0
 
@@ -1123,7 +1271,11 @@ prerequisites = ["yuri_war_factory", "yuri_psychic_sensor"]
 model = "assets/models/yuri_battle_lab.glb"
 icon = "assets/ui/cameos/ytchicon.png"
 archetype = "power_plant"
-scale = [2.1, 2.2, 2.1]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.34
+roughness = 0.52
+emissive_boost = 1.45
 primary_color = [0.68, 0.22, 0.88]
 
 [[buildings]]
@@ -1146,7 +1298,10 @@ stealth = { detects_cloak = true }
 model = "assets/models/yuri_gatling_cannon.glb"
 icon = "assets/ui/cameos/gtncicon.png"
 archetype = "turret"
-scale = [1.3, 1.6, 1.3]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.34
+roughness = 0.52
 primary_color = [0.68, 0.22, 0.88]
 has_turret = true
 barrel_recoil_distance = 0.18
@@ -1171,7 +1326,11 @@ stealth = { detects_disguise = true }
 model = "assets/models/yuri_psychic_tower.glb"
 icon = "assets/ui/cameos/psyticon.png"
 archetype = "turret"
-scale = [1.3, 2.0, 1.3]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.42
+roughness = 0.42
+emissive_boost = 1.70
 primary_color = [0.68, 0.22, 0.88]
 
 [[buildings]]
@@ -1193,7 +1352,10 @@ container = { capacity = 1, accepts_vehicles = true, passengers_can_fire = true 
 model = "assets/models/yuri_tank_bunker.glb"
 icon = "assets/ui/cameos/tbnkicon.png"
 archetype = "turret"
-scale = [1.7, 1.2, 1.7]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.34
+roughness = 0.52
 primary_color = [0.68, 0.22, 0.88]
 
 [[buildings]]
@@ -1216,7 +1378,10 @@ support_aura = { cash_trickle_per_sec = 10 }
 model = "assets/models/yuri_grinder.glb"
 icon = "assets/ui/cameos/grndicon.png"
 archetype = "refinery"
-scale = [2.0, 1.6, 2.0]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.34
+roughness = 0.52
 primary_color = [0.68, 0.22, 0.88]
 
 [[buildings]]
@@ -1240,7 +1405,11 @@ support_aura = { heals_infantry_per_sec = 10.0 }
 model = "assets/models/yuri_cloning_vats.glb"
 icon = "assets/ui/cameos/clonicon.png"
 archetype = "power_plant"
-scale = [2.1, 1.9, 2.1]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.42
+roughness = 0.42
+emissive_boost = 1.55
 primary_color = [0.68, 0.22, 0.88]
 
 [[buildings]]
@@ -1270,7 +1439,11 @@ radius = 6.0
 model = "assets/models/yuri_genetic_mutator.glb"
 icon = "assets/ui/cameos/muteicon.png"
 archetype = "power_plant"
-scale = [2.5, 2.0, 2.5]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.42
+roughness = 0.42
+emissive_boost = 1.75
 primary_color = [0.68, 0.22, 0.88]
 
 [[buildings]]
@@ -1301,7 +1474,11 @@ radius = 6.5
 model = "assets/models/yuri_psychic_dominator.glb"
 icon = "assets/ui/cameos/pdomicon.png"
 archetype = "power_plant"
-scale = [2.6, 2.3, 2.6]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.42
+roughness = 0.42
+emissive_boost = 1.85
 primary_color = [0.68, 0.22, 0.88]
 
 # === Shared Tactical Fortifications (Walls & Gates) ===
@@ -1325,7 +1502,10 @@ prerequisites = []
 model = "assets/models/concrete_wall.glb"
 icon = "assets/ui/cameos/concrete_wall.png"
 archetype = "generic_box"
-scale = [1.0, 0.95, 1.0]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.34
+roughness = 0.52
 primary_color = [0.62, 0.64, 0.68]
 
 [[buildings]]
@@ -1346,7 +1526,10 @@ prerequisites = []
 model = "assets/models/security_gate.glb"
 icon = "assets/ui/cameos/security_gate.png"
 archetype = "generic_box"
-scale = [1.0, 0.75, 1.0]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.34
+roughness = 0.52
 primary_color = [0.45, 0.58, 0.72]
 
 
@@ -1372,7 +1555,10 @@ support_aura = { cash_trickle_per_sec = 25 }
 model = "assets/models/tech_oil_derrick.glb"
 icon = "assets/ui/cameos/tech_oil_derrick.png"
 archetype = "refinery"
-scale = [2.0, 2.2, 2.0]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.34
+roughness = 0.52
 primary_color = [0.75, 0.68, 0.52]
 
 [[buildings]]
@@ -1402,7 +1588,10 @@ radius = 4.0
 model = "assets/models/tech_airport.glb"
 icon = "assets/ui/cameos/tech_airport.png"
 archetype = "construction_yard"
-scale = [2.6, 1.8, 2.6]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.34
+roughness = 0.52
 primary_color = [0.72, 0.76, 0.82]
 
 [[buildings]]
@@ -1424,7 +1613,11 @@ support_aura = { heals_infantry_per_sec = 12.0 }
 model = "assets/models/tech_hospital.glb"
 icon = "assets/ui/cameos/tech_hospital.png"
 archetype = "barracks"
-scale = [3.2, 2.2, 3.2]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.34
+roughness = 0.52
+emissive_boost = 1.25
 primary_color = [0.88, 0.88, 0.92]
 
 [[buildings]]
@@ -1446,7 +1639,10 @@ support_aura = { repairs_vehicles_per_sec = 15.0 }
 model = "assets/models/tech_machine_shop.glb"
 icon = "assets/ui/cameos/tech_machine_shop.png"
 archetype = "war_factory"
-scale = [2.5, 1.8, 2.5]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.34
+roughness = 0.52
 primary_color = [0.68, 0.62, 0.56]
 
 [[buildings]]
@@ -1469,7 +1665,11 @@ stealth = { detects_cloak = true }
 model = "assets/models/tech_secret_lab.glb"
 icon = "assets/ui/cameos/tech_secret_lab.png"
 archetype = "power_plant"
-scale = [2.5, 2.0, 2.5]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.34
+roughness = 0.52
+emissive_boost = 1.35
 primary_color = [0.62, 0.74, 0.84]
 
 [[buildings]]
@@ -1492,7 +1692,10 @@ support_aura = { repairs_vehicles_per_sec = 10.0 }
 model = "assets/models/tech_outpost.glb"
 icon = "assets/ui/cameos/tech_outpost.png"
 archetype = "turret"
-scale = [3.0, 2.2, 2.4]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.34
+roughness = 0.52
 primary_color = [0.66, 0.70, 0.68]
 
 [[buildings]]
@@ -1513,7 +1716,10 @@ prerequisites = []
 model = "assets/models/tech_power_plant.glb"
 icon = "assets/ui/cameos/tech_power_plant.png"
 archetype = "power_plant"
-scale = [2.0, 1.8, 2.0]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.34
+roughness = 0.52
 primary_color = [0.74, 0.74, 0.68]
 
 [[buildings]]
@@ -1534,7 +1740,10 @@ prerequisites = []
 model = "assets/models/props/civilian_building_intact.glb"
 icon = "assets/ui/cameos/bridge_repair_hut_icon.png"
 archetype = "generic_box"
-scale = [0.95, 0.95, 0.95]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.18
+roughness = 0.68
 primary_color = [0.68, 0.64, 0.56]
 team_color_tint = false
 
@@ -1559,7 +1768,10 @@ support_aura = { grants_radar = true, periodic_reveal_interval_secs = 45, period
 model = "assets/models/soviet_radar_tower.glb"
 icon = "assets/ui/cameos/tech_communications_center_icon.png"
 archetype = "power_plant"
-scale = [2.0, 2.2, 2.0]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.34
+roughness = 0.52
 primary_color = [0.64, 0.74, 0.84]
 
 # === Iconic Campaign Landmarks & Monuments (RA2 & Yuri's Revenge) ===
@@ -1586,7 +1798,10 @@ support_aura = { cash_trickle_per_sec = 20 }
 model = "assets/models/statue_of_liberty.glb"
 icon = "assets/ui/cameos/statue_of_liberty.png"
 archetype = "construction_yard"
-scale = [2.6, 3.8, 2.6]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.18
+roughness = 0.68
 primary_color = [0.46, 0.72, 0.62]
 team_color_tint = false
 
@@ -1609,7 +1824,10 @@ prerequisites = []
 model = "assets/models/eiffel_tower.glb"
 icon = "assets/ui/cameos/eiffel_tower.png"
 archetype = "turret"
-scale = [3.2, 4.4, 3.2]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.52
+roughness = 0.42
 primary_color = [0.62, 0.56, 0.48]
 team_color_tint = false
 
@@ -1634,7 +1852,10 @@ support_aura = { cash_trickle_per_sec = 20, vehicle_cost_discount = 0.15 }
 model = "assets/models/kremlin_palace.glb"
 icon = "assets/ui/cameos/kremlin_palace.png"
 archetype = "construction_yard"
-scale = [2.8, 2.6, 3.4]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.18
+roughness = 0.68
 primary_color = [0.78, 0.36, 0.32]
 team_color_tint = false
 
@@ -1657,7 +1878,10 @@ container = { capacity = 8 }
 model = "assets/models/st_basil_cathedral.glb"
 icon = "assets/ui/cameos/st_basil_cathedral.png"
 archetype = "construction_yard"
-scale = [3.2, 3.4, 3.2]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.18
+roughness = 0.68
 primary_color = [0.82, 0.42, 0.34]
 team_color_tint = false
 
@@ -1682,7 +1906,10 @@ support_aura = { heals_infantry_per_sec = 6.0, cash_trickle_per_sec = 20 }
 model = "assets/models/white_house.glb"
 icon = "assets/ui/cameos/white_house.png"
 archetype = "construction_yard"
-scale = [3.4, 2.2, 3.4]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.18
+roughness = 0.68
 primary_color = [0.92, 0.92, 0.94]
 team_color_tint = false
 
@@ -1707,7 +1934,11 @@ support_aura = { ore_refine_multiplier = 0.15 }
 model = "assets/models/einstein_lab.glb"
 icon = "assets/ui/cameos/einstein_lab.png"
 archetype = "power_plant"
-scale = [2.6, 2.2, 3.2]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.34
+roughness = 0.52
+emissive_boost = 1.45
 primary_color = [0.58, 0.72, 0.88]
 
 [[buildings]]
@@ -1729,7 +1960,11 @@ prerequisites = []
 model = "assets/models/maya_prism_pyramid.glb"
 icon = "assets/ui/cameos/maya_prism_pyramid.png"
 archetype = "turret"
-scale = [2.6, 2.4, 2.2]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.18
+roughness = 0.68
+emissive_boost = 1.70
 primary_color = [0.76, 0.68, 0.52]
 team_color_tint = false
 
@@ -1752,7 +1987,10 @@ container = { capacity = 8 }
 model = "assets/models/air_force_chapel.glb"
 icon = "assets/ui/cameos/air_force_chapel.png"
 archetype = "barracks"
-scale = [3.4, 2.6, 2.6]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.52
+roughness = 0.42
 primary_color = [0.78, 0.82, 0.88]
 team_color_tint = false
 
@@ -1782,7 +2020,11 @@ radius = 6.0
 model = "assets/models/time_machine.glb"
 icon = "assets/ui/cameos/time_machine.png"
 archetype = "power_plant"
-scale = [3.2, 2.4, 2.6]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.42
+roughness = 0.42
+emissive_boost = 1.75
 primary_color = [0.48, 0.76, 0.92]
 
 [[buildings]]
@@ -1807,7 +2049,10 @@ support_aura = { cash_trickle_per_sec = 15 }
 model = "assets/models/london_big_ben.glb"
 icon = "assets/ui/cameos/london_big_ben.png"
 archetype = "construction_yard"
-scale = [2.0, 3.8, 2.0]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.18
+roughness = 0.68
 primary_color = [0.76, 0.68, 0.54]
 team_color_tint = false
 
@@ -1833,7 +2078,10 @@ support_aura = { cash_trickle_per_sec = 15 }
 model = "assets/models/transylvania_fortress.glb"
 icon = "assets/ui/cameos/transylvania_fortress.png"
 archetype = "construction_yard"
-scale = [3.4, 3.0, 3.4]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.18
+roughness = 0.68
 primary_color = [0.56, 0.48, 0.64]
 team_color_tint = false
 
@@ -1857,7 +2105,10 @@ support_aura = { heals_infantry_per_sec = 8.0, cash_trickle_per_sec = 15 }
 model = "assets/models/great_pyramid.glb"
 icon = "assets/ui/cameos/great_pyramid.png"
 archetype = "construction_yard"
-scale = [3.6, 3.2, 3.6]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.18
+roughness = 0.68
 primary_color = [0.84, 0.74, 0.52]
 team_color_tint = false
 
@@ -1880,7 +2131,10 @@ container = { capacity = 10 }
 model = "assets/models/alcatraz_prison.glb"
 icon = "assets/ui/cameos/alcatraz_prison.png"
 archetype = "construction_yard"
-scale = [3.6, 2.4, 3.0]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.18
+roughness = 0.68
 primary_color = [0.74, 0.72, 0.68]
 team_color_tint = false
 
@@ -1913,7 +2167,11 @@ payloads = [{ kind = "mind_control_wave", radius = 9.0, max_units = 8, blast_dam
 model = "assets/models/psychic_beacon.glb"
 icon = "assets/ui/cameos/psychic_beacon.png"
 archetype = "power_plant"
-scale = [2.2, 2.8, 2.2]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.42
+roughness = 0.42
+emissive_boost = 1.70
 primary_color = [0.75, 0.24, 0.86]
 
 [[buildings]]
@@ -1943,5 +2201,9 @@ radius = 6.0
 model = "assets/models/psychic_amplifier.glb"
 icon = "assets/ui/cameos/psychic_amplifier.png"
 archetype = "power_plant"
-scale = [3.2, 3.0, 3.2]
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+metallic = 0.42
+roughness = 0.42
+emissive_boost = 1.75
 primary_color = [0.78, 0.22, 0.88]
