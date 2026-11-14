@@ -44,93 +44,11 @@ fn set_visibility_if_dirty(vis: &mut Mut<Visibility>, target: Visibility) {
     }
 }
 
-#[allow(clippy::type_complexity)]
-fn discover_articulated_descendants(
-    root: Entity,
-    children_q: &Query<&Children>,
-    name_q: &Query<
-        (&Name, &mut Transform),
-        (
-            Without<SimVisualEntity>,
-            Without<FogOfWarPlaneEntity>,
-            Without<PlacementGhostModel>,
-            Without<preview_stage::PreviewStageEntity>,
-        ),
-    >,
-) -> Option<Vec<CachedArticulatedPart>> {
-    let root_children = children_q.get(root).ok()?;
-    if root_children.is_empty() {
-        return None;
-    }
-    let mut any_named = false;
-    let mut parts = Vec::new();
-    let mut stack = vec![(root, false)];
-    while let Some((curr, anc_turret)) = stack.pop() {
-        if let Ok(children) = children_q.get(curr) {
-            for &child in children.iter() {
-                let mut child_anc_turret = anc_turret;
-                if let Ok((name, tf)) = name_q.get(child) {
-                    any_named = true;
-                    let kind_opt = match name.as_str() {
-                        "Turret" => {
-                            child_anc_turret = true;
-                            Some(ArticulatedPartKind::Turret)
-                        }
-                        "Barrel" => Some(ArticulatedPartKind::Barrel),
-                        "Rotor" => Some(ArticulatedPartKind::Rotor),
-                        _ => None,
-                    };
-                    if let Some(kind) = kind_opt {
-                        parts.push(CachedArticulatedPart {
-                            entity: child,
-                            kind,
-                            rest_translation: tf.translation,
-                            parent_is_turret: anc_turret,
-                        });
-                    }
-                }
-                stack.push((child, child_anc_turret));
-            }
-        }
-    }
-    any_named.then_some(parts)
-}
-
-#[allow(clippy::type_complexity)]
-fn apply_cached_articulation(
-    parts: &[CachedArticulatedPart],
-    rel_yaw: f32,
-    turret_elevation_rad: f32,
-    barrel_recoil_z: f32,
-    rotor_spin_angle: f32,
-    turret_node_q: &mut Query<
-        (&Name, &mut Transform),
-        (
-            Without<SimVisualEntity>,
-            Without<FogOfWarPlaneEntity>,
-            Without<PlacementGhostModel>,
-            Without<preview_stage::PreviewStageEntity>,
-        ),
-    >,
-) {
-    let has_separate_barrel = parts
-        .iter()
-        .any(|p| matches!(p.kind, ArticulatedPartKind::Barrel));
-    for part in parts {
-        if let Ok((_, mut tf)) = turret_node_q.get_mut(part.entity) {
-            let (desired_rot, desired_pos) = compute_articulated_part_pose(
-                part,
-                has_separate_barrel,
-                rel_yaw,
-                turret_elevation_rad,
-                barrel_recoil_z,
-                rotor_spin_angle,
-            );
-            set_rotation_if_dirty(&mut tf, desired_rot);
-            set_translation_if_dirty(&mut tf, desired_pos);
-        }
-    }
-}
+#[path = "entity_articulation.rs"]
+mod entity_articulation;
+use entity_articulation::{
+    apply_cached_articulation, discover_articulated_descendants, resolve_entity_base_mult_and_iso_yaw,
+};
 
 #[allow(clippy::too_many_arguments, clippy::type_complexity)]
 pub fn sync_sim_entities_to_3d(
@@ -334,13 +252,12 @@ pub fn sync_sim_entities_to_3d(
                 0.0
             };
 
-            let base_mult = if let Some([fw, fh]) = vis.building_footprint {
-                (fw.max(fh) as f32) * 0.96
-            } else if is_infantry {
-                0.95
-            } else {
-                0.78
-            };
+            let (base_mult, shp_iso_align_yaw) = resolve_entity_base_mult_and_iso_yaw(
+                loaded,
+                curr_type_id,
+                vis.building_footprint,
+                is_infantry,
+            );
 
             // Animated defensive Gate retraction (`world.gate_states[tile].openness_01`, Task 198b)
             let gate_openness_01: f32 = match (&sim_ent.kind, vis.building_footprint) {
@@ -371,13 +288,6 @@ pub fn sync_sim_entities_to_3d(
                 pose.position.y + move_bob_y + gate_sink_y,
                 pose.position.z,
             ) + recoil_offset;
-
-            // Align .shp-derived isometric building relief meshes (`yaw = 38°` in sprite_relief.rs) squarely with the camera
-            let shp_iso_align_yaw = if vis.building_footprint.is_some() {
-                38.0_f32.to_radians()
-            } else {
-                0.0
-            };
 
             // Combine slerped chassis yaw quaternion with aircraft bank/pitch or vehicle suspension pitch
             let target_rot = if pose.position.y > 2.2 && !sim_ent.landed_at_airfield {
@@ -539,10 +449,12 @@ pub fn sync_sim_entities_to_3d(
                     commands.entity(bevy_ent).despawn_recursive();
                 } else {
                     let p = dec_p.clamp(0.03, 1.0);
-                    let base_mult = vis
-                        .building_footprint
-                        .map(|[fw, fh]| (fw.max(fh) as f32) * 0.96)
-                        .unwrap_or(1.0);
+                    let (base_mult, _) = resolve_entity_base_mult_and_iso_yaw(
+                        loaded,
+                        &vis.entity_type_id,
+                        vis.building_footprint,
+                        vis.is_infantry,
+                    );
                     let xz_scale = (0.85 + 0.15 * p) * base_mult;
                     transform.scale = Vec3::new(xz_scale, p * base_mult, xz_scale);
                 }
@@ -608,18 +520,12 @@ pub fn sync_sim_entities_to_3d(
                 }),
                 _ => false,
             };
-            let base_mult = if let Some([fw, fh]) = b_footprint {
-                (fw.max(fh) as f32) * 0.96
-            } else if is_infantry_spawn {
-                0.95
-            } else {
-                0.78
-            };
-            let shp_iso_align_yaw = if b_footprint.is_some() {
-                38.0_f32.to_radians()
-            } else {
-                0.0
-            };
+            let (base_mult, shp_iso_align_yaw) = resolve_entity_base_mult_and_iso_yaw(
+                loaded,
+                &type_id_str,
+                b_footprint,
+                is_infantry_spawn,
+            );
             let world_pos = Vec3::from_array(sim_ent.position);
             let initial_vis = if cached_fow.is_entity_visible(world, loaded, sim_ent) {
                 Visibility::Inherited
@@ -709,10 +615,12 @@ pub fn sync_sim_entities_to_3d(
         let center = world
             .grid
             .footprint_center_world(interaction.hovered_tile, active_fp);
+        let (_, ghost_iso_yaw) =
+            resolve_entity_base_mult_and_iso_yaw(loaded, b_id, Some(active_fp), false);
         let rot_y = if interaction.placement_rotated {
-            std::f32::consts::FRAC_PI_2 + 38.0_f32.to_radians()
+            std::f32::consts::FRAC_PI_2 + ghost_iso_yaw
         } else {
-            38.0_f32.to_radians()
+            ghost_iso_yaw
         };
         let mut matched_existing = false;
         for (ghost_ent, ghost_comp, mut ghost_tf) in &mut ghost_query {

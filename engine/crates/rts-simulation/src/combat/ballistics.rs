@@ -33,10 +33,7 @@ pub fn build_structure_occlusion_map(
             continue;
         }
         let fp = ent.custom_footprint.unwrap_or(b_def.footprint);
-        let struct_h = match b_def.role {
-            BuildingRole::Wall | BuildingRole::Gate => 1.85_f32,
-            _ => (b_def.visual.scale[1] * 2.4).clamp(2.4, 5.0),
-        };
+        let struct_h = crate::world::locomotors::effective_building_roof_height(b_def);
         for dz in 0..fp[1] as i32 {
             for dx in 0..fp[0] as i32 {
                 let tile = [ent.tile_origin[0] + dx, ent.tile_origin[1] + dz];

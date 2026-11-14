@@ -261,9 +261,9 @@ pub(super) fn acquire_and_queue_entity_attack(
                 EntityKind::Building { building_id } => loaded
                     .buildings
                     .get(building_id)
-                    .filter(|b| b.visual.scale[1] >= 2.5)
-                    .map(|b| p.att_pos[1] + b.visual.scale[1])
-                    .unwrap_or(p.att_pos[1]),
+                    .map(crate::world::locomotors::effective_building_tower_bonus)
+                    .unwrap_or(0.0)
+                    + p.att_pos[1],
                 _ => p.att_pos[1],
             };
             #[allow(clippy::type_complexity)]

@@ -44,45 +44,6 @@ pub fn convert_multipart_vxl_to_glb(
     convert_multipart_vxl_to_glb_with_team_color(parts, external_pal, None, mesh_name)
 }
 
-pub(crate) fn infer_default_westwood_team_color(mesh_name: &str) -> [f32; 3] {
-    let lower = mesh_name.to_ascii_lowercase();
-    if lower.starts_with("na")
-        || lower.starts_with("ng")
-        || matches!(
-            lower.as_str(),
-            "apoc"
-                | "htnk"
-                | "zep"
-                | "harv"
-                | "smcv"
-                | "htk"
-                | "ttnk"
-                | "dtruck"
-                | "sapc"
-                | "sub"
-                | "hyd"
-                | "sqd"
-                | "dred"
-                | "v3"
-                | "e2"
-                | "flakt"
-                | "shk"
-                | "terror"
-                | "deso"
-                | "ivan"
-                | "civan"
-                | "dron"
-                | "tesla"
-        )
-    {
-        [0.86, 0.16, 0.14]
-    } else if lower.starts_with("ya") || lower.contains("yuri") {
-        [0.68, 0.22, 0.86]
-    } else {
-        [0.20, 0.50, 0.92]
-    }
-}
-
 /// Borrowed `(vxl_bytes, optional_hva_bytes, translation_offset)` tuple for multi-part VXL assembly.
 pub type VxlHvaPartRef<'a> = (&'a [u8], Option<&'a [u8]>, [f32; 3]);
 

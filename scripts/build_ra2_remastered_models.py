@@ -1007,16 +1007,17 @@ def _slot_partition_key(slots: np.ndarray, merge_shades: bool) -> np.ndarray:
     Returns integer partition key per vertex:
       - When `merge_shades=False`: exact `slots` (`0..255`).
       - When `merge_shades=True`:
-          - Team slots `16..=31` -> grouped into 4 grayscale bands (`1000..1003`)
+          - Team slots `16..=31` -> grouped into 4 grayscale bands (`1000..1003` in Row 0)
           - Emissive slots -> exact `2000 + slot`
-          - Procedural materials `224..249` -> exact `3000 + slot`
-          - Raw VXL non-team palette `0..15, 32..222` -> grouped into `0` (merged spatially,
-            preserving convex `Alpha=255` Rows 1..15!)
+          - Procedural materials `223..255` -> exact `3000 + slot`
+          - Raw VXL non-team palette `0..15, 32..222` -> `s // 4` (groups at most 4 adjacent
+            ramp shades strictly within the SAME 16-column atlas row `s // 16`, preserving
+            convex `Alpha=255` Rows 1..15 without cross-row UV bleeding!)
     """
     if not merge_shades:
         return slots.astype(np.int32)
     s = slots.astype(np.int32)
-    key = np.zeros_like(s)
+    key = s // 4
     team_m = (s >= 16) & (s <= 31)
     key[team_m] = 1000 + ((s[team_m] - 16) // 4)
     proc_m = s >= 223
@@ -1033,8 +1034,12 @@ def cluster_decimate_mesh(
     merge_shades: bool = False,
 ) -> BuiltMesh:
     """
-    Fast vectorized vertex-clustering decimator that strictly partitions Team (`Alpha=0` Row 0)
-    from Non-Team (`Alpha=255` Rows 1..15) so cross-alpha triangles can NEVER occur!
+    Manifold-watertight vectorized vertex-clustering decimator:
+      1. Spatial positions are clustered ONLY by `qxyz` (`pos_inv`), ensuring shared geometric
+         corners/edges across different palette slots or hard creases always map to the exact
+         same 3D vertex coordinates (zero Swiss-cheese holes or T-junction cracks!).
+      2. Vertex attributes strictly partition Team (`Alpha=0` Row 0) from Non-Team (`Alpha=255`
+         Rows 1..15) so cross-alpha triangles can NEVER occur.
     """
     n_verts = mesh.vertex_count
     if n_verts <= 16 or mesh.indices.size < 6:
@@ -1044,28 +1049,34 @@ def cluster_decimate_mesh(
     pmax = mesh.positions.max(axis=0)
     span = np.maximum(pmax - pmin, 1e-4)
     max_span = float(span.max())
-    cell = max(max_span / float(max(grid_res, 2)), 1e-4)
+    cell = max(max_span / float(max(grid_res, 2)), 1e-5)
 
-    qxyz = np.floor((mesh.positions - pmin[None, :]) / cell).astype(np.int32)
+    qxyz = np.floor((mesh.positions - pmin[None, :]) / cell + 1e-4).astype(np.int32)
+    _, pos_inv = np.unique(qxyz, axis=0, return_inverse=True)
+    pos_inv = pos_inv.astype(np.int32)
+    pos_count = int(pos_inv.max()) + 1
+    spatial_pos = np.zeros((pos_count, 3), dtype=np.float64)
+    pos_counts = np.bincount(pos_inv, minlength=pos_count).astype(np.float64)[:, None]
+    np.add.at(spatial_pos, pos_inv, mesh.positions)
+    spatial_pos = (spatial_pos / pos_counts).astype(np.float32)
+
     skey = _slot_partition_key(mesh.slots, merge_shades=merge_shades)
     if preserve_normals_sharpness:
         qn = np.round(mesh.normals * 1.4).astype(np.int32)
-        keys = np.column_stack([qxyz, skey, qn])
+        keys = np.column_stack([pos_inv, skey, qn])
     else:
-        keys = np.column_stack([qxyz, skey])
+        keys = np.column_stack([pos_inv, skey])
 
     _, first_idx, inv = np.unique(keys, axis=0, return_index=True, return_inverse=True)
     inv = inv.astype(np.uint32)
     new_count = int(first_idx.shape[0])
 
-    new_pos = np.zeros((new_count, 3), dtype=np.float64)
+    new_pos = spatial_pos[pos_inv[first_idx]]
     new_nrm = np.zeros((new_count, 3), dtype=np.float64)
     new_col = np.zeros((new_count, 4), dtype=np.float64)
     counts = np.bincount(inv, minlength=new_count).astype(np.float64)[:, None]
-    np.add.at(new_pos, inv, mesh.positions)
     np.add.at(new_nrm, inv, mesh.normals)
     np.add.at(new_col, inv, mesh.colors)
-    new_pos = (new_pos / counts).astype(np.float32)
     n_len = np.linalg.norm(new_nrm, axis=1, keepdims=True)
     new_nrm = np.where(n_len > 1e-8, new_nrm / np.maximum(n_len, 1e-8), np.array([[0.0, 1.0, 0.0]])).astype(
         np.float32
@@ -1080,8 +1091,17 @@ def cluster_decimate_mesh(
         new_uv[vi, 0] = 0.5 * (u0 + u1)
         new_uv[vi, 1] = 0.5 * (t0 + t1)
 
-    tris = inv[mesh.indices.reshape(-1, 3)]
-    non_deg = (tris[:, 0] != tris[:, 1]) & (tris[:, 1] != tris[:, 2]) & (tris[:, 0] != tris[:, 2])
+    orig_tris = mesh.indices.reshape(-1, 3)
+    tris = inv[orig_tris]
+    c_tris = pos_inv[orig_tris]
+    non_deg = (
+        (tris[:, 0] != tris[:, 1])
+        & (tris[:, 1] != tris[:, 2])
+        & (tris[:, 0] != tris[:, 2])
+        & (c_tris[:, 0] != c_tris[:, 1])
+        & (c_tris[:, 1] != c_tris[:, 2])
+        & (c_tris[:, 0] != c_tris[:, 2])
+    )
     tris = tris[non_deg]
     if tris.shape[0] == 0:
         return mesh
@@ -1107,7 +1127,18 @@ def enforce_vertex_budget(mesh: BuiltMesh, max_verts: int) -> BuiltMesh:
     if mesh.vertex_count <= max_verts:
         return mesh
     cand = mesh
-    for res, m_shades in ((52, False), (42, True), (34, True), (28, True), (22, True), (18, True), (14, True), (10, True)):
+    for res, m_shades in (
+        (72, False),
+        (60, False),
+        (50, True),
+        (42, True),
+        (34, True),
+        (28, True),
+        (22, True),
+        (18, True),
+        (14, True),
+        (10, True),
+    ):
         cand = cluster_decimate_mesh(
             mesh, grid_res=res, preserve_normals_sharpness=(res >= 22), merge_shades=m_shades
         )
@@ -1787,8 +1818,9 @@ class WestwoodVxlDecoder:
             indices=np.concatenate(all_idx, axis=0),
             slots=np.concatenate(all_slots, axis=0),
         )
-        # Weld coplanar/smooth-crease vertices of identical material slot (< 38 deg crease lock)
-        return cluster_decimate_mesh(raw_mesh, grid_res=56, preserve_normals_sharpness=True)
+        # Weld exact coincident voxel lattice corners without sub-voxel distortion (`2 * max_dim`)
+        weld_res = max(int(max(ux, uy, uz)) * 2, 64)
+        return cluster_decimate_mesh(raw_mesh, grid_res=weld_res, preserve_normals_sharpness=True)
 
 
 # ==============================================================================
@@ -2246,13 +2278,13 @@ def build_remastered_vxl_unit_glb(
         rotor_mesh = rotor_mesh.translated(-rcx, -rmin_y, -rcz)
 
     # Decimate dense VXL meshes cleanly BEFORE attaching razor-sharp hard-surface Hero parts!
-    hull_mesh = enforce_vertex_budget(hull_mesh, 3600)
+    hull_mesh = enforce_vertex_budget(hull_mesh, 6200)
     if tur_mesh is not None:
-        tur_mesh = enforce_vertex_budget(tur_mesh, 1500)
+        tur_mesh = enforce_vertex_budget(tur_mesh, 2400)
     if barl_mesh is not None:
-        barl_mesh = enforce_vertex_budget(barl_mesh, 600)
+        barl_mesh = enforce_vertex_budget(barl_mesh, 800)
     if rotor_mesh is not None:
-        rotor_mesh = enforce_vertex_budget(rotor_mesh, 500)
+        rotor_mesh = enforce_vertex_budget(rotor_mesh, 600)
 
     # ------------------------------------------------------------------
     # HERO HARD-SURFACE ENHANCEMENT PASS (perfectly circular 3D parts!)
@@ -2470,9 +2502,9 @@ def build_remastered_vxl_unit_glb(
         has_tur = True
         has_barl = True
 
-    hull_final = enforce_vertex_budget(h_mb.build(), 4600)
-    tur_final = enforce_vertex_budget(t_mb.build(), 1800) if has_tur else None
-    barl_final = enforce_vertex_budget(b_mb.build(), 900) if has_barl else None
+    hull_final = enforce_vertex_budget(h_mb.build(), 7200)
+    tur_final = enforce_vertex_budget(t_mb.build(), 2800) if has_tur else None
+    barl_final = enforce_vertex_budget(b_mb.build(), 1000) if has_barl else None
 
     # Ensure overall model min_y == 0.0 exactly
     g_min_y = float(hull_final.positions[:, 1].min())

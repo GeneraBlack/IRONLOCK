@@ -255,7 +255,7 @@ pub(super) fn resolve_beam_or_cone_attack(
                 EntityKind::Unit { unit_id } => loaded
                     .units
                     .get(unit_id)
-                    .map(|u| (u.visual.scale[0].max(u.visual.scale[2]) * 0.5).clamp(0.45, 1.8))
+                    .map(crate::world::locomotors::effective_unit_beam_radius)
                     .unwrap_or(0.55),
             };
             let (perp_d, t_param) = point_to_segment_xz(ent.position, muzzle_pos, clipped_end);

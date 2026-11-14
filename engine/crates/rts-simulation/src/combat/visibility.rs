@@ -69,8 +69,7 @@ impl CombatSpatialContext {
                     EntityKind::Building { building_id } => loaded
                         .buildings
                         .get(building_id)
-                        .filter(|b| b.visual.scale[1] >= 2.5)
-                        .map(|b| b.visual.scale[1])
+                        .map(crate::world::locomotors::effective_building_tower_bonus)
                         .unwrap_or(0.0),
                     _ => 0.0,
                 };
@@ -584,8 +583,7 @@ pub(crate) fn is_target_visible_to(
             EntityKind::Building { building_id } => loaded
                 .buildings
                 .get(building_id)
-                .filter(|b| b.visual.scale[1] >= 2.5)
-                .map(|b| b.visual.scale[1])
+                .map(crate::world::locomotors::effective_building_tower_bonus)
                 .unwrap_or(0.0),
             _ => 0.0,
         };

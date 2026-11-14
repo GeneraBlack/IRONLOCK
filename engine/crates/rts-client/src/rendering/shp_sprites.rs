@@ -154,10 +154,15 @@ pub enum Ra2EntityVisualMode {
 
 impl Ra2EntityVisualMode {
     pub fn default_for_mod_root(mod_root: &Path) -> Self {
-        if mod_root.join("assets/sprites/sprites_catalog.json").is_file() {
-            Self::HybridHdSprites
-        } else {
-            Self::Full3dMeshes
+        Self::from_env_or_catalog(mod_root.join("assets/sprites/sprites_catalog.json").is_file())
+    }
+
+    pub fn from_env_or_catalog(has_catalog: bool) -> Self {
+        match std::env::var("RTS_VISUAL_MODE").ok().as_deref().map(str::trim) {
+            Some("3d" | "full_3d" | "meshes") => Self::Full3dMeshes,
+            Some("sprites" | "hd_sprites" | "hybrid") if has_catalog => Self::HybridHdSprites,
+            _ if has_catalog => Self::HybridHdSprites,
+            _ => Self::Full3dMeshes,
         }
     }
 
@@ -380,11 +385,7 @@ pub fn reload_ra2_sprite_catalog_if_needed(
     let root = mod_res.0.root_dir.as_path();
     if catalog.loaded_mod_root.as_deref() == Some(root) { return; }
     gpu_cache.atlas_handles.clear();
-    *visual_mode = if catalog.load_from_mod_root(root) {
-        Ra2EntityVisualMode::HybridHdSprites
-    } else {
-        Ra2EntityVisualMode::Full3dMeshes
-    };
+    *visual_mode = Ra2EntityVisualMode::from_env_or_catalog(catalog.load_from_mod_root(root));
 }
 
 fn resolve_sprite_shield_fx(world: &SimWorld, sim_ent: Option<&SimEntity>) -> ShieldFresnelKind {
@@ -633,11 +634,8 @@ pub fn register_ra2_shp_sprite_rendering(app: &mut App) {
         app.init_asset::<ShpSpriteMaterial>();
     }
     let mut catalog = Ra2ShpSpriteCatalog::default();
-    let default_mode = if app.world().get_resource::<ModResource>().is_some_and(|m| catalog.load_from_mod_root(&m.0.root_dir)) {
-        Ra2EntityVisualMode::HybridHdSprites
-    } else {
-        Ra2EntityVisualMode::Full3dMeshes
-    };
+    let has_cat = app.world().get_resource::<ModResource>().is_some_and(|m| catalog.load_from_mod_root(&m.0.root_dir));
+    let default_mode = Ra2EntityVisualMode::from_env_or_catalog(has_cat);
     app.insert_resource(catalog).init_resource::<Ra2SpriteGpuCache>();
     if !app.world().contains_resource::<Ra2EntityVisualMode>() {
         app.insert_resource(default_mode);

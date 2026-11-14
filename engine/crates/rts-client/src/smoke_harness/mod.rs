@@ -73,15 +73,26 @@ pub fn drive_visual_smoke_test(
         ResMut<TutorialCoachState>,
         Option<ResMut<JukeboxState>>,
     ),
-    (mut ui_cache, mut keys): (
+    (mut ui_cache, mut keys, mut visual_mode): (
         Option<ResMut<UiAssetCache>>,
         Option<ResMut<ButtonInput<KeyCode>>>,
+        Option<ResMut<crate::rendering::Ra2EntityVisualMode>>,
     ),
     mut exit_events: EventWriter<AppExit>,
 ) {
     let Some(out_dir) = smoke.output_dir.clone() else {
         return;
     };
+    if std::env::var_os("RTS_SMOKE_RA2_OVERHAUL").is_some() {
+        stages_ext::drive_ra2_overhaul_showcase(
+            &mut commands, &out_dir, asset_server.as_deref(), &mut meshes, &mut materials,
+            &mut mod_res, &mut sim_res, &mut smoke, &mut interaction, &mut cached_fow,
+            &mut vfx_state, &mut subwindows, &mut last_sig, &mut terrain_dirty,
+            &mut terrain_dirty_rects, &env_q, &visual_q, &mut camera_q,
+            visual_mode.as_deref_mut(), &mut exit_events,
+        );
+        return;
+    }
 
     if (smoke.frame_count == 30 || smoke.frame_count == 215 || smoke.frame_count == 445)
         && smoke.wait_polls < 180
@@ -727,7 +738,7 @@ pub fn drive_visual_smoke_test(
     }
 }
 
-fn save_smoke_screenshot(commands: &mut Commands, path: &std::path::Path) {
+pub(crate) fn save_smoke_screenshot(commands: &mut Commands, path: &std::path::Path) {
     let owned = std::path::PathBuf::from(path);
     commands
         .spawn(bevy::render::view::screenshot::Screenshot::primary_window())

@@ -536,3 +536,168 @@ pub fn setup_stage_14_creator_workbench_node_graphs_and_vfx(
     last_sig.studio_sig.clear();
     last_sig.sidebar_sig.clear();
 }
+
+#[allow(clippy::too_many_arguments, clippy::type_complexity)]
+pub fn drive_ra2_overhaul_showcase(
+    commands: &mut Commands,
+    out_dir: &std::path::Path,
+    asset_server: Option<&AssetServer>,
+    meshes: &mut Assets<Mesh>,
+    materials: &mut Assets<StandardMaterial>,
+    mod_res: &mut ModResource,
+    sim_res: &mut SimWorldResource,
+    smoke: &mut crate::plugins::VisualSmokeTestState,
+    interaction: &mut ClientInteractionState,
+    cached_fow: &mut CachedFogVisibility,
+    vfx_state: &mut VfxTrackerState,
+    subwindows: &mut PlayerSubWindowStack,
+    last_sig: &mut LastSidebarSignature,
+    terrain_dirty: &mut Option<ResMut<MapTerrainDirty>>,
+    terrain_dirty_rects: &mut Option<ResMut<MapTerrainDirtyRects>>,
+    env_q: &Query<Entity, With<MapEnvironmentEntity>>,
+    visual_q: &Query<(Entity, &SimVisualEntity, Option<&Children>)>,
+    camera_q: &mut Query<(&mut RtsCameraRig, &mut Transform), Without<PreviewStageCamera>>,
+    visual_mode: Option<&mut crate::rendering::Ra2EntityVisualMode>,
+    exit_events: &mut EventWriter<bevy::app::AppExit>,
+) {
+    if (smoke.frame_count == 25 || smoke.frame_count == 55) && smoke.wait_polls < 240 {
+        smoke.wait_polls += 1;
+        let ready = !visual_q.is_empty()
+            && visual_q.iter().all(|(_, _, ch)| ch.is_some_and(|c| !c.is_empty()))
+            && asset_server.is_none_or(|srv| {
+                smoke.preloaded_handles.iter().all(|h| srv.is_loaded_with_dependencies(h.id()))
+                    && smoke
+                        .preloaded_scene_handles
+                        .iter()
+                        .all(|h| srv.is_loaded_with_dependencies(h.id()))
+            });
+        if !ready {
+            return;
+        }
+    }
+    smoke.wait_polls = 0;
+    smoke.frame_count += 1;
+
+    match smoke.frame_count {
+        1 => {
+            let _ = std::fs::create_dir_all(out_dir);
+            if let Some(rc_map) = mod_res.0.maps.get("river_crossing").cloned() {
+                for ent in env_q {
+                    commands.entity(ent).despawn_recursive();
+                }
+                for (ent, _, _) in visual_q {
+                    commands.entity(ent).despawn_recursive();
+                }
+                mod_res.0.entry_map = rc_map;
+                interaction.active_map_id = "river_crossing".to_string();
+                sim_res.0 = SimWorld::from_mod(&mod_res.0);
+                vfx_state.reset();
+                spawn_map_environment_entities(commands, meshes, materials, &mod_res.0, &sim_res.0);
+                if let Some(ref mut td) = terrain_dirty {
+                    td.0 = true;
+                }
+                if let Some(ref mut tr) = terrain_dirty_rects {
+                    tr.mark_all();
+                }
+            }
+            for (pid, bid, tile) in [
+                (1, "allied_prism_tower", [14, 15]),
+                (1, "allied_pillbox", [12, 16]),
+                (2, "soviet_conyard", [17, 10]),
+                (2, "soviet_tesla_reactor", [18, 14]),
+                (2, "soviet_tesla_coil", [17, 15]),
+            ] {
+                let _ = sim_res.0.spawn_building(pid, bid, tile, &mod_res.0, false);
+            }
+            for (pid, uid, tile, hull_yaw, tur_yaw) in [
+                (1, "grizzly_tank", [13, 17], 1.15_f32, 1.65_f32),
+                (1, "prism_tank", [11, 17], 1.35, 1.55),
+                (1, "guardian_gi", [13, 16], 1.40, 1.40),
+                (1, "grizzly_tank", [15, 22], 0.90, 0.35),
+                (1, "allied_gi", [16, 23], 0.85, 0.85),
+                (2, "apocalypse_tank", [16, 16], -1.35, -2.05),
+                (2, "rhino_tank", [17, 18], -1.55, -0.95),
+                (2, "soviet_conscript", [16, 18], -1.50, -1.50),
+                (2, "tesla_trooper", [18, 17], -1.60, -1.60),
+            ] {
+                if let Some(eid) = sim_res.0.spawn_unit(pid, uid, tile, &mod_res.0) {
+                    if let Some(e) = sim_res.0.entities.get_mut(&eid) {
+                        e.facing_radians = hull_yaw;
+                        e.turret_facing_radians = tur_yaw;
+                    }
+                }
+            }
+            subwindows.close_all();
+            interaction.app_phase = AppPhase::InGame;
+            interaction.menu_open = false;
+            interaction.studio_open = false;
+            interaction.fog_of_war_enabled = false;
+            cached_fow.reset();
+            if let Some(vm) = visual_mode {
+                *vm = crate::rendering::Ra2EntityVisualMode::HybridHdSprites;
+            }
+            if let Ok((mut rig, mut tf)) = camera_q.get_single_mut() {
+                let map = &mod_res.0.entry_map;
+                rig.map_max = Vec2::new(map.width as f32 * map.tile_size, map.height as f32 * map.tile_size);
+                rig.reset_orientation();
+                rig.set_zoom_distance(31.0);
+                let wy = sim_res.0.grid.sample_world_height(30.5, 32.5);
+                rig.snap_to(Vec3::new(30.5, wy, 32.5));
+                *tf = rig.compute_transform();
+            }
+            if let Some(srv) = asset_server {
+                for layer in [
+                    "layer_0_clear.png",
+                    "layer_1_rough.png",
+                    "layer_2_shore.png",
+                    "layer_3_pavement.png",
+                    "layer_4_cliff.png",
+                ] {
+                    smoke.preloaded_handles.push(srv.load(format!("rust-ra2/assets/terrain/temperate/{layer}")));
+                }
+                for ent in sim_res.0.entities.values() {
+                    match &ent.kind {
+                        EntityKind::Unit { unit_id } => {
+                            if let Some(u) = mod_res.0.units.get(unit_id) {
+                                smoke.preloaded_scene_handles.push(srv.load(format!("rust-ra2/{}#Scene0", u.visual.model)));
+                            }
+                            let sp = format!("rust-ra2/assets/sprites/infantry/{unit_id}.png");
+                            if mod_res.0.root_dir.join(format!("assets/sprites/infantry/{unit_id}.png")).is_file() {
+                                smoke.preloaded_handles.push(srv.load(sp));
+                            }
+                        }
+                        EntityKind::Building { building_id } => {
+                            if let Some(b) = mod_res.0.buildings.get(building_id) {
+                                smoke.preloaded_scene_handles.push(srv.load(format!("rust-ra2/{}#Scene0", b.visual.model)));
+                            }
+                            let sp = format!("rust-ra2/assets/sprites/buildings/{building_id}.png");
+                            if mod_res.0.root_dir.join(format!("assets/sprites/buildings/{building_id}.png")).is_file() {
+                                smoke.preloaded_handles.push(srv.load(sp));
+                            }
+                        }
+                    }
+                }
+            }
+            last_sig.sidebar_sig.clear();
+        }
+        68 => {
+            sim_res.0.step(&mod_res.0);
+        }
+        75 => {
+            super::save_smoke_screenshot(commands, &out_dir.join("ra2_overhaul_hd_sprites.png"));
+        }
+        84 => {
+            if let Some(vm) = visual_mode {
+                *vm = crate::rendering::Ra2EntityVisualMode::Full3dMeshes;
+            }
+            sim_res.0.step(&mod_res.0);
+        }
+        106 => {
+            super::save_smoke_screenshot(commands, &out_dir.join("ra2_overhaul_full_3d.png"));
+        }
+        118 => {
+            exit_events.send(bevy::app::AppExit::Success);
+        }
+        _ => {}
+    }
+}
