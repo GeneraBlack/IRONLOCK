@@ -142,15 +142,15 @@ pub const TEAM_COLOR_PALETTE_SLOTS: u8 = 10;
 pub fn lod0_visibility_range() -> VisibilityRange {
     VisibilityRange {
         start_margin: 0.0..0.0,
-        end_margin: 55.0..62.0,
+        end_margin: 185.0..210.0,
         use_aabb: false,
     }
 }
 
 pub fn lod1_visibility_range() -> VisibilityRange {
     VisibilityRange {
-        start_margin: 55.0..62.0,
-        end_margin: 280.0..300.0,
+        start_margin: 185.0..210.0,
+        end_margin: 945.0..1015.0,
         use_aabb: false,
     }
 }
@@ -360,5 +360,18 @@ mod tests {
         assert!(soviet[0] >= 0.90 && soviet[1] <= 0.10 && soviet[2] <= 0.10);
         // Yuri Psi-Purple: vibrant violet-magenta (strong blue + red, low green)
         assert!(yuri[2] >= 0.90 && yuri[0] >= 0.50 && yuri[1] <= 0.12);
+    }
+
+    #[test]
+    fn lod_visibility_ranges_cover_telephoto_default_eye_and_orbital_crossfade() {
+        let mut rig = crate::camera::RtsCameraRig::new(128.0, 128.0);
+        let default_eye = (rig.compute_transform().translation - rig.focus).length();
+        let lod0 = lod0_visibility_range();
+        let lod1 = lod1_visibility_range();
+        assert!(default_eye > 75.0 && default_eye < lod0.end_margin.start);
+
+        rig.set_zoom_distance(185.0);
+        let orbital_eye = (rig.compute_transform().translation - rig.focus).length();
+        assert!(orbital_eye > lod1.start_margin.end && orbital_eye < lod1.end_margin.start);
     }
 }

@@ -8,7 +8,8 @@ use bevy::core_pipeline::bloom::Bloom;
 use bevy::core_pipeline::prepass::{DepthPrepass, NormalPrepass};
 use bevy::core_pipeline::tonemapping::Tonemapping;
 use bevy::pbr::{
-    CascadeShadowConfig, ScreenSpaceAmbientOcclusion, ScreenSpaceAmbientOcclusionQualityLevel,
+    CascadeShadowConfig, CascadeShadowConfigBuilder, ScreenSpaceAmbientOcclusion,
+    ScreenSpaceAmbientOcclusionQualityLevel,
 };
 use bevy::prelude::*;
 use bevy::render::mesh::{Indices, PrimitiveTopology};
@@ -59,12 +60,7 @@ pub struct ActiveTheaterLightingResource {
 
 impl TheaterLightingProfile {
     pub const ALL: [Self; 6] = [
-        Self::Temperate,
-        Self::Snow,
-        Self::Urban,
-        Self::NewUrban,
-        Self::Desert,
-        Self::Lunar,
+        Self::Temperate, Self::Snow, Self::Urban, Self::NewUrban, Self::Desert, Self::Lunar,
     ];
 
     pub fn from_loaded_mod(loaded: &LoadedMod) -> Self {
@@ -154,7 +150,35 @@ pub struct MainDirectionalLight {
     pub is_primary_sun: bool,
 }
 
-/// Applies runtime `ShadowQualitySetting` AND altitude-adaptive orbital zoom cascade scaling (`12m..550m`).
+/// Builds camera-eye-aware `CascadeShadowConfig` so `TelephotoTactical` (`eye_dist = zoom * 3.37`)
+/// brackets `rig.focus` inside Cascade 0 instead of wasting Cascade 0 in empty air (`1m..28m`).
+pub fn build_camera_aware_cascade_config(
+    setting: ShadowQualitySetting,
+    zoom_dist: f32,
+    eye_dist: f32,
+) -> CascadeShadowConfig {
+    if eye_dist <= zoom_dist * 1.5 {
+        return setting.build_cascade_config_for_altitude(zoom_dist);
+    }
+    let min_d = (eye_dist * 0.45).max(1.0);
+    let span = (zoom_dist * 1.15).max(24.0);
+    let (num_cascades, first_far, max_d, overlap) = match setting {
+        ShadowQualitySetting::Off => (1, eye_dist + span * 0.90, (eye_dist * 1.80).max(145.0), 0.15),
+        ShadowQualitySetting::Low => (2, eye_dist + span * 0.95, (eye_dist * 1.82).max(150.0), 0.15),
+        ShadowQualitySetting::Medium => (3, eye_dist + span * 1.15, (eye_dist * 1.92).max(170.0), 0.20),
+        ShadowQualitySetting::High => (4, eye_dist + span * 1.30, (eye_dist * 2.08).max(215.0), 0.22),
+    };
+    CascadeShadowConfigBuilder {
+        num_cascades,
+        minimum_distance: min_d,
+        first_cascade_far_bound: first_far,
+        maximum_distance: max_d,
+        overlap_proportion: overlap,
+    }
+    .build()
+}
+
+/// Applies runtime `ShadowQualitySetting` AND eye-distance-aware cascade scaling across camera modes.
 #[allow(clippy::type_complexity)]
 pub fn sync_directional_shadow_quality(
     shadow_setting: Res<ShadowQualitySetting>,
@@ -162,7 +186,9 @@ pub fn sync_directional_shadow_quality(
         &crate::camera::RtsCameraRig,
         (Without<PreviewStageCamera>, Without<MainDirectionalLight>),
     >,
-    mut last_applied_bucket: Local<Option<(ShadowQualitySetting, u16)>>,
+    mut last_applied_bucket: Local<
+        Option<(ShadowQualitySetting, crate::camera::CameraProjectionMode, u16)>,
+    >,
     mut sun_q: Query<
         (
             &MainDirectionalLight,
@@ -173,8 +199,13 @@ pub fn sync_directional_shadow_quality(
         (Without<crate::camera::RtsCameraRig>, Without<PreviewStageCamera>),
     >,
 ) {
-    let zoom_dist = cam_rig_q.iter().next().map(|r| r.zoom_distance()).unwrap_or(32.0);
-    let desired_key = (*shadow_setting, (zoom_dist / 12.0).round() as u16);
+    let default_eye = 23.5 * crate::camera::RtsCameraRig::telephoto_eye_scale();
+    let (zoom_dist, eye_dist, proj_mode) = cam_rig_q
+        .iter()
+        .next()
+        .map(|r| (r.zoom_distance(), r.effective_eye_distance(), r.projection_mode))
+        .unwrap_or((23.5, default_eye, crate::camera::CameraProjectionMode::TelephotoTactical));
+    let desired_key = (*shadow_setting, proj_mode, (eye_dist / 12.0).round() as u16);
     let bucket_changed = *last_applied_bucket != Some(desired_key);
 
     for (sun_tag, mut dir_light, cascade_opt, tag_ref) in &mut sun_q {
@@ -189,7 +220,7 @@ pub fn sync_directional_shadow_quality(
             dir_light.shadows_enabled = want_shadows;
         }
         if let Some(mut cascades) = cascade_opt {
-            *cascades = shadow_setting.build_cascade_config_for_altitude(zoom_dist);
+            *cascades = build_camera_aware_cascade_config(*shadow_setting, zoom_dist, eye_dist);
         }
         *last_applied_bucket = Some(desired_key);
     }
@@ -201,15 +232,9 @@ pub struct CameraHdrIblConfigured;
 fn f32_to_f16_bits(val: f32) -> u16 {
     let bits = val.to_bits();
     let sign = ((bits >> 16) & 0x8000) as u16;
-    let exp = ((bits >> 23) & 0xff) as i32 - 127 + 15;
+    let exp = ((bits >> 23) & 0xff) as i32 - 112;
     let mant = bits & 0x007f_ffff;
-    if exp <= 0 {
-        sign
-    } else if exp >= 31 {
-        sign | 0x7c00
-    } else {
-        sign | ((exp as u16) << 10) | ((mant >> 13) as u16)
-    }
+    if exp <= 0 { sign } else if exp >= 31 { sign | 0x7c00 } else { sign | ((exp as u16) << 10) | ((mant >> 13) as u16) }
 }
 
 fn cubemap_face_dir(face: u32, u: f32, v: f32) -> Vec3 {
@@ -283,7 +308,7 @@ pub fn build_procedural_ibl_cubemap_images_for_theater(
 }
 
 /// Upgrades the main battlefield `Camera3d` with HDR, `TonyMcMapface` tonemapping, crisp bloom,
-/// theater-matched `EnvironmentMapLight` IBL, haze-free `DistanceFog`, and dynamic SSAO.
+/// theater-matched `EnvironmentMapLight` IBL, haze-free `DistanceFog`, and perspective-gated SSAO.
 #[allow(clippy::type_complexity)]
 pub fn sync_hdr_camera_ssao_and_ibl(
     mut commands: Commands,
@@ -295,6 +320,7 @@ pub fn sync_hdr_camera_ssao_and_ibl(
         (
             Entity,
             &mut Camera,
+            Option<&Projection>,
             Option<&mut DistanceFog>,
             Option<&CameraHdrIblConfigured>,
             Option<&ScreenSpaceAmbientOcclusion>,
@@ -302,19 +328,19 @@ pub fn sync_hdr_camera_ssao_and_ibl(
         (With<crate::camera::RtsCameraRig>, Without<PreviewStageCamera>),
     >,
 ) {
-    let theater_spec = theater_res
-        .as_deref()
-        .map(|t| t.profile)
-        .unwrap_or_default()
-        .spec();
+    let theater_spec = theater_res.as_deref().map(|t| t.profile).unwrap_or_default().spec();
     let theater_changed = theater_res.as_ref().is_some_and(|t| t.is_changed());
     let ibl_changed = ibl_res.as_ref().is_some_and(|i| i.is_changed());
 
-    for (ent, mut cam, mut fog_opt, configured, curr_ssao) in &mut cam_q {
+    for (ent, mut cam, proj_opt, mut fog_opt, configured, curr_ssao) in &mut cam_q {
         if let Some(ref mut fog) = fog_opt {
             if theater_changed || configured.is_none() {
                 fog.color = theater_spec.fog_color;
             }
+        }
+        let is_ortho = matches!(proj_opt, Some(Projection::Orthographic(_)));
+        if (is_ortho || *ssao_setting == SsaoQualitySetting::Off) && curr_ssao.is_some() {
+            commands.entity(ent).remove::<ScreenSpaceAmbientOcclusion>();
         }
         if render_device.is_none() {
             continue;
@@ -340,38 +366,26 @@ pub fn sync_hdr_camera_ssao_and_ibl(
                     ..default()
                 });
             }
-        } else if ibl_changed || theater_changed {
-            if let Some(ref ibl) = ibl_res {
-                commands.entity(ent).insert(EnvironmentMapLight {
-                    diffuse_map: ibl.diffuse_cubemap.clone(),
-                    specular_map: ibl.specular_cubemap.clone(),
-                    intensity: theater_spec.ibl_intensity,
-                    ..default()
-                });
-            }
+        } else if let (true, Some(ibl)) = (ibl_changed || theater_changed, ibl_res.as_ref()) {
+            commands.entity(ent).insert(EnvironmentMapLight {
+                diffuse_map: ibl.diffuse_cubemap.clone(),
+                specular_map: ibl.specular_cubemap.clone(),
+                intensity: theater_spec.ibl_intensity,
+                ..default()
+            });
         }
 
-        match *ssao_setting {
-            SsaoQualitySetting::Off => {
-                if curr_ssao.is_some() {
-                    commands.entity(ent).remove::<ScreenSpaceAmbientOcclusion>();
-                }
-            }
-            SsaoQualitySetting::Medium | SsaoQualitySetting::High => {
-                let want = if *ssao_setting == SsaoQualitySetting::High {
-                    ScreenSpaceAmbientOcclusionQualityLevel::High
-                } else {
-                    ScreenSpaceAmbientOcclusionQualityLevel::Medium
-                };
-                if curr_ssao.map(|s| s.quality_level != want).unwrap_or(true) {
-                    commands.entity(ent).insert((
-                        Msaa::Off,
-                        ScreenSpaceAmbientOcclusion {
-                            quality_level: want,
-                            constant_object_thickness: 0.25,
-                        },
-                    ));
-                }
+        if !is_ortho && matches!(*ssao_setting, SsaoQualitySetting::Medium | SsaoQualitySetting::High) {
+            let want = if *ssao_setting == SsaoQualitySetting::High {
+                ScreenSpaceAmbientOcclusionQualityLevel::High
+            } else {
+                ScreenSpaceAmbientOcclusionQualityLevel::Medium
+            };
+            if curr_ssao.map(|s| s.quality_level != want).unwrap_or(true) {
+                commands.entity(ent).insert((
+                    Msaa::Off,
+                    ScreenSpaceAmbientOcclusion { quality_level: want, constant_object_thickness: 0.25 },
+                ));
             }
         }
     }
@@ -394,11 +408,8 @@ pub struct PlacementGhostModel {
 
 /// Builds a continuous 3D vertex-colored heightmap terrain mesh (`PrimitiveTopology::TriangleList`).
 pub fn build_continuous_terrain_mesh(world: &SimWorld) -> Mesh {
-    let w = world.grid.width.max(1) as usize;
-    let h = world.grid.height.max(1) as usize;
-    let ts = world.grid.tile_size;
+    let (w, h, ts) = (world.grid.width.max(1) as usize, world.grid.height.max(1) as usize, world.grid.tile_size);
     let (vw, vh) = (w + 1, h + 1);
-
     let base_tiles: Vec<[i32; 2]> = world
         .entities
         .values()
@@ -423,27 +434,19 @@ pub fn build_continuous_terrain_mesh(world: &SimWorld) -> Mesh {
         } else {
             let hash = ((cx as u32).wrapping_mul(73856093) ^ (cz as u32).wrapping_mul(19349663)) & 0xff;
             let micro = (hash as f32 / 255.0 - 0.5) * 0.04;
-            if ((cx / 3) + (cz / 3)) % 2 == 0 {
-                (0.0, [0.27 + micro, 0.42 + micro, 0.21 + micro, 1.0])
-            } else {
-                (0.0, [0.21 + micro, 0.35 + micro, 0.17 + micro, 1.0])
-            }
+            if ((cx / 3) + (cz / 3)) % 2 == 0 { (0.0, [0.27 + micro, 0.42 + micro, 0.21 + micro, 1.0]) }
+            else { (0.0, [0.21 + micro, 0.35 + micro, 0.17 + micro, 1.0]) }
         }
     };
 
-    let mut positions = Vec::with_capacity(vw * vh);
-    let mut colors = Vec::with_capacity(vw * vh);
-    let mut heights = vec![0.0_f32; vw * vh];
-
+    let (mut positions, mut colors, mut heights) = (Vec::with_capacity(vw * vh), Vec::with_capacity(vw * vh), vec![0.0_f32; vw * vh]);
     for vz in 0..vh {
         for vx in 0..vw {
             let (mut sum_h, mut sum_c) = (0.0_f32, [0.0_f32; 4]);
             for (ox, oz) in [(-1, -1), (0, -1), (-1, 0), (0, 0)] {
                 let (th, tc) = sample_tile(vx as i32 + ox, vz as i32 + oz);
                 sum_h += th;
-                for c in 0..4 {
-                    sum_c[c] += tc[c];
-                }
+                for c in 0..4 { sum_c[c] += tc[c]; }
             }
             let avg_h = sum_h * 0.25;
             heights[vz * vw + vx] = avg_h;
@@ -455,29 +458,18 @@ pub fn build_continuous_terrain_mesh(world: &SimWorld) -> Mesh {
     let mut normals = Vec::with_capacity(vw * vh);
     for vz in 0..vh {
         for vx in 0..vw {
-            let (xl, xr) = (vx.saturating_sub(1), (vx + 1).min(vw - 1));
-            let (zu, zd) = (vz.saturating_sub(1), (vz + 1).min(vh - 1));
-            let n = Vec3::new(
-                heights[vz * vw + xl] - heights[vz * vw + xr],
-                2.0 * ts,
-                heights[zu * vw + vx] - heights[zd * vw + vx],
-            )
-            .normalize_or_zero();
-            normals.push(n.to_array());
+            let (xl, xr, zu, zd) = (vx.saturating_sub(1), (vx + 1).min(vw - 1), vz.saturating_sub(1), (vz + 1).min(vh - 1));
+            normals.push(Vec3::new(heights[vz * vw + xl] - heights[vz * vw + xr], 2.0 * ts, heights[zu * vw + vx] - heights[zd * vw + vx]).normalize_or_zero().to_array());
         }
     }
 
     let mut indices = Vec::with_capacity(w * h * 6);
     for tz in 0..h {
         for tx in 0..w {
-            let i00 = (tz * vw + tx) as u32;
-            let i10 = i00 + 1;
-            let i01 = ((tz + 1) * vw + tx) as u32;
-            let i11 = i01 + 1;
-            indices.extend_from_slice(&[i00, i01, i10, i10, i01, i11]);
+            let (i00, i01) = ((tz * vw + tx) as u32, ((tz + 1) * vw + tx) as u32);
+            indices.extend_from_slice(&[i00, i01, i00 + 1, i00 + 1, i01, i01 + 1]);
         }
     }
-
     let mut mesh = Mesh::new(PrimitiveTopology::TriangleList, RenderAssetUsages::default());
     mesh.insert_attribute(Mesh::ATTRIBUTE_POSITION, positions);
     mesh.insert_attribute(Mesh::ATTRIBUTE_NORMAL, normals);
@@ -489,8 +481,7 @@ pub fn build_continuous_terrain_mesh(world: &SimWorld) -> Mesh {
 fn cuboid_with_vertex_color(w: f32, h: f32, d: f32, rgba: [f32; 4]) -> Mesh {
     let mut m = Mesh::from(Cuboid::new(w, h, d));
     m.remove_attribute(Mesh::ATTRIBUTE_UV_0);
-    let v_count = m.count_vertices();
-    m.insert_attribute(Mesh::ATTRIBUTE_COLOR, vec![rgba; v_count]);
+    m.insert_attribute(Mesh::ATTRIBUTE_COLOR, vec![rgba; m.count_vertices()]);
     m
 }
 
@@ -498,15 +489,9 @@ fn cuboid_with_vertex_color(w: f32, h: f32, d: f32, rgba: [f32; 4]) -> Mesh {
 pub fn resolve_mod_asset_path(asset_root: &Path, mod_root: &Path, model_rel: &str) -> String {
     let norm_asset = std::fs::canonicalize(asset_root).unwrap_or_else(|_| asset_root.to_path_buf());
     let norm_mod = std::fs::canonicalize(mod_root).unwrap_or_else(|_| mod_root.to_path_buf());
-
     if let Ok(prefix) = norm_mod.strip_prefix(&norm_asset) {
-        let prefix_str = prefix.to_string_lossy().replace('\\', "/");
-        let clean_model = model_rel.trim_start_matches('/').replace('\\', "/");
-        if prefix_str.is_empty() {
-            format!("{clean_model}#Scene0")
-        } else {
-            format!("{prefix_str}/{clean_model}#Scene0")
-        }
+        let (prefix_str, clean_model) = (prefix.to_string_lossy().replace('\\', "/"), model_rel.trim_start_matches('/').replace('\\', "/"));
+        if prefix_str.is_empty() { format!("{clean_model}#Scene0") } else { format!("{prefix_str}/{clean_model}#Scene0") }
     } else {
         format!("{}#Scene0", model_rel.replace('\\', "/"))
     }
@@ -525,23 +510,14 @@ pub fn spawn_map_environment_entities(
     world: &SimWorld,
 ) {
     let map = &loaded.entry_map;
-    let fallback_terrain_mat = materials.add(StandardMaterial {
-        base_color: Color::WHITE,
-        perceptual_roughness: 0.92,
-        metallic: 0.02,
-        ..default()
-    });
+    let fallback_terrain_mat = materials.add(StandardMaterial { base_color: Color::WHITE, perceptual_roughness: 0.92, metallic: 0.02, ..default() });
     let (chunks_x, chunks_z) = terrain_chunk_counts(world.grid.width, world.grid.height);
     for cz in 0..chunks_z {
         for cx in 0..chunks_x {
             let chunk_mesh = meshes.add(build_terrain_chunk_mesh(map, world, cx, cz));
             commands.spawn((
-                MapEnvironmentEntity,
-                TerrainChunkEntity { chunk_x: cx, chunk_z: cz },
-                PendingTerrainSplatUpgrade,
-                Mesh3d(chunk_mesh),
-                MeshMaterial3d(fallback_terrain_mat.clone()),
-                Transform::IDENTITY,
+                MapEnvironmentEntity, TerrainChunkEntity { chunk_x: cx, chunk_z: cz }, PendingTerrainSplatUpgrade,
+                Mesh3d(chunk_mesh), MeshMaterial3d(fallback_terrain_mat.clone()), Transform::IDENTITY,
             ));
         }
     }
@@ -690,10 +666,11 @@ pub fn setup_3d_map_environment(
         0.0,
         (sim_res.0.grid.height.max(1) as f32 * sim_res.0.grid.tile_size) * 0.5,
     );
+    let default_eye = 23.5 * crate::camera::RtsCameraRig::telephoto_eye_scale();
     commands.spawn((
         MainDirectionalLight { is_primary_sun: true },
         DirectionalLight { color: spec.sun_color, illuminance: spec.sun_illuminance, shadows_enabled: true, ..default() },
-        ShadowQualitySetting::Medium.build_cascade_config(),
+        build_camera_aware_cascade_config(ShadowQualitySetting::Medium, 23.5, default_eye),
         Transform::from_translation(center + spec.sun_direction_to_sky * 120.0).looking_at(center, Vec3::Y),
     ));
     commands.spawn((
@@ -729,5 +706,29 @@ mod theater_tests {
             assert_eq!(diff.texture_descriptor.size.depth_or_array_layers, 6);
             assert_eq!(spec_img.texture_descriptor.size.depth_or_array_layers, 6);
         }
+    }
+
+    #[test]
+    fn telephoto_cascade_brackets_focus_and_ortho_projection_removes_ssao() {
+        use bevy::ecs::system::RunSystemOnce;
+        let rig = crate::camera::RtsCameraRig::new(128.0, 128.0);
+        let eye_d = rig.effective_eye_distance();
+        for q in [ShadowQualitySetting::Low, ShadowQualitySetting::Medium, ShadowQualitySetting::High] {
+            let cfg = build_camera_aware_cascade_config(q, rig.zoom_distance(), eye_d);
+            assert!(cfg.minimum_distance < eye_d && cfg.bounds[0] > eye_d + 20.0);
+            assert!(*cfg.bounds.last().unwrap() >= eye_d * 1.80);
+        }
+
+        let mut app = App::new();
+        app.insert_resource(SsaoQualitySetting::High);
+        let mut ortho_rig = rig;
+        ortho_rig.projection_mode = crate::camera::CameraProjectionMode::ClassicIso2to1;
+        let cam_e = app.world_mut().spawn((
+            ortho_rig.clone(), Camera::default(), ortho_rig.compute_projection(),
+            ScreenSpaceAmbientOcclusion::default(),
+        )).id();
+        app.world_mut().run_system_once(sync_hdr_camera_ssao_and_ibl).expect("run ssao sync");
+        app.world_mut().flush();
+        assert!(app.world().entity(cam_e).get::<ScreenSpaceAmbientOcclusion>().is_none());
     }
 }
