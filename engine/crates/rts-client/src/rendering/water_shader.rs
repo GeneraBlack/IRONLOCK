@@ -1,3 +1,4 @@
+use super::terrain_shader::Ra2TerrainTheater;
 use super::{
     build_default_fow_overlay_image, CachedFogVisibility, FogOfWarOverlayImage, MapTerrainDirty,
     MapTerrainDirtyRects, SmoothFogTemporalState,
@@ -20,7 +21,7 @@ pub const WATER_WAVE_SHADER_HANDLE: Handle<Shader> =
 
 /// World-space Y elevation of continuous navigable water (`CollisionGrid::WATER_SURFACE_Y = -0.35`).
 pub const WATER_SURFACE_Y: f32 = CollisionGrid::WATER_SURFACE_Y;
-const SHORE_TEXELS_PER_TILE: i32 = 2;
+const SHORE_TEXELS_PER_TILE: i32 = 4;
 
 pub type WaterWaveMaterial = ExtendedMaterial<StandardMaterial, WaterWaveExtension>;
 
@@ -47,11 +48,42 @@ impl Default for WaterWaveUniform {
         Self {
             map_world_size: Vec2::splat(128.0),
             time_secs: 0.0,
-            foam_intensity: 0.94,
-            shallow_color: Vec4::new(0.08, 0.48, 0.66, 1.0),
-            deep_color: Vec4::new(0.02, 0.14, 0.36, 1.0),
+            foam_intensity: 1.08,
+            shallow_color: Vec4::new(0.06, 0.54, 0.80, 1.0),
+            deep_color: Vec4::new(0.015, 0.16, 0.48, 1.0),
             fow_params: Vec4::ZERO,
         }
+    }
+}
+
+/// Returns `(shallow_color, deep_color, foam_intensity)` tuned for each authentic RA2/YR theater.
+pub fn theater_water_palette(theater: Ra2TerrainTheater) -> (Vec4, Vec4, f32) {
+    match theater {
+        Ra2TerrainTheater::Temperate | Ra2TerrainTheater::NewUrban => (
+            Vec4::new(0.06, 0.55, 0.82, 1.0),
+            Vec4::new(0.015, 0.17, 0.50, 1.0),
+            1.10,
+        ),
+        Ra2TerrainTheater::Snow => (
+            Vec4::new(0.14, 0.62, 0.86, 1.0),
+            Vec4::new(0.02, 0.15, 0.42, 1.0),
+            1.22,
+        ),
+        Ra2TerrainTheater::Urban => (
+            Vec4::new(0.05, 0.46, 0.72, 1.0),
+            Vec4::new(0.015, 0.14, 0.42, 1.0),
+            1.05,
+        ),
+        Ra2TerrainTheater::Desert => (
+            Vec4::new(0.07, 0.64, 0.80, 1.0),
+            Vec4::new(0.02, 0.21, 0.52, 1.0),
+            1.08,
+        ),
+        Ra2TerrainTheater::Lunar => (
+            Vec4::new(0.08, 0.36, 0.58, 1.0),
+            Vec4::new(0.01, 0.10, 0.30, 1.0),
+            0.88,
+        ),
     }
 }
 
@@ -86,7 +118,7 @@ pub struct WaterSurfaceEntity {
     pub material_handle: Handle<WaterWaveMaterial>,
 }
 
-/// Computes a `2x2`-texels/tile shoreline depth & bridge-pier foam mask:
+/// Computes a crisp `4x4`-texels/tile shoreline depth & bridge-pier foam mask:
 /// - `R`: Soft shoreline water column depth (`0 = dry bank above -0.35m`, `255 = deep open water`).
 /// - `G`: Bridge-pier foam ring (`255 = adjacent to bridge support pier`, `0 = open water`).
 pub fn build_shoreline_depth_image(world: &SimWorld) -> Image {
@@ -135,7 +167,7 @@ pub fn build_shoreline_depth_image(world: &SimWorld) -> Image {
                         }
                     }
                 }
-                let dist_depth = ((min_land_dist_sq.sqrt() - 0.42) / 3.25).clamp(0.04, 1.0);
+                let dist_depth = ((min_land_dist_sq.sqrt() - 0.42) / 3.15).clamp(0.04, 1.0);
                 if world.grid.has_valid_vertex_heights() {
                     dist_depth.min((height_depth * 1.35).clamp(0.06, 1.0))
                 } else {
@@ -282,6 +314,12 @@ pub fn animate_and_sync_water_shader(
     let Some(mut water_mats) = water_mats else {
         return;
     };
+    let active_theater = mod_res
+        .as_deref()
+        .map(|mr| Ra2TerrainTheater::infer_from_map(&mr.0.entry_map.id, &mr.0.entry_map.name))
+        .unwrap_or_default();
+    let (shallow_color, deep_color, foam_intensity) = theater_water_palette(active_theater);
+
     let fow_strength = smooth_fow
         .as_deref()
         .map(|s| s.fow_shader_strength)
@@ -296,6 +334,9 @@ pub fn animate_and_sync_water_shader(
     for (_, _, surf, _) in &water_q {
         if let Some(mat) = water_mats.get_mut(&surf.material_handle) {
             mat.extension.params.time_secs = elapsed;
+            mat.extension.params.shallow_color = shallow_color;
+            mat.extension.params.deep_color = deep_color;
+            mat.extension.params.foam_intensity = foam_intensity;
             mat.extension.params.fow_params = Vec4::new(fow_strength, 0.0, 0.0, 0.0);
             if let Some(ref fow_res) = fow_img_res {
                 if mat.extension.fow_tex != fow_res.0 {
@@ -335,10 +376,10 @@ pub fn animate_and_sync_water_shader(
             );
             let mat_handle = water_mats.add(WaterWaveMaterial {
                 base: StandardMaterial {
-                    base_color: Color::srgba(0.06, 0.36, 0.62, 0.88),
+                    base_color: Color::srgba(0.04, 0.38, 0.72, 0.90),
                     alpha_mode: AlphaMode::Blend,
-                    perceptual_roughness: 0.08,
-                    reflectance: 0.92,
+                    perceptual_roughness: 0.06,
+                    reflectance: 0.95,
                     ..default()
                 },
                 extension: WaterWaveExtension {
@@ -346,8 +387,10 @@ pub fn animate_and_sync_water_shader(
                     params: WaterWaveUniform {
                         map_world_size: world_size,
                         time_secs: elapsed,
+                        foam_intensity,
+                        shallow_color,
+                        deep_color,
                         fow_params: Vec4::new(fow_strength, 0.0, 0.0, 0.0),
-                        ..default()
                     },
                     fow_tex: fow_tex_handle,
                 },
@@ -403,8 +446,49 @@ pub fn animate_and_sync_water_shader(
                 curr_dims[0] as f32 * world.grid.tile_size,
                 curr_dims[1] as f32 * world.grid.tile_size,
             );
+            mat.extension.params.shallow_color = shallow_color;
+            mat.extension.params.deep_color = deep_color;
+            mat.extension.params.foam_intensity = foam_intensity;
             mat.extension.fow_tex = fow_tex_handle.clone();
         }
         *vis = Visibility::Inherited;
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use rts_sdk::loader::LoadedMod;
+
+    #[test]
+    fn builds_high_res_shoreline_depth_mask_and_vivid_ra2_theater_palettes() {
+        let mod_dir = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .join("../../../rust-ra2")
+            .canonicalize()
+            .expect("canonicalize rust-ra2 path");
+        let loaded = LoadedMod::load_from_dir(mod_dir).expect("rust-ra2 should load");
+        let river_map = loaded
+            .maps
+            .values()
+            .find(|m| !m.water_rects.is_empty())
+            .unwrap_or(&loaded.entry_map);
+        let world = SimWorld::from_mod_map(&loaded, river_map);
+
+        let shore = build_shoreline_depth_image(&world);
+        assert_eq!(
+            shore.texture_descriptor.size.width,
+            (world.grid.width * SHORE_TEXELS_PER_TILE) as u32
+        );
+        assert_eq!(
+            shore.texture_descriptor.size.height,
+            (world.grid.height * SHORE_TEXELS_PER_TILE) as u32
+        );
+        assert!(build_water_surface_mesh(&world).is_some());
+
+        let (temp_sh, temp_dp, temp_foam) = theater_water_palette(Ra2TerrainTheater::Temperate);
+        let (snow_sh, _, snow_foam) = theater_water_palette(Ra2TerrainTheater::Snow);
+        assert!(temp_dp.z > temp_dp.x * 8.0, "deep RA2 water must be vivid sapphire blue");
+        assert!(snow_foam > temp_foam);
+        assert_ne!(temp_sh, snow_sh);
     }
 }

@@ -1,10 +1,14 @@
 mod chunk_mesh;
 mod layer_textures;
 
-pub use chunk_mesh::{build_splatted_terrain_mesh, build_terrain_chunk_mesh};
+pub use chunk_mesh::{
+    build_splatted_terrain_mesh, build_terrain_chunk_mesh, RA2_STEPPED_PLATEAU_HEIGHT,
+};
 pub use layer_textures::{
     build_splat_weight_image, build_terrain_layer_array_image,
-    build_terrain_normal_rough_height_array_image, update_splat_weight_subrect,
+    build_terrain_layer_array_image_for_theater, build_terrain_normal_rough_height_array_image,
+    build_terrain_normal_rough_height_array_image_for_theater, update_splat_weight_subrect,
+    Ra2TerrainTheater, TERRAIN_LAYER_COUNT, TERRAIN_LAYER_TEX_SIZE,
 };
 
 use super::{
@@ -16,6 +20,7 @@ use bevy::pbr::{ExtendedMaterial, MaterialExtension};
 use bevy::prelude::*;
 use bevy::render::render_resource::{AsBindGroup, ShaderRef};
 use chunk_mesh::{build_terrain_chunk_mesh_with_hmap, chunk_intersects_dirty_rects};
+use std::path::PathBuf;
 
 pub const TERRAIN_SPLAT_SHADER_HANDLE: Handle<Shader> =
     Handle::weak_from_u128(0x64d2_81a9_4b7e_4c11_9e35_71b2_c804_1640);
@@ -51,8 +56,9 @@ impl Default for TerrainSplatUniform {
     fn default() -> Self {
         Self {
             map_world_size: Vec2::splat(128.0),
-            detail_uv_scale: 0.24,
-            cliff_slope_boost: 1.0,
+            // 0.125 maps each 512x512 repeat across 8.0m (4x4 RA2 2m tiles -> 128x128 texels/tile!)
+            detail_uv_scale: 0.125,
+            cliff_slope_boost: 1.25,
             cloud_params: Vec4::new(0.0, 0.28, 0.032, 0.019),
             fow_params: Vec4::ZERO,
         }
@@ -124,11 +130,13 @@ pub fn terrain_chunk_counts(width: i32, height: i32) -> (u32, u32) {
 }
 
 /// Live-rebuilds ONLY affected `16x16` `TerrainChunkEntity` meshes and splatmap sub-regions
-/// whenever `MapTerrainDirtyRects` or `MapTerrainDirty(true)` is set, and upgrades newly spawned
-/// `PendingTerrainSplatUpgrade` chunk entities to share a single `TerrainSplatMaterial` + `4x4`/tile splatmap.
+/// whenever `MapTerrainDirtyRects` or `MapTerrainDirty(true)` is set, hot-swaps the active RA2
+/// theater `512x512` `Texture2DArray` when the map theater changes, and upgrades newly spawned
+/// `PendingTerrainSplatUpgrade` chunk entities to share a single `TerrainSplatMaterial`.
 #[allow(clippy::too_many_arguments, clippy::type_complexity)]
 pub fn sync_dirty_terrain_splat_and_mesh(
     mut commands: Commands,
+    mut synced_theater: Local<Option<(Ra2TerrainTheater, PathBuf)>>,
     time: Option<Res<Time>>,
     interaction: Option<Res<crate::input::ClientInteractionState>>,
     mod_res: Option<Res<ModResource>>,
@@ -164,6 +172,27 @@ pub fn sync_dirty_terrain_splat_and_mesh(
     };
     let world = &sim_res.0;
     let map = &mod_res.0.entry_map;
+
+    // Hot-load authentic 512x512 RA2/YR theater Texture2DArrays whenever active theater or mod root changes
+    let active_theater = Ra2TerrainTheater::infer_from_map(&map.id, &map.name);
+    if let Some(layer_arr) = layer_res.as_deref() {
+        let desired_key = (active_theater, mod_res.0.root_dir.clone());
+        if synced_theater.as_ref() != Some(&desired_key) {
+            let root = mod_res.0.root_dir.as_path();
+            if let Some(albedo_img) = images.get_mut(&layer_arr.array_image) {
+                *albedo_img =
+                    build_terrain_layer_array_image_for_theater(active_theater, Some(root));
+            }
+            if let Some(nrh_img) = images.get_mut(&layer_arr.normal_rough_height_image) {
+                *nrh_img = build_terrain_normal_rough_height_array_image_for_theater(
+                    active_theater,
+                    Some(root),
+                );
+            }
+            *synced_theater = Some(desired_key);
+        }
+    }
+
     let curr_dims = [world.grid.width.max(1), world.grid.height.max(1)];
     let world_size = Vec2::new(
         curr_dims[0] as f32 * world.grid.tile_size,
@@ -191,6 +220,8 @@ pub fn sync_dirty_terrain_splat_and_mesh(
         (0.38, 0.075, 0.022)
     } else if weather_low.contains("snow") {
         (0.32, 0.026, 0.020)
+    } else if active_theater == Ra2TerrainTheater::Lunar {
+        (0.0, 0.0, 0.0)
     } else {
         (0.28, 0.032, 0.019)
     };
@@ -229,7 +260,7 @@ pub fn sync_dirty_terrain_splat_and_mesh(
             let shared_mat_handle = mats.add(TerrainSplatMaterial {
                 base: StandardMaterial {
                     base_color: Color::WHITE,
-                    perceptual_roughness: 0.90,
+                    perceptual_roughness: 0.88,
                     metallic: 0.02,
                     ..default()
                 },
@@ -398,13 +429,18 @@ mod tests {
         let loaded = LoadedMod::load_from_dir(mod_dir).expect("rust-ra2 should load");
         let sim_world = SimWorld::from_mod_map(&loaded, &loaded.entry_map);
 
+        let expected_bytes =
+            (TERRAIN_LAYER_TEX_SIZE * TERRAIN_LAYER_TEX_SIZE * TERRAIN_LAYER_COUNT * 4) as usize;
         let array_img = build_terrain_layer_array_image();
+        assert_eq!(array_img.texture_descriptor.size.width, 512);
+        assert_eq!(array_img.texture_descriptor.size.height, 512);
         assert_eq!(array_img.texture_descriptor.size.depth_or_array_layers, 5);
-        assert_eq!(array_img.data.len(), (128 * 128 * 5 * 4) as usize);
+        assert_eq!(array_img.data.len(), expected_bytes);
 
         let nrh_img = build_terrain_normal_rough_height_array_image();
+        assert_eq!(nrh_img.texture_descriptor.size.width, 512);
         assert_eq!(nrh_img.texture_descriptor.size.depth_or_array_layers, 5);
-        assert_eq!(nrh_img.data.len(), (128 * 128 * 5 * 4) as usize);
+        assert_eq!(nrh_img.data.len(), expected_bytes);
 
         let splat_img = build_splat_weight_image(&loaded.entry_map, &sim_world);
         assert_eq!(
@@ -475,5 +511,158 @@ mod tests {
             },
             &rects.rects
         ));
+    }
+
+    #[test]
+    fn infers_all_six_ra2_theaters_and_loads_512x512_tmp_cooked_packs_with_fallback() {
+        assert_eq!(
+            Ra2TerrainTheater::infer_from_map("skirmish_valley", "Skirmish Valley"),
+            Ra2TerrainTheater::Temperate
+        );
+        assert_eq!(
+            Ra2TerrainTheater::infer_from_map("mp_10_arctic_circle", "Depth Charge"),
+            Ra2TerrainTheater::Snow
+        );
+        assert_eq!(
+            Ra2TerrainTheater::infer_from_map("ra2_soviet_12_polar_storm", "Polar Storm"),
+            Ra2TerrainTheater::Snow
+        );
+        assert_eq!(
+            Ra2TerrainTheater::infer_from_map("ra2_allied_10_mirage", "Mirage"),
+            Ra2TerrainTheater::Snow
+        );
+        assert_eq!(
+            Ra2TerrainTheater::infer_from_map("ra2_allied_06_liberty", "Liberty"),
+            Ra2TerrainTheater::Urban
+        );
+        assert_eq!(
+            Ra2TerrainTheater::infer_from_map("ra2_soviet_03_big_apple", "Big Apple"),
+            Ra2TerrainTheater::Urban
+        );
+        assert_eq!(
+            Ra2TerrainTheater::infer_from_map("ra2_soviet_05_city_of_lights", "Paris"),
+            Ra2TerrainTheater::Urban
+        );
+        assert_eq!(
+            Ra2TerrainTheater::infer_from_map("mp_yr_austin_tx", "Austin, TX"),
+            Ra2TerrainTheater::NewUrban
+        );
+        assert_eq!(
+            Ra2TerrainTheater::infer_from_map("yr_allied_02_hollywood_and_vain", "Hollywood"),
+            Ra2TerrainTheater::NewUrban
+        );
+        assert_eq!(
+            Ra2TerrainTheater::infer_from_map("yr_allied_04_tomb_raided", "Tomb Raided"),
+            Ra2TerrainTheater::Desert
+        );
+        assert_eq!(
+            Ra2TerrainTheater::infer_from_map("yr_soviet_04_romanov_on_the_run", "Morocco"),
+            Ra2TerrainTheater::Desert
+        );
+        assert_eq!(
+            Ra2TerrainTheater::infer_from_map("yr_soviet_06_to_the_moon", "Lunar Surface"),
+            Ra2TerrainTheater::Lunar
+        );
+
+        let mod_dir = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .join("../../../rust-ra2")
+            .canonicalize()
+            .expect("canonicalize rust-ra2 path");
+        let expected_bytes =
+            (TERRAIN_LAYER_TEX_SIZE * TERRAIN_LAYER_TEX_SIZE * TERRAIN_LAYER_COUNT * 4) as usize;
+
+        let temp_img = build_terrain_layer_array_image_for_theater(
+            Ra2TerrainTheater::Temperate,
+            Some(&mod_dir),
+        );
+        let snow_img =
+            build_terrain_layer_array_image_for_theater(Ra2TerrainTheater::Snow, Some(&mod_dir));
+        let lunar_img =
+            build_terrain_layer_array_image_for_theater(Ra2TerrainTheater::Lunar, Some(&mod_dir));
+        assert_eq!(temp_img.data.len(), expected_bytes);
+        assert_eq!(snow_img.data.len(), expected_bytes);
+        assert_eq!(lunar_img.data.len(), expected_bytes);
+        assert_ne!(temp_img.data[..4096], snow_img.data[..4096]);
+        assert_ne!(snow_img.data[..4096], lunar_img.data[..4096]);
+
+        // Headless missing-directory fallback must also cleanly produce 512x512 x 5 RGBA8
+        let missing_dir = mod_dir.join("__nonexistent_terrain_root__");
+        let fallback = build_terrain_layer_array_image_for_theater(
+            Ra2TerrainTheater::Desert,
+            Some(&missing_dir),
+        );
+        assert_eq!(fallback.data.len(), expected_bytes);
+    }
+
+    #[test]
+    fn stepped_ra2_plateaus_keep_flat_tabletops_crisp_cliffs_and_smooth_ramps() {
+        let mod_dir = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .join("../../../rust-ra2")
+            .canonicalize()
+            .expect("canonicalize rust-ra2 path");
+        let loaded = LoadedMod::load_from_dir(mod_dir).expect("rust-ra2 should load");
+        let valley_map = loaded
+            .maps
+            .values()
+            .find(|m| m.id == "skirmish_valley")
+            .unwrap_or(&loaded.entry_map);
+        let sim_world = SimWorld::from_mod_map(&loaded, valley_map);
+        let (hmap, _) = valley_map.synthesize_height_and_splat();
+        let ts = sim_world.grid.tile_size;
+
+        // skirmish_valley plateau [14..=18, 22..=26] with west ramp [13..=14, 23..=25]:
+        // Interior tabletop [15.5..=17.5, 23.0..=26.0] must be 100% flat at RA2_STEPPED_PLATEAU_HEIGHT!
+        for gz_half in [46, 47, 48, 49, 50, 51, 52] {
+            for gx_half in [31, 32, 33, 34, 35] {
+                let wx = (gx_half as f32 * 0.5) * ts;
+                let wz = (gz_half as f32 * 0.5) * ts;
+                let y = chunk_mesh::sample_continuous_terrain_height(
+                    &hmap, false, &sim_world, wx, wz,
+                );
+                assert!(
+                    (y - RA2_STEPPED_PLATEAU_HEIGHT).abs() < 1e-5,
+                    "Expected flat plateau height {} at ({}, {}), got {}",
+                    RA2_STEPPED_PLATEAU_HEIGHT,
+                    wx,
+                    wz,
+                    y
+                );
+            }
+        }
+
+        // North cliff escarpment at gx=16.0, crossing gz=21.5 -> 22.0 must drop crisply > 2.0m in 0.5 tiles!
+        let y_rim = chunk_mesh::sample_continuous_terrain_height(
+            &hmap,
+            false,
+            &sim_world,
+            16.0 * ts,
+            22.0 * ts,
+        );
+        let y_toe = chunk_mesh::sample_continuous_terrain_height(
+            &hmap,
+            false,
+            &sim_world,
+            16.0 * ts,
+            21.5 * ts,
+        );
+        assert!(
+            y_rim - y_toe > 2.0,
+            "Expected crisp stepped cliff drop > 2.0m across 0.5 tile, got rim={y_rim}, toe={y_toe}"
+        );
+
+        // West ramp centerline (gz=24.5, gx=13.0 -> 13.5 -> 14.0 -> 14.5 -> 15.0) must rise smoothly
+        let mut prev_y = -0.01_f32;
+        for gx_half in 26..=30 {
+            let wx = (gx_half as f32 * 0.5) * ts;
+            let wz = 24.5 * ts;
+            let y =
+                chunk_mesh::sample_continuous_terrain_height(&hmap, false, &sim_world, wx, wz);
+            assert!(
+                y + 1e-4 >= prev_y,
+                "Ramp height must increase monotonically: prev={prev_y}, curr={y} at gx_half={gx_half}"
+            );
+            prev_y = y;
+        }
+        assert!((prev_y - RA2_STEPPED_PLATEAU_HEIGHT).abs() < 1e-4);
     }
 }

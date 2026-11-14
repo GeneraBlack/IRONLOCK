@@ -59,20 +59,30 @@ fn sample_planar_layer(uv_near: vec2<f32>, uv_macro: vec2<f32>, layer: i32) -> L
     );
     let n_near = nrh_near.rg * 2.0 - vec2<f32>(1.0, 1.0);
     let n_macro = nrh_macro.rg * 2.0 - vec2<f32>(1.0, 1.0);
+
     var out: LayerPbrSample;
-    out.albedo = mix(near_c, macro_c, 0.30);
-    out.normal_xz = mix(n_near, n_macro, 0.28);
-    out.roughness = mix(nrh_near.b, nrh_macro.b, 0.25);
-    out.height = mix(nrh_near.a, nrh_macro.a, 0.30);
+    // Keep axis-aligned RA2 concrete slab seams (layer 3) un-rotated; apply only subtle macro tonal wear
+    if layer == 3 {
+        let macro_luma = dot(macro_c, vec3<f32>(0.299, 0.587, 0.114));
+        out.albedo = clamp(near_c * (0.94 + macro_luma * 0.12), vec3<f32>(0.0), vec3<f32>(1.0));
+        out.normal_xz = n_near;
+        out.roughness = mix(nrh_near.b, nrh_macro.b, 0.14);
+        out.height = nrh_near.a;
+    } else {
+        out.albedo = mix(near_c, macro_c, 0.22);
+        out.normal_xz = mix(n_near, n_macro, 0.22);
+        out.roughness = mix(nrh_near.b, nrh_macro.b, 0.20);
+        out.height = mix(nrh_near.a, nrh_macro.a, 0.22);
+    }
     return out;
 }
 
-// True 3-Axis Triplanar projection (`ZY` + `XZ` + `XY` weighted by `abs(world_normal)^4`)
-// used on steep slopes (`abs(world_normal.y) < 0.78`) so vertical cliffs have zero UV stretching.
+// True 3-Axis Triplanar projection (`ZY` + `XZ` + `XY` weighted by `abs(world_normal)^6`)
+// with `-world_pos.y` vertical V mapping so sunlit rock ledges & masonry courses face skyward!
 fn sample_triplanar_layer(world_pos: vec3<f32>, tri_w: vec3<f32>, scale: f32, layer: i32) -> LayerPbrSample {
-    let uv_zy = world_pos.zy * scale;
+    let uv_zy = vec2<f32>(world_pos.z, -world_pos.y) * scale;
     let uv_xz = world_pos.xz * scale;
-    let uv_xy = world_pos.xy * scale;
+    let uv_xy = vec2<f32>(world_pos.x, -world_pos.y) * scale;
 
     let c_x = textureSample(layer_array_tex, layer_array_sampler, uv_zy, layer).rgb;
     let c_y = textureSample(layer_array_tex, layer_array_sampler, uv_xz, layer).rgb;
@@ -149,6 +159,18 @@ fn sample_scrolling_cloud_shadow(world_xz: vec2<f32>, cloud_params: vec4<f32>) -
     return smoothstep(0.45, 0.74, fbm) * strength;
 }
 
+// Crisp sub-pixel RA2 modular concrete base-pad grid micro-relief (`2m` major tile slabs + `1m` sub-slabs)
+fn sample_ra2_concrete_grid_accent(world_xz: vec2<f32>) -> f32 {
+    let major_f = fract(world_xz * 0.5);
+    let minor_f = fract(world_xz * 1.0);
+    let d_major = min(min(major_f.x, 1.0 - major_f.x), min(major_f.y, 1.0 - major_f.y));
+    let d_minor = min(min(minor_f.x, 1.0 - minor_f.x), min(minor_f.y, 1.0 - minor_f.y));
+    let major_groove = 1.0 - smoothstep(0.008, 0.024, d_major);
+    let minor_groove = 1.0 - smoothstep(0.006, 0.018, d_minor);
+    let bevel = (1.0 - smoothstep(0.024, 0.050, d_major)) * (1.0 - major_groove);
+    return 1.0 - major_groove * 0.22 - minor_groove * 0.09 + bevel * 0.06;
+}
+
 @fragment
 fn fragment(
     in: VertexOutput,
@@ -172,12 +194,18 @@ fn fragment(
 
     let unit_n = normalize(in.world_normal);
     let abs_n = max(abs(unit_n), vec3<f32>(0.0001));
-    var tri_w = pow(abs_n, vec3<f32>(4.0));
+    var tri_w = pow(abs_n, vec3<f32>(6.0));
     tri_w = tri_w / max(tri_w.x + tri_w.y + tri_w.z, 0.0001);
 
-    let tri_blend = 1.0 - smoothstep(0.60, 0.78, abs_n.y);
-    let auto_cliff = (1.0 - smoothstep(0.52, 0.82, abs_n.y)) * terrain_params.cliff_slope_boost;
-    w4 = clamp(w4 + auto_cliff * 1.45, 0.0, 1.65);
+    // Crisp triplanar activation on stepped RA2 cliff escarpments
+    let tri_blend = 1.0 - smoothstep(0.58, 0.84, abs_n.y);
+    let slope_cliff = 1.0 - smoothstep(0.55, 0.85, abs_n.y);
+    let auto_cliff = slope_cliff * terrain_params.cliff_slope_boost;
+    let flat_keep = 1.0 - clamp(slope_cliff * 0.92, 0.0, 0.92);
+    w0 = w0 * flat_keep;
+    w2 = w2 * flat_keep;
+    w3 = w3 * flat_keep;
+    w4 = clamp(w4 + auto_cliff * 1.95, 0.0, 2.20);
 
     let raw_sum = max(w0 + w1 + w2 + w3 + w4, 0.0001);
     w0 = w0 / raw_sum;
@@ -190,28 +218,29 @@ fn fragment(
     let uv_macro = vec2<f32>(
         world_xz.x * 0.8660254 - world_xz.y * 0.5,
         world_xz.x * 0.5 + world_xz.y * 0.8660254,
-    ) * (terrain_params.detail_uv_scale * 0.27);
-    let tri_scale = terrain_params.detail_uv_scale * 0.92;
+    ) * (terrain_params.detail_uv_scale * 0.29);
+    let tri_scale = terrain_params.detail_uv_scale * 1.28;
 
     let s0 = sample_hybrid_layer(world_pos, uv_near, uv_macro, tri_w, tri_blend, tri_scale, 0);
     let s1 = sample_hybrid_layer(world_pos, uv_near, uv_macro, tri_w, tri_blend, tri_scale, 1);
     let s2 = sample_hybrid_layer(world_pos, uv_near, uv_macro, tri_w, tri_blend, tri_scale, 2);
     let s3 = sample_hybrid_layer(world_pos, uv_near, uv_macro, tri_w, tri_blend, tri_scale, 3);
-    let s4 = sample_hybrid_layer(world_pos, uv_near * 0.85, uv_macro, tri_w, tri_blend, tri_scale * 0.85, 4);
+    let s4 = sample_hybrid_layer(world_pos, uv_near, uv_macro, tri_w, max(tri_blend, slope_cliff), tri_scale, 4);
 
-    let h_depth = 0.24;
-    let p0 = w0 * 1.25 + s0.height * 0.52;
-    let p1 = w1 * 1.25 + s1.height * 0.52;
-    let p2 = w2 * 1.25 + s2.height * 0.52;
-    let p3 = w3 * 1.25 + s3.height * 0.52;
-    let p4 = w4 * 1.25 + s4.height * 0.58;
+    // Tight height-blended splat transitions (extra-sharp around concrete slabs & cliff strata!)
+    let h_depth = mix(0.14, 0.085, clamp(w3 + w4, 0.0, 1.0));
+    let p0 = w0 * 1.32 + s0.height * 0.50;
+    let p1 = w1 * 1.32 + s1.height * 0.52;
+    let p2 = w2 * 1.32 + s2.height * 0.48;
+    let p3 = w3 * 1.40 + s3.height * 0.56;
+    let p4 = w4 * 1.38 + s4.height * 0.62;
     let max_p = max(max(max(p0, p1), max(p2, p3)), p4) - h_depth;
 
-    var bw0 = max(p0 - max_p, 0.0) * clamp(w0 * 8.0, 0.0, 1.0);
-    var bw1 = max(p1 - max_p, 0.0) * clamp(w1 * 8.0, 0.0, 1.0);
-    var bw2 = max(p2 - max_p, 0.0) * clamp(w2 * 8.0, 0.0, 1.0);
-    var bw3 = max(p3 - max_p, 0.0) * clamp(w3 * 8.0, 0.0, 1.0);
-    var bw4 = max(p4 - max_p, 0.0) * clamp(w4 * 8.0, 0.0, 1.0);
+    var bw0 = max(p0 - max_p, 0.0) * clamp(w0 * 10.0, 0.0, 1.0);
+    var bw1 = max(p1 - max_p, 0.0) * clamp(w1 * 10.0, 0.0, 1.0);
+    var bw2 = max(p2 - max_p, 0.0) * clamp(w2 * 10.0, 0.0, 1.0);
+    var bw3 = max(p3 - max_p, 0.0) * clamp(w3 * 12.0, 0.0, 1.0);
+    var bw4 = max(p4 - max_p, 0.0) * clamp(w4 * 12.0, 0.0, 1.0);
     let bw_sum = max(bw0 + bw1 + bw2 + bw3 + bw4, 0.0001);
     bw0 = bw0 / bw_sum;
     bw1 = bw1 / bw_sum;
@@ -219,13 +248,23 @@ fn fragment(
     bw3 = bw3 / bw_sum;
     bw4 = bw4 / bw_sum;
 
+    let slab_accent = sample_ra2_concrete_grid_accent(world_xz);
+    let paved_albedo = s3.albedo * slab_accent;
+    let cliff_strata_ao = mix(0.84, 1.08, s4.height);
+    let cliff_albedo = s4.albedo * cliff_strata_ao;
+
     var albedo = s0.albedo * bw0
         + s1.albedo * bw1
         + s2.albedo * bw2
-        + s3.albedo * bw3
-        + s4.albedo * bw4;
+        + paved_albedo * bw3
+        + cliff_albedo * bw4;
 
-    let height_tint = clamp(0.95 + world_pos.y * 0.045, 0.82, 1.12);
+    // Subtle curb contact shadow along concrete-to-ground slab edges
+    let curb_ao = 1.0 - clamp(bw3 * (bw0 + bw1 + bw2) * 3.6, 0.0, 1.0) * 0.16;
+    albedo = albedo * curb_ao;
+
+    // Subtle elevation sun-lift so stepped RA2 plateaus read with unmistakable 3D depth over valleys
+    let height_tint = clamp(0.95 + world_pos.y * 0.048, 0.82, 1.13);
     albedo = albedo * height_tint;
 
     let cloud_shadow = sample_scrolling_cloud_shadow(world_xz, terrain_params.cloud_params);
@@ -240,11 +279,11 @@ fn fragment(
     albedo = mix(albedo, explored_cool, explored_w * 0.76);
     albedo = mix(albedo, vec3<f32>(0.009, 0.014, 0.026), unexplored_w * 0.95);
 
-    let detail_n = s0.normal_xz * (bw0 * 0.28)
-        + s1.normal_xz * (bw1 * 0.42)
+    let detail_n = s0.normal_xz * (bw0 * 0.32)
+        + s1.normal_xz * (bw1 * 0.46)
         + s2.normal_xz * (bw2 * 0.30)
-        + s3.normal_xz * (bw3 * 0.22)
-        + s4.normal_xz * (bw4 * 0.65);
+        + s3.normal_xz * (bw3 * 0.36)
+        + s4.normal_xz * (bw4 * 0.78);
     let blended_roughness = clamp(
         s0.roughness * bw0
             + s1.roughness * bw1
@@ -257,7 +296,7 @@ fn fragment(
 
     pbr_input.material.base_color = vec4<f32>(albedo, 1.0);
     pbr_input.material.perceptual_roughness = mix(blended_roughness, 0.95, unexplored_w);
-    pbr_input.material.metallic = (0.04 * bw3 + 0.07 * bw4) * (1.0 - unexplored_w);
+    pbr_input.material.metallic = (0.05 * bw3 + 0.08 * bw4) * (1.0 - unexplored_w);
     pbr_input.N = normalize(pbr_input.N + vec3<f32>(detail_n.x, 0.0, detail_n.y));
     pbr_input.material.base_color = alpha_discard(pbr_input.material, pbr_input.material.base_color);
 
