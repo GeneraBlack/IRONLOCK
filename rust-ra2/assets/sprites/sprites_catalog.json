@@ -1,0 +1,8903 @@
+{
+  "buildings": {
+    "air_force_chapel": {
+      "active_loop": [],
+      "atlas": "assets/sprites/buildings/air_force_chapel.png",
+      "atlas_height": 1116,
+      "atlas_width": 1212,
+      "cell_height": 372,
+      "cell_width": 404,
+      "columns": 3,
+      "crop_height": 186,
+      "crop_width": 202,
+      "crop_x": 0,
+      "crop_y": 0,
+      "damaged": 0,
+      "damaged_active_loop": [],
+      "foot_anchor_px": [
+        100.5,
+        132.5
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 185.0,
+      "idle": 0,
+      "make": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        0
+      ],
+      "orig_footprint": [
+        4,
+        3
+      ],
+      "source_canvas_height": 186,
+      "source_canvas_width": 202,
+      "team_remap": false,
+      "toml_footprint": [
+        4,
+        3
+      ]
+    },
+    "alcatraz_prison": {
+      "active_loop": [],
+      "atlas": "assets/sprites/buildings/alcatraz_prison.png",
+      "atlas_height": 1926,
+      "atlas_width": 2178,
+      "cell_height": 642,
+      "cell_width": 726,
+      "columns": 3,
+      "crop_height": 321,
+      "crop_width": 363,
+      "crop_x": 137,
+      "crop_y": 48,
+      "damaged": 1,
+      "damaged_active_loop": [],
+      "foot_anchor_px": [
+        237.5,
+        303.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 363.0,
+      "idle": 0,
+      "make": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        0
+      ],
+      "orig_footprint": [
+        3,
+        5
+      ],
+      "source_canvas_height": 507,
+      "source_canvas_width": 538,
+      "team_remap": false,
+      "toml_footprint": [
+        4,
+        4
+      ]
+    },
+    "allied_airforce_command": {
+      "active_loop": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "atlas": "assets/sprites/buildings/allied_airforce_command.png",
+      "atlas_height": 1540,
+      "atlas_width": 1740,
+      "cell_height": 308,
+      "cell_width": 290,
+      "columns": 6,
+      "crop_height": 154,
+      "crop_width": 145,
+      "crop_x": 39,
+      "crop_y": 2,
+      "damaged": 1,
+      "damaged_active_loop": [
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "foot_anchor_px": [
+        110.0,
+        115.5
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 153.0,
+      "idle": 0,
+      "make": [
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25
+      ],
+      "orig_footprint": [
+        3,
+        2
+      ],
+      "source_canvas_height": 162,
+      "source_canvas_width": 188,
+      "team_remap": true,
+      "toml_footprint": [
+        3,
+        2
+      ]
+    },
+    "allied_barracks": {
+      "active_loop": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "atlas": "assets/sprites/buildings/allied_barracks.png",
+      "atlas_height": 1560,
+      "atlas_width": 1700,
+      "cell_height": 260,
+      "cell_width": 340,
+      "columns": 5,
+      "crop_height": 130,
+      "crop_width": 170,
+      "crop_x": 72,
+      "crop_y": 16,
+      "damaged": 1,
+      "damaged_active_loop": [
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "foot_anchor_px": [
+        138.5,
+        104.5
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 142.0,
+      "idle": 0,
+      "make": [
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25
+      ],
+      "orig_footprint": [
+        3,
+        2
+      ],
+      "source_canvas_height": 148,
+      "source_canvas_width": 250,
+      "team_remap": true,
+      "toml_footprint": [
+        2,
+        2
+      ]
+    },
+    "allied_battle_lab": {
+      "active_loop": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "atlas": "assets/sprites/buildings/allied_battle_lab.png",
+      "atlas_height": 2190,
+      "atlas_width": 2592,
+      "cell_height": 438,
+      "cell_width": 432,
+      "columns": 6,
+      "crop_height": 219,
+      "crop_width": 216,
+      "crop_x": 126,
+      "crop_y": 0,
+      "damaged": 1,
+      "damaged_active_loop": [
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "foot_anchor_px": [
+        186.5,
+        178.5
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 216.0,
+      "idle": 0,
+      "make": [
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25
+      ],
+      "orig_footprint": [
+        3,
+        2
+      ],
+      "source_canvas_height": 300,
+      "source_canvas_width": 346,
+      "team_remap": true,
+      "toml_footprint": [
+        2,
+        2
+      ]
+    },
+    "allied_chronosphere": {
+      "active_loop": [
+        2,
+        3
+      ],
+      "atlas": "assets/sprites/buildings/allied_chronosphere.png",
+      "atlas_height": 1130,
+      "atlas_width": 1086,
+      "cell_height": 226,
+      "cell_width": 362,
+      "columns": 3,
+      "crop_height": 113,
+      "crop_width": 181,
+      "crop_x": 25,
+      "crop_y": 79,
+      "damaged": 1,
+      "damaged_active_loop": [],
+      "foot_anchor_px": [
+        76.5,
+        112.5
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 165.0,
+      "idle": 0,
+      "make": [
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "orig_footprint": [
+        3,
+        4
+      ],
+      "source_canvas_height": 194,
+      "source_canvas_width": 210,
+      "team_remap": true,
+      "toml_footprint": [
+        3,
+        3
+      ]
+    },
+    "allied_conyard": {
+      "active_loop": [
+        2,
+        3,
+        4
+      ],
+      "atlas": "assets/sprites/buildings/allied_conyard.png",
+      "atlas_height": 1520,
+      "atlas_width": 1864,
+      "cell_height": 304,
+      "cell_width": 466,
+      "columns": 4,
+      "crop_height": 152,
+      "crop_width": 233,
+      "crop_x": 35,
+      "crop_y": 72,
+      "damaged": 1,
+      "damaged_active_loop": [
+        5,
+        6,
+        7
+      ],
+      "foot_anchor_px": [
+        142.5,
+        161.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 221.0,
+      "idle": 0,
+      "make": [
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17
+      ],
+      "orig_footprint": [
+        4,
+        4
+      ],
+      "source_canvas_height": 226,
+      "source_canvas_width": 284,
+      "team_remap": true,
+      "toml_footprint": [
+        3,
+        3
+      ]
+    },
+    "allied_gap_generator": {
+      "active_loop": [],
+      "atlas": "assets/sprites/buildings/allied_gap_generator.png",
+      "atlas_height": 696,
+      "atlas_width": 936,
+      "cell_height": 232,
+      "cell_width": 234,
+      "columns": 4,
+      "crop_height": 116,
+      "crop_width": 117,
+      "crop_x": 60,
+      "crop_y": 2,
+      "damaged": 1,
+      "damaged_active_loop": [],
+      "foot_anchor_px": [
+        87.5,
+        98.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 113.0,
+      "idle": 0,
+      "make": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "orig_footprint": [
+        1,
+        1
+      ],
+      "source_canvas_height": 176,
+      "source_canvas_width": 178,
+      "team_remap": true,
+      "toml_footprint": [
+        1,
+        1
+      ]
+    },
+    "allied_grand_cannon": {
+      "active_loop": [],
+      "atlas": "assets/sprites/buildings/allied_grand_cannon.png",
+      "atlas_height": 852,
+      "atlas_width": 1376,
+      "cell_height": 284,
+      "cell_width": 344,
+      "columns": 4,
+      "crop_height": 142,
+      "crop_width": 172,
+      "crop_x": 56,
+      "crop_y": 3,
+      "damaged": 1,
+      "damaged_active_loop": [],
+      "foot_anchor_px": [
+        115.0,
+        111.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 141.0,
+      "idle": 0,
+      "make": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "orig_footprint": [
+        2,
+        2
+      ],
+      "source_canvas_height": 168,
+      "source_canvas_width": 232,
+      "team_remap": true,
+      "toml_footprint": [
+        2,
+        2
+      ]
+    },
+    "allied_naval_shipyard": {
+      "active_loop": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "atlas": "assets/sprites/buildings/allied_naval_shipyard.png",
+      "atlas_height": 2424,
+      "atlas_width": 2650,
+      "cell_height": 404,
+      "cell_width": 530,
+      "columns": 5,
+      "crop_height": 202,
+      "crop_width": 265,
+      "crop_x": 135,
+      "crop_y": 55,
+      "damaged": 1,
+      "damaged_active_loop": [
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "foot_anchor_px": [
+        214.5,
+        194.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 254.0,
+      "idle": 0,
+      "make": [
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25
+      ],
+      "orig_footprint": [
+        4,
+        4
+      ],
+      "source_canvas_height": 304,
+      "source_canvas_width": 432,
+      "team_remap": true,
+      "toml_footprint": [
+        3,
+        3
+      ]
+    },
+    "allied_ore_purifier": {
+      "active_loop": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "atlas": "assets/sprites/buildings/allied_ore_purifier.png",
+      "atlas_height": 1080,
+      "atlas_width": 1360,
+      "cell_height": 216,
+      "cell_width": 272,
+      "columns": 5,
+      "crop_height": 108,
+      "crop_width": 136,
+      "crop_x": 0,
+      "crop_y": 58,
+      "damaged": 1,
+      "damaged_active_loop": [
+        1,
+        10,
+        11,
+        12,
+        13,
+        14
+      ],
+      "foot_anchor_px": [
+        65.0,
+        118.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 163.0,
+      "idle": 0,
+      "make": [
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24
+      ],
+      "orig_footprint": [
+        3,
+        3
+      ],
+      "source_canvas_height": 168,
+      "source_canvas_width": 150,
+      "team_remap": true,
+      "toml_footprint": [
+        3,
+        3
+      ]
+    },
+    "allied_patriot_missile": {
+      "active_loop": [],
+      "atlas": "assets/sprites/buildings/allied_patriot_missile.png",
+      "atlas_height": 480,
+      "atlas_width": 444,
+      "cell_height": 120,
+      "cell_width": 148,
+      "columns": 3,
+      "crop_height": 60,
+      "crop_width": 74,
+      "crop_x": 22,
+      "crop_y": 2,
+      "damaged": 1,
+      "damaged_active_loop": [],
+      "foot_anchor_px": [
+        47.5,
+        44.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 59.0,
+      "idle": 0,
+      "make": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "orig_footprint": [
+        1,
+        1
+      ],
+      "source_canvas_height": 68,
+      "source_canvas_width": 98,
+      "team_remap": true,
+      "toml_footprint": [
+        1,
+        1
+      ]
+    },
+    "allied_pillbox": {
+      "active_loop": [],
+      "atlas": "assets/sprites/buildings/allied_pillbox.png",
+      "atlas_height": 288,
+      "atlas_width": 378,
+      "cell_height": 72,
+      "cell_width": 126,
+      "columns": 3,
+      "crop_height": 36,
+      "crop_width": 63,
+      "crop_x": 1,
+      "crop_y": 26,
+      "damaged": 1,
+      "damaged_active_loop": [],
+      "foot_anchor_px": [
+        32.5,
+        42.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 57.0,
+      "idle": 0,
+      "make": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "orig_footprint": [
+        1,
+        1
+      ],
+      "source_canvas_height": 64,
+      "source_canvas_width": 68,
+      "team_remap": true,
+      "toml_footprint": [
+        1,
+        1
+      ]
+    },
+    "allied_power_plant": {
+      "active_loop": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "atlas": "assets/sprites/buildings/allied_power_plant.png",
+      "atlas_height": 1152,
+      "atlas_width": 1120,
+      "cell_height": 192,
+      "cell_width": 224,
+      "columns": 5,
+      "crop_height": 96,
+      "crop_width": 112,
+      "crop_x": 26,
+      "crop_y": 12,
+      "damaged": 1,
+      "damaged_active_loop": [
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "foot_anchor_px": [
+        69.5,
+        75.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 105.0,
+      "idle": 0,
+      "make": [
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25
+      ],
+      "orig_footprint": [
+        2,
+        2
+      ],
+      "source_canvas_height": 110,
+      "source_canvas_width": 142,
+      "team_remap": true,
+      "toml_footprint": [
+        2,
+        2
+      ]
+    },
+    "allied_power_plant_overcharged": {
+      "active_loop": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "atlas": "assets/sprites/buildings/allied_power_plant.png",
+      "atlas_height": 1152,
+      "atlas_width": 1120,
+      "cell_height": 192,
+      "cell_width": 224,
+      "columns": 5,
+      "crop_height": 96,
+      "crop_width": 112,
+      "crop_x": 26,
+      "crop_y": 12,
+      "damaged": 1,
+      "damaged_active_loop": [
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "foot_anchor_px": [
+        69.5,
+        75.0
+      ],
+      "fps": 14.0,
+      "ground_bottom_y_px": 105.0,
+      "idle": 0,
+      "make": [
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25
+      ],
+      "orig_footprint": [
+        2,
+        2
+      ],
+      "source_canvas_height": 110,
+      "source_canvas_width": 142,
+      "team_remap": true,
+      "toml_footprint": [
+        2,
+        2
+      ]
+    },
+    "allied_prism_tower": {
+      "active_loop": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "atlas": "assets/sprites/buildings/allied_prism_tower.png",
+      "atlas_height": 1100,
+      "atlas_width": 1210,
+      "cell_height": 220,
+      "cell_width": 242,
+      "columns": 5,
+      "crop_height": 110,
+      "crop_width": 121,
+      "crop_x": 50,
+      "crop_y": 0,
+      "damaged": 1,
+      "damaged_active_loop": [
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "foot_anchor_px": [
+        85.0,
+        90.0
+      ],
+      "fps": 10.0,
+      "ground_bottom_y_px": 105.0,
+      "idle": 0,
+      "make": [
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23
+      ],
+      "orig_footprint": [
+        1,
+        1
+      ],
+      "source_canvas_height": 160,
+      "source_canvas_width": 172,
+      "team_remap": true,
+      "toml_footprint": [
+        1,
+        1
+      ]
+    },
+    "allied_refinery": {
+      "active_loop": [
+        2,
+        3,
+        4
+      ],
+      "atlas": "assets/sprites/buildings/allied_refinery.png",
+      "atlas_height": 1370,
+      "atlas_width": 1408,
+      "cell_height": 274,
+      "cell_width": 352,
+      "columns": 4,
+      "crop_height": 137,
+      "crop_width": 176,
+      "crop_x": 30,
+      "crop_y": 57,
+      "damaged": 1,
+      "damaged_active_loop": [
+        5,
+        6,
+        7
+      ],
+      "foot_anchor_px": [
+        116.5,
+        138.5
+      ],
+      "fps": 7.0,
+      "ground_bottom_y_px": 191.0,
+      "idle": 0,
+      "make": [
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17
+      ],
+      "orig_footprint": [
+        4,
+        3
+      ],
+      "source_canvas_height": 196,
+      "source_canvas_width": 210,
+      "team_remap": true,
+      "toml_footprint": [
+        3,
+        2
+      ]
+    },
+    "allied_robot_control": {
+      "active_loop": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "atlas": "assets/sprites/buildings/allied_robot_control.png",
+      "atlas_height": 1380,
+      "atlas_width": 1310,
+      "cell_height": 230,
+      "cell_width": 262,
+      "columns": 5,
+      "crop_height": 115,
+      "crop_width": 131,
+      "crop_x": 63,
+      "crop_y": 1,
+      "damaged": 1,
+      "damaged_active_loop": [
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "foot_anchor_px": [
+        106.0,
+        83.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 113.0,
+      "idle": 0,
+      "make": [
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25
+      ],
+      "orig_footprint": [
+        2,
+        2
+      ],
+      "source_canvas_height": 118,
+      "source_canvas_width": 198,
+      "team_remap": true,
+      "toml_footprint": [
+        2,
+        2
+      ]
+    },
+    "allied_service_depot": {
+      "active_loop": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "atlas": "assets/sprites/buildings/allied_service_depot.png",
+      "atlas_height": 1620,
+      "atlas_width": 1560,
+      "cell_height": 270,
+      "cell_width": 312,
+      "columns": 5,
+      "crop_height": 135,
+      "crop_width": 156,
+      "crop_x": 3,
+      "crop_y": 13,
+      "damaged": 1,
+      "damaged_active_loop": [
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "foot_anchor_px": [
+        75.5,
+        99.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 144.0,
+      "idle": 0,
+      "make": [
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25
+      ],
+      "orig_footprint": [
+        3,
+        3
+      ],
+      "source_canvas_height": 150,
+      "source_canvas_width": 190,
+      "team_remap": true,
+      "toml_footprint": [
+        3,
+        3
+      ]
+    },
+    "allied_war_factory": {
+      "active_loop": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "atlas": "assets/sprites/buildings/allied_war_factory.png",
+      "atlas_height": 1896,
+      "atlas_width": 2240,
+      "cell_height": 316,
+      "cell_width": 448,
+      "columns": 5,
+      "crop_height": 158,
+      "crop_width": 224,
+      "crop_x": 37,
+      "crop_y": 64,
+      "damaged": 1,
+      "damaged_active_loop": [
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "foot_anchor_px": [
+        154.0,
+        159.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 219.0,
+      "idle": 0,
+      "make": [
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25
+      ],
+      "orig_footprint": [
+        5,
+        3
+      ],
+      "source_canvas_height": 224,
+      "source_canvas_width": 266,
+      "team_remap": true,
+      "toml_footprint": [
+        3,
+        3
+      ]
+    },
+    "allied_weather_controller": {
+      "active_loop": [],
+      "atlas": "assets/sprites/buildings/allied_weather_controller.png",
+      "atlas_height": 654,
+      "atlas_width": 1048,
+      "cell_height": 218,
+      "cell_width": 262,
+      "columns": 4,
+      "crop_height": 109,
+      "crop_width": 131,
+      "crop_x": 19,
+      "crop_y": 43,
+      "damaged": 1,
+      "damaged_active_loop": [],
+      "foot_anchor_px": [
+        76.0,
+        104.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 149.0,
+      "idle": 0,
+      "make": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "orig_footprint": [
+        3,
+        3
+      ],
+      "source_canvas_height": 154,
+      "source_canvas_width": 154,
+      "team_remap": true,
+      "toml_footprint": [
+        3,
+        3
+      ]
+    },
+    "bridge_repair_hut": {
+      "active_loop": [],
+      "atlas": "assets/sprites/buildings/bridge_repair_hut.png",
+      "atlas_height": 270,
+      "atlas_width": 420,
+      "cell_height": 90,
+      "cell_width": 140,
+      "columns": 3,
+      "crop_height": 45,
+      "crop_width": 70,
+      "crop_x": 16,
+      "crop_y": 17,
+      "damaged": 0,
+      "damaged_active_loop": [],
+      "foot_anchor_px": [
+        45.0,
+        44.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 59.0,
+      "idle": 0,
+      "make": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        0
+      ],
+      "orig_footprint": [
+        1,
+        1
+      ],
+      "source_canvas_height": 64,
+      "source_canvas_width": 90,
+      "team_remap": false,
+      "toml_footprint": [
+        1,
+        1
+      ]
+    },
+    "concrete_wall": {
+      "active_loop": [],
+      "atlas": "assets/sprites/buildings/concrete_wall.png",
+      "atlas_height": 288,
+      "atlas_width": 342,
+      "cell_height": 96,
+      "cell_width": 114,
+      "columns": 3,
+      "crop_height": 48,
+      "crop_width": 57,
+      "crop_x": 15,
+      "crop_y": 15,
+      "damaged": 1,
+      "damaged_active_loop": [],
+      "foot_anchor_px": [
+        37.5,
+        44.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 59.0,
+      "idle": 0,
+      "make": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        0
+      ],
+      "orig_footprint": [
+        1,
+        1
+      ],
+      "source_canvas_height": 70,
+      "source_canvas_width": 78,
+      "team_remap": false,
+      "toml_footprint": [
+        1,
+        1
+      ]
+    },
+    "eiffel_tower": {
+      "active_loop": [],
+      "atlas": "assets/sprites/buildings/eiffel_tower.png",
+      "atlas_height": 2052,
+      "atlas_width": 2504,
+      "cell_height": 684,
+      "cell_width": 626,
+      "columns": 4,
+      "crop_height": 342,
+      "crop_width": 313,
+      "crop_x": 147,
+      "crop_y": 19,
+      "damaged": 1,
+      "damaged_active_loop": [],
+      "foot_anchor_px": [
+        231.5,
+        298.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 358.0,
+      "idle": 0,
+      "make": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        0
+      ],
+      "orig_footprint": [
+        4,
+        4
+      ],
+      "source_canvas_height": 492,
+      "source_canvas_width": 462,
+      "team_remap": false,
+      "toml_footprint": [
+        4,
+        4
+      ]
+    },
+    "einstein_lab": {
+      "active_loop": [],
+      "atlas": "assets/sprites/buildings/einstein_lab.png",
+      "atlas_height": 960,
+      "atlas_width": 1194,
+      "cell_height": 320,
+      "cell_width": 398,
+      "columns": 3,
+      "crop_height": 160,
+      "crop_width": 199,
+      "crop_x": 37,
+      "crop_y": 14,
+      "damaged": 1,
+      "damaged_active_loop": [],
+      "foot_anchor_px": [
+        119.0,
+        126.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 171.0,
+      "idle": 0,
+      "make": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        0
+      ],
+      "orig_footprint": [
+        3,
+        3
+      ],
+      "source_canvas_height": 176,
+      "source_canvas_width": 240,
+      "team_remap": false,
+      "toml_footprint": [
+        3,
+        4
+      ]
+    },
+    "great_pyramid": {
+      "active_loop": [],
+      "atlas": "assets/sprites/buildings/great_pyramid.png",
+      "atlas_height": 1482,
+      "atlas_width": 2322,
+      "cell_height": 494,
+      "cell_width": 774,
+      "columns": 3,
+      "crop_height": 247,
+      "crop_width": 387,
+      "crop_x": 153,
+      "crop_y": 2,
+      "damaged": 1,
+      "damaged_active_loop": [],
+      "foot_anchor_px": [
+        273.5,
+        186.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 246.0,
+      "idle": 0,
+      "make": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        0
+      ],
+      "orig_footprint": [
+        4,
+        4
+      ],
+      "source_canvas_height": 256,
+      "source_canvas_width": 540,
+      "team_remap": false,
+      "toml_footprint": [
+        4,
+        4
+      ]
+    },
+    "kremlin_palace": {
+      "active_loop": [],
+      "atlas": "assets/sprites/buildings/kremlin_palace.png",
+      "atlas_height": 978,
+      "atlas_width": 1320,
+      "cell_height": 326,
+      "cell_width": 440,
+      "columns": 3,
+      "crop_height": 163,
+      "crop_width": 220,
+      "crop_x": 3,
+      "crop_y": 45,
+      "damaged": 1,
+      "damaged_active_loop": [],
+      "foot_anchor_px": [
+        100.5,
+        152.5
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 205.0,
+      "idle": 0,
+      "make": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        0
+      ],
+      "orig_footprint": [
+        2,
+        5
+      ],
+      "source_canvas_height": 214,
+      "source_canvas_width": 300,
+      "team_remap": false,
+      "toml_footprint": [
+        3,
+        4
+      ]
+    },
+    "london_big_ben": {
+      "active_loop": [],
+      "atlas": "assets/sprites/buildings/london_big_ben.png",
+      "atlas_height": 852,
+      "atlas_width": 800,
+      "cell_height": 426,
+      "cell_width": 160,
+      "columns": 5,
+      "crop_height": 213,
+      "crop_width": 80,
+      "crop_x": 0,
+      "crop_y": 0,
+      "damaged": 0,
+      "damaged_active_loop": [],
+      "foot_anchor_px": [
+        39.5,
+        182.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 212.0,
+      "idle": 0,
+      "make": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        0
+      ],
+      "orig_footprint": [
+        2,
+        2
+      ],
+      "source_canvas_height": 213,
+      "source_canvas_width": 80,
+      "team_remap": false,
+      "toml_footprint": [
+        2,
+        2
+      ]
+    },
+    "maya_prism_pyramid": {
+      "active_loop": [],
+      "atlas": "assets/sprites/buildings/maya_prism_pyramid.png",
+      "atlas_height": 676,
+      "atlas_width": 864,
+      "cell_height": 338,
+      "cell_width": 216,
+      "columns": 4,
+      "crop_height": 169,
+      "crop_width": 108,
+      "crop_x": 0,
+      "crop_y": 0,
+      "damaged": 0,
+      "damaged_active_loop": [],
+      "foot_anchor_px": [
+        53.5,
+        130.5
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 168.0,
+      "idle": 0,
+      "make": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        0
+      ],
+      "orig_footprint": [
+        3,
+        2
+      ],
+      "source_canvas_height": 169,
+      "source_canvas_width": 108,
+      "team_remap": false,
+      "toml_footprint": [
+        3,
+        2
+      ]
+    },
+    "psychic_amplifier": {
+      "active_loop": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "atlas": "assets/sprites/buildings/psychic_amplifier.png",
+      "atlas_height": 2200,
+      "atlas_width": 2310,
+      "cell_height": 440,
+      "cell_width": 462,
+      "columns": 5,
+      "crop_height": 220,
+      "crop_width": 231,
+      "crop_x": 45,
+      "crop_y": 2,
+      "damaged": 1,
+      "damaged_active_loop": [
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "foot_anchor_px": [
+        136.0,
+        149.0
+      ],
+      "fps": 9.0,
+      "ground_bottom_y_px": 209.0,
+      "idle": 0,
+      "make": [
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        0
+      ],
+      "orig_footprint": [
+        4,
+        4
+      ],
+      "source_canvas_height": 232,
+      "source_canvas_width": 280,
+      "team_remap": true,
+      "toml_footprint": [
+        4,
+        4
+      ]
+    },
+    "psychic_beacon": {
+      "active_loop": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "atlas": "assets/sprites/buildings/psychic_beacon.png",
+      "atlas_height": 2052,
+      "atlas_width": 2010,
+      "cell_height": 342,
+      "cell_width": 402,
+      "columns": 5,
+      "crop_height": 171,
+      "crop_width": 201,
+      "crop_x": 101,
+      "crop_y": 2,
+      "damaged": 1,
+      "damaged_active_loop": [
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "foot_anchor_px": [
+        151.5,
+        135.0
+      ],
+      "fps": 9.0,
+      "ground_bottom_y_px": 165.0,
+      "idle": 0,
+      "make": [
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25
+      ],
+      "orig_footprint": [
+        2,
+        2
+      ],
+      "source_canvas_height": 232,
+      "source_canvas_width": 306,
+      "team_remap": true,
+      "toml_footprint": [
+        2,
+        2
+      ]
+    },
+    "security_gate": {
+      "active_loop": [],
+      "atlas": "assets/sprites/buildings/security_gate.png",
+      "atlas_height": 924,
+      "atlas_width": 1104,
+      "cell_height": 308,
+      "cell_width": 276,
+      "columns": 4,
+      "crop_height": 154,
+      "crop_width": 138,
+      "crop_x": 104,
+      "crop_y": 2,
+      "damaged": 1,
+      "damaged_active_loop": [],
+      "foot_anchor_px": [
+        150.0,
+        125.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 140.0,
+      "idle": 0,
+      "make": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        1,
+        0
+      ],
+      "orig_footprint": [
+        1,
+        1
+      ],
+      "source_canvas_height": 210,
+      "source_canvas_width": 246,
+      "team_remap": false,
+      "toml_footprint": [
+        1,
+        1
+      ]
+    },
+    "soviet_barracks": {
+      "active_loop": [
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "atlas": "assets/sprites/buildings/soviet_barracks.png",
+      "atlas_height": 1680,
+      "atlas_width": 1710,
+      "cell_height": 336,
+      "cell_width": 342,
+      "columns": 5,
+      "crop_height": 168,
+      "crop_width": 171,
+      "crop_x": 79,
+      "crop_y": 2,
+      "damaged": 1,
+      "damaged_active_loop": [
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "foot_anchor_px": [
+        125.5,
+        136.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 166.0,
+      "idle": 0,
+      "make": [
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21
+      ],
+      "orig_footprint": [
+        2,
+        2
+      ],
+      "source_canvas_height": 230,
+      "source_canvas_width": 254,
+      "team_remap": true,
+      "toml_footprint": [
+        2,
+        2
+      ]
+    },
+    "soviet_battle_bunker": {
+      "active_loop": [],
+      "atlas": "assets/sprites/buildings/soviet_battle_bunker.png",
+      "atlas_height": 456,
+      "atlas_width": 760,
+      "cell_height": 152,
+      "cell_width": 190,
+      "columns": 4,
+      "crop_height": 76,
+      "crop_width": 95,
+      "crop_x": 23,
+      "crop_y": 40,
+      "damaged": 1,
+      "damaged_active_loop": [],
+      "foot_anchor_px": [
+        63.5,
+        77.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 107.0,
+      "idle": 0,
+      "make": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "orig_footprint": [
+        2,
+        2
+      ],
+      "source_canvas_height": 118,
+      "source_canvas_width": 130,
+      "team_remap": true,
+      "toml_footprint": [
+        2,
+        2
+      ]
+    },
+    "soviet_battle_lab": {
+      "active_loop": [],
+      "atlas": "assets/sprites/buildings/soviet_battle_lab.png",
+      "atlas_height": 1020,
+      "atlas_width": 1584,
+      "cell_height": 340,
+      "cell_width": 396,
+      "columns": 4,
+      "crop_height": 170,
+      "crop_width": 198,
+      "crop_x": 36,
+      "crop_y": 3,
+      "damaged": 1,
+      "damaged_active_loop": [],
+      "foot_anchor_px": [
+        117.5,
+        125.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 170.0,
+      "idle": 0,
+      "make": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "orig_footprint": [
+        3,
+        3
+      ],
+      "source_canvas_height": 178,
+      "source_canvas_width": 238,
+      "team_remap": true,
+      "toml_footprint": [
+        2,
+        2
+      ]
+    },
+    "soviet_conyard": {
+      "active_loop": [
+        2,
+        3,
+        4,
+        3,
+        2,
+        2,
+        2,
+        2
+      ],
+      "atlas": "assets/sprites/buildings/soviet_conyard.png",
+      "atlas_height": 1424,
+      "atlas_width": 2048,
+      "cell_height": 356,
+      "cell_width": 512,
+      "columns": 4,
+      "crop_height": 178,
+      "crop_width": 256,
+      "crop_x": 23,
+      "crop_y": 44,
+      "damaged": 1,
+      "damaged_active_loop": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "foot_anchor_px": [
+        138.5,
+        159.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 219.0,
+      "idle": 0,
+      "make": [
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14
+      ],
+      "orig_footprint": [
+        4,
+        4
+      ],
+      "source_canvas_height": 224,
+      "source_canvas_width": 286,
+      "team_remap": true,
+      "toml_footprint": [
+        3,
+        3
+      ]
+    },
+    "soviet_flak_cannon": {
+      "active_loop": [],
+      "atlas": "assets/sprites/buildings/soviet_flak_cannon.png",
+      "atlas_height": 438,
+      "atlas_width": 672,
+      "cell_height": 146,
+      "cell_width": 168,
+      "columns": 4,
+      "crop_height": 73,
+      "crop_width": 84,
+      "crop_x": 30,
+      "crop_y": 2,
+      "damaged": 1,
+      "damaged_active_loop": [],
+      "foot_anchor_px": [
+        58.0,
+        57.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 72.0,
+      "idle": 0,
+      "make": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "orig_footprint": [
+        1,
+        1
+      ],
+      "source_canvas_height": 90,
+      "source_canvas_width": 118,
+      "team_remap": true,
+      "toml_footprint": [
+        1,
+        1
+      ]
+    },
+    "soviet_industrial_plant": {
+      "active_loop": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "atlas": "assets/sprites/buildings/soviet_industrial_plant.png",
+      "atlas_height": 2244,
+      "atlas_width": 2150,
+      "cell_height": 374,
+      "cell_width": 430,
+      "columns": 5,
+      "crop_height": 187,
+      "crop_width": 215,
+      "crop_x": 59,
+      "crop_y": 2,
+      "damaged": 1,
+      "damaged_active_loop": [
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "foot_anchor_px": [
+        147.0,
+        141.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 186.0,
+      "idle": 0,
+      "make": [
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25
+      ],
+      "orig_footprint": [
+        3,
+        3
+      ],
+      "source_canvas_height": 220,
+      "source_canvas_width": 278,
+      "team_remap": true,
+      "toml_footprint": [
+        3,
+        3
+      ]
+    },
+    "soviet_iron_curtain": {
+      "active_loop": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "atlas": "assets/sprites/buildings/soviet_iron_curtain.png",
+      "atlas_height": 1236,
+      "atlas_width": 1440,
+      "cell_height": 206,
+      "cell_width": 288,
+      "columns": 5,
+      "crop_height": 103,
+      "crop_width": 144,
+      "crop_x": 16,
+      "crop_y": 57,
+      "damaged": 1,
+      "damaged_active_loop": [
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "foot_anchor_px": [
+        82.0,
+        112.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 157.0,
+      "idle": 0,
+      "make": [
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25
+      ],
+      "orig_footprint": [
+        3,
+        3
+      ],
+      "source_canvas_height": 162,
+      "source_canvas_width": 164,
+      "team_remap": true,
+      "toml_footprint": [
+        3,
+        3
+      ]
+    },
+    "soviet_naval_shipyard": {
+      "active_loop": [
+        2,
+        3,
+        4,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "atlas": "assets/sprites/buildings/soviet_naval_shipyard.png",
+      "atlas_height": 2260,
+      "atlas_width": 2770,
+      "cell_height": 452,
+      "cell_width": 554,
+      "columns": 5,
+      "crop_height": 226,
+      "crop_width": 277,
+      "crop_x": 102,
+      "crop_y": 11,
+      "damaged": 1,
+      "damaged_active_loop": [
+        9,
+        10,
+        11,
+        12,
+        13,
+        13
+      ],
+      "foot_anchor_px": [
+        199.0,
+        174.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 234.0,
+      "idle": 0,
+      "make": [
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23
+      ],
+      "orig_footprint": [
+        4,
+        4
+      ],
+      "source_canvas_height": 246,
+      "source_canvas_width": 400,
+      "team_remap": true,
+      "toml_footprint": [
+        3,
+        3
+      ]
+    },
+    "soviet_nuclear_reactor": {
+      "active_loop": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "atlas": "assets/sprites/buildings/soviet_nuclear_reactor.png",
+      "atlas_height": 1370,
+      "atlas_width": 1980,
+      "cell_height": 274,
+      "cell_width": 396,
+      "columns": 5,
+      "crop_height": 137,
+      "crop_width": 198,
+      "crop_x": 74,
+      "crop_y": 49,
+      "damaged": 1,
+      "damaged_active_loop": [
+        1,
+        10,
+        11,
+        12,
+        13,
+        14
+      ],
+      "foot_anchor_px": [
+        158.5,
+        123.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 183.0,
+      "idle": 0,
+      "make": [
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24
+      ],
+      "orig_footprint": [
+        4,
+        4
+      ],
+      "source_canvas_height": 188,
+      "source_canvas_width": 276,
+      "team_remap": true,
+      "toml_footprint": [
+        3,
+        3
+      ]
+    },
+    "soviet_nuclear_silo": {
+      "active_loop": [
+        0,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "atlas": "assets/sprites/buildings/soviet_nuclear_silo.png",
+      "atlas_height": 1650,
+      "atlas_width": 1890,
+      "cell_height": 330,
+      "cell_width": 378,
+      "columns": 5,
+      "crop_height": 165,
+      "crop_width": 189,
+      "crop_x": 43,
+      "crop_y": 19,
+      "damaged": 1,
+      "damaged_active_loop": [
+        1,
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "foot_anchor_px": [
+        118.0,
+        135.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 180.0,
+      "idle": 0,
+      "make": [
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23
+      ],
+      "orig_footprint": [
+        3,
+        3
+      ],
+      "source_canvas_height": 202,
+      "source_canvas_width": 238,
+      "team_remap": true,
+      "toml_footprint": [
+        3,
+        3
+      ]
+    },
+    "soviet_radar_tower": {
+      "active_loop": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "atlas": "assets/sprites/buildings/soviet_radar_tower.png",
+      "atlas_height": 1572,
+      "atlas_width": 1580,
+      "cell_height": 262,
+      "cell_width": 316,
+      "columns": 5,
+      "crop_height": 131,
+      "crop_width": 158,
+      "crop_x": 65,
+      "crop_y": 0,
+      "damaged": 1,
+      "damaged_active_loop": [
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "foot_anchor_px": [
+        111.5,
+        98.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 128.0,
+      "idle": 0,
+      "make": [
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25
+      ],
+      "orig_footprint": [
+        2,
+        2
+      ],
+      "source_canvas_height": 154,
+      "source_canvas_width": 226,
+      "team_remap": true,
+      "toml_footprint": [
+        2,
+        2
+      ]
+    },
+    "soviet_refinery": {
+      "active_loop": [
+        2,
+        3,
+        4
+      ],
+      "atlas": "assets/sprites/buildings/soviet_refinery.png",
+      "atlas_height": 1470,
+      "atlas_width": 1528,
+      "cell_height": 294,
+      "cell_width": 382,
+      "columns": 4,
+      "crop_height": 147,
+      "crop_width": 191,
+      "crop_x": 15,
+      "crop_y": 35,
+      "damaged": 1,
+      "damaged_active_loop": [
+        5,
+        6,
+        7
+      ],
+      "foot_anchor_px": [
+        112.5,
+        126.5
+      ],
+      "fps": 7.0,
+      "ground_bottom_y_px": 179.0,
+      "idle": 0,
+      "make": [
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17
+      ],
+      "orig_footprint": [
+        4,
+        3
+      ],
+      "source_canvas_height": 184,
+      "source_canvas_width": 210,
+      "team_remap": true,
+      "toml_footprint": [
+        3,
+        2
+      ]
+    },
+    "soviet_sentry_gun": {
+      "active_loop": [],
+      "atlas": "assets/sprites/buildings/soviet_sentry_gun.png",
+      "atlas_height": 264,
+      "atlas_width": 456,
+      "cell_height": 88,
+      "cell_width": 114,
+      "columns": 4,
+      "crop_height": 44,
+      "crop_width": 57,
+      "crop_x": 13,
+      "crop_y": 12,
+      "damaged": 1,
+      "damaged_active_loop": [],
+      "foot_anchor_px": [
+        36.0,
+        38.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 53.0,
+      "idle": 0,
+      "make": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "orig_footprint": [
+        1,
+        1
+      ],
+      "source_canvas_height": 58,
+      "source_canvas_width": 74,
+      "team_remap": true,
+      "toml_footprint": [
+        1,
+        1
+      ]
+    },
+    "soviet_service_depot": {
+      "active_loop": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "atlas": "assets/sprites/buildings/soviet_service_depot.png",
+      "atlas_height": 1848,
+      "atlas_width": 1750,
+      "cell_height": 308,
+      "cell_width": 350,
+      "columns": 5,
+      "crop_height": 154,
+      "crop_width": 175,
+      "crop_x": 19,
+      "crop_y": 34,
+      "damaged": 1,
+      "damaged_active_loop": [
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "foot_anchor_px": [
+        109.5,
+        131.5
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 184.0,
+      "idle": 0,
+      "make": [
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25
+      ],
+      "orig_footprint": [
+        4,
+        3
+      ],
+      "source_canvas_height": 190,
+      "source_canvas_width": 198,
+      "team_remap": true,
+      "toml_footprint": [
+        3,
+        3
+      ]
+    },
+    "soviet_tesla_coil": {
+      "active_loop": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "atlas": "assets/sprites/buildings/soviet_tesla_coil.png",
+      "atlas_height": 1068,
+      "atlas_width": 1000,
+      "cell_height": 178,
+      "cell_width": 200,
+      "columns": 5,
+      "crop_height": 89,
+      "crop_width": 100,
+      "crop_x": 56,
+      "crop_y": 2,
+      "damaged": 1,
+      "damaged_active_loop": [
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "foot_anchor_px": [
+        79.0,
+        73.0
+      ],
+      "fps": 10.0,
+      "ground_bottom_y_px": 88.0,
+      "idle": 0,
+      "make": [
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25
+      ],
+      "orig_footprint": [
+        1,
+        1
+      ],
+      "source_canvas_height": 126,
+      "source_canvas_width": 160,
+      "team_remap": true,
+      "toml_footprint": [
+        1,
+        1
+      ]
+    },
+    "soviet_tesla_reactor": {
+      "active_loop": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "atlas": "assets/sprites/buildings/soviet_tesla_reactor.png",
+      "atlas_height": 1176,
+      "atlas_width": 1460,
+      "cell_height": 196,
+      "cell_width": 292,
+      "columns": 5,
+      "crop_height": 98,
+      "crop_width": 146,
+      "crop_x": 60,
+      "crop_y": 40,
+      "damaged": 1,
+      "damaged_active_loop": [
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "foot_anchor_px": [
+        119.0,
+        97.5
+      ],
+      "fps": 9.0,
+      "ground_bottom_y_px": 135.0,
+      "idle": 0,
+      "make": [
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25
+      ],
+      "orig_footprint": [
+        3,
+        2
+      ],
+      "source_canvas_height": 140,
+      "source_canvas_width": 210,
+      "team_remap": true,
+      "toml_footprint": [
+        2,
+        2
+      ]
+    },
+    "soviet_tesla_reactor_overcharged": {
+      "active_loop": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "atlas": "assets/sprites/buildings/soviet_tesla_reactor.png",
+      "atlas_height": 1176,
+      "atlas_width": 1460,
+      "cell_height": 196,
+      "cell_width": 292,
+      "columns": 5,
+      "crop_height": 98,
+      "crop_width": 146,
+      "crop_x": 60,
+      "crop_y": 40,
+      "damaged": 1,
+      "damaged_active_loop": [
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "foot_anchor_px": [
+        119.0,
+        97.5
+      ],
+      "fps": 15.0,
+      "ground_bottom_y_px": 135.0,
+      "idle": 0,
+      "make": [
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25
+      ],
+      "orig_footprint": [
+        3,
+        2
+      ],
+      "source_canvas_height": 140,
+      "source_canvas_width": 210,
+      "team_remap": true,
+      "toml_footprint": [
+        2,
+        2
+      ]
+    },
+    "soviet_war_factory": {
+      "active_loop": [
+        2,
+        3,
+        4,
+        3,
+        5,
+        6,
+        7,
+        8
+      ],
+      "atlas": "assets/sprites/buildings/soviet_war_factory.png",
+      "atlas_height": 1870,
+      "atlas_width": 1800,
+      "cell_height": 374,
+      "cell_width": 450,
+      "columns": 4,
+      "crop_height": 187,
+      "crop_width": 225,
+      "crop_x": 53,
+      "crop_y": 35,
+      "damaged": 1,
+      "damaged_active_loop": [],
+      "foot_anchor_px": [
+        167.5,
+        159.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 219.0,
+      "idle": 0,
+      "make": [
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "orig_footprint": [
+        5,
+        3
+      ],
+      "source_canvas_height": 224,
+      "source_canvas_width": 282,
+      "team_remap": true,
+      "toml_footprint": [
+        3,
+        3
+      ]
+    },
+    "st_basil_cathedral": {
+      "active_loop": [],
+      "atlas": "assets/sprites/buildings/st_basil_cathedral.png",
+      "atlas_height": 1566,
+      "atlas_width": 1626,
+      "cell_height": 522,
+      "cell_width": 542,
+      "columns": 3,
+      "crop_height": 261,
+      "crop_width": 271,
+      "crop_x": 97,
+      "crop_y": 2,
+      "damaged": 1,
+      "damaged_active_loop": [],
+      "foot_anchor_px": [
+        189.5,
+        200.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 260.0,
+      "idle": 0,
+      "make": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        0
+      ],
+      "orig_footprint": [
+        4,
+        4
+      ],
+      "source_canvas_height": 298,
+      "source_canvas_width": 404,
+      "team_remap": false,
+      "toml_footprint": [
+        4,
+        4
+      ]
+    },
+    "statue_of_liberty": {
+      "active_loop": [],
+      "atlas": "assets/sprites/buildings/statue_of_liberty.png",
+      "atlas_height": 1100,
+      "atlas_width": 1400,
+      "cell_height": 550,
+      "cell_width": 280,
+      "columns": 5,
+      "crop_height": 275,
+      "crop_width": 140,
+      "crop_x": 108,
+      "crop_y": 20,
+      "damaged": 1,
+      "damaged_active_loop": [],
+      "foot_anchor_px": [
+        180.5,
+        241.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 286.0,
+      "idle": 0,
+      "make": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        0
+      ],
+      "orig_footprint": [
+        3,
+        3
+      ],
+      "source_canvas_height": 428,
+      "source_canvas_width": 358,
+      "team_remap": false,
+      "toml_footprint": [
+        3,
+        3
+      ]
+    },
+    "tech_airport": {
+      "active_loop": [
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "atlas": "assets/sprites/buildings/tech_airport.png",
+      "atlas_height": 1280,
+      "atlas_width": 1640,
+      "cell_height": 320,
+      "cell_width": 328,
+      "columns": 5,
+      "crop_height": 160,
+      "crop_width": 164,
+      "crop_x": 0,
+      "crop_y": 10,
+      "damaged": 1,
+      "damaged_active_loop": [
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "foot_anchor_px": [
+        82.5,
+        122.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 167.0,
+      "idle": 0,
+      "make": [
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        0
+      ],
+      "orig_footprint": [
+        3,
+        3
+      ],
+      "source_canvas_height": 172,
+      "source_canvas_width": 172,
+      "team_remap": true,
+      "toml_footprint": [
+        3,
+        3
+      ]
+    },
+    "tech_communications_center": {
+      "active_loop": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "atlas": "assets/sprites/buildings/tech_communications_center.png",
+      "atlas_height": 1176,
+      "atlas_width": 1440,
+      "cell_height": 196,
+      "cell_width": 288,
+      "columns": 5,
+      "crop_height": 98,
+      "crop_width": 144,
+      "crop_x": 38,
+      "crop_y": 2,
+      "damaged": 1,
+      "damaged_active_loop": [
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "foot_anchor_px": [
+        89.0,
+        64.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 94.0,
+      "idle": 0,
+      "make": [
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25
+      ],
+      "orig_footprint": [
+        2,
+        2
+      ],
+      "source_canvas_height": 102,
+      "source_canvas_width": 186,
+      "team_remap": true,
+      "toml_footprint": [
+        2,
+        2
+      ]
+    },
+    "tech_hospital": {
+      "active_loop": [
+        2,
+        3
+      ],
+      "atlas": "assets/sprites/buildings/tech_hospital.png",
+      "atlas_height": 2110,
+      "atlas_width": 1836,
+      "cell_height": 422,
+      "cell_width": 612,
+      "columns": 3,
+      "crop_height": 211,
+      "crop_width": 306,
+      "crop_x": 138,
+      "crop_y": 85,
+      "damaged": 1,
+      "damaged_active_loop": [
+        4,
+        5
+      ],
+      "foot_anchor_px": [
+        265.5,
+        206.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 281.0,
+      "idle": 0,
+      "make": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        0
+      ],
+      "orig_footprint": [
+        6,
+        4
+      ],
+      "source_canvas_height": 298,
+      "source_canvas_width": 448,
+      "team_remap": true,
+      "toml_footprint": [
+        4,
+        4
+      ]
+    },
+    "tech_machine_shop": {
+      "active_loop": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "atlas": "assets/sprites/buildings/tech_machine_shop.png",
+      "atlas_height": 1350,
+      "atlas_width": 1550,
+      "cell_height": 270,
+      "cell_width": 310,
+      "columns": 5,
+      "crop_height": 135,
+      "crop_width": 155,
+      "crop_x": 0,
+      "crop_y": 39,
+      "damaged": 1,
+      "damaged_active_loop": [
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "foot_anchor_px": [
+        73.5,
+        126.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 171.0,
+      "idle": 0,
+      "make": [
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        0
+      ],
+      "orig_footprint": [
+        3,
+        3
+      ],
+      "source_canvas_height": 176,
+      "source_canvas_width": 162,
+      "team_remap": true,
+      "toml_footprint": [
+        3,
+        3
+      ]
+    },
+    "tech_oil_derrick": {
+      "active_loop": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "atlas": "assets/sprites/buildings/tech_oil_derrick.png",
+      "atlas_height": 1100,
+      "atlas_width": 1340,
+      "cell_height": 220,
+      "cell_width": 268,
+      "columns": 5,
+      "crop_height": 110,
+      "crop_width": 134,
+      "crop_x": 27,
+      "crop_y": 10,
+      "damaged": 1,
+      "damaged_active_loop": [
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "foot_anchor_px": [
+        66.5,
+        87.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 117.0,
+      "idle": 0,
+      "make": [
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        0
+      ],
+      "orig_footprint": [
+        2,
+        2
+      ],
+      "source_canvas_height": 122,
+      "source_canvas_width": 166,
+      "team_remap": true,
+      "toml_footprint": [
+        2,
+        2
+      ]
+    },
+    "tech_outpost": {
+      "active_loop": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "atlas": "assets/sprites/buildings/tech_outpost.png",
+      "atlas_height": 1704,
+      "atlas_width": 1728,
+      "cell_height": 284,
+      "cell_width": 432,
+      "columns": 4,
+      "crop_height": 142,
+      "crop_width": 216,
+      "crop_x": 65,
+      "crop_y": 48,
+      "damaged": 1,
+      "damaged_active_loop": [
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "foot_anchor_px": [
+        155.0,
+        134.5
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 187.0,
+      "idle": 0,
+      "make": [
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        0
+      ],
+      "orig_footprint": [
+        4,
+        3
+      ],
+      "source_canvas_height": 192,
+      "source_canvas_width": 290,
+      "team_remap": true,
+      "toml_footprint": [
+        4,
+        3
+      ]
+    },
+    "tech_power_plant": {
+      "active_loop": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "atlas": "assets/sprites/buildings/tech_power_plant.png",
+      "atlas_height": 1160,
+      "atlas_width": 1168,
+      "cell_height": 232,
+      "cell_width": 292,
+      "columns": 4,
+      "crop_height": 116,
+      "crop_width": 146,
+      "crop_x": 40,
+      "crop_y": 2,
+      "damaged": 1,
+      "damaged_active_loop": [],
+      "foot_anchor_px": [
+        95.0,
+        85.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 115.0,
+      "idle": 0,
+      "make": [
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        0
+      ],
+      "orig_footprint": [
+        2,
+        2
+      ],
+      "source_canvas_height": 120,
+      "source_canvas_width": 190,
+      "team_remap": true,
+      "toml_footprint": [
+        2,
+        2
+      ]
+    },
+    "tech_secret_lab": {
+      "active_loop": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "atlas": "assets/sprites/buildings/tech_secret_lab.png",
+      "atlas_height": 1660,
+      "atlas_width": 1660,
+      "cell_height": 332,
+      "cell_width": 332,
+      "columns": 5,
+      "crop_height": 166,
+      "crop_width": 166,
+      "crop_x": 32,
+      "crop_y": 0,
+      "damaged": 1,
+      "damaged_active_loop": [
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "foot_anchor_px": [
+        97.5,
+        112.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 157.0,
+      "idle": 0,
+      "make": [
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        0
+      ],
+      "orig_footprint": [
+        3,
+        3
+      ],
+      "source_canvas_height": 168,
+      "source_canvas_width": 202,
+      "team_remap": true,
+      "toml_footprint": [
+        3,
+        3
+      ]
+    },
+    "time_machine": {
+      "active_loop": [
+        2,
+        3
+      ],
+      "atlas": "assets/sprites/buildings/time_machine.png",
+      "atlas_height": 920,
+      "atlas_width": 1104,
+      "cell_height": 230,
+      "cell_width": 368,
+      "columns": 3,
+      "crop_height": 115,
+      "crop_width": 184,
+      "crop_x": 30,
+      "crop_y": 87,
+      "damaged": 1,
+      "damaged_active_loop": [],
+      "foot_anchor_px": [
+        121.5,
+        146.5
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 199.0,
+      "idle": 0,
+      "make": [
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        0
+      ],
+      "orig_footprint": [
+        4,
+        3
+      ],
+      "source_canvas_height": 204,
+      "source_canvas_width": 218,
+      "team_remap": false,
+      "toml_footprint": [
+        4,
+        3
+      ]
+    },
+    "transylvania_fortress": {
+      "active_loop": [],
+      "atlas": "assets/sprites/buildings/transylvania_fortress.png",
+      "atlas_height": 1248,
+      "atlas_width": 1338,
+      "cell_height": 416,
+      "cell_width": 446,
+      "columns": 3,
+      "crop_height": 208,
+      "crop_width": 223,
+      "crop_x": 33,
+      "crop_y": 18,
+      "damaged": 1,
+      "damaged_active_loop": [],
+      "foot_anchor_px": [
+        135.5,
+        163.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 223.0,
+      "idle": 0,
+      "make": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        0
+      ],
+      "orig_footprint": [
+        4,
+        4
+      ],
+      "source_canvas_height": 238,
+      "source_canvas_width": 260,
+      "team_remap": false,
+      "toml_footprint": [
+        4,
+        4
+      ]
+    },
+    "white_house": {
+      "active_loop": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "atlas": "assets/sprites/buildings/white_house.png",
+      "atlas_height": 1630,
+      "atlas_width": 1880,
+      "cell_height": 326,
+      "cell_width": 376,
+      "columns": 5,
+      "crop_height": 163,
+      "crop_width": 188,
+      "crop_x": 6,
+      "crop_y": 53,
+      "damaged": 1,
+      "damaged_active_loop": [
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "foot_anchor_px": [
+        98.0,
+        153.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 213.0,
+      "idle": 0,
+      "make": [
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        0
+      ],
+      "orig_footprint": [
+        4,
+        4
+      ],
+      "source_canvas_height": 218,
+      "source_canvas_width": 198,
+      "team_remap": false,
+      "toml_footprint": [
+        4,
+        4
+      ]
+    },
+    "yuri_barracks": {
+      "active_loop": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "atlas": "assets/sprites/buildings/yuri_barracks.png",
+      "atlas_height": 1610,
+      "atlas_width": 1932,
+      "cell_height": 322,
+      "cell_width": 322,
+      "columns": 6,
+      "crop_height": 161,
+      "crop_width": 161,
+      "crop_x": 0,
+      "crop_y": 2,
+      "damaged": 1,
+      "damaged_active_loop": [
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "foot_anchor_px": [
+        60.5,
+        112.5
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 150.0,
+      "idle": 0,
+      "make": [
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25
+      ],
+      "orig_footprint": [
+        2,
+        3
+      ],
+      "source_canvas_height": 182,
+      "source_canvas_width": 184,
+      "team_remap": true,
+      "toml_footprint": [
+        2,
+        2
+      ]
+    },
+    "yuri_battle_lab": {
+      "active_loop": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "atlas": "assets/sprites/buildings/yuri_battle_lab.png",
+      "atlas_height": 2270,
+      "atlas_width": 2436,
+      "cell_height": 454,
+      "cell_width": 406,
+      "columns": 6,
+      "crop_height": 227,
+      "crop_width": 203,
+      "crop_x": 101,
+      "crop_y": 2,
+      "damaged": 1,
+      "damaged_active_loop": [
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "foot_anchor_px": [
+        168.0,
+        187.5
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 225.0,
+      "idle": 0,
+      "make": [
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25
+      ],
+      "orig_footprint": [
+        3,
+        2
+      ],
+      "source_canvas_height": 316,
+      "source_canvas_width": 308,
+      "team_remap": true,
+      "toml_footprint": [
+        2,
+        2
+      ]
+    },
+    "yuri_bio_reactor": {
+      "active_loop": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "atlas": "assets/sprites/buildings/yuri_bio_reactor.png",
+      "atlas_height": 1440,
+      "atlas_width": 1270,
+      "cell_height": 240,
+      "cell_width": 254,
+      "columns": 5,
+      "crop_height": 120,
+      "crop_width": 127,
+      "crop_x": 43,
+      "crop_y": 2,
+      "damaged": 1,
+      "damaged_active_loop": [
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "foot_anchor_px": [
+        84.0,
+        89.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 119.0,
+      "idle": 0,
+      "make": [
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25
+      ],
+      "orig_footprint": [
+        2,
+        2
+      ],
+      "source_canvas_height": 142,
+      "source_canvas_width": 174,
+      "team_remap": true,
+      "toml_footprint": [
+        2,
+        2
+      ]
+    },
+    "yuri_cloning_vats": {
+      "active_loop": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "atlas": "assets/sprites/buildings/yuri_cloning_vats.png",
+      "atlas_height": 1380,
+      "atlas_width": 1600,
+      "cell_height": 276,
+      "cell_width": 320,
+      "columns": 5,
+      "crop_height": 138,
+      "crop_width": 160,
+      "crop_x": 50,
+      "crop_y": 2,
+      "damaged": 1,
+      "damaged_active_loop": [
+        1,
+        10,
+        11,
+        12,
+        13,
+        14
+      ],
+      "foot_anchor_px": [
+        108.0,
+        107.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 137.0,
+      "idle": 0,
+      "make": [
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24
+      ],
+      "orig_footprint": [
+        2,
+        2
+      ],
+      "source_canvas_height": 174,
+      "source_canvas_width": 214,
+      "team_remap": true,
+      "toml_footprint": [
+        2,
+        2
+      ]
+    },
+    "yuri_conyard": {
+      "active_loop": [
+        2,
+        3,
+        4
+      ],
+      "atlas": "assets/sprites/buildings/yuri_conyard.png",
+      "atlas_height": 1580,
+      "atlas_width": 1912,
+      "cell_height": 316,
+      "cell_width": 478,
+      "columns": 4,
+      "crop_height": 158,
+      "crop_width": 239,
+      "crop_x": 13,
+      "crop_y": 73,
+      "damaged": 1,
+      "damaged_active_loop": [
+        5,
+        6,
+        7
+      ],
+      "foot_anchor_px": [
+        126.0,
+        167.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 227.0,
+      "idle": 0,
+      "make": [
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17
+      ],
+      "orig_footprint": [
+        4,
+        4
+      ],
+      "source_canvas_height": 232,
+      "source_canvas_width": 256,
+      "team_remap": true,
+      "toml_footprint": [
+        3,
+        3
+      ]
+    },
+    "yuri_gatling_cannon": {
+      "active_loop": [],
+      "atlas": "assets/sprites/buildings/yuri_gatling_cannon.png",
+      "atlas_height": 396,
+      "atlas_width": 672,
+      "cell_height": 132,
+      "cell_width": 168,
+      "columns": 4,
+      "crop_height": 66,
+      "crop_width": 84,
+      "crop_x": 32,
+      "crop_y": 2,
+      "damaged": 1,
+      "damaged_active_loop": [],
+      "foot_anchor_px": [
+        63.5,
+        49.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 64.0,
+      "idle": 0,
+      "make": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "orig_footprint": [
+        1,
+        1
+      ],
+      "source_canvas_height": 82,
+      "source_canvas_width": 120,
+      "team_remap": true,
+      "toml_footprint": [
+        1,
+        1
+      ]
+    },
+    "yuri_genetic_mutator": {
+      "active_loop": [],
+      "atlas": "assets/sprites/buildings/yuri_genetic_mutator.png",
+      "atlas_height": 960,
+      "atlas_width": 1400,
+      "cell_height": 320,
+      "cell_width": 350,
+      "columns": 4,
+      "crop_height": 160,
+      "crop_width": 175,
+      "crop_x": 55,
+      "crop_y": 45,
+      "damaged": 1,
+      "damaged_active_loop": [],
+      "foot_anchor_px": [
+        134.5,
+        157.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 202.0,
+      "idle": 0,
+      "make": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "orig_footprint": [
+        3,
+        3
+      ],
+      "source_canvas_height": 244,
+      "source_canvas_width": 270,
+      "team_remap": true,
+      "toml_footprint": [
+        3,
+        3
+      ]
+    },
+    "yuri_grinder": {
+      "active_loop": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        2,
+        4,
+        7
+      ],
+      "atlas": "assets/sprites/buildings/yuri_grinder.png",
+      "atlas_height": 1350,
+      "atlas_width": 1448,
+      "cell_height": 270,
+      "cell_width": 362,
+      "columns": 4,
+      "crop_height": 135,
+      "crop_width": 181,
+      "crop_x": 88,
+      "crop_y": 48,
+      "damaged": 1,
+      "damaged_active_loop": [],
+      "foot_anchor_px": [
+        159.0,
+        134.0
+      ],
+      "fps": 9.0,
+      "ground_bottom_y_px": 179.0,
+      "idle": 0,
+      "make": [
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17
+      ],
+      "orig_footprint": [
+        3,
+        3
+      ],
+      "source_canvas_height": 220,
+      "source_canvas_width": 320,
+      "team_remap": true,
+      "toml_footprint": [
+        2,
+        2
+      ]
+    },
+    "yuri_psychic_dominator": {
+      "active_loop": [
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "atlas": "assets/sprites/buildings/yuri_psychic_dominator.png",
+      "atlas_height": 1570,
+      "atlas_width": 1890,
+      "cell_height": 314,
+      "cell_width": 378,
+      "columns": 5,
+      "crop_height": 157,
+      "crop_width": 189,
+      "crop_x": 65,
+      "crop_y": 25,
+      "damaged": 1,
+      "damaged_active_loop": [
+        7,
+        8,
+        9,
+        10,
+        8
+      ],
+      "foot_anchor_px": [
+        133.0,
+        129.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 174.0,
+      "idle": 0,
+      "make": [
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20
+      ],
+      "orig_footprint": [
+        3,
+        3
+      ],
+      "source_canvas_height": 204,
+      "source_canvas_width": 282,
+      "team_remap": true,
+      "toml_footprint": [
+        3,
+        3
+      ]
+    },
+    "yuri_psychic_sensor": {
+      "active_loop": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "atlas": "assets/sprites/buildings/yuri_psychic_sensor.png",
+      "atlas_height": 1872,
+      "atlas_width": 2090,
+      "cell_height": 312,
+      "cell_width": 418,
+      "columns": 5,
+      "crop_height": 156,
+      "crop_width": 209,
+      "crop_x": 49,
+      "crop_y": 3,
+      "damaged": 1,
+      "damaged_active_loop": [
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "foot_anchor_px": [
+        129.0,
+        124.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 154.0,
+      "idle": 0,
+      "make": [
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25
+      ],
+      "orig_footprint": [
+        2,
+        2
+      ],
+      "source_canvas_height": 210,
+      "source_canvas_width": 262,
+      "team_remap": true,
+      "toml_footprint": [
+        2,
+        2
+      ]
+    },
+    "yuri_psychic_tower": {
+      "active_loop": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "atlas": "assets/sprites/buildings/yuri_psychic_tower.png",
+      "atlas_height": 1550,
+      "atlas_width": 1872,
+      "cell_height": 310,
+      "cell_width": 312,
+      "columns": 6,
+      "crop_height": 155,
+      "crop_width": 156,
+      "crop_x": 80,
+      "crop_y": 2,
+      "damaged": 1,
+      "damaged_active_loop": [
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "foot_anchor_px": [
+        120.0,
+        139.0
+      ],
+      "fps": 9.0,
+      "ground_bottom_y_px": 154.0,
+      "idle": 0,
+      "make": [
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25
+      ],
+      "orig_footprint": [
+        1,
+        1
+      ],
+      "source_canvas_height": 254,
+      "source_canvas_width": 242,
+      "team_remap": true,
+      "toml_footprint": [
+        1,
+        1
+      ]
+    },
+    "yuri_slave_refinery": {
+      "active_loop": [
+        2,
+        3
+      ],
+      "atlas": "assets/sprites/buildings/yuri_slave_refinery.png",
+      "atlas_height": 648,
+      "atlas_width": 896,
+      "cell_height": 162,
+      "cell_width": 224,
+      "columns": 4,
+      "crop_height": 81,
+      "crop_width": 112,
+      "crop_x": 2,
+      "crop_y": 25,
+      "damaged": 1,
+      "damaged_active_loop": [],
+      "foot_anchor_px": [
+        51.0,
+        72.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 102.0,
+      "idle": 0,
+      "make": [
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "orig_footprint": [
+        2,
+        2
+      ],
+      "source_canvas_height": 108,
+      "source_canvas_width": 118,
+      "team_remap": true,
+      "toml_footprint": [
+        3,
+        2
+      ]
+    },
+    "yuri_submarine_pen": {
+      "active_loop": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "atlas": "assets/sprites/buildings/yuri_submarine_pen.png",
+      "atlas_height": 2028,
+      "atlas_width": 2120,
+      "cell_height": 338,
+      "cell_width": 424,
+      "columns": 5,
+      "crop_height": 169,
+      "crop_width": 212,
+      "crop_x": 88,
+      "crop_y": 45,
+      "damaged": 1,
+      "damaged_active_loop": [
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "foot_anchor_px": [
+        138.5,
+        145.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 205.0,
+      "idle": 0,
+      "make": [
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25
+      ],
+      "orig_footprint": [
+        4,
+        4
+      ],
+      "source_canvas_height": 236,
+      "source_canvas_width": 304,
+      "team_remap": true,
+      "toml_footprint": [
+        3,
+        3
+      ]
+    },
+    "yuri_tank_bunker": {
+      "active_loop": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "atlas": "assets/sprites/buildings/yuri_tank_bunker.png",
+      "atlas_height": 854,
+      "atlas_width": 912,
+      "cell_height": 122,
+      "cell_width": 228,
+      "columns": 4,
+      "crop_height": 61,
+      "crop_width": 114,
+      "crop_x": 0,
+      "crop_y": 0,
+      "damaged": 0,
+      "damaged_active_loop": [
+        9,
+        10,
+        11,
+        12,
+        13,
+        14
+      ],
+      "foot_anchor_px": [
+        56.5,
+        30.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 60.0,
+      "idle": 0,
+      "make": [
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24
+      ],
+      "orig_footprint": [
+        2,
+        2
+      ],
+      "source_canvas_height": 61,
+      "source_canvas_width": 114,
+      "team_remap": true,
+      "toml_footprint": [
+        2,
+        2
+      ]
+    },
+    "yuri_war_factory": {
+      "active_loop": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "atlas": "assets/sprites/buildings/yuri_war_factory.png",
+      "atlas_height": 1750,
+      "atlas_width": 1784,
+      "cell_height": 350,
+      "cell_width": 446,
+      "columns": 4,
+      "crop_height": 175,
+      "crop_width": 223,
+      "crop_x": 44,
+      "crop_y": 65,
+      "damaged": 1,
+      "damaged_active_loop": [
+        6,
+        7,
+        8,
+        9
+      ],
+      "foot_anchor_px": [
+        162.0,
+        168.0
+      ],
+      "fps": 8.0,
+      "ground_bottom_y_px": 228.0,
+      "idle": 0,
+      "make": [
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "orig_footprint": [
+        5,
+        3
+      ],
+      "source_canvas_height": 242,
+      "source_canvas_width": 272,
+      "team_remap": true,
+      "toml_footprint": [
+        3,
+        3
+      ]
+    }
+  },
+  "infantry": {
+    "allied_attack_dog": {
+      "atlas": "assets/sprites/infantry/allied_attack_dog.png",
+      "atlas_height": 1128,
+      "atlas_width": 1180,
+      "body_height_px": 26.0,
+      "cell_height": 94,
+      "cell_width": 118,
+      "columns": 10,
+      "crop_height": 47,
+      "crop_width": 59,
+      "crop_x": 11,
+      "crop_y": 3,
+      "die": [
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111
+      ],
+      "fire": [
+        [
+          56,
+          57,
+          58,
+          59,
+          60,
+          61
+        ],
+        [
+          62,
+          63,
+          64,
+          65,
+          66,
+          67
+        ],
+        [
+          68,
+          69,
+          70,
+          71,
+          72,
+          73
+        ],
+        [
+          74,
+          75,
+          76,
+          77,
+          78,
+          79
+        ],
+        [
+          80,
+          81,
+          82,
+          83,
+          84,
+          85
+        ],
+        [
+          86,
+          87,
+          88,
+          89,
+          90,
+          91
+        ],
+        [
+          92,
+          93,
+          94,
+          95,
+          96,
+          97
+        ],
+        [
+          98,
+          99,
+          100,
+          101,
+          102,
+          103
+        ]
+      ],
+      "foot_anchor_px": [
+        37.0,
+        43.0
+      ],
+      "fps": 11.0,
+      "run": [
+        [
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ],
+        [
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        [
+          20,
+          21,
+          22,
+          23,
+          24,
+          25
+        ],
+        [
+          26,
+          27,
+          28,
+          29,
+          30,
+          31
+        ],
+        [
+          32,
+          33,
+          34,
+          35,
+          36,
+          37
+        ],
+        [
+          38,
+          39,
+          40,
+          41,
+          42,
+          43
+        ],
+        [
+          44,
+          45,
+          46,
+          47,
+          48,
+          49
+        ],
+        [
+          50,
+          51,
+          52,
+          53,
+          54,
+          55
+        ]
+      ],
+      "source_canvas_height": 72,
+      "source_canvas_width": 74,
+      "stand": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "team_remap": true,
+      "world_height_m": 1.149999976158142
+    },
+    "allied_engineer": {
+      "atlas": "assets/sprites/infantry/engineer.png",
+      "atlas_height": 672,
+      "atlas_width": 768,
+      "body_height_px": 30.0,
+      "cell_height": 84,
+      "cell_width": 96,
+      "columns": 8,
+      "crop_height": 42,
+      "crop_width": 48,
+      "crop_x": 17,
+      "crop_y": 7,
+      "die": [
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63
+      ],
+      "fire": [
+        [
+          0
+        ],
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4
+        ],
+        [
+          5
+        ],
+        [
+          6
+        ],
+        [
+          7
+        ]
+      ],
+      "foot_anchor_px": [
+        38.0,
+        42.0
+      ],
+      "fps": 11.0,
+      "run": [
+        [
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ],
+        [
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        [
+          20,
+          21,
+          22,
+          23,
+          24,
+          25
+        ],
+        [
+          26,
+          27,
+          28,
+          29,
+          30,
+          31
+        ],
+        [
+          32,
+          33,
+          34,
+          35,
+          36,
+          37
+        ],
+        [
+          38,
+          39,
+          40,
+          41,
+          42,
+          43
+        ],
+        [
+          44,
+          45,
+          46,
+          47,
+          48,
+          49
+        ],
+        [
+          50,
+          51,
+          52,
+          53,
+          54,
+          55
+        ]
+      ],
+      "source_canvas_height": 80,
+      "source_canvas_width": 76,
+      "stand": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "team_remap": true,
+      "world_height_m": 1.7200000286102295
+    },
+    "allied_gi": {
+      "atlas": "assets/sprites/infantry/allied_gi.png",
+      "atlas_height": 1032,
+      "atlas_width": 1026,
+      "body_height_px": 34.0,
+      "cell_height": 86,
+      "cell_width": 114,
+      "columns": 9,
+      "crop_height": 43,
+      "crop_width": 57,
+      "crop_x": 17,
+      "crop_y": 2,
+      "die": [
+        97,
+        98,
+        99,
+        100,
+        101,
+        102,
+        103,
+        104
+      ],
+      "fire": [
+        [
+          56,
+          57,
+          58,
+          59,
+          60,
+          59
+        ],
+        [
+          61,
+          62,
+          63,
+          64,
+          65,
+          64
+        ],
+        [
+          66,
+          67,
+          68,
+          69,
+          70,
+          71
+        ],
+        [
+          72,
+          73,
+          74,
+          75,
+          76,
+          75
+        ],
+        [
+          77,
+          78,
+          79,
+          80,
+          81,
+          80
+        ],
+        [
+          82,
+          83,
+          84,
+          85,
+          86,
+          85
+        ],
+        [
+          87,
+          88,
+          89,
+          90,
+          91,
+          90
+        ],
+        [
+          92,
+          93,
+          94,
+          95,
+          96,
+          95
+        ]
+      ],
+      "foot_anchor_px": [
+        39.0,
+        40.0
+      ],
+      "fps": 11.0,
+      "run": [
+        [
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ],
+        [
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        [
+          20,
+          21,
+          22,
+          23,
+          24,
+          25
+        ],
+        [
+          26,
+          27,
+          28,
+          29,
+          30,
+          31
+        ],
+        [
+          32,
+          33,
+          34,
+          35,
+          36,
+          37
+        ],
+        [
+          38,
+          39,
+          40,
+          41,
+          42,
+          43
+        ],
+        [
+          44,
+          45,
+          46,
+          47,
+          48,
+          49
+        ],
+        [
+          50,
+          51,
+          52,
+          53,
+          54,
+          55
+        ]
+      ],
+      "source_canvas_height": 66,
+      "source_canvas_width": 78,
+      "stand": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "team_remap": true,
+      "world_height_m": 1.75
+    },
+    "allied_spy": {
+      "atlas": "assets/sprites/infantry/allied_spy.png",
+      "atlas_height": 800,
+      "atlas_width": 896,
+      "body_height_px": 26.0,
+      "cell_height": 100,
+      "cell_width": 112,
+      "columns": 8,
+      "crop_height": 50,
+      "crop_width": 56,
+      "crop_x": 26,
+      "crop_y": 2,
+      "die": [
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63
+      ],
+      "fire": [
+        [
+          0
+        ],
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4
+        ],
+        [
+          5
+        ],
+        [
+          6
+        ],
+        [
+          7
+        ]
+      ],
+      "foot_anchor_px": [
+        43.0,
+        48.0
+      ],
+      "fps": 11.0,
+      "run": [
+        [
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ],
+        [
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        [
+          20,
+          21,
+          22,
+          23,
+          24,
+          25
+        ],
+        [
+          26,
+          27,
+          28,
+          29,
+          30,
+          31
+        ],
+        [
+          32,
+          33,
+          34,
+          35,
+          36,
+          37
+        ],
+        [
+          38,
+          39,
+          40,
+          41,
+          42,
+          43
+        ],
+        [
+          44,
+          45,
+          46,
+          47,
+          48,
+          49
+        ],
+        [
+          50,
+          51,
+          52,
+          53,
+          54,
+          55
+        ]
+      ],
+      "source_canvas_height": 86,
+      "source_canvas_width": 86,
+      "stand": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "team_remap": true,
+      "world_height_m": 1.75
+    },
+    "boris": {
+      "atlas": "assets/sprites/infantry/boris.png",
+      "atlas_height": 1584,
+      "atlas_width": 1500,
+      "body_height_px": 35.0,
+      "cell_height": 132,
+      "cell_width": 150,
+      "columns": 10,
+      "crop_height": 66,
+      "crop_width": 75,
+      "crop_x": 19,
+      "crop_y": 9,
+      "die": [
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111
+      ],
+      "fire": [
+        [
+          56,
+          57,
+          58,
+          59,
+          60,
+          61
+        ],
+        [
+          62,
+          63,
+          64,
+          65,
+          66,
+          67
+        ],
+        [
+          68,
+          69,
+          70,
+          71,
+          72,
+          73
+        ],
+        [
+          74,
+          75,
+          76,
+          77,
+          78,
+          79
+        ],
+        [
+          80,
+          81,
+          82,
+          83,
+          84,
+          85
+        ],
+        [
+          86,
+          87,
+          88,
+          89,
+          90,
+          91
+        ],
+        [
+          92,
+          93,
+          94,
+          95,
+          96,
+          97
+        ],
+        [
+          98,
+          99,
+          100,
+          101,
+          102,
+          103
+        ]
+      ],
+      "foot_anchor_px": [
+        49.0,
+        52.0
+      ],
+      "fps": 11.0,
+      "run": [
+        [
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ],
+        [
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        [
+          20,
+          21,
+          22,
+          23,
+          24,
+          25
+        ],
+        [
+          26,
+          27,
+          28,
+          29,
+          30,
+          31
+        ],
+        [
+          32,
+          33,
+          34,
+          35,
+          36,
+          37
+        ],
+        [
+          38,
+          39,
+          40,
+          41,
+          42,
+          43
+        ],
+        [
+          44,
+          45,
+          46,
+          47,
+          48,
+          49
+        ],
+        [
+          50,
+          51,
+          52,
+          53,
+          54,
+          55
+        ]
+      ],
+      "source_canvas_height": 88,
+      "source_canvas_width": 98,
+      "stand": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "team_remap": true,
+      "world_height_m": 1.8600000143051147
+    },
+    "chrono_commando": {
+      "atlas": "assets/sprites/infantry/chrono_commando.png",
+      "atlas_height": 960,
+      "atlas_width": 1060,
+      "body_height_px": 32.0,
+      "cell_height": 80,
+      "cell_width": 106,
+      "columns": 10,
+      "crop_height": 40,
+      "crop_width": 53,
+      "crop_x": 31,
+      "crop_y": 7,
+      "die": [
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111
+      ],
+      "fire": [
+        [
+          56,
+          57,
+          58,
+          59,
+          60,
+          61
+        ],
+        [
+          62,
+          63,
+          64,
+          65,
+          66,
+          67
+        ],
+        [
+          68,
+          69,
+          70,
+          71,
+          72,
+          73
+        ],
+        [
+          74,
+          75,
+          76,
+          77,
+          78,
+          79
+        ],
+        [
+          80,
+          81,
+          82,
+          83,
+          84,
+          85
+        ],
+        [
+          86,
+          87,
+          88,
+          89,
+          90,
+          91
+        ],
+        [
+          92,
+          93,
+          94,
+          95,
+          96,
+          97
+        ],
+        [
+          98,
+          99,
+          100,
+          101,
+          102,
+          103
+        ]
+      ],
+      "foot_anchor_px": [
+        59.0,
+        41.0
+      ],
+      "fps": 11.0,
+      "run": [
+        [
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ],
+        [
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        [
+          20,
+          21,
+          22,
+          23,
+          24,
+          25
+        ],
+        [
+          26,
+          27,
+          28,
+          29,
+          30,
+          31
+        ],
+        [
+          32,
+          33,
+          34,
+          35,
+          36,
+          37
+        ],
+        [
+          38,
+          39,
+          40,
+          41,
+          42,
+          43
+        ],
+        [
+          44,
+          45,
+          46,
+          47,
+          48,
+          49
+        ],
+        [
+          50,
+          51,
+          52,
+          53,
+          54,
+          55
+        ]
+      ],
+      "source_canvas_height": 72,
+      "source_canvas_width": 118,
+      "stand": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "team_remap": true,
+      "world_height_m": 1.8200000524520874
+    },
+    "chrono_ivan": {
+      "atlas": "assets/sprites/infantry/chrono_ivan.png",
+      "atlas_height": 1378,
+      "atlas_width": 1422,
+      "body_height_px": 28.0,
+      "cell_height": 106,
+      "cell_width": 158,
+      "columns": 9,
+      "crop_height": 53,
+      "crop_width": 79,
+      "crop_x": 21,
+      "crop_y": 8,
+      "die": [
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111
+      ],
+      "fire": [
+        [
+          56,
+          57,
+          58,
+          59,
+          60,
+          61
+        ],
+        [
+          62,
+          63,
+          64,
+          65,
+          66,
+          67
+        ],
+        [
+          68,
+          69,
+          70,
+          71,
+          72,
+          73
+        ],
+        [
+          74,
+          75,
+          76,
+          77,
+          78,
+          79
+        ],
+        [
+          80,
+          81,
+          82,
+          83,
+          84,
+          85
+        ],
+        [
+          86,
+          87,
+          88,
+          89,
+          90,
+          91
+        ],
+        [
+          92,
+          93,
+          94,
+          95,
+          96,
+          97
+        ],
+        [
+          98,
+          99,
+          100,
+          101,
+          102,
+          103
+        ]
+      ],
+      "foot_anchor_px": [
+        52.0,
+        48.0
+      ],
+      "fps": 11.0,
+      "run": [
+        [
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ],
+        [
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        [
+          20,
+          21,
+          22,
+          23,
+          24,
+          25
+        ],
+        [
+          26,
+          27,
+          28,
+          29,
+          30,
+          31
+        ],
+        [
+          32,
+          33,
+          34,
+          35,
+          36,
+          37
+        ],
+        [
+          38,
+          39,
+          40,
+          41,
+          42,
+          43
+        ],
+        [
+          44,
+          45,
+          46,
+          47,
+          48,
+          49
+        ],
+        [
+          50,
+          51,
+          52,
+          53,
+          54,
+          55
+        ]
+      ],
+      "source_canvas_height": 88,
+      "source_canvas_width": 104,
+      "stand": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "team_remap": true,
+      "world_height_m": 1.8200000524520874
+    },
+    "chrono_legionnaire": {
+      "atlas": "assets/sprites/infantry/chrono_legionnaire.png",
+      "atlas_height": 1144,
+      "atlas_width": 1188,
+      "body_height_px": 33.0,
+      "cell_height": 88,
+      "cell_width": 132,
+      "columns": 9,
+      "crop_height": 44,
+      "crop_width": 66,
+      "crop_x": 4,
+      "crop_y": 10,
+      "die": [
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111
+      ],
+      "fire": [
+        [
+          56,
+          57,
+          58,
+          59,
+          60,
+          61
+        ],
+        [
+          62,
+          63,
+          64,
+          65,
+          66,
+          67
+        ],
+        [
+          68,
+          69,
+          70,
+          71,
+          72,
+          73
+        ],
+        [
+          74,
+          75,
+          76,
+          77,
+          78,
+          79
+        ],
+        [
+          80,
+          81,
+          82,
+          83,
+          84,
+          85
+        ],
+        [
+          86,
+          87,
+          88,
+          89,
+          90,
+          91
+        ],
+        [
+          92,
+          93,
+          94,
+          95,
+          96,
+          97
+        ],
+        [
+          98,
+          99,
+          100,
+          101,
+          102,
+          103
+        ]
+      ],
+      "foot_anchor_px": [
+        37.0,
+        51.0
+      ],
+      "fps": 11.0,
+      "run": [
+        [
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ],
+        [
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        [
+          20,
+          21,
+          22,
+          23,
+          24,
+          25
+        ],
+        [
+          26,
+          27,
+          28,
+          29,
+          30,
+          31
+        ],
+        [
+          32,
+          33,
+          34,
+          35,
+          36,
+          37
+        ],
+        [
+          38,
+          39,
+          40,
+          41,
+          42,
+          43
+        ],
+        [
+          44,
+          45,
+          46,
+          47,
+          48,
+          49
+        ],
+        [
+          50,
+          51,
+          52,
+          53,
+          54,
+          55
+        ]
+      ],
+      "source_canvas_height": 88,
+      "source_canvas_width": 74,
+      "stand": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "team_remap": true,
+      "world_height_m": 1.840000033378601
+    },
+    "crazy_ivan": {
+      "atlas": "assets/sprites/infantry/crazy_ivan.png",
+      "atlas_height": 1474,
+      "atlas_width": 1540,
+      "body_height_px": 28.0,
+      "cell_height": 134,
+      "cell_width": 140,
+      "columns": 11,
+      "crop_height": 67,
+      "crop_width": 70,
+      "crop_x": 25,
+      "crop_y": 2,
+      "die": [
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111
+      ],
+      "fire": [
+        [
+          56,
+          57,
+          58,
+          59,
+          60,
+          61
+        ],
+        [
+          62,
+          63,
+          64,
+          65,
+          66,
+          67
+        ],
+        [
+          68,
+          69,
+          70,
+          71,
+          72,
+          73
+        ],
+        [
+          74,
+          75,
+          76,
+          77,
+          78,
+          79
+        ],
+        [
+          80,
+          81,
+          82,
+          83,
+          84,
+          85
+        ],
+        [
+          86,
+          87,
+          88,
+          89,
+          90,
+          91
+        ],
+        [
+          92,
+          93,
+          94,
+          95,
+          96,
+          97
+        ],
+        [
+          98,
+          99,
+          100,
+          101,
+          102,
+          103
+        ]
+      ],
+      "foot_anchor_px": [
+        50.0,
+        48.0
+      ],
+      "fps": 11.0,
+      "run": [
+        [
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ],
+        [
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        [
+          20,
+          21,
+          22,
+          23,
+          24,
+          25
+        ],
+        [
+          26,
+          27,
+          28,
+          29,
+          30,
+          31
+        ],
+        [
+          32,
+          33,
+          34,
+          35,
+          36,
+          37
+        ],
+        [
+          38,
+          39,
+          40,
+          41,
+          42,
+          43
+        ],
+        [
+          44,
+          45,
+          46,
+          47,
+          48,
+          49
+        ],
+        [
+          50,
+          51,
+          52,
+          53,
+          54,
+          55
+        ]
+      ],
+      "source_canvas_height": 88,
+      "source_canvas_width": 100,
+      "stand": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "team_remap": true,
+      "world_height_m": 1.8200000524520874
+    },
+    "desolator": {
+      "atlas": "assets/sprites/infantry/desolator.png",
+      "atlas_height": 1378,
+      "atlas_width": 1620,
+      "body_height_px": 40.0,
+      "cell_height": 106,
+      "cell_width": 180,
+      "columns": 9,
+      "crop_height": 53,
+      "crop_width": 90,
+      "crop_x": 30,
+      "crop_y": 2,
+      "die": [
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111
+      ],
+      "fire": [
+        [
+          56,
+          57,
+          58,
+          59,
+          60,
+          61
+        ],
+        [
+          62,
+          63,
+          64,
+          65,
+          66,
+          67
+        ],
+        [
+          68,
+          69,
+          70,
+          71,
+          72,
+          73
+        ],
+        [
+          74,
+          75,
+          76,
+          77,
+          78,
+          79
+        ],
+        [
+          80,
+          81,
+          82,
+          83,
+          84,
+          85
+        ],
+        [
+          86,
+          87,
+          88,
+          89,
+          90,
+          91
+        ],
+        [
+          92,
+          93,
+          94,
+          95,
+          96,
+          97
+        ],
+        [
+          98,
+          99,
+          100,
+          101,
+          102,
+          103
+        ]
+      ],
+      "foot_anchor_px": [
+        63.0,
+        52.0
+      ],
+      "fps": 11.0,
+      "run": [
+        [
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ],
+        [
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        [
+          20,
+          21,
+          22,
+          23,
+          24,
+          25
+        ],
+        [
+          26,
+          27,
+          28,
+          29,
+          30,
+          31
+        ],
+        [
+          32,
+          33,
+          34,
+          35,
+          36,
+          37
+        ],
+        [
+          38,
+          39,
+          40,
+          41,
+          42,
+          43
+        ],
+        [
+          44,
+          45,
+          46,
+          47,
+          48,
+          49
+        ],
+        [
+          50,
+          51,
+          52,
+          53,
+          54,
+          55
+        ]
+      ],
+      "source_canvas_height": 88,
+      "source_canvas_width": 126,
+      "stand": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "team_remap": true,
+      "world_height_m": 1.9199999570846558
+    },
+    "flak_trooper": {
+      "atlas": "assets/sprites/infantry/flak_trooper.png",
+      "atlas_height": 1392,
+      "atlas_width": 1440,
+      "body_height_px": 44.0,
+      "cell_height": 116,
+      "cell_width": 144,
+      "columns": 10,
+      "crop_height": 58,
+      "crop_width": 72,
+      "crop_x": 19,
+      "crop_y": 1,
+      "die": [
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111
+      ],
+      "fire": [
+        [
+          56,
+          57,
+          58,
+          59,
+          60,
+          61
+        ],
+        [
+          62,
+          63,
+          64,
+          65,
+          66,
+          67
+        ],
+        [
+          68,
+          69,
+          70,
+          71,
+          72,
+          73
+        ],
+        [
+          74,
+          75,
+          76,
+          77,
+          78,
+          79
+        ],
+        [
+          80,
+          81,
+          82,
+          83,
+          84,
+          85
+        ],
+        [
+          86,
+          87,
+          88,
+          89,
+          90,
+          91
+        ],
+        [
+          92,
+          93,
+          94,
+          95,
+          96,
+          97
+        ],
+        [
+          98,
+          99,
+          100,
+          101,
+          102,
+          103
+        ]
+      ],
+      "foot_anchor_px": [
+        49.0,
+        55.0
+      ],
+      "fps": 11.0,
+      "run": [
+        [
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ],
+        [
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        [
+          20,
+          21,
+          22,
+          23,
+          24,
+          25
+        ],
+        [
+          26,
+          27,
+          28,
+          29,
+          30,
+          31
+        ],
+        [
+          32,
+          33,
+          34,
+          35,
+          36,
+          37
+        ],
+        [
+          38,
+          39,
+          40,
+          41,
+          42,
+          43
+        ],
+        [
+          44,
+          45,
+          46,
+          47,
+          48,
+          49
+        ],
+        [
+          50,
+          51,
+          52,
+          53,
+          54,
+          55
+        ]
+      ],
+      "source_canvas_height": 94,
+      "source_canvas_width": 98,
+      "stand": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "team_remap": true,
+      "world_height_m": 1.8200000524520874
+    },
+    "guardian_gi": {
+      "atlas": "assets/sprites/infantry/guardian_gi.png",
+      "atlas_height": 1118,
+      "atlas_width": 1134,
+      "body_height_px": 33.0,
+      "cell_height": 86,
+      "cell_width": 126,
+      "columns": 9,
+      "crop_height": 43,
+      "crop_width": 63,
+      "crop_x": 20,
+      "crop_y": 8,
+      "die": [
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111
+      ],
+      "fire": [
+        [
+          56,
+          57,
+          58,
+          59,
+          60,
+          61
+        ],
+        [
+          62,
+          63,
+          64,
+          65,
+          66,
+          67
+        ],
+        [
+          68,
+          69,
+          70,
+          71,
+          72,
+          73
+        ],
+        [
+          74,
+          75,
+          76,
+          77,
+          78,
+          79
+        ],
+        [
+          80,
+          81,
+          82,
+          83,
+          84,
+          85
+        ],
+        [
+          86,
+          87,
+          88,
+          89,
+          90,
+          91
+        ],
+        [
+          92,
+          93,
+          94,
+          95,
+          96,
+          97
+        ],
+        [
+          98,
+          99,
+          100,
+          101,
+          102,
+          103
+        ]
+      ],
+      "foot_anchor_px": [
+        47.0,
+        45.0
+      ],
+      "fps": 11.0,
+      "run": [
+        [
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ],
+        [
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        [
+          20,
+          21,
+          22,
+          23,
+          24,
+          25
+        ],
+        [
+          26,
+          27,
+          28,
+          29,
+          30,
+          31
+        ],
+        [
+          32,
+          33,
+          34,
+          35,
+          36,
+          37
+        ],
+        [
+          38,
+          39,
+          40,
+          41,
+          42,
+          43
+        ],
+        [
+          44,
+          45,
+          46,
+          47,
+          48,
+          49
+        ],
+        [
+          50,
+          51,
+          52,
+          53,
+          54,
+          55
+        ]
+      ],
+      "source_canvas_height": 78,
+      "source_canvas_width": 94,
+      "stand": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "team_remap": true,
+      "world_height_m": 1.7999999523162842
+    },
+    "navy_seal": {
+      "atlas": "assets/sprites/infantry/navy_seal.png",
+      "atlas_height": 960,
+      "atlas_width": 1060,
+      "body_height_px": 32.0,
+      "cell_height": 80,
+      "cell_width": 106,
+      "columns": 10,
+      "crop_height": 40,
+      "crop_width": 53,
+      "crop_x": 31,
+      "crop_y": 7,
+      "die": [
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111
+      ],
+      "fire": [
+        [
+          56,
+          57,
+          58,
+          59,
+          60,
+          61
+        ],
+        [
+          62,
+          63,
+          64,
+          65,
+          66,
+          67
+        ],
+        [
+          68,
+          69,
+          70,
+          71,
+          72,
+          73
+        ],
+        [
+          74,
+          75,
+          76,
+          77,
+          78,
+          79
+        ],
+        [
+          80,
+          81,
+          82,
+          83,
+          84,
+          85
+        ],
+        [
+          86,
+          87,
+          88,
+          89,
+          90,
+          91
+        ],
+        [
+          92,
+          93,
+          94,
+          95,
+          96,
+          97
+        ],
+        [
+          98,
+          99,
+          100,
+          101,
+          102,
+          103
+        ]
+      ],
+      "foot_anchor_px": [
+        59.0,
+        41.0
+      ],
+      "fps": 11.0,
+      "run": [
+        [
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ],
+        [
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        [
+          20,
+          21,
+          22,
+          23,
+          24,
+          25
+        ],
+        [
+          26,
+          27,
+          28,
+          29,
+          30,
+          31
+        ],
+        [
+          32,
+          33,
+          34,
+          35,
+          36,
+          37
+        ],
+        [
+          38,
+          39,
+          40,
+          41,
+          42,
+          43
+        ],
+        [
+          44,
+          45,
+          46,
+          47,
+          48,
+          49
+        ],
+        [
+          50,
+          51,
+          52,
+          53,
+          54,
+          55
+        ]
+      ],
+      "source_canvas_height": 72,
+      "source_canvas_width": 118,
+      "stand": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "team_remap": true,
+      "world_height_m": 1.8200000524520874
+    },
+    "psi_commando": {
+      "atlas": "assets/sprites/infantry/psi_commando.png",
+      "atlas_height": 720,
+      "atlas_width": 744,
+      "body_height_px": 28.0,
+      "cell_height": 72,
+      "cell_width": 62,
+      "columns": 12,
+      "crop_height": 36,
+      "crop_width": 31,
+      "crop_x": 13,
+      "crop_y": 7,
+      "die": [
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111
+      ],
+      "fire": [
+        [
+          56,
+          57,
+          58,
+          59,
+          60,
+          61
+        ],
+        [
+          62,
+          63,
+          64,
+          65,
+          66,
+          67
+        ],
+        [
+          68,
+          69,
+          70,
+          71,
+          72,
+          73
+        ],
+        [
+          74,
+          75,
+          76,
+          77,
+          78,
+          79
+        ],
+        [
+          80,
+          81,
+          82,
+          83,
+          84,
+          85
+        ],
+        [
+          86,
+          87,
+          88,
+          89,
+          90,
+          91
+        ],
+        [
+          92,
+          93,
+          94,
+          95,
+          96,
+          97
+        ],
+        [
+          98,
+          99,
+          100,
+          101,
+          102,
+          103
+        ]
+      ],
+      "foot_anchor_px": [
+        28.0,
+        39.0
+      ],
+      "fps": 11.0,
+      "run": [
+        [
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ],
+        [
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        [
+          20,
+          21,
+          22,
+          23,
+          24,
+          25
+        ],
+        [
+          26,
+          27,
+          28,
+          29,
+          30,
+          31
+        ],
+        [
+          32,
+          33,
+          34,
+          35,
+          36,
+          37
+        ],
+        [
+          38,
+          39,
+          40,
+          41,
+          42,
+          43
+        ],
+        [
+          44,
+          45,
+          46,
+          47,
+          48,
+          49
+        ],
+        [
+          50,
+          51,
+          52,
+          53,
+          54,
+          55
+        ]
+      ],
+      "source_canvas_height": 70,
+      "source_canvas_width": 56,
+      "stand": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "team_remap": true,
+      "world_height_m": 1.7999999523162842
+    },
+    "rocketeer": {
+      "atlas": "assets/sprites/infantry/rocketeer.png",
+      "atlas_height": 1232,
+      "atlas_width": 1300,
+      "body_height_px": 33.0,
+      "cell_height": 112,
+      "cell_width": 130,
+      "columns": 10,
+      "crop_height": 56,
+      "crop_width": 65,
+      "crop_x": 25,
+      "crop_y": 17,
+      "die": [
+        96,
+        97,
+        98,
+        99,
+        100,
+        101,
+        102,
+        103
+      ],
+      "fire": [
+        [
+          48,
+          49,
+          50,
+          51,
+          52,
+          53
+        ],
+        [
+          54,
+          55,
+          56,
+          57,
+          58,
+          59
+        ],
+        [
+          60,
+          61,
+          62,
+          63,
+          64,
+          65
+        ],
+        [
+          66,
+          67,
+          68,
+          69,
+          70,
+          71
+        ],
+        [
+          72,
+          73,
+          74,
+          75,
+          76,
+          77
+        ],
+        [
+          78,
+          79,
+          80,
+          81,
+          82,
+          83
+        ],
+        [
+          84,
+          85,
+          86,
+          87,
+          88,
+          89
+        ],
+        [
+          90,
+          91,
+          92,
+          93,
+          94,
+          95
+        ]
+      ],
+      "foot_anchor_px": [
+        47.0,
+        65.0
+      ],
+      "fps": 11.0,
+      "run": [
+        [
+          0,
+          8,
+          9,
+          10,
+          11,
+          12
+        ],
+        [
+          1,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        [
+          2,
+          18,
+          19,
+          20,
+          21,
+          22
+        ],
+        [
+          3,
+          23,
+          24,
+          25,
+          26,
+          27
+        ],
+        [
+          4,
+          28,
+          29,
+          30,
+          31,
+          32
+        ],
+        [
+          5,
+          33,
+          34,
+          35,
+          36,
+          37
+        ],
+        [
+          6,
+          38,
+          39,
+          40,
+          41,
+          42
+        ],
+        [
+          7,
+          43,
+          44,
+          45,
+          46,
+          47
+        ]
+      ],
+      "source_canvas_height": 120,
+      "source_canvas_width": 94,
+      "stand": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "team_remap": true,
+      "world_height_m": 1.850000023841858
+    },
+    "sniper": {
+      "atlas": "assets/sprites/infantry/sniper.png",
+      "atlas_height": 1404,
+      "atlas_width": 1512,
+      "body_height_px": 34.0,
+      "cell_height": 108,
+      "cell_width": 168,
+      "columns": 9,
+      "crop_height": 54,
+      "crop_width": 84,
+      "crop_x": 24,
+      "crop_y": 2,
+      "die": [
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111
+      ],
+      "fire": [
+        [
+          56,
+          57,
+          58,
+          59,
+          60,
+          61
+        ],
+        [
+          62,
+          63,
+          64,
+          65,
+          66,
+          67
+        ],
+        [
+          68,
+          69,
+          70,
+          71,
+          72,
+          73
+        ],
+        [
+          74,
+          75,
+          76,
+          77,
+          78,
+          79
+        ],
+        [
+          80,
+          81,
+          82,
+          83,
+          84,
+          85
+        ],
+        [
+          86,
+          87,
+          88,
+          89,
+          90,
+          91
+        ],
+        [
+          92,
+          93,
+          94,
+          95,
+          96,
+          97
+        ],
+        [
+          98,
+          99,
+          100,
+          101,
+          102,
+          103
+        ]
+      ],
+      "foot_anchor_px": [
+        56.0,
+        50.0
+      ],
+      "fps": 11.0,
+      "run": [
+        [
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ],
+        [
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        [
+          20,
+          21,
+          22,
+          23,
+          24,
+          25
+        ],
+        [
+          26,
+          27,
+          28,
+          29,
+          30,
+          31
+        ],
+        [
+          32,
+          33,
+          34,
+          35,
+          36,
+          37
+        ],
+        [
+          38,
+          39,
+          40,
+          41,
+          42,
+          43
+        ],
+        [
+          44,
+          45,
+          46,
+          47,
+          48,
+          49
+        ],
+        [
+          50,
+          51,
+          52,
+          53,
+          54,
+          55
+        ]
+      ],
+      "source_canvas_height": 82,
+      "source_canvas_width": 112,
+      "stand": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "team_remap": true,
+      "world_height_m": 1.7799999713897705
+    },
+    "soviet_attack_dog": {
+      "atlas": "assets/sprites/infantry/soviet_attack_dog.png",
+      "atlas_height": 1128,
+      "atlas_width": 1180,
+      "body_height_px": 26.0,
+      "cell_height": 94,
+      "cell_width": 118,
+      "columns": 10,
+      "crop_height": 47,
+      "crop_width": 59,
+      "crop_x": 11,
+      "crop_y": 3,
+      "die": [
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111
+      ],
+      "fire": [
+        [
+          56,
+          57,
+          58,
+          59,
+          60,
+          61
+        ],
+        [
+          62,
+          63,
+          64,
+          65,
+          66,
+          67
+        ],
+        [
+          68,
+          69,
+          70,
+          71,
+          72,
+          73
+        ],
+        [
+          74,
+          75,
+          76,
+          77,
+          78,
+          79
+        ],
+        [
+          80,
+          81,
+          82,
+          83,
+          84,
+          85
+        ],
+        [
+          86,
+          87,
+          88,
+          89,
+          90,
+          91
+        ],
+        [
+          92,
+          93,
+          94,
+          95,
+          96,
+          97
+        ],
+        [
+          98,
+          99,
+          100,
+          101,
+          102,
+          103
+        ]
+      ],
+      "foot_anchor_px": [
+        37.0,
+        43.0
+      ],
+      "fps": 11.0,
+      "run": [
+        [
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ],
+        [
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        [
+          20,
+          21,
+          22,
+          23,
+          24,
+          25
+        ],
+        [
+          26,
+          27,
+          28,
+          29,
+          30,
+          31
+        ],
+        [
+          32,
+          33,
+          34,
+          35,
+          36,
+          37
+        ],
+        [
+          38,
+          39,
+          40,
+          41,
+          42,
+          43
+        ],
+        [
+          44,
+          45,
+          46,
+          47,
+          48,
+          49
+        ],
+        [
+          50,
+          51,
+          52,
+          53,
+          54,
+          55
+        ]
+      ],
+      "source_canvas_height": 72,
+      "source_canvas_width": 74,
+      "stand": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "team_remap": true,
+      "world_height_m": 1.149999976158142
+    },
+    "soviet_conscript": {
+      "atlas": "assets/sprites/infantry/soviet_conscript.png",
+      "atlas_height": 990,
+      "atlas_width": 1092,
+      "body_height_px": 33.0,
+      "cell_height": 110,
+      "cell_width": 84,
+      "columns": 13,
+      "crop_height": 55,
+      "crop_width": 42,
+      "crop_x": 17,
+      "crop_y": 4,
+      "die": [
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111
+      ],
+      "fire": [
+        [
+          56,
+          57,
+          58,
+          59,
+          60,
+          61
+        ],
+        [
+          62,
+          63,
+          64,
+          65,
+          66,
+          67
+        ],
+        [
+          68,
+          69,
+          70,
+          71,
+          72,
+          73
+        ],
+        [
+          74,
+          75,
+          76,
+          77,
+          78,
+          79
+        ],
+        [
+          80,
+          81,
+          82,
+          83,
+          84,
+          85
+        ],
+        [
+          86,
+          87,
+          88,
+          89,
+          90,
+          91
+        ],
+        [
+          92,
+          93,
+          94,
+          95,
+          96,
+          97
+        ],
+        [
+          98,
+          99,
+          100,
+          101,
+          102,
+          103
+        ]
+      ],
+      "foot_anchor_px": [
+        38.0,
+        55.0
+      ],
+      "fps": 11.0,
+      "run": [
+        [
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ],
+        [
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        [
+          20,
+          21,
+          22,
+          23,
+          24,
+          25
+        ],
+        [
+          26,
+          27,
+          28,
+          29,
+          30,
+          31
+        ],
+        [
+          32,
+          33,
+          34,
+          35,
+          36,
+          37
+        ],
+        [
+          38,
+          39,
+          40,
+          41,
+          42,
+          43
+        ],
+        [
+          44,
+          45,
+          46,
+          47,
+          48,
+          49
+        ],
+        [
+          50,
+          51,
+          52,
+          53,
+          54,
+          55
+        ]
+      ],
+      "source_canvas_height": 96,
+      "source_canvas_width": 76,
+      "stand": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "team_remap": true,
+      "world_height_m": 1.7599999904632568
+    },
+    "soviet_engineer": {
+      "atlas": "assets/sprites/infantry/engineer.png",
+      "atlas_height": 672,
+      "atlas_width": 768,
+      "body_height_px": 30.0,
+      "cell_height": 84,
+      "cell_width": 96,
+      "columns": 8,
+      "crop_height": 42,
+      "crop_width": 48,
+      "crop_x": 17,
+      "crop_y": 7,
+      "die": [
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63
+      ],
+      "fire": [
+        [
+          0
+        ],
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4
+        ],
+        [
+          5
+        ],
+        [
+          6
+        ],
+        [
+          7
+        ]
+      ],
+      "foot_anchor_px": [
+        38.0,
+        42.0
+      ],
+      "fps": 11.0,
+      "run": [
+        [
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ],
+        [
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        [
+          20,
+          21,
+          22,
+          23,
+          24,
+          25
+        ],
+        [
+          26,
+          27,
+          28,
+          29,
+          30,
+          31
+        ],
+        [
+          32,
+          33,
+          34,
+          35,
+          36,
+          37
+        ],
+        [
+          38,
+          39,
+          40,
+          41,
+          42,
+          43
+        ],
+        [
+          44,
+          45,
+          46,
+          47,
+          48,
+          49
+        ],
+        [
+          50,
+          51,
+          52,
+          53,
+          54,
+          55
+        ]
+      ],
+      "source_canvas_height": 80,
+      "source_canvas_width": 76,
+      "stand": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "team_remap": true,
+      "world_height_m": 1.7200000286102295
+    },
+    "tanya": {
+      "atlas": "assets/sprites/infantry/tanya.png",
+      "atlas_height": 1144,
+      "atlas_width": 1122,
+      "body_height_px": 30.0,
+      "cell_height": 104,
+      "cell_width": 102,
+      "columns": 11,
+      "crop_height": 52,
+      "crop_width": 51,
+      "crop_x": 43,
+      "crop_y": 16,
+      "die": [
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111
+      ],
+      "fire": [
+        [
+          56,
+          57,
+          58,
+          59,
+          60,
+          61
+        ],
+        [
+          62,
+          63,
+          64,
+          65,
+          66,
+          67
+        ],
+        [
+          68,
+          69,
+          70,
+          71,
+          72,
+          73
+        ],
+        [
+          74,
+          75,
+          76,
+          77,
+          78,
+          79
+        ],
+        [
+          80,
+          81,
+          82,
+          83,
+          84,
+          85
+        ],
+        [
+          86,
+          87,
+          88,
+          89,
+          90,
+          91
+        ],
+        [
+          92,
+          93,
+          94,
+          95,
+          96,
+          97
+        ],
+        [
+          98,
+          99,
+          100,
+          101,
+          102,
+          103
+        ]
+      ],
+      "foot_anchor_px": [
+        65.0,
+        60.0
+      ],
+      "fps": 11.0,
+      "run": [
+        [
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ],
+        [
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        [
+          20,
+          21,
+          22,
+          23,
+          24,
+          25
+        ],
+        [
+          26,
+          27,
+          28,
+          29,
+          30,
+          31
+        ],
+        [
+          32,
+          33,
+          34,
+          35,
+          36,
+          37
+        ],
+        [
+          38,
+          39,
+          40,
+          41,
+          42,
+          43
+        ],
+        [
+          44,
+          45,
+          46,
+          47,
+          48,
+          49
+        ],
+        [
+          50,
+          51,
+          52,
+          53,
+          54,
+          55
+        ]
+      ],
+      "source_canvas_height": 110,
+      "source_canvas_width": 130,
+      "stand": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "team_remap": true,
+      "world_height_m": 1.7799999713897705
+    },
+    "terrorist": {
+      "atlas": "assets/sprites/infantry/terrorist.png",
+      "atlas_height": 736,
+      "atlas_width": 828,
+      "body_height_px": 30.0,
+      "cell_height": 92,
+      "cell_width": 92,
+      "columns": 9,
+      "crop_height": 46,
+      "crop_width": 46,
+      "crop_x": 9,
+      "crop_y": 7,
+      "die": [
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69
+      ],
+      "fire": [
+        [
+          56,
+          57,
+          58,
+          59,
+          60,
+          61
+        ],
+        [
+          56,
+          57,
+          58,
+          59,
+          60,
+          61
+        ],
+        [
+          56,
+          57,
+          58,
+          59,
+          60,
+          61
+        ],
+        [
+          56,
+          57,
+          58,
+          59,
+          60,
+          61
+        ],
+        [
+          56,
+          57,
+          58,
+          59,
+          60,
+          61
+        ],
+        [
+          56,
+          57,
+          58,
+          59,
+          60,
+          61
+        ],
+        [
+          56,
+          57,
+          58,
+          59,
+          60,
+          61
+        ],
+        [
+          56,
+          57,
+          58,
+          59,
+          60,
+          61
+        ]
+      ],
+      "foot_anchor_px": [
+        39.0,
+        42.0
+      ],
+      "fps": 11.0,
+      "run": [
+        [
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ],
+        [
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        [
+          20,
+          21,
+          22,
+          23,
+          24,
+          25
+        ],
+        [
+          26,
+          27,
+          28,
+          29,
+          30,
+          31
+        ],
+        [
+          32,
+          33,
+          34,
+          35,
+          36,
+          37
+        ],
+        [
+          38,
+          39,
+          40,
+          41,
+          42,
+          43
+        ],
+        [
+          44,
+          45,
+          46,
+          47,
+          48,
+          49
+        ],
+        [
+          50,
+          51,
+          52,
+          53,
+          54,
+          55
+        ]
+      ],
+      "source_canvas_height": 76,
+      "source_canvas_width": 78,
+      "stand": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "team_remap": true,
+      "world_height_m": 1.7599999904632568
+    },
+    "tesla_trooper": {
+      "atlas": "assets/sprites/infantry/tesla_trooper.png",
+      "atlas_height": 1104,
+      "atlas_width": 1200,
+      "body_height_px": 33.0,
+      "cell_height": 92,
+      "cell_width": 120,
+      "columns": 10,
+      "crop_height": 46,
+      "crop_width": 60,
+      "crop_x": 2,
+      "crop_y": 2,
+      "die": [
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111
+      ],
+      "fire": [
+        [
+          56,
+          57,
+          58,
+          59,
+          60,
+          61
+        ],
+        [
+          62,
+          63,
+          64,
+          65,
+          66,
+          67
+        ],
+        [
+          68,
+          69,
+          70,
+          71,
+          72,
+          73
+        ],
+        [
+          74,
+          75,
+          76,
+          77,
+          78,
+          79
+        ],
+        [
+          80,
+          81,
+          82,
+          83,
+          84,
+          85
+        ],
+        [
+          86,
+          87,
+          88,
+          89,
+          90,
+          91
+        ],
+        [
+          92,
+          93,
+          94,
+          95,
+          96,
+          97
+        ],
+        [
+          98,
+          99,
+          100,
+          101,
+          102,
+          103
+        ]
+      ],
+      "foot_anchor_px": [
+        33.0,
+        44.0
+      ],
+      "fps": 11.0,
+      "run": [
+        [
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ],
+        [
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        [
+          20,
+          21,
+          22,
+          23,
+          24,
+          25
+        ],
+        [
+          26,
+          27,
+          28,
+          29,
+          30,
+          31
+        ],
+        [
+          32,
+          33,
+          34,
+          35,
+          36,
+          37
+        ],
+        [
+          38,
+          39,
+          40,
+          41,
+          42,
+          43
+        ],
+        [
+          44,
+          45,
+          46,
+          47,
+          48,
+          49
+        ],
+        [
+          50,
+          51,
+          52,
+          53,
+          54,
+          55
+        ]
+      ],
+      "source_canvas_height": 76,
+      "source_canvas_width": 66,
+      "stand": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "team_remap": true,
+      "world_height_m": 1.9199999570846558
+    },
+    "yuri_brute": {
+      "atlas": "assets/sprites/infantry/yuri_brute.png",
+      "atlas_height": 1464,
+      "atlas_width": 1400,
+      "body_height_px": 40.0,
+      "cell_height": 122,
+      "cell_width": 140,
+      "columns": 10,
+      "crop_height": 61,
+      "crop_width": 70,
+      "crop_x": 37,
+      "crop_y": 3,
+      "die": [
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111
+      ],
+      "fire": [
+        [
+          56,
+          57,
+          58,
+          59,
+          60,
+          61
+        ],
+        [
+          62,
+          63,
+          64,
+          65,
+          66,
+          67
+        ],
+        [
+          68,
+          69,
+          70,
+          71,
+          72,
+          73
+        ],
+        [
+          74,
+          75,
+          76,
+          77,
+          78,
+          79
+        ],
+        [
+          80,
+          81,
+          82,
+          83,
+          84,
+          85
+        ],
+        [
+          86,
+          87,
+          88,
+          89,
+          90,
+          91
+        ],
+        [
+          92,
+          93,
+          94,
+          95,
+          96,
+          97
+        ],
+        [
+          98,
+          99,
+          100,
+          101,
+          102,
+          103
+        ]
+      ],
+      "foot_anchor_px": [
+        67.0,
+        57.0
+      ],
+      "fps": 11.0,
+      "run": [
+        [
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ],
+        [
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        [
+          20,
+          21,
+          22,
+          23,
+          24,
+          25
+        ],
+        [
+          26,
+          27,
+          28,
+          29,
+          30,
+          31
+        ],
+        [
+          32,
+          33,
+          34,
+          35,
+          36,
+          37
+        ],
+        [
+          38,
+          39,
+          40,
+          41,
+          42,
+          43
+        ],
+        [
+          44,
+          45,
+          46,
+          47,
+          48,
+          49
+        ],
+        [
+          50,
+          51,
+          52,
+          53,
+          54,
+          55
+        ]
+      ],
+      "source_canvas_height": 96,
+      "source_canvas_width": 134,
+      "stand": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "team_remap": true,
+      "world_height_m": 2.1500000953674316
+    },
+    "yuri_clone": {
+      "atlas": "assets/sprites/infantry/yuri_clone.png",
+      "atlas_height": 800,
+      "atlas_width": 888,
+      "body_height_px": 29.0,
+      "cell_height": 80,
+      "cell_width": 74,
+      "columns": 12,
+      "crop_height": 40,
+      "crop_width": 37,
+      "crop_x": 1,
+      "crop_y": 8,
+      "die": [
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111
+      ],
+      "fire": [
+        [
+          56,
+          57,
+          58,
+          59,
+          60,
+          61
+        ],
+        [
+          62,
+          63,
+          64,
+          65,
+          66,
+          67
+        ],
+        [
+          68,
+          69,
+          70,
+          71,
+          72,
+          73
+        ],
+        [
+          74,
+          75,
+          76,
+          77,
+          78,
+          79
+        ],
+        [
+          80,
+          81,
+          82,
+          83,
+          84,
+          85
+        ],
+        [
+          86,
+          87,
+          88,
+          89,
+          90,
+          91
+        ],
+        [
+          92,
+          93,
+          94,
+          95,
+          96,
+          97
+        ],
+        [
+          98,
+          99,
+          100,
+          101,
+          102,
+          103
+        ]
+      ],
+      "foot_anchor_px": [
+        23.0,
+        40.0
+      ],
+      "fps": 11.0,
+      "run": [
+        [
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ],
+        [
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        [
+          20,
+          21,
+          22,
+          23,
+          24,
+          25
+        ],
+        [
+          26,
+          27,
+          28,
+          29,
+          30,
+          31
+        ],
+        [
+          32,
+          33,
+          34,
+          35,
+          36,
+          37
+        ],
+        [
+          38,
+          39,
+          40,
+          41,
+          42,
+          43
+        ],
+        [
+          44,
+          45,
+          46,
+          47,
+          48,
+          49
+        ],
+        [
+          50,
+          51,
+          52,
+          53,
+          54,
+          55
+        ]
+      ],
+      "source_canvas_height": 68,
+      "source_canvas_width": 46,
+      "stand": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "team_remap": true,
+      "world_height_m": 1.7799999713897705
+    },
+    "yuri_engineer": {
+      "atlas": "assets/sprites/infantry/engineer.png",
+      "atlas_height": 672,
+      "atlas_width": 768,
+      "body_height_px": 30.0,
+      "cell_height": 84,
+      "cell_width": 96,
+      "columns": 8,
+      "crop_height": 42,
+      "crop_width": 48,
+      "crop_x": 17,
+      "crop_y": 7,
+      "die": [
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63
+      ],
+      "fire": [
+        [
+          0
+        ],
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4
+        ],
+        [
+          5
+        ],
+        [
+          6
+        ],
+        [
+          7
+        ]
+      ],
+      "foot_anchor_px": [
+        38.0,
+        42.0
+      ],
+      "fps": 11.0,
+      "run": [
+        [
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ],
+        [
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        [
+          20,
+          21,
+          22,
+          23,
+          24,
+          25
+        ],
+        [
+          26,
+          27,
+          28,
+          29,
+          30,
+          31
+        ],
+        [
+          32,
+          33,
+          34,
+          35,
+          36,
+          37
+        ],
+        [
+          38,
+          39,
+          40,
+          41,
+          42,
+          43
+        ],
+        [
+          44,
+          45,
+          46,
+          47,
+          48,
+          49
+        ],
+        [
+          50,
+          51,
+          52,
+          53,
+          54,
+          55
+        ]
+      ],
+      "source_canvas_height": 80,
+      "source_canvas_width": 76,
+      "stand": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "team_remap": true,
+      "world_height_m": 1.7200000286102295
+    },
+    "yuri_initiate": {
+      "atlas": "assets/sprites/infantry/yuri_initiate.png",
+      "atlas_height": 1200,
+      "atlas_width": 1380,
+      "body_height_px": 33.0,
+      "cell_height": 100,
+      "cell_width": 138,
+      "columns": 10,
+      "crop_height": 50,
+      "crop_width": 69,
+      "crop_x": 11,
+      "crop_y": 2,
+      "die": [
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111
+      ],
+      "fire": [
+        [
+          56,
+          57,
+          58,
+          59,
+          60,
+          61
+        ],
+        [
+          62,
+          63,
+          64,
+          65,
+          66,
+          67
+        ],
+        [
+          68,
+          69,
+          70,
+          71,
+          72,
+          73
+        ],
+        [
+          74,
+          75,
+          76,
+          77,
+          78,
+          79
+        ],
+        [
+          80,
+          81,
+          82,
+          83,
+          84,
+          85
+        ],
+        [
+          86,
+          87,
+          88,
+          89,
+          90,
+          91
+        ],
+        [
+          92,
+          93,
+          94,
+          95,
+          96,
+          97
+        ],
+        [
+          98,
+          99,
+          100,
+          101,
+          102,
+          103
+        ]
+      ],
+      "foot_anchor_px": [
+        43.0,
+        48.0
+      ],
+      "fps": 11.0,
+      "run": [
+        [
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ],
+        [
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        [
+          20,
+          21,
+          22,
+          23,
+          24,
+          25
+        ],
+        [
+          26,
+          27,
+          28,
+          29,
+          30,
+          31
+        ],
+        [
+          32,
+          33,
+          34,
+          35,
+          36,
+          37
+        ],
+        [
+          38,
+          39,
+          40,
+          41,
+          42,
+          43
+        ],
+        [
+          44,
+          45,
+          46,
+          47,
+          48,
+          49
+        ],
+        [
+          50,
+          51,
+          52,
+          53,
+          54,
+          55
+        ]
+      ],
+      "source_canvas_height": 86,
+      "source_canvas_width": 86,
+      "stand": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "team_remap": true,
+      "world_height_m": 1.7599999904632568
+    },
+    "yuri_prime": {
+      "atlas": "assets/sprites/infantry/yuri_prime.png",
+      "atlas_height": 2002,
+      "atlas_width": 2068,
+      "body_height_px": 56.0,
+      "cell_height": 182,
+      "cell_width": 188,
+      "columns": 11,
+      "crop_height": 91,
+      "crop_width": 94,
+      "crop_x": 42,
+      "crop_y": 6,
+      "die": [
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111
+      ],
+      "fire": [
+        [
+          56,
+          57,
+          58,
+          59,
+          60,
+          61
+        ],
+        [
+          62,
+          63,
+          64,
+          65,
+          66,
+          67
+        ],
+        [
+          68,
+          69,
+          70,
+          71,
+          72,
+          73
+        ],
+        [
+          74,
+          75,
+          76,
+          77,
+          78,
+          79
+        ],
+        [
+          80,
+          81,
+          82,
+          83,
+          84,
+          85
+        ],
+        [
+          86,
+          87,
+          88,
+          89,
+          90,
+          91
+        ],
+        [
+          92,
+          93,
+          94,
+          95,
+          96,
+          97
+        ],
+        [
+          98,
+          99,
+          100,
+          101,
+          102,
+          103
+        ]
+      ],
+      "foot_anchor_px": [
+        77.0,
+        67.0
+      ],
+      "fps": 11.0,
+      "run": [
+        [
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ],
+        [
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        [
+          20,
+          21,
+          22,
+          23,
+          24,
+          25
+        ],
+        [
+          26,
+          27,
+          28,
+          29,
+          30,
+          31
+        ],
+        [
+          32,
+          33,
+          34,
+          35,
+          36,
+          37
+        ],
+        [
+          38,
+          39,
+          40,
+          41,
+          42,
+          43
+        ],
+        [
+          44,
+          45,
+          46,
+          47,
+          48,
+          49
+        ],
+        [
+          50,
+          51,
+          52,
+          53,
+          54,
+          55
+        ]
+      ],
+      "source_canvas_height": 122,
+      "source_canvas_width": 154,
+      "stand": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "team_remap": true,
+      "world_height_m": 1.899999976158142
+    },
+    "yuri_virus": {
+      "atlas": "assets/sprites/infantry/yuri_virus.png",
+      "atlas_height": 1638,
+      "atlas_width": 1584,
+      "body_height_px": 37.0,
+      "cell_height": 126,
+      "cell_width": 176,
+      "columns": 9,
+      "crop_height": 63,
+      "crop_width": 88,
+      "crop_x": 20,
+      "crop_y": 2,
+      "die": [
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111
+      ],
+      "fire": [
+        [
+          56,
+          57,
+          58,
+          59,
+          60,
+          61
+        ],
+        [
+          62,
+          63,
+          64,
+          65,
+          66,
+          67
+        ],
+        [
+          68,
+          69,
+          70,
+          71,
+          72,
+          73
+        ],
+        [
+          74,
+          75,
+          76,
+          77,
+          78,
+          79
+        ],
+        [
+          80,
+          81,
+          82,
+          83,
+          84,
+          85
+        ],
+        [
+          86,
+          87,
+          88,
+          89,
+          90,
+          91
+        ],
+        [
+          92,
+          93,
+          94,
+          95,
+          96,
+          97
+        ],
+        [
+          98,
+          99,
+          100,
+          101,
+          102,
+          103
+        ]
+      ],
+      "foot_anchor_px": [
+        65.0,
+        52.0
+      ],
+      "fps": 11.0,
+      "run": [
+        [
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ],
+        [
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        [
+          20,
+          21,
+          22,
+          23,
+          24,
+          25
+        ],
+        [
+          26,
+          27,
+          28,
+          29,
+          30,
+          31
+        ],
+        [
+          32,
+          33,
+          34,
+          35,
+          36,
+          37
+        ],
+        [
+          38,
+          39,
+          40,
+          41,
+          42,
+          43
+        ],
+        [
+          44,
+          45,
+          46,
+          47,
+          48,
+          49
+        ],
+        [
+          50,
+          51,
+          52,
+          53,
+          54,
+          55
+        ]
+      ],
+      "source_canvas_height": 84,
+      "source_canvas_width": 130,
+      "stand": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "team_remap": true,
+      "world_height_m": 1.7799999713897705
+    }
+  },
+  "version": 1
+}

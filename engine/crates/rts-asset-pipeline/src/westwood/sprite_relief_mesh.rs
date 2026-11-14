@@ -1,4 +1,15 @@
-use super::sprite_relief_upscale::{color_luma, sample_rgb_bilinear};
+/// Compact UV-mapped (`TEXCOORD_0`) 3D fallback mesh paired with a `2x` classified xBRZ RGBA8 texture
+/// (`Alpha = 0` on `16..=31` house-color texels, `Alpha = 255` on normal texels).
+pub(super) struct ShpUvTexturedMesh {
+    pub(super) positions: Vec<[f32; 3]>,
+    pub(super) normals: Vec<[f32; 3]>,
+    pub(super) uvs: Vec<[f32; 2]>,
+    pub(super) colors: Vec<[f32; 4]>,
+    pub(super) indices: Vec<u32>,
+    pub(super) texture_width: u32,
+    pub(super) texture_height: u32,
+    pub(super) texture_rgba8: Vec<u8>,
+}
 
 pub(super) struct IsoBuildingReliefFields {
     pub(super) bw: usize,
@@ -15,8 +26,6 @@ pub(super) struct IsoBuildingReliefFields {
     pub(super) spit: f32,
     pub(super) cpit: f32,
     pub(super) solid: Vec<bool>,
-    pub(super) rgb_grid: Vec<[f32; 3]>,
-    pub(super) arch_rgb_grid: Vec<[f32; 3]>,
     pub(super) depth_grid: Vec<f32>,
     pub(super) dist_upper_grid: Vec<f32>,
     pub(super) ao_grid: Vec<f32>,
@@ -28,10 +37,11 @@ pub(super) struct IsoBuildingReliefFields {
     pub(super) w_back_col: Vec<f32>,
 }
 
-pub(super) fn emit_welded_isometric_building_mesh(
+pub(super) fn emit_welded_isometric_building_uv_mesh(
     fields: &IsoBuildingReliefFields,
     out_positions: &mut Vec<[f32; 3]>,
     out_normals: &mut Vec<[f32; 3]>,
+    out_uvs: &mut Vec<[f32; 2]>,
     out_colors: &mut Vec<[f32; 4]>,
     out_indices: &mut Vec<u32>,
 ) {
@@ -49,8 +59,6 @@ pub(super) fn emit_welded_isometric_building_mesh(
     let spit = fields.spit;
     let cpit = fields.cpit;
     let solid = &fields.solid;
-    let rgb_grid = &fields.rgb_grid;
-    let arch_rgb_grid = &fields.arch_rgb_grid;
     let depth_grid = &fields.depth_grid;
     let dist_upper_grid = &fields.dist_upper_grid;
     let ao_grid = &fields.ao_grid;
@@ -61,7 +69,6 @@ pub(super) fn emit_welded_isometric_building_mesh(
     let w_wall_col = &fields.w_wall_col;
     let w_back_col = &fields.w_back_col;
 
-    // 5. Build Welded Corner Grid `(bw + 1) x (bh + 1)` & Joint Taubin Surface + Silhouette Smoothing
     let cw = bw + 1;
     let ch = bh + 1;
     let num_c = cw * ch;
@@ -148,9 +155,9 @@ pub(super) fn emit_welded_isometric_building_mesh(
 
     let orig_u = c_u.clone();
     let orig_v = c_v.clone();
-    let max_disp = step * 1.25;
-    for _ in 0..6 {
-        for &factor in &[0.45f32, -0.472f32] {
+    let max_disp = step * 0.85;
+    for _ in 0..4 {
+        for &factor in &[0.42f32, -0.44f32] {
             let pu = c_u.clone();
             let pv = c_v.clone();
             let pw = c_w.clone();
@@ -176,7 +183,7 @@ pub(super) fn emit_welded_isometric_building_mesh(
                         .clamp(orig_u[ci] - max_disp, orig_u[ci] + max_disp);
                     c_v[ci] = (pv[ci] + factor * (av - pv[ci]))
                         .clamp(orig_v[ci] - max_disp, orig_v[ci] + max_disp);
-                    c_w[ci] = (pw[ci] + factor * 0.45 * (aw - pw[ci])).max(step * 0.15);
+                    c_w[ci] = (pw[ci] + factor * 0.40 * (aw - pw[ci])).max(step * 0.12);
                 } else if !grid_adj[ci].is_empty() {
                     let nbs = &grid_adj[ci];
                     let mut aw = 0.0f32;
@@ -184,13 +191,12 @@ pub(super) fn emit_welded_isometric_building_mesh(
                         aw += pw[nb];
                     }
                     aw /= nbs.len() as f32;
-                    c_w[ci] = (pw[ci] + factor * 0.32 * (aw - pw[ci])).max(step * 0.18);
+                    c_w[ci] = (pw[ci] + factor * 0.30 * (aw - pw[ci])).max(step * 0.14);
                 }
             }
         }
     }
 
-    // 6. True 4-Wall Isometric 3D Architectural Unprojection + Cylindrical Tower Reconstruction
     let upright_to_world = |u: f32, y_height: f32, w: f32| -> [f32; 3] {
         [u * cyaw - w * syaw, y_height, u * syaw + w * cyaw]
     };
@@ -206,12 +212,14 @@ pub(super) fn emit_welded_isometric_building_mesh(
     let mut front_v_idx = vec![u32::MAX; num_c];
     let mut back_v_idx = vec![u32::MAX; num_c];
     let mut local_pos: Vec<[f32; 3]> = Vec::new();
+    let mut local_uv: Vec<[f32; 2]> = Vec::new();
     let mut local_col: Vec<[f32; 4]> = Vec::new();
-    let mut local_micro_n: Vec<[f32; 3]> = Vec::new();
     let mut local_is_front: Vec<bool> = Vec::new();
     let mut local_tris: Vec<[u32; 3]> = Vec::new();
 
     let u_apex = (x_apex as f32 - cx_f) * step;
+    let inv_bw = 1.0 / (bw.max(1) as f32);
+    let inv_bh = 1.0 / (bh.max(1) as f32);
 
     for ci in 0..num_c {
         if !c_active[ci] {
@@ -224,9 +232,11 @@ pub(super) fn emit_welded_isometric_building_mesh(
 
         let fx_img = (u / step) + cx_f - 0.5;
         let fy_front = cy_f - (v / step) - 0.5;
-        let rgb = sample_rgb_bilinear(rgb_grid, bw, bh, fx_img, fy_front);
+        let uv = [
+            ((fx_img + 0.5) * inv_bw).clamp(0.0, 1.0),
+            ((fy_front + 0.5) * inv_bh).clamp(0.0, 1.0),
+        ];
 
-        // Interpolate 4-wall 3D isometric ground foundation at column `fx_img`
         let v_g = sample_col_1d(v_ground, fx_img);
         let v_b = sample_col_1d(v_bot_smooth, fx_img);
         let v_c = sample_col_1d(v_chord_col, fx_img);
@@ -239,29 +249,19 @@ pub(super) fn emit_welded_isometric_building_mesh(
         let ty = (h_screen / total_v_span).clamp(0.0, 1.0);
         let d_upper = c_upper_d[ci];
 
-        // Normalized 2D column height `col_ty in [0, 1]` from ground (`h_screen == 0`) to upper silhouette (`d_upper == 0`)
         let col_ty = (h_screen / (h_screen + d_upper).max(step * 4.0)).clamp(0.0, 1.0);
         let roof_t = ((col_ty - 0.16) / 0.84).clamp(0.0, 1.0);
         let roof_smooth = roof_t * roof_t * (3.0 - 2.0 * roof_t);
 
         let dv_dia = (v_c - v_g).max(0.0);
         let dv_recede = dv_dia * roof_smooth;
-
         let w_struct = w_f_wall - (dv_recede / spit);
-        let foot_taper = (h_screen / (step * 4.0)).clamp(0.0, 1.0);
+        let foot_taper = (h_screen / (step * 3.0)).clamp(0.0, 1.0);
         let sculpt_w = sculpt_raw * foot_taper;
 
-        // Exact isometric ray-consistency (`y_front * cpit - w_front * spit == v - v_mid_ground`)
-        // AND exact flat horizontal ground foundation (`y_front == 0` along `v == v_g`)
         let w_front = w_struct + sculpt_w;
         let y_front = (((v - v_mid_ground) + w_front * spit) / cpit).max(0.0);
 
-        // Symmetric 4-Wall 3D Rear Volume:
-        // - At `col_ty == 0`: `w_back == w_b_wall`, `y_back == 0` (flat 4-wall diamond base on `Y = 0`),
-        // - Across `col_ty in (0, 1)`: `dv_recede_back = dv_back * roof_smooth` and `w_back_struct = w_b_wall + (dv_back/spit)*roof_smooth`,
-        //   so in `218° Rueckansicht` (`ry_218 = y_back*cpit + w_back*spit`), `-dv_recede_back + dv_recede_back == 0`
-        //   and `-v_b + v_g == 0` (100% straight, un-warped rear roof with zero V-trough or dark arch!),
-        // - At `col_ty == 1` (`d_upper == 0`): `w_back_struct == w_c == w_struct` and `y_back == y_front` seamlessly.
         let dv_recede_back = (dv_back * roof_smooth).min(h_back * 0.72);
         let y_back_struct = ((h_back - dv_recede_back).max(0.0)) / cpit;
         let w_back_struct = w_b_wall + (dv_back * roof_smooth) / spit;
@@ -270,7 +270,7 @@ pub(super) fn emit_welded_isometric_building_mesh(
         let w_back_clamped = w_prism_back.max(w_struct - max_back_offset);
 
         let upper_edge_pinch = if c_nsol[ci] < 4 {
-            (1.0 - (d_upper / (step * 4.5)).clamp(0.0, 1.0)) * 0.94
+            (1.0 - (d_upper / (step * 3.5)).clamp(0.0, 1.0)) * 0.92
         } else {
             0.0
         };
@@ -281,74 +281,25 @@ pub(super) fn emit_welded_isometric_building_mesh(
         let y_back =
             y_back_raw.min(y_max_ray) * (1.0 - upper_edge_pinch) + y_front * upper_edge_pinch;
 
-        // Wide-radius (+/- 2.0 subpixel) tangent-space 3D micro-normal relief
-        let l_r = color_luma(sample_rgb_bilinear(
-            rgb_grid,
-            bw,
-            bh,
-            fx_img + 2.0,
-            fy_front,
-        ));
-        let l_l = color_luma(sample_rgb_bilinear(
-            rgb_grid,
-            bw,
-            bh,
-            fx_img - 2.0,
-            fy_front,
-        ));
-        let l_u = color_luma(sample_rgb_bilinear(
-            rgb_grid,
-            bw,
-            bh,
-            fx_img,
-            fy_front - 2.0,
-        ));
-        let l_d = color_luma(sample_rgb_bilinear(
-            rgb_grid,
-            bw,
-            bh,
-            fx_img,
-            fy_front + 2.0,
-        ));
-        let dl_du = (l_r - l_l) * 0.28;
-        let dl_dv = (l_u - l_d) * 0.28;
-        let micro_f = upright_to_world(-dl_du * 0.85, -dl_dv * 0.85, 0.0);
-
-        // Subtle 3D architectural directional shading across left wall, right wall, and roof height
         let wall_side = ((u - u_apex) / (u_span_total * 0.22).max(0.1)).clamp(-1.0, 1.0);
-        let dir_shade = (0.95 - 0.05 * wall_side + 0.08 * ty) * ao;
+        let front_shade = ((0.95 - 0.04 * wall_side + 0.06 * ty) * ao).clamp(0.75, 1.0);
+        let back_shade = ((0.80 + 0.06 * wall_side + 0.08 * ty) * ao).clamp(0.68, 1.0);
 
         let fv = local_pos.len() as u32;
         local_pos.push(upright_to_world(u, y_front, w_front));
-        local_col.push([
-            (rgb[0] * dir_shade).clamp(0.0, 1.0),
-            (rgb[1] * dir_shade).clamp(0.0, 1.0),
-            (rgb[2] * dir_shade).clamp(0.0, 1.0),
-            1.0,
-        ]);
-        local_micro_n.push(micro_f);
+        local_uv.push(uv);
+        local_col.push([front_shade, front_shade, front_shade, 1.0]);
         local_is_front.push(true);
         front_v_idx[ci] = fv;
 
-        let back_rgb = sample_rgb_bilinear(arch_rgb_grid, bw, bh, fx_img, fy_front);
-        let rear_wall_shade = 0.78 + 0.09 * wall_side + 0.08 * ty;
-        let panel_course = 0.96 + 0.04 * ((y_back / (step * 6.0)).sin());
-        let back_shade = rear_wall_shade * panel_course * ao;
-
         let bv = local_pos.len() as u32;
         local_pos.push(upright_to_world(u, y_back, w_back));
-        local_col.push([
-            (back_rgb[0] * back_shade).clamp(0.0, 1.0),
-            (back_rgb[1] * back_shade).clamp(0.0, 1.0),
-            (back_rgb[2] * back_shade).clamp(0.0, 1.0),
-            1.0,
-        ]);
-        local_micro_n.push([-micro_f[0] * 0.4, micro_f[1] * 0.4, -micro_f[2] * 0.4]);
+        local_uv.push(uv);
+        local_col.push([back_shade, back_shade, back_shade, 1.0]);
         local_is_front.push(false);
         back_v_idx[ci] = bv;
     }
 
-    // Anchor building 3D ground base at `Y = 0.0` (`p[1] -= min_y`) and normalize vertical relief height
     if !local_pos.is_empty() {
         let mut min_y = f32::INFINITY;
         let mut max_y = f32::NEG_INFINITY;
@@ -407,7 +358,6 @@ pub(super) fn emit_welded_isometric_building_mesh(
         }
     }
 
-    // 7. Compute Smooth Area-Weighted 3D Normals Blended with Isometric Key-Light Bias & Micro-Normals
     let v_count = local_pos.len();
     let mut smooth_normals = vec![[0.0f32; 3]; v_count];
     for &[i0, i1, i2] in &local_tris {
@@ -438,14 +388,14 @@ pub(super) fn emit_welded_isometric_building_mesh(
             .sqrt()
             .max(1e-6);
         let bias = if local_is_front[vi] { n_front } else { n_back };
-        let mn = local_micro_n[vi];
-        let nx = (sn[0] / sl) * 0.78 + bias[0] * 0.22 + mn[0];
-        let ny = (sn[1] / sl) * 0.78 + bias[1] * 0.22 + mn[1];
-        let nz = (sn[2] / sl) * 0.78 + bias[2] * 0.22 + mn[2];
+        let nx = (sn[0] / sl) * 0.78 + bias[0] * 0.22;
+        let ny = (sn[1] / sl) * 0.78 + bias[1] * 0.22;
+        let nz = (sn[2] / sl) * 0.78 + bias[2] * 0.22;
         let nl = (nx * nx + ny * ny + nz * nz).sqrt().max(1e-5);
 
         out_positions.push(local_pos[vi]);
         out_normals.push([nx / nl, ny / nl, nz / nl]);
+        out_uvs.push(local_uv[vi]);
         out_colors.push(local_col[vi]);
     }
     for &[i0, i1, i2] in &local_tris {

@@ -6,6 +6,7 @@ mod gizmos;
 mod gizmos_world;
 pub mod interpolation;
 pub mod preview_stage;
+pub mod shp_sprites;
 pub mod sockets;
 pub mod strategic_zoom_icons;
 pub mod team_material;
@@ -21,6 +22,7 @@ pub use fow_projection::*;
 pub use gizmos::*;
 pub use interpolation::*;
 pub use preview_stage::*;
+pub use shp_sprites::*;
 pub use sockets::*;
 pub use strategic_zoom_icons::*;
 pub use team_material::*;
@@ -466,6 +468,7 @@ impl Plugin for ClientRenderingAvPlugin {
                     sync_directional_shadow_quality,
                 ),
             );
+        register_ra2_shp_sprite_rendering(app);
     }
 }
 
@@ -500,7 +503,7 @@ pub struct SimVisualEntity {
     pub deconstruct_progress: Option<f32>,
     pub death_anim_progress: Option<f32>,
     pub is_infantry: bool,
-    pub cached_articulated_parts: Option<Vec<(Entity, ArticulatedPartKind)>>,
+    pub cached_articulated_parts: Option<Vec<CachedArticulatedPart>>,
     pub has_3d_turret_node: bool,
 }
 
