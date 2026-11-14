@@ -1,18 +1,34 @@
+use super::sprite_relief_mesh::ShpUvTexturedMesh;
 use super::*;
 use anyhow::{bail, Result};
-use flate2::write::ZlibEncoder;
-use flate2::Compression;
+use serde_json::json;
 use std::collections::BTreeMap;
-use std::io::Write;
 
-use super::sprite_codec::super_resolve_shp_frame;
 pub use super::sprite_codec::{apply_format40_xor_delta, compress_format80, decompress_format80};
+pub use super::sprite_relief_upscale::{
+    classify_shp_pixel_index, decode_shp_palette_neutral_or_tinted,
+    upscale_shp_indexed_2x_classified, ClassifiedHdShpImage, ShpPixelClass,
+};
 
 #[derive(Clone)]
 pub(super) struct DecodedShpFrame {
     pub(super) width: usize,
     pub(super) height: usize,
     pub(super) pixels: Vec<u8>,
+}
+
+/// Full-canvas decoded `.shp` frame preserving exact `(x, y)` sub-rectangle placement
+/// on `(canvas_width, canvas_height)` and 1-to-1 frame indices (`0..num_frames`).
+#[derive(Debug, Clone)]
+pub struct ShpCanvasFrame {
+    pub canvas_width: usize,
+    pub canvas_height: usize,
+    pub x: usize,
+    pub y: usize,
+    pub sub_width: usize,
+    pub sub_height: usize,
+    pub flags: u32,
+    pub pixels: Vec<u8>,
 }
 
 pub(super) fn decode_shp_frame_pixels(
@@ -58,45 +74,124 @@ pub(super) fn decode_shp_frame_pixels(
     pixels
 }
 
-pub(super) fn decode_shp_palette(
-    external_pal: Option<&[u8]>,
-    team_color: Option<[f32; 3]>,
-    mesh_name: &str,
-) -> [[f32; 3]; 256] {
-    let mut palette_rgb = [[0.5f32, 0.5, 0.5]; 256];
-    let remap_rgb = team_color.unwrap_or_else(|| infer_default_westwood_team_color(mesh_name));
-    if let Some(pal) = external_pal {
-        if pal.len() >= 768 {
-            for i in 0..256 {
-                if (16..=31).contains(&i) {
-                    let t = (31 - i) as f32 / 15.0;
-                    let shade = 0.22 + 0.88 * t.powf(0.85);
-                    let hi = (t - 0.72).max(0.0) * 0.55;
-                    palette_rgb[i] = [
-                        (remap_rgb[0] * shade + hi).clamp(0.0, 1.0),
-                        (remap_rgb[1] * shade + hi).clamp(0.0, 1.0),
-                        (remap_rgb[2] * shade + hi).clamp(0.0, 1.0),
-                    ];
-                } else {
-                    let r6 = pal[i * 3].min(63) as f32 / 63.0;
-                    let g6 = pal[i * 3 + 1].min(63) as f32 / 63.0;
-                    let b6 = pal[i * 3 + 2].min(63) as f32 / 63.0;
-                    palette_rgb[i] = [r6, g6, b6];
+/// Decodes ALL frames (`0..num_frames`, up to 8192) of a Westwood TS/RA2 or TD/RA1 `.shp` file
+/// onto their full `(canvas_width, canvas_height)` canvas without skipping empty/shadow frames.
+pub fn decode_shp_canvas_frames(shp: &[u8]) -> Result<Vec<ShpCanvasFrame>> {
+    if shp.len() < 14 {
+        bail!("Westwood .shp file is too short ({} bytes)", shp.len());
+    }
+    let first_u16 = u16::from_le_bytes([shp[0], shp[1]]);
+    if first_u16 == 0 {
+        if shp.len() < 32 {
+            bail!("Invalid TS/RA2 .shp header");
+        }
+        let raw_cw = u16::from_le_bytes([shp[2], shp[3]]) as usize;
+        let raw_ch = u16::from_le_bytes([shp[4], shp[5]]) as usize;
+        let num_frames = u16::from_le_bytes([shp[6], shp[7]]) as usize;
+        if num_frames == 0 || shp.len() < 8 + 24 {
+            bail!("Invalid TS/RA2 .shp header");
+        }
+        let cw = raw_cw.clamp(1, 2048);
+        let ch = raw_ch.clamp(1, 2048);
+        let max_headers = num_frames.min((shp.len() - 8) / 24).min(8192);
+        let mut out = Vec::with_capacity(max_headers);
+        for f_idx in 0..max_headers {
+            let f_base = 8 + f_idx * 24;
+            let fx = u16::from_le_bytes([shp[f_base], shp[f_base + 1]]) as usize;
+            let fy = u16::from_le_bytes([shp[f_base + 2], shp[f_base + 3]]) as usize;
+            let fw = u16::from_le_bytes([shp[f_base + 4], shp[f_base + 5]]) as usize;
+            let fh = u16::from_le_bytes([shp[f_base + 6], shp[f_base + 7]]) as usize;
+            let fl = u32::from_le_bytes(shp[f_base + 8..f_base + 12].try_into().unwrap());
+            let off = u32::from_le_bytes(shp[f_base + 20..f_base + 24].try_into().unwrap()) as usize;
+
+            let mut canvas = vec![0u8; cw * ch];
+            if fw > 0 && fh > 0 && off > 0 && off < shp.len() && fw <= 2048 && fh <= 2048 {
+                let sub = decode_shp_frame_pixels(shp, fw, fh, fl, off);
+                for sy in 0..fh {
+                    let cy = fy + sy;
+                    if cy >= ch {
+                        break;
+                    }
+                    for sx in 0..fw {
+                        let cx = fx + sx;
+                        if cx >= cw {
+                            break;
+                        }
+                        let v = sub[sy * fw + sx];
+                        if v != 0 {
+                            canvas[cy * cw + cx] = v;
+                        }
+                    }
                 }
             }
-            return palette_rgb;
+            out.push(ShpCanvasFrame {
+                canvas_width: cw,
+                canvas_height: ch,
+                x: fx,
+                y: fy,
+                sub_width: fw,
+                sub_height: fh,
+                flags: fl,
+                pixels: canvas,
+            });
         }
+        return Ok(out);
     }
-    for (i, rgb) in palette_rgb.iter_mut().enumerate() {
-        let r = ((i * 19 + 40) % 220) as f32 / 255.0;
-        let g = ((i * 37 + 60) % 220) as f32 / 255.0;
-        let b = ((i * 53 + 80) % 220) as f32 / 255.0;
-        *rgb = [r, g, b];
+
+    if let Some(td_frames) = decode_td_ra1_shp_frames_unlimited(shp, 4096) {
+        return Ok(td_frames
+            .into_iter()
+            .map(|f| ShpCanvasFrame {
+                canvas_width: f.width,
+                canvas_height: f.height,
+                x: 0,
+                y: 0,
+                sub_width: f.width,
+                sub_height: f.height,
+                flags: 0x80,
+                pixels: f.pixels,
+            })
+            .collect());
     }
-    palette_rgb
+
+    let fw = (u16::from_le_bytes([shp[6], shp[7]]) as usize).clamp(4, 512);
+    let fh = (u16::from_le_bytes([shp[8], shp[9]]) as usize).clamp(4, 512);
+    Ok(vec![ShpCanvasFrame {
+        canvas_width: fw,
+        canvas_height: fh,
+        x: 0,
+        y: 0,
+        sub_width: fw,
+        sub_height: fh,
+        flags: 0,
+        pixels: decode_shp_frame_pixels(shp, fw, fh, 0, 24),
+    }])
 }
 
-fn decode_td_ra1_shp_frames(shp: &[u8]) -> Option<Vec<DecodedShpFrame>> {
+/// Composites an active animation overlay `.shp` frame (`*_a.shp`, `*_b.shp`) onto `base_canvas`.
+pub fn composite_shp_canvas_overlay(base_canvas: &mut [u8], overlay_canvas: &[u8]) {
+    for (dst, &ov) in base_canvas.iter_mut().zip(overlay_canvas.iter()) {
+        if ov >= 2 || (ov == 1 && *dst == 0) {
+            *dst = ov;
+        }
+    }
+}
+
+/// Upscales a single indexed `.shp` canvas (`width x height`) to a `2x` edge-directed xBRZ RGBA8
+/// sprite sheet buffer (`(width*2) x (height*2) x 4`) with separated transparent (`A=0`),
+/// shadow (`A=112`), house-color grayscale mask (`A=192`), and normal RGB (`A=255`).
+pub fn upscale_shp_frame_hd_2x_rgba(
+    width: usize,
+    height: usize,
+    pixels: &[u8],
+    external_pal: Option<&[u8]>,
+) -> (u32, u32, Vec<u8>) {
+    let hd = upscale_shp_indexed_2x_classified(width, height, pixels, external_pal, None);
+    let rgba = hd.encode_sprite_sheet_rgba8();
+    (hd.width as u32, hd.height as u32, rgba)
+}
+
+fn decode_td_ra1_shp_frames_unlimited(shp: &[u8], max_cap: usize) -> Option<Vec<DecodedShpFrame>> {
     if shp.len() < 22 {
         return None;
     }
@@ -116,16 +211,11 @@ fn decode_td_ra1_shp_frames(shp: &[u8]) -> Option<Vec<DecodedShpFrame>> {
     }
 
     let table_start = 14usize;
-    // TD/RA1 SHP has (num_frames + 2) 8-byte offset entries (last two are EOF + zero sentinel)
     let required_table_end = table_start + (num_frames + 1) * 8;
     if shp.len() < required_table_end {
         return None;
     }
-    let palette_skip = if (flags & 0x0001) != 0 {
-        768usize
-    } else {
-        0usize
-    };
+    let palette_skip = if (flags & 0x0001) != 0 { 768 } else { 0 };
     let frame_pixel_count = width * height;
 
     let mut raw_entries = Vec::with_capacity(num_frames + 1);
@@ -140,7 +230,6 @@ fn decode_td_ra1_shp_frames(shp: &[u8]) -> Option<Vec<DecodedShpFrame>> {
         raw_entries.push((off, fmt, ref_off, ref_fmt));
     }
 
-    // Verify offsets look like a genuine TD/RA1 offset table
     let first_off = raw_entries[0].0;
     let first_fmt = raw_entries[0].1;
     if first_off < table_start + num_frames * 8 + palette_skip
@@ -153,10 +242,10 @@ fn decode_td_ra1_shp_frames(shp: &[u8]) -> Option<Vec<DecodedShpFrame>> {
     let mut decoded_by_offset: BTreeMap<usize, Vec<u8>> = BTreeMap::new();
     let mut prev_pixels = vec![0u8; frame_pixel_count];
     let mut frames = Vec::new();
-    let max_decode = num_frames.min(64);
+    let max_decode = num_frames.min(max_cap);
 
     for i in 0..max_decode {
-        let (off, fmt, ref_off, _ref_fmt) = raw_entries[i];
+        let (off, fmt, ref_off, _) = raw_entries[i];
         let next_off = raw_entries
             .get(i + 1)
             .map(|e| e.0)
@@ -166,20 +255,15 @@ fn decode_td_ra1_shp_frames(shp: &[u8]) -> Option<Vec<DecodedShpFrame>> {
             continue;
         }
         let slice = &shp[off..next_off];
-
         let pixels = match fmt {
-            0x80 => {
-                // Format80 (LCW) keyframe
-                match decompress_format80(slice, frame_pixel_count) {
-                    Ok(mut p) => {
-                        p.resize(frame_pixel_count, 0);
-                        p
-                    }
-                    Err(_) => continue,
+            0x80 => match decompress_format80(slice, frame_pixel_count) {
+                Ok(mut p) => {
+                    p.resize(frame_pixel_count, 0);
+                    p
                 }
-            }
+                Err(_) => continue,
+            },
             0x40 => {
-                // Format40 XOR-delta against reference keyframe at `ref_off`
                 let mut base_buf = decoded_by_offset
                     .get(&ref_off)
                     .cloned()
@@ -188,7 +272,6 @@ fn decode_td_ra1_shp_frames(shp: &[u8]) -> Option<Vec<DecodedShpFrame>> {
                 base_buf
             }
             0x20 => {
-                // Format20 XOR-delta against immediately preceding frame
                 let mut base_buf = prev_pixels.clone();
                 apply_format40_xor_delta(&mut base_buf, slice);
                 base_buf
@@ -214,69 +297,30 @@ fn decode_td_ra1_shp_frames(shp: &[u8]) -> Option<Vec<DecodedShpFrame>> {
 }
 
 pub(super) fn decode_shp_frames(shp: &[u8]) -> Result<Vec<DecodedShpFrame>> {
-    if shp.len() < 14 {
-        bail!("Westwood .shp file is too short ({} bytes)", shp.len());
-    }
-    let first_u16 = u16::from_le_bytes(shp[0..2].try_into().unwrap());
-    let mut valid_frames: Vec<DecodedShpFrame> = Vec::new();
-
-    if first_u16 == 0 {
-        if shp.len() < 32 {
-            bail!("Invalid TS/RA2 .shp header");
-        }
-        let full_w = u16::from_le_bytes(shp[2..4].try_into().unwrap()) as usize;
-        let full_h = u16::from_le_bytes(shp[4..6].try_into().unwrap()) as usize;
-        let num_frames = u16::from_le_bytes(shp[6..8].try_into().unwrap()) as usize;
-        if num_frames == 0 || shp.len() < 8 + 24 {
-            bail!("Invalid TS/RA2 .shp header");
-        }
-        let max_headers = num_frames.min((shp.len() - 8) / 24).min(64);
-        for f_idx in 0..max_headers {
-            let f_base = 8 + f_idx * 24;
-            let w = u16::from_le_bytes(shp[f_base + 4..f_base + 6].try_into().unwrap()) as usize;
-            let h = u16::from_le_bytes(shp[f_base + 6..f_base + 8].try_into().unwrap()) as usize;
-            let fl = u32::from_le_bytes(shp[f_base + 8..f_base + 12].try_into().unwrap());
-            let off =
-                u32::from_le_bytes(shp[f_base + 20..f_base + 24].try_into().unwrap()) as usize;
-            if w > 0 && h > 0 && off > 0 && off < shp.len() {
-                let fw = w.clamp(1, 512);
-                let fh = h.clamp(1, 512);
-                let pixels = decode_shp_frame_pixels(shp, fw, fh, fl, off);
-                if pixels.iter().any(|&p| p > 1) {
-                    valid_frames.push(DecodedShpFrame {
-                        width: fw,
-                        height: fh,
-                        pixels,
-                    });
-                }
-            }
-        }
-        if valid_frames.is_empty() {
-            let fw = full_w.clamp(4, 256);
-            let fh = full_h.clamp(4, 256);
+    let canvas_frames = decode_shp_canvas_frames(shp)?;
+    let mut valid_frames: Vec<DecodedShpFrame> = canvas_frames
+        .iter()
+        .take(64)
+        .filter(|f| f.pixels.iter().any(|&p| p >= 2))
+        .map(|f| DecodedShpFrame {
+            width: f.canvas_width,
+            height: f.canvas_height,
+            pixels: f.pixels.clone(),
+        })
+        .collect();
+    if valid_frames.is_empty() {
+        if let Some(f0) = canvas_frames.first() {
             valid_frames.push(DecodedShpFrame {
-                width: fw,
-                height: fh,
-                pixels: decode_shp_frame_pixels(shp, fw, fh, 0, 32),
+                width: f0.canvas_width,
+                height: f0.canvas_height,
+                pixels: f0.pixels.clone(),
             });
         }
-    } else if let Some(td_frames) = decode_td_ra1_shp_frames(shp) {
-        valid_frames = td_frames;
-    } else {
-        let fw = (u16::from_le_bytes(shp[6..8].try_into().unwrap()) as usize).clamp(4, 512);
-        let fh = (u16::from_le_bytes(shp[8..10].try_into().unwrap()) as usize).clamp(4, 512);
-        valid_frames.push(DecodedShpFrame {
-            width: fw,
-            height: fh,
-            pixels: decode_shp_frame_pixels(shp, fw, fh, 0, 24),
-        });
     }
-
     Ok(valid_frames)
 }
 
-/// Builds a synthetic valid TD/RA1 `.shp` sprite using `Format80` (`LCW`) keyframe compression
-/// (`0x80` format tag in the 24-bit offset table) for testing TD/RA1 `.shp -> .glb` conversion.
+/// Builds a synthetic valid TD/RA1 `.shp` sprite using `Format80` (`LCW`) keyframe compression.
 pub fn build_sample_td_format80_shp_bytes(width: u16, height: u16, num_frames: u16) -> Vec<u8> {
     let nf = num_frames.max(1) as usize;
     let w = width.max(4) as usize;
@@ -308,13 +352,13 @@ pub fn build_sample_td_format80_shp_bytes(width: u16, height: u16, num_frames: u
     let mut shp = Vec::with_capacity(
         header_and_table_len + compressed_frames.iter().map(Vec::len).sum::<usize>(),
     );
-    shp.extend_from_slice(&(nf as u16).to_le_bytes()); // num_frames (non-zero => TD/RA1)
-    shp.extend_from_slice(&0u16.to_le_bytes()); // x
-    shp.extend_from_slice(&0u16.to_le_bytes()); // y
+    shp.extend_from_slice(&(nf as u16).to_le_bytes());
+    shp.extend_from_slice(&0u16.to_le_bytes());
+    shp.extend_from_slice(&0u16.to_le_bytes());
     shp.extend_from_slice(&(w as u16).to_le_bytes());
     shp.extend_from_slice(&(h as u16).to_le_bytes());
     shp.extend_from_slice(&(largest.min(65_535) as u16).to_le_bytes());
-    shp.extend_from_slice(&0u16.to_le_bytes()); // flags
+    shp.extend_from_slice(&0u16.to_le_bytes());
 
     let mut running_off = header_and_table_len as u32;
     for lcw in &compressed_frames {
@@ -323,7 +367,6 @@ pub fn build_sample_td_format80_shp_bytes(width: u16, height: u16, num_frames: u
         shp.extend_from_slice(&0u32.to_le_bytes());
         running_off += lcw.len() as u32;
     }
-    // EOF offset entry + trailing zero sentinel entry
     shp.extend_from_slice(&(running_off & 0x00FF_FFFF).to_le_bytes());
     shp.extend_from_slice(&0u32.to_le_bytes());
     shp.extend_from_slice(&0u32.to_le_bytes());
@@ -333,30 +376,6 @@ pub fn build_sample_td_format80_shp_bytes(width: u16, height: u16, num_frames: u
         shp.extend_from_slice(lcw);
     }
     shp
-}
-
-fn png_crc32(bytes: &[u8]) -> u32 {
-    let mut crc = 0xFFFF_FFFFu32;
-    for &b in bytes {
-        crc ^= b as u32;
-        for _ in 0..8 {
-            if (crc & 1) != 0 {
-                crc = (crc >> 1) ^ 0xEDB8_8320;
-            } else {
-                crc >>= 1;
-            }
-        }
-    }
-    !crc
-}
-
-fn write_png_chunk(out: &mut Vec<u8>, chunk_type: &[u8; 4], data: &[u8]) {
-    out.extend_from_slice(&(data.len() as u32).to_be_bytes());
-    let crc_start = out.len();
-    out.extend_from_slice(chunk_type);
-    out.extend_from_slice(data);
-    let crc = png_crc32(&out[crc_start..]);
-    out.extend_from_slice(&crc.to_be_bytes());
 }
 
 /// Encodes an 8-bit-per-channel RGBA buffer (`width * height * 4` bytes) into a standard `.png` image.
@@ -371,32 +390,15 @@ pub fn encode_rgba_to_png(width: u32, height: u32, rgba: &[u8]) -> Result<Vec<u8
             rgba.len()
         );
     }
-
-    let mut raw_scanlines = Vec::with_capacity(h * (1 + w * 4));
-    for y in 0..h {
-        raw_scanlines.push(0u8); // filter type 0 (None)
-        let row_start = y * w * 4;
-        raw_scanlines.extend_from_slice(&rgba[row_start..row_start + w * 4]);
+    let mut out = Vec::new();
+    {
+        let mut encoder = png::Encoder::new(&mut out, w as u32, h as u32);
+        encoder.set_color(png::ColorType::Rgba);
+        encoder.set_depth(png::BitDepth::Eight);
+        encoder.set_compression(png::Compression::High);
+        let mut writer = encoder.write_header()?;
+        writer.write_image_data(&rgba[..w * h * 4])?;
     }
-
-    let mut encoder = ZlibEncoder::new(Vec::new(), Compression::default());
-    encoder.write_all(&raw_scanlines)?;
-    let compressed = encoder.finish()?;
-
-    let mut out = Vec::with_capacity(64 + compressed.len());
-    out.extend_from_slice(b"\x89PNG\r\n\x1a\n");
-
-    let mut ihdr = Vec::with_capacity(13);
-    ihdr.extend_from_slice(&(w as u32).to_be_bytes());
-    ihdr.extend_from_slice(&(h as u32).to_be_bytes());
-    ihdr.push(8); // bit depth = 8
-    ihdr.push(6); // color type = 6 (RGBA)
-    ihdr.push(0); // compression = deflate
-    ihdr.push(0); // filter = adaptive
-    ihdr.push(0); // interlace = none
-    write_png_chunk(&mut out, b"IHDR", &ihdr);
-    write_png_chunk(&mut out, b"IDAT", &compressed);
-    write_png_chunk(&mut out, b"IEND", &[]);
     Ok(out)
 }
 
@@ -411,11 +413,13 @@ pub fn convert_shp_cameo_to_png(
     let frame = frames
         .first()
         .ok_or_else(|| anyhow::anyhow!("Cameo .shp '{cameo_name}' contained 0 frames"))?;
-    let pal = decode_shp_palette(external_pal, team_color, cameo_name);
+    let pal = decode_shp_palette_neutral_or_tinted(external_pal, team_color);
     let mut rgba = Vec::with_capacity(frame.width * frame.height * 4);
     for &idx in &frame.pixels {
         if idx == 0 {
             rgba.extend_from_slice(&[0, 0, 0, 0]);
+        } else if idx == 1 {
+            rgba.extend_from_slice(&[0, 0, 0, 128]);
         } else {
             let rgb = pal[idx as usize];
             rgba.extend_from_slice(&[
@@ -429,8 +433,8 @@ pub fn convert_shp_cameo_to_png(
     encode_rgba_to_png(frame.width as u32, frame.height as u32, &rgba)
 }
 
-/// Converts a classic Westwood / OpenRA `.shp` 2D sprite file (TS/RA2 or TD/RA1 format)
-/// into a 3D `.glb` mesh.
+/// Converts a classic Westwood / OpenRA `.shp` 2D sprite file into a UV-mapped 3D `.glb` mesh
+/// without pre-baking house-color remap indices (`16..=31`).
 pub fn convert_shp_bytes_to_glb(
     shp: &[u8],
     external_pal: Option<&[u8]>,
@@ -439,85 +443,29 @@ pub fn convert_shp_bytes_to_glb(
     convert_shp_bytes_to_glb_with_team_color(shp, external_pal, None, mesh_name)
 }
 
-/// Returns `true` when `mesh_name` identifies an infantry or mobile unit `.shp` sprite
-/// (as opposed to an isometric building or static turret `.shp`).
 fn is_unit_or_infantry_shp(mesh_name: &str, frames: &[DecodedShpFrame]) -> bool {
     let lower = mesh_name.to_ascii_lowercase();
     let unit_keywords = [
-        "gi",
-        "e1",
-        "e2",
-        "conscript",
-        "cons",
-        "engineer",
-        "engi",
-        "rocketeer",
-        "jumpjet",
-        "seal",
-        "tanya",
-        "tany",
-        "spy",
-        "sniper",
-        "snipe",
-        "legionnaire",
-        "cleg",
-        "dog",
-        "flak_trooper",
-        "flakt",
-        "tesla_trooper",
-        "shk",
-        "desolator",
-        "deso",
-        "ivan",
-        "terrorist",
-        "boris",
-        "terror_drone",
-        "dron",
-        "dolphin",
-        "dlph",
-        "squid",
-        "sqd",
-        "initiate",
-        "init",
-        "brute",
-        "virus",
-        "vrus",
-        "clone",
-        "prime",
-        "yuripr",
-        "commando",
-        "ptroop",
+        "gi", "e1", "e2", "conscript", "cons", "engineer", "engi", "rocketeer", "jumpjet", "seal",
+        "tanya", "tany", "spy", "sniper", "snipe", "legionnaire", "cleg", "dog", "flak_trooper",
+        "flakt", "tesla_trooper", "shk", "desolator", "deso", "ivan", "terrorist", "boris",
+        "terror_drone", "dron", "dolphin", "dlph", "squid", "sqd", "initiate", "init", "brute",
+        "virus", "vrus", "clone", "prime", "yuripr", "commando", "ptroop",
+    ];
+    let structure_words = [
+        "barracks", "cloning", "grinder", "bunker", "cannon", "tower", "reactor", "power", "yard",
+        "factory", "refinery", "shipyard", "depot", "sensor", "control", "command", "lab",
     ];
     if unit_keywords.iter().any(|k| lower.contains(k))
-        && !lower.contains("barracks")
-        && !lower.contains("cloning")
-        && !lower.contains("grinder")
-        && !lower.contains("bunker")
-        && !lower.contains("cannon")
-        && !lower.contains("tower")
-        && !lower.contains("reactor")
-        && !lower.contains("power")
-        && !lower.contains("yard")
-        && !lower.contains("factory")
-        && !lower.contains("refinery")
-        && !lower.contains("shipyard")
-        && !lower.contains("depot")
-        && !lower.contains("sensor")
-        && !lower.contains("control")
-        && !lower.contains("command")
-        && !lower.contains("lab")
+        && !structure_words.iter().any(|w| lower.contains(w))
     {
         return true;
     }
-
-    // Also check classic Westwood 2-letter building prefixes (`gg`, `ga`, `ng`, `na`, `yg`, `ya`, `cg`, `ca`, `ct`, `cu`, `cd`, `cl`):
-    // if not a building prefix and sprite canvas is infantry-sized (<= 68x68), treat as mobile unit/infantry.
     let building_prefixes = [
         "gg", "ga", "ng", "na", "yg", "ya", "cg", "ca", "ct", "cu", "cd", "cl", "allied_",
         "soviet_", "yuri_", "tech_",
     ];
-    let has_building_prefix = building_prefixes.iter().any(|p| lower.starts_with(p));
-    if !has_building_prefix {
+    if !building_prefixes.iter().any(|p| lower.starts_with(p)) {
         if let Some(f0) = frames.first() {
             if f0.width <= 68 && f0.height <= 68 {
                 return true;
@@ -527,8 +475,165 @@ fn is_unit_or_infantry_shp(mesh_name: &str, frames: &[DecodedShpFrame]) -> bool 
     false
 }
 
-/// Converts a classic Westwood / OpenRA `.shp` 2D sprite file into a 3D `.glb` mesh with optional
-/// Westwood house color remapping on palette indices `16..=31`.
+fn pack_uv_textured_shp_mesh_to_glb(mesh: &ShpUvTexturedMesh, mesh_name: &str) -> Result<Vec<u8>> {
+    let png_bytes = encode_rgba_to_png(mesh.texture_width, mesh.texture_height, &mesh.texture_rgba8)?;
+    let mut min = [f32::MAX; 3];
+    let mut max = [f32::MIN; 3];
+    for p in &mesh.positions {
+        for i in 0..3 {
+            min[i] = min[i].min(p[i]);
+            max[i] = max[i].max(p[i]);
+        }
+    }
+    if mesh.positions.is_empty() {
+        min = [0.0; 3];
+        max = [0.0; 3];
+    }
+
+    let mut bin = Vec::new();
+    let push_aligned = |buf: &mut Vec<u8>| {
+        while !buf.len().is_multiple_of(4) {
+            buf.push(0);
+        }
+    };
+
+    let pos_off = bin.len();
+    for p in &mesh.positions {
+        for c in p {
+            bin.extend_from_slice(&c.to_le_bytes());
+        }
+    }
+    let pos_len = bin.len() - pos_off;
+
+    let norm_off = bin.len();
+    for n in &mesh.normals {
+        for c in n {
+            bin.extend_from_slice(&c.to_le_bytes());
+        }
+    }
+    let norm_len = bin.len() - norm_off;
+
+    let uv_off = bin.len();
+    for uv in &mesh.uvs {
+        for c in uv {
+            bin.extend_from_slice(&c.to_le_bytes());
+        }
+    }
+    let uv_len = bin.len() - uv_off;
+
+    let col_off = bin.len();
+    for col in &mesh.colors {
+        for c in col {
+            bin.extend_from_slice(&c.to_le_bytes());
+        }
+    }
+    let col_len = bin.len() - col_off;
+
+    let idx_off = bin.len();
+    for &idx in &mesh.indices {
+        bin.extend_from_slice(&idx.to_le_bytes());
+    }
+    let idx_len = bin.len() - idx_off;
+    push_aligned(&mut bin);
+
+    let img_off = bin.len();
+    bin.extend_from_slice(&png_bytes);
+    let img_len = png_bytes.len();
+    push_aligned(&mut bin);
+
+    let cx = (min[0] + max[0]) * 0.5;
+    let mid_y = min[1] + (max[1] - min[1]) * 0.55;
+    let nodes = vec![
+        json!({
+            "name": mesh_name,
+            "mesh": 0,
+            "children": [1, 2, 3]
+        }),
+        json!({ "name": "Muzzle_01", "translation": [cx, mid_y, max[2]] }),
+        json!({ "name": "Exhaust_01", "translation": [cx, min[1] + (max[1] - min[1]) * 0.42, min[2]] }),
+        json!({ "name": "DamageSmoke_01", "translation": [cx, min[1] + (max[1] - min[1]) * 0.85, (min[2] + max[2]) * 0.5] }),
+    ];
+
+    let gltf_json = json!({
+        "asset": {
+            "version": "2.0",
+            "generator": "rts-mod-tools Westwood HD UV-Textured SHP->GLB converter"
+        },
+        "scene": 0,
+        "scenes": [{ "nodes": [0] }],
+        "nodes": nodes,
+        "meshes": [{
+            "name": format!("{mesh_name}_shp_uv_mesh"),
+            "primitives": [{
+                "attributes": {
+                    "POSITION": 0,
+                    "NORMAL": 1,
+                    "TEXCOORD_0": 2,
+                    "COLOR_0": 3
+                },
+                "indices": 4,
+                "material": 0
+            }]
+        }],
+        "materials": [{
+            "name": "ShpHdTexturedMaterial",
+            "alphaMode": "OPAQUE",
+            "pbrMetallicRoughness": {
+                "baseColorTexture": { "index": 0 },
+                "baseColorFactor": [1.0, 1.0, 1.0, 1.0],
+                "metallicFactor": 0.12,
+                "roughnessFactor": 0.72
+            }
+        }],
+        "textures": [{ "sampler": 0, "source": 0 }],
+        "samplers": [{
+            "magFilter": 9728,
+            "minFilter": 9986,
+            "wrapS": 33071,
+            "wrapT": 33071
+        }],
+        "images": [{
+            "bufferView": 5,
+            "mimeType": "image/png"
+        }],
+        "accessors": [
+            { "bufferView": 0, "componentType": 5126, "count": mesh.positions.len(), "type": "VEC3", "min": min, "max": max },
+            { "bufferView": 1, "componentType": 5126, "count": mesh.normals.len(), "type": "VEC3" },
+            { "bufferView": 2, "componentType": 5126, "count": mesh.uvs.len(), "type": "VEC2" },
+            { "bufferView": 3, "componentType": 5126, "count": mesh.colors.len(), "type": "VEC4" },
+            { "bufferView": 4, "componentType": 5125, "count": mesh.indices.len(), "type": "SCALAR" }
+        ],
+        "bufferViews": [
+            { "buffer": 0, "byteOffset": pos_off, "byteLength": pos_len, "target": 34962 },
+            { "buffer": 0, "byteOffset": norm_off, "byteLength": norm_len, "target": 34962 },
+            { "buffer": 0, "byteOffset": uv_off, "byteLength": uv_len, "target": 34962 },
+            { "buffer": 0, "byteOffset": col_off, "byteLength": col_len, "target": 34962 },
+            { "buffer": 0, "byteOffset": idx_off, "byteLength": idx_len, "target": 34963 },
+            { "buffer": 0, "byteOffset": img_off, "byteLength": img_len }
+        ],
+        "buffers": [{ "byteLength": bin.len() }]
+    });
+
+    let mut json_bytes = serde_json::to_vec(&gltf_json)?;
+    while !json_bytes.len().is_multiple_of(4) {
+        json_bytes.push(b' ');
+    }
+    let total_len = 12 + 8 + json_bytes.len() + 8 + bin.len();
+    let mut glb = Vec::with_capacity(total_len);
+    glb.extend_from_slice(b"glTF");
+    glb.extend_from_slice(&2u32.to_le_bytes());
+    glb.extend_from_slice(&(total_len as u32).to_le_bytes());
+    glb.extend_from_slice(&(json_bytes.len() as u32).to_le_bytes());
+    glb.extend_from_slice(&0x4E4F_534Au32.to_le_bytes());
+    glb.extend_from_slice(&json_bytes);
+    glb.extend_from_slice(&(bin.len() as u32).to_le_bytes());
+    glb.extend_from_slice(&0x004E_4942u32.to_le_bytes());
+    glb.extend_from_slice(&bin);
+    Ok(glb)
+}
+
+/// Converts a classic Westwood / OpenRA `.shp` 2D sprite file into a UV-mapped 3D `.glb` mesh
+/// with optional Westwood house-color remapping on palette indices `16..=31`.
 pub fn convert_shp_bytes_to_glb_with_team_color(
     shp: &[u8],
     external_pal: Option<&[u8]>,
@@ -538,76 +643,106 @@ pub fn convert_shp_bytes_to_glb_with_team_color(
     if shp.len() < 22 {
         bail!("Westwood .shp file is too short ({} bytes)", shp.len());
     }
-
-    let palette_rgb = decode_shp_palette(external_pal, team_color, mesh_name);
     let valid_frames = decode_shp_frames(shp)?;
-
-    let mut positions: Vec<[f32; 3]> = Vec::new();
-    let mut normals: Vec<[f32; 3]> = Vec::new();
-    let mut colors: Vec<[f32; 4]> = Vec::new();
-    let mut indices: Vec<u32> = Vec::new();
-
-    if is_unit_or_infantry_shp(mesh_name, &valid_frames) {
-        emit_upright_volumetric_shp_unit_3d_mesh(
-            &valid_frames,
-            &palette_rgb,
-            &mut positions,
-            &mut normals,
-            &mut colors,
-            &mut indices,
-        );
-    } else if valid_frames.len() >= 8 && valid_frames[0].width <= 16 && valid_frames[0].height <= 16
-    {
-        let upscaled_frames: Vec<DecodedShpFrame> =
-            valid_frames.iter().map(super_resolve_shp_frame).collect();
-        let num_views = if upscaled_frames.len() >= 32 {
-            32usize
-        } else if upscaled_frames.len() >= 16 {
-            16usize
-        } else {
-            8usize
-        };
-        let (color_grid, size_x, size_y, size_z, voxel_scale) =
-            carve_visual_hull_from_turntable_frames(&upscaled_frames[..num_views], &palette_rgb);
-        reconstruct_smooth_isosurface_into_mesh(
-            &color_grid,
-            size_x,
-            size_y,
-            size_z,
-            voxel_scale,
-            [0.0, 0.0, 0.0],
-            &mut positions,
-            &mut normals,
-            &mut colors,
-            &mut indices,
-        );
+    let uv_mesh_opt = if is_unit_or_infantry_shp(mesh_name, &valid_frames) {
+        emit_upright_volumetric_shp_unit_3d_mesh(&valid_frames, external_pal, team_color)
     } else {
-        emit_crisp_isometric_shp_relief_mesh(
-            &valid_frames[0],
-            &palette_rgb,
-            &mut positions,
-            &mut normals,
-            &mut colors,
-            &mut indices,
-        );
+        emit_crisp_isometric_shp_relief_mesh(&valid_frames[0], external_pal, team_color)
+    };
+
+    if let Some(uv_mesh) = uv_mesh_opt {
+        return pack_uv_textured_shp_mesh_to_glb(&uv_mesh, mesh_name);
     }
 
-    if positions.is_empty() {
-        let mut fallback = vec![None; 8];
-        fallback[0] = Some([0.5, 0.5, 0.5]);
-        reconstruct_smooth_isosurface_into_mesh(
-            &fallback,
-            2,
-            2,
-            2,
-            0.25,
-            [0.0, 0.0, 0.0],
-            &mut positions,
-            &mut normals,
-            &mut colors,
-            &mut indices,
-        );
-    }
-
+    let mut positions = Vec::new();
+    let mut normals = Vec::new();
+    let mut colors = Vec::new();
+    let mut indices = Vec::new();
+    let mut fallback = vec![None; 8];
+    fallback[0] = Some([0.5, 0.5, 0.5]);
+    reconstruct_smooth_isosurface_into_mesh(
+        &fallback,
+        2,
+        2,
+        2,
+        0.25,
+        [0.0, 0.0, 0.0],
+        &mut positions,
+        &mut normals,
+        &mut colors,
+        &mut indices,
+    );
     pack_colored_mesh_to_glb(&positions, &normals, &colors, &indices, mesh_name)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn classified_2x_xbrz_never_prebakes_team_color_and_prevents_background_bleed() {
+        let mut pal = vec![0u8; 768];
+        // Background index 0 = bright blue (63), Shadow index 1 = blue (49), House 20 = red (48,0,0), Normal 40 = green (12,50,14)
+        pal[0..3].copy_from_slice(&[0, 0, 63]);
+        pal[3..6].copy_from_slice(&[0, 0, 49]);
+        pal[20 * 3..20 * 3 + 3].copy_from_slice(&[48, 0, 0]);
+        pal[40 * 3..40 * 3 + 3].copy_from_slice(&[12, 50, 14]);
+
+        let pixels = [
+            0u8, 0, 0, 0, //
+            0, 1, 20, 0, //
+            0, 1, 40, 0, //
+            0, 0, 0, 0, //
+        ];
+        let hd = upscale_shp_indexed_2x_classified(4, 4, &pixels, Some(&pal), None);
+        assert_eq!((hd.width, hd.height), (8, 8));
+
+        let sheet = hd.encode_sprite_sheet_rgba8();
+        let mut saw_team = false;
+        let mut saw_shadow = false;
+        let mut saw_normal = false;
+        for px in sheet.chunks_exact(4) {
+            match px[3] {
+                0 => assert_eq!(px, &[0, 0, 0, 0]),
+                112 => {
+                    saw_shadow = true;
+                    assert_eq!(&px[0..3], &[0, 0, 0], "shadow must never inherit blue pal[1]");
+                }
+                192 => {
+                    saw_team = true;
+                    assert_eq!(px[0], px[1], "team remap must stay neutral grayscale");
+                    assert_eq!(px[1], px[2], "team remap must stay neutral grayscale");
+                    assert!(px[0] > 120, "house-color luminance preserved");
+                }
+                255 => {
+                    saw_normal = true;
+                    assert!(
+                        px[1] > px[0] && px[1] > px[2],
+                        "normal green pixel must have zero blue background or red house bleed: {px:?}"
+                    );
+                }
+                other => panic!("unexpected sprite sheet alpha tag {other}"),
+            }
+        }
+        assert!(saw_team && saw_shadow && saw_normal);
+    }
+
+    #[test]
+    fn shp_to_glb_embeds_uv_png_texture_and_compact_mesh() {
+        let shp = build_sample_shp_bytes(24, 28);
+        let glb = convert_shp_bytes_to_glb(&shp, None, "allied_barracks").expect("building glb");
+        assert_eq!(&glb[0..4], b"glTF");
+        let json_len = u32::from_le_bytes(glb[12..16].try_into().unwrap()) as usize;
+        let parsed: serde_json::Value = serde_json::from_slice(&glb[20..20 + json_len]).unwrap();
+        assert!(parsed["meshes"][0]["primitives"][0]["attributes"]["TEXCOORD_0"].is_number());
+        assert_eq!(parsed["images"][0]["mimeType"], "image/png");
+        assert_eq!(parsed["materials"][0]["alphaMode"], "OPAQUE");
+        let idx_count = parsed["accessors"][4]["count"].as_u64().unwrap();
+        assert!(
+            idx_count > 0 && idx_count < 12_000,
+            "expected compact UV-textured mesh (<4k tris), got {} indices",
+            idx_count
+        );
+        assert!(glb.windows(8).any(|w| w == b"\x89PNG\r\n\x1a\n"));
+    }
 }

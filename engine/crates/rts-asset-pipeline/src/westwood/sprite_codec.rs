@@ -1,5 +1,6 @@
-use anyhow::{bail, Result};
+use anyhow::{bail, Context, Result};
 
+use super::sprite_relief_upscale::upscale_shp_indexed_2x_classified_with_remap;
 use super::sprite_shp::DecodedShpFrame;
 
 /// Decompresses a Westwood `Format80` (`LCW`) compressed byte stream (used in TD/RA1 `.shp` frames
@@ -281,6 +282,7 @@ pub fn apply_format40_xor_delta(base: &mut [u8], delta: &[u8]) {
 /// Edge-Preserving Pixel-Art Super-Resolution Upscaler (EPX / Scale2x / AdvMAME2x).
 /// Doubles the resolution (`2x`) while reconstructing smooth 45-degree diagonal edges
 /// without blurring or introducing palette artifacts.
+#[allow(dead_code)]
 fn upscale_shp_frame_epx_2x(frame: &DecodedShpFrame) -> DecodedShpFrame {
     let w = frame.width;
     let h = frame.height;
@@ -339,6 +341,7 @@ fn upscale_shp_frame_epx_2x(frame: &DecodedShpFrame) -> DecodedShpFrame {
 /// Automatically upscales low-resolution `.shp` frames using chained EPX/Scale2x super-resolution
 /// (up to 4x for compact unit/infantry sprites, 2x for medium sprites) so 3D reconstruction
 /// operates on high-definition anti-aliased contours.
+#[allow(dead_code)]
 pub(super) fn super_resolve_shp_frame(frame: &DecodedShpFrame) -> DecodedShpFrame {
     let max_dim = frame.width.max(frame.height);
     if max_dim <= 28 {
@@ -348,5 +351,258 @@ pub(super) fn super_resolve_shp_frame(frame: &DecodedShpFrame) -> DecodedShpFram
         upscale_shp_frame_epx_2x(frame)
     } else {
         frame.clone()
+    }
+}
+
+/// Metadata + encoded RGBA8 PNG bytes for a `2x` edge-directed xBRZ HD `.shp` sprite-sheet atlas.
+#[derive(Debug, Clone)]
+pub struct HdSpriteAtlasPackResult {
+    pub png_bytes: Vec<u8>,
+    pub atlas_width: u32,
+    pub atlas_height: u32,
+    pub cell_width: u32,
+    pub cell_height: u32,
+    pub columns: u32,
+    pub frame_count: u32,
+    pub source_canvas_width: u32,
+    pub source_canvas_height: u32,
+    pub crop_x: u32,
+    pub crop_y: u32,
+    pub crop_width: u32,
+    pub crop_height: u32,
+}
+
+/// Composites a Westwood `.shp` ground-shadow mask frame (`pixels` containing only `{0, 1}`)
+/// onto `base_canvas` wherever `base_canvas == 0`.
+pub fn composite_westwood_shp_shadow(base_canvas: &mut [u8], shadow_canvas: &[u8]) {
+    if shadow_canvas.len() == base_canvas.len() && shadow_canvas.iter().all(|&p| p <= 1) {
+        for (dst, &sh) in base_canvas.iter_mut().zip(shadow_canvas.iter()) {
+            if sh == 1 && *dst == 0 {
+                *dst = 1;
+            }
+        }
+    }
+}
+
+/// Synthesizes crisp bottom-up construction reveal frames from an `idle` `1x` `.shp` frame
+/// for landmarks/neutral structures that lack a separate `*mk.shp` buildup sequence.
+pub fn synthesize_bottom_up_make_frames(
+    width: usize,
+    height: usize,
+    idle_1x: &[u8],
+    steps: usize,
+) -> Vec<Vec<u8>> {
+    let count = steps.clamp(2, 16);
+    let mut min_y = height;
+    let mut max_y = 0usize;
+    for y in 0..height {
+        if idle_1x[y * width..(y + 1) * width].iter().any(|&p| p >= 2) {
+            min_y = min_y.min(y);
+            max_y = max_y.max(y);
+        }
+    }
+    if min_y > max_y {
+        return vec![idle_1x.to_vec(); count];
+    }
+    let span = (max_y - min_y + 1).max(1);
+    let mut out = Vec::with_capacity(count);
+    for s in 0..count {
+        let frac = (s + 1) as f32 / (count as f32);
+        let reveal_rows = ((span as f32 * frac).round() as usize).clamp(1, span);
+        let top_cut_y = max_y + 1 - reveal_rows;
+        let mut frame = vec![0u8; width * height];
+        for y in 0..height {
+            for x in 0..width {
+                let p = idle_1x[y * width + x];
+                if p == 1 || (p >= 2 && y >= top_cut_y) {
+                    frame[y * width + x] = p;
+                }
+            }
+        }
+        out.push(frame);
+    }
+    out
+}
+
+/// Tight-crops a sequence of `1x` indexed `.shp` frames (`canvas_width x canvas_height`) to their
+/// shared union bounding box (+2px border), runs class-separated `2x` edge-directed xBRZ upscaling,
+/// and packs all cells into a compact `RGBA8` PNG sprite atlas (`A=0` transparent, `A=112` shadow,
+/// `A=192` neutral-gray team-remap, `A=255` normal RGB).
+pub fn pack_hd_shp_frames_to_atlas_png(
+    canvas_width: usize,
+    canvas_height: usize,
+    frames_1x: &[Vec<u8>],
+    external_pal: Option<&[u8]>,
+    allow_team_remap: bool,
+) -> Result<HdSpriteAtlasPackResult> {
+    if canvas_width == 0 || canvas_height == 0 || frames_1x.is_empty() {
+        bail!("Cannot pack empty .shp frame list into HD sprite atlas");
+    }
+    let expected_len = canvas_width * canvas_height;
+    let mut min_x = canvas_width;
+    let mut max_x = 0usize;
+    let mut min_y = canvas_height;
+    let mut max_y = 0usize;
+
+    for f in frames_1x {
+        if f.len() < expected_len {
+            bail!(
+                "Frame buffer length {} smaller than canvas {}x{}",
+                f.len(),
+                canvas_width,
+                canvas_height
+            );
+        }
+        for y in 0..canvas_height {
+            let row = &f[y * canvas_width..(y + 1) * canvas_width];
+            for (x, &p) in row.iter().enumerate() {
+                if p != 0 {
+                    min_x = min_x.min(x);
+                    max_x = max_x.max(x);
+                    min_y = min_y.min(y);
+                    max_y = max_y.max(y);
+                }
+            }
+        }
+    }
+
+    let (crop_x, crop_y, crop_w, crop_h) = if min_x <= max_x && min_y <= max_y {
+        let cx0 = min_x.saturating_sub(2);
+        let cy0 = min_y.saturating_sub(2);
+        let cx1 = (max_x + 3).min(canvas_width);
+        let cy1 = (max_y + 3).min(canvas_height);
+        (cx0, cy0, (cx1 - cx0).max(1), (cy1 - cy0).max(1))
+    } else {
+        (0, 0, canvas_width.min(8), canvas_height.min(8))
+    };
+
+    let cell_w = crop_w * 2;
+    let cell_h = crop_h * 2;
+    let n_frames = frames_1x.len();
+    let max_cols_for_4k = (4096 / cell_w.max(1)).max(1);
+    let ideal_cols = (((n_frames as f32) * (cell_h as f32) / (cell_w as f32))
+        .sqrt()
+        .ceil() as usize)
+        .clamp(1, n_frames)
+        .min(max_cols_for_4k);
+    let columns = ideal_cols.max(1);
+    let rows = n_frames.div_ceil(columns);
+    let atlas_w = columns * cell_w;
+    let atlas_h = rows * cell_h;
+
+    let mut atlas_rgba = vec![0u8; atlas_w * atlas_h * 4];
+    let mut cropped = vec![0u8; crop_w * crop_h];
+
+    for (idx, src) in frames_1x.iter().enumerate() {
+        for ry in 0..crop_h {
+            let src_row = (crop_y + ry) * canvas_width + crop_x;
+            cropped[ry * crop_w..(ry + 1) * crop_w]
+                .copy_from_slice(&src[src_row..src_row + crop_w]);
+        }
+        let hd = upscale_shp_indexed_2x_classified_with_remap(
+            crop_w,
+            crop_h,
+            &cropped,
+            external_pal,
+            None,
+            allow_team_remap,
+        );
+        let cell_rgba = hd.encode_sprite_sheet_rgba8();
+        let col = idx % columns;
+        let row = idx / columns;
+        let dst_x0 = col * cell_w;
+        let dst_y0 = row * cell_h;
+        for cy in 0..cell_h {
+            let src_off = cy * cell_w * 4;
+            let dst_off = ((dst_y0 + cy) * atlas_w + dst_x0) * 4;
+            atlas_rgba[dst_off..dst_off + cell_w * 4]
+                .copy_from_slice(&cell_rgba[src_off..src_off + cell_w * 4]);
+        }
+    }
+
+    let mut png_bytes = Vec::new();
+    {
+        let mut encoder = png::Encoder::new(&mut png_bytes, atlas_w as u32, atlas_h as u32);
+        encoder.set_color(png::ColorType::Rgba);
+        encoder.set_depth(png::BitDepth::Eight);
+        encoder.set_compression(png::Compression::High);
+        let mut writer = encoder
+            .write_header()
+            .context("Failed to write HD .shp sprite atlas PNG header")?;
+        writer
+            .write_image_data(&atlas_rgba)
+            .context("Failed to write HD .shp sprite atlas PNG image data")?;
+    }
+
+    Ok(HdSpriteAtlasPackResult {
+        png_bytes,
+        atlas_width: atlas_w as u32,
+        atlas_height: atlas_h as u32,
+        cell_width: cell_w as u32,
+        cell_height: cell_h as u32,
+        columns: columns as u32,
+        frame_count: n_frames as u32,
+        source_canvas_width: canvas_width as u32,
+        source_canvas_height: canvas_height as u32,
+        crop_x: crop_x as u32,
+        crop_y: crop_y as u32,
+        crop_width: crop_w as u32,
+        crop_height: crop_h as u32,
+    })
+}
+
+#[cfg(test)]
+mod hd_atlas_tests {
+    use super::*;
+
+    #[test]
+    fn pack_hd_shp_frames_preserves_alpha_classes_without_prebaked_team_rgb() {
+        let mut pal = vec![0u8; 768];
+        // Deliberately put bright red in house-remap slot 20 and cyan in normal slot 45
+        pal[20 * 3] = 63;
+        pal[20 * 3 + 1] = 0;
+        pal[20 * 3 + 2] = 0;
+        pal[45 * 3] = 8;
+        pal[45 * 3 + 1] = 52;
+        pal[45 * 3 + 2] = 60;
+
+        let mut f0 = vec![0u8; 16 * 16];
+        f0[5 * 16 + 5] = 1; // shadow
+        f0[6 * 16 + 6] = 20; // house remap
+        f0[7 * 16 + 7] = 45; // normal RGB
+
+        let res = pack_hd_shp_frames_to_atlas_png(16, 16, &[f0], Some(&pal), true).unwrap();
+        assert_eq!(res.frame_count, 1);
+        assert_eq!(res.cell_width, res.crop_width * 2);
+        assert_eq!(res.cell_height, res.crop_height * 2);
+
+        let decoder = png::Decoder::new(std::io::Cursor::new(&res.png_bytes));
+        let mut reader = decoder.read_info().unwrap();
+        let mut decoded = vec![0u8; reader.output_buffer_size().unwrap()];
+        let info = reader.next_frame(&mut decoded).unwrap();
+        let rgba = &decoded[..info.buffer_size()];
+
+        let mut saw_transparent = false;
+        let mut saw_shadow = false;
+        let mut saw_team_gray = false;
+        let mut saw_normal = false;
+        for px in rgba.chunks_exact(4) {
+            match px[3] {
+                0 => saw_transparent = true,
+                112 => {
+                    saw_shadow = true;
+                    assert_eq!(&px[0..3], &[0, 0, 0]);
+                }
+                192 => {
+                    saw_team_gray = true;
+                    // Never pre-baked red: R == G == B neutral grayscale
+                    assert_eq!(px[0], px[1]);
+                    assert_eq!(px[1], px[2]);
+                }
+                255 => saw_normal = true,
+                other => panic!("Unexpected alpha class byte {other}"),
+            }
+        }
+        assert!(saw_transparent && saw_shadow && saw_team_gray && saw_normal);
     }
 }

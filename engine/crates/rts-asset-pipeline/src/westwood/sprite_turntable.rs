@@ -1,5 +1,10 @@
+pub use super::sprite_codec::{
+    composite_westwood_shp_shadow, pack_hd_shp_frames_to_atlas_png,
+    synthesize_bottom_up_make_frames, HdSpriteAtlasPackResult,
+};
 use super::*;
 
+#[allow(dead_code)]
 pub(super) struct TurntableViewField {
     w: usize,
     h: usize,
@@ -14,6 +19,7 @@ pub(super) struct TurntableViewField {
 
 /// Precomputes centered bounding boxes, azimuth trigonometry (`sin_t`, `cos_t`),
 /// and $3 \times 3$ dilated soft-silhouette + color maps for each turntable camera view.
+#[allow(dead_code)]
 pub(super) fn build_turntable_view_fields(
     frames: &[DecodedShpFrame],
     palette_rgb: &[[f32; 3]; 256],
@@ -115,6 +121,7 @@ pub(super) fn build_turntable_view_fields(
 /// Multi-Angle Visual Hull (Shape-from-Silhouette) Space Carving + Photometric Multi-View Color Fusion.
 /// Projects every 3D voxel `(x, y, z)` into all `N` directional camera views around the 360-degree
 /// turntable (at the classic 30-degree isometric elevation angle) with early-exit silhouette rejection.
+#[allow(dead_code)]
 pub(super) fn carve_visual_hull_from_turntable_frames(
     frames: &[DecodedShpFrame],
     palette_rgb: &[[f32; 3]; 256],
@@ -207,6 +214,7 @@ pub(super) fn carve_visual_hull_from_turntable_frames(
 
 /// Reconstructs a 3D volumetric grid from a single isometric sprite frame using
 /// 2D Euclidean distance-to-silhouette-edge + Shape-from-Shading luminance depth.
+#[allow(dead_code)]
 pub(super) fn build_isometric_relief_volume(
     frame: &DecodedShpFrame,
     palette_rgb: &[[f32; 3]; 256],
@@ -410,4 +418,150 @@ pub fn build_sample_vxl_bytes(size_x: u8, size_y: u8, size_z: u8) -> Vec<u8> {
     vxl.push(2); // normals_mode
 
     vxl
+}
+
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct BuildingSpriteSpec {
+    pub atlas: String,
+    pub atlas_width: u32,
+    pub atlas_height: u32,
+    pub cell_width: u32,
+    pub cell_height: u32,
+    pub columns: u32,
+    pub source_canvas_width: u32,
+    pub source_canvas_height: u32,
+    pub crop_x: u32,
+    pub crop_y: u32,
+    pub crop_width: u32,
+    pub crop_height: u32,
+    pub foot_anchor_px: [f32; 2],
+    pub ground_bottom_y_px: f32,
+    pub orig_footprint: [u32; 2],
+    pub toml_footprint: [u32; 2],
+    pub team_remap: bool,
+    pub idle: u32,
+    pub damaged: u32,
+    pub active_loop: Vec<u32>,
+    #[serde(default)]
+    pub damaged_active_loop: Vec<u32>,
+    pub make: Vec<u32>,
+    pub fps: f32,
+}
+
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct InfantrySpriteSpec {
+    pub atlas: String,
+    pub atlas_width: u32,
+    pub atlas_height: u32,
+    pub cell_width: u32,
+    pub cell_height: u32,
+    pub columns: u32,
+    pub source_canvas_width: u32,
+    pub source_canvas_height: u32,
+    pub crop_x: u32,
+    pub crop_y: u32,
+    pub crop_width: u32,
+    pub crop_height: u32,
+    pub foot_anchor_px: [f32; 2],
+    pub body_height_px: f32,
+    pub world_height_m: f32,
+    pub team_remap: bool,
+    pub stand: Vec<u32>,
+    pub run: Vec<Vec<u32>>,
+    pub fire: Vec<Vec<u32>>,
+    pub die: Vec<u32>,
+    pub fps: f32,
+}
+
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub struct Ra2ShpSpriteCatalogFile {
+    #[serde(default)]
+    pub version: u32,
+    #[serde(default)]
+    pub buildings: std::collections::HashMap<String, BuildingSpriteSpec>,
+    #[serde(default)]
+    pub infantry: std::collections::HashMap<String, InfantrySpriteSpec>,
+}
+
+/// Loads `assets/sprites/sprites_catalog.json` from `mod_root` if present and non-empty.
+pub fn load_ra2_shp_sprite_catalog(mod_root: &std::path::Path) -> Option<Ra2ShpSpriteCatalogFile> {
+    let catalog_path = mod_root.join("assets/sprites/sprites_catalog.json");
+    let bytes = std::fs::read(catalog_path).ok()?;
+    let parsed: Ra2ShpSpriteCatalogFile = serde_json::from_slice(&bytes).ok()?;
+    if parsed.buildings.is_empty() && parsed.infantry.is_empty() {
+        None
+    } else {
+        Some(parsed)
+    }
+}
+
+/// Maps `(unit_yaw_rad - camera_yaw_rad)` to Westwood's 8-direction infantry `.shp` facing (`0..=7`):
+/// `0 = Screen UP`, `1 = UP-LEFT`, `2 = LEFT`, `3 = DOWN-LEFT`, `4 = DOWN`, `5 = DOWN-RIGHT`, `6 = RIGHT`, `7 = UP-RIGHT`.
+#[inline]
+pub fn infantry_facing_8dir(unit_yaw_rad: f32, camera_yaw_rad: f32) -> usize {
+    let delta = unit_yaw_rad - camera_yaw_rad;
+    let angle = (delta + std::f32::consts::PI).rem_euclid(std::f32::consts::TAU);
+    ((angle / std::f32::consts::FRAC_PI_4).round() as usize) % 8
+}
+
+/// Selects the active cooked atlas frame index for an RA2 building (`make`, `damaged`, `active_loop`, `idle`).
+pub fn select_building_sprite_frame(
+    spec: &BuildingSpriteSpec,
+    spawn_progress: f32,
+    deconstruct_progress: Option<f32>,
+    hp_ratio: f32,
+    is_online: bool,
+    elapsed_secs: f32,
+) -> u32 {
+    if let Some(dec_p) = deconstruct_progress {
+        if !spec.make.is_empty() {
+            let idx = ((dec_p.clamp(0.0, 0.999) * spec.make.len() as f32).floor() as usize)
+                .min(spec.make.len() - 1);
+            return spec.make[idx];
+        }
+    }
+    if spawn_progress < 0.995 && !spec.make.is_empty() {
+        let idx = ((spawn_progress.clamp(0.0, 0.999) * spec.make.len() as f32).floor() as usize)
+            .min(spec.make.len() - 1);
+        return spec.make[idx];
+    }
+    let fps = spec.fps.max(1.0);
+    if hp_ratio < 0.50 {
+        if is_online && !spec.damaged_active_loop.is_empty() {
+            let step = (elapsed_secs.max(0.0) * fps).floor() as usize;
+            return spec.damaged_active_loop[step % spec.damaged_active_loop.len()];
+        }
+        return spec.damaged;
+    }
+    if is_online && !spec.active_loop.is_empty() {
+        let step = (elapsed_secs.max(0.0) * fps).floor() as usize;
+        return spec.active_loop[step % spec.active_loop.len()];
+    }
+    spec.idle
+}
+
+/// Selects the active cooked atlas frame index for an RA2 infantry unit across 8 facings.
+pub fn select_infantry_sprite_frame_flags(
+    spec: &InfantrySpriteSpec,
+    facing_8: usize,
+    is_dying: bool,
+    is_attacking: bool,
+    is_walking: bool,
+    death_progress: Option<f32>,
+    elapsed_secs: f32,
+) -> u32 {
+    let dir = facing_8 % 8;
+    if (is_dying || death_progress.is_some()) && !spec.die.is_empty() {
+        let p = death_progress.unwrap_or(0.0).clamp(0.0, 0.999);
+        let idx = ((p * spec.die.len() as f32).floor() as usize).min(spec.die.len() - 1);
+        return spec.die[idx];
+    }
+    let fps = spec.fps.max(1.0);
+    if let Some(seq) = spec.fire.get(dir).filter(|s| is_attacking && !s.is_empty()) {
+        return seq[((elapsed_secs.max(0.0) * fps * 1.15).floor() as usize) % seq.len()];
+    }
+    if let Some(seq) = spec.run.get(dir).filter(|s| is_walking && !s.is_empty()) {
+        return seq[((elapsed_secs.max(0.0) * fps).floor() as usize) % seq.len()];
+    }
+    spec.stand.get(dir).copied().unwrap_or(0)
 }

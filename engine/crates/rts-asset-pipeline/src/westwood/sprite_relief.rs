@@ -1,26 +1,23 @@
-use super::sprite_relief_mesh::{emit_welded_isometric_building_mesh, IsoBuildingReliefFields};
+use super::sprite_relief_mesh::{
+    emit_welded_isometric_building_uv_mesh, IsoBuildingReliefFields, ShpUvTexturedMesh,
+};
 pub(super) use super::sprite_relief_unit::emit_upright_volumetric_shp_unit_3d_mesh;
 use super::sprite_relief_upscale::*;
 use super::sprite_shp::DecodedShpFrame;
 
-/// Reconstructs a 4K-grade, anti-aliased, contour-smoothed 3D Isometric Relief Mesh from a
-/// Westwood `.shp` sprite frame aligned with the inverse isometric camera basis (`yaw = 38Â°`,
-/// `pitch = 26Â°`). Combines adaptive 4x/2x silhouette-aware xBR super-resolution, 24-bit
-/// bilateral truecolor filtering, smoothed 3D relief depth, welded Taubin ($\lambda/\mu$)
-/// silhouette contour smoothing, and smooth Phong relief normals.
+/// Reconstructs a compact, low-triangle (`< 2,000` tris), UV-mapped (`TEXCOORD_0`) 3D isometric
+/// architectural relief mesh paired with a `2x` classified xBRZ RGBA8 texture (`Alpha = 0` on
+/// `16..=31` house-color texels, `Alpha = 255` on normal texels).
 pub(super) fn emit_crisp_isometric_shp_relief_mesh(
     raw_frame: &DecodedShpFrame,
-    palette_rgb: &[[f32; 3]; 256],
-    out_positions: &mut Vec<[f32; 3]>,
-    out_normals: &mut Vec<[f32; 3]>,
-    out_colors: &mut Vec<[f32; 4]>,
-    out_indices: &mut Vec<u32>,
-) {
+    external_pal: Option<&[u8]>,
+    team_color: Option<[f32; 3]>,
+) -> Option<ShpUvTexturedMesh> {
     if raw_frame.width == 0 || raw_frame.height == 0 {
-        return;
+        return None;
     }
 
-    // 1. Tight crop around non-empty, non-shadow pixels (+ 2px margin for super-resolution bevels)
+    // 1. Tight crop around opaque sprite pixels (`idx >= 2`, preserving `idx == 12` black details!)
     let mut r_min_x = raw_frame.width;
     let mut r_max_x = 0usize;
     let mut r_min_y = raw_frame.height;
@@ -28,7 +25,7 @@ pub(super) fn emit_crisp_isometric_shp_relief_mesh(
     for py in 0..raw_frame.height {
         for px in 0..raw_frame.width {
             let c = raw_frame.pixels[py * raw_frame.width + px];
-            if c > 1 && c != 12 {
+            if c >= 2 {
                 r_min_x = r_min_x.min(px);
                 r_max_x = r_max_x.max(px);
                 r_min_y = r_min_y.min(py);
@@ -37,197 +34,70 @@ pub(super) fn emit_crisp_isometric_shp_relief_mesh(
         }
     }
     if r_min_x > r_max_x || r_min_y > r_max_y {
-        return;
+        return None;
     }
 
-    let c_x0 = r_min_x.saturating_sub(2);
-    let c_y0 = r_min_y.saturating_sub(2);
-    let c_x1 = (r_max_x + 2).min(raw_frame.width - 1);
-    let c_y1 = (r_max_y + 2).min(raw_frame.height - 1);
+    let c_x0 = r_min_x.saturating_sub(1);
+    let c_y0 = r_min_y.saturating_sub(1);
+    let c_x1 = (r_max_x + 1).min(raw_frame.width - 1);
+    let c_y1 = (r_max_y + 1).min(raw_frame.height - 1);
     let crop_w = c_x1 - c_x0 + 1;
     let crop_h = c_y1 - c_y0 + 1;
 
-    let mut solid_1x = vec![false; crop_w * crop_h];
-    let mut rgb_1x = vec![[0.0f32; 3]; crop_w * crop_h];
-    let mut total_solid_1x = 0usize;
+    let mut crop_indices = vec![0u8; crop_w * crop_h];
     for y in 0..crop_h {
         for x in 0..crop_w {
-            let c = raw_frame.pixels[(c_y0 + y) * raw_frame.width + (c_x0 + x)];
-            if c > 1 && c != 12 {
-                solid_1x[y * crop_w + x] = true;
-                rgb_1x[y * crop_w + x] = palette_rgb[c as usize];
-                total_solid_1x += 1;
-            }
+            crop_indices[y * crop_w + x] =
+                raw_frame.pixels[(c_y0 + y) * raw_frame.width + (c_x0 + x)];
         }
     }
 
-    // Despeckle tiny isolated floating pixel islands (< 24 px or < 1.25% of area)
-    if total_solid_1x > 32 {
-        let min_comp_size = 24usize.max(total_solid_1x / 80);
-        let mut visited = vec![false; crop_w * crop_h];
-        let mut queue = Vec::new();
-        for start in 0..(crop_w * crop_h) {
-            if !solid_1x[start] || visited[start] {
-                continue;
-            }
-            queue.clear();
-            queue.push(start);
-            visited[start] = true;
-            let mut head = 0usize;
-            while head < queue.len() {
-                let curr = queue[head];
-                head += 1;
-                let cy = curr / crop_w;
-                let cx = curr % crop_w;
-                for dy in -2isize..=2 {
-                    for dx in -2isize..=2 {
-                        let ny = cy as isize + dy;
-                        let nx = cx as isize + dx;
-                        if ny >= 0 && (ny as usize) < crop_h && nx >= 0 && (nx as usize) < crop_w {
-                            let nidx = (ny as usize) * crop_w + (nx as usize);
-                            if solid_1x[nidx] && !visited[nidx] {
-                                visited[nidx] = true;
-                                queue.push(nidx);
-                            }
-                        }
-                    }
-                }
-            }
-            if queue.len() < min_comp_size {
-                for &idx in &queue {
-                    solid_1x[idx] = false;
-                    rgb_1x[idx] = [0.0; 3];
-                }
-            }
-        }
-    }
+    // 2. Class-separated 2x edge-directed xBRZ HD texture (zero background/shadow/team-color bleed)
+    let hd_img =
+        upscale_shp_indexed_2x_classified(crop_w, crop_h, &crop_indices, external_pal, team_color);
+    let tex_rgba8 = hd_img.encode_glb_opaque_teammask_rgba8();
 
-    // 2. Adaptive Multi-Octave 24-Bit Vector/xBRZ Super-Resolution:
-    // - Defense towers / compact structures (<= 75px): 3 Octaves (`8x` Vector-HD)
-    // - Main base buildings, superweapons & landmarks (<= 210px): 2 Octaves (`4x` Vector-HD)
-    // - Giant multi-tile monuments (> 210px): 1 Octave (`2x` Vector-HD)
-    let max_raw_dim = crop_w.max(crop_h);
-    let (fw, fh, s_up, c_up_raw) = if max_raw_dim <= 75 {
-        let (w2, h2, s2, c2) = upscale_2x_vector_xbrz_rgb(crop_w, crop_h, &solid_1x, &rgb_1x, 0);
-        let (w4, h4, s4, c4) = upscale_2x_vector_xbrz_rgb(w2, h2, &s2, &c2, 1);
-        upscale_2x_vector_xbrz_rgb(w4, h4, &s4, &c4, 2)
-    } else if max_raw_dim <= 210 {
-        let (w2, h2, s2, c2) = upscale_2x_vector_xbrz_rgb(crop_w, crop_h, &solid_1x, &rgb_1x, 0);
-        upscale_2x_vector_xbrz_rgb(w2, h2, &s2, &c2, 1)
-    } else {
-        upscale_2x_vector_xbrz_rgb(crop_w, crop_h, &solid_1x, &rgb_1x, 0)
-    };
-    let c_up = sharpen_micro_detail_rgb(fw, fh, &s_up, &c_up_raw, 0.26);
-
-    let mut min_x = fw;
-    let mut max_x = 0usize;
-    let mut min_y = fh;
-    let mut max_y = 0usize;
-    for py in 0..fh {
-        for px in 0..fw {
-            if s_up[py * fw + px] {
-                min_x = min_x.min(px);
-                max_x = max_x.max(px);
-                min_y = min_y.min(py);
-                max_y = max_y.max(py);
-            }
-        }
-    }
-    if min_x > max_x || min_y > max_y {
-        return;
-    }
-
-    let bw = max_x - min_x + 1;
-    let bh = max_y - min_y + 1;
+    // 3. Downsample silhouette & luminance onto a compact coarse 3D relief grid (`<= 24 x 24`)
+    let bw = crop_w.clamp(6, 24);
+    let bh = crop_h.clamp(6, 24);
     let mut solid = vec![false; bw * bh];
-    let mut tight_c = vec![[0.0f32; 3]; bw * bh];
-    for y in 0..bh {
-        for x in 0..bw {
-            let src = (min_y + y) * fw + (min_x + x);
-            solid[y * bw + x] = s_up[src];
-            tight_c[y * bw + x] = c_up[src];
+    let mut lum_grid = vec![0.5f32; bw * bh];
+    for gy in 0..bh {
+        let y0 = (gy * hd_img.height) / bh;
+        let y1 = (((gy + 1) * hd_img.height) / bh).max(y0 + 1).min(hd_img.height);
+        for gx in 0..bw {
+            let x0 = (gx * hd_img.width) / bw;
+            let x1 = (((gx + 1) * hd_img.width) / bw).max(x0 + 1).min(hd_img.width);
+            let mut op_cnt = 0usize;
+            let mut lum_sum = 0.0f32;
+            for py in y0..y1 {
+                for px in x0..x1 {
+                    let i = py * hd_img.width + px;
+                    if matches!(
+                        hd_img.classes[i],
+                        ShpPixelClass::NormalRgb | ShpPixelClass::TeamRemap
+                    ) {
+                        op_cnt += 1;
+                        lum_sum += color_luma(hd_img.rgb[i]);
+                    }
+                }
+            }
+            if op_cnt > 0 {
+                solid[gy * bw + gx] = true;
+                lum_grid[gy * bw + gx] = lum_sum / (op_cnt as f32);
+            }
         }
     }
-    let rgb_grid = dilate_rgb_into_background(bw, bh, &solid, &tight_c);
+    if !solid.iter().any(|&s| s) {
+        return None;
+    }
 
-    // 3. Layer 1 (`Z_macro`): Smooth 3D Architectural Volume Inflation via Exact 2D EDT + Medial Radius
     let dist_sil = compute_exact_2d_edt(bw, bh, &solid);
-    let mut local_r = dist_sil.clone();
-    for _ in 0..18 {
-        let prev = local_r.clone();
-        for y in 0..bh {
-            for x in 0..bw {
-                let idx = y * bw + x;
-                if !solid[idx] {
-                    continue;
-                }
-                let mut best = prev[idx];
-                for dy in -1isize..=1 {
-                    let ny = y as isize + dy;
-                    if ny < 0 || (ny as usize) >= bh {
-                        continue;
-                    }
-                    for dx in -1isize..=1 {
-                        let nx = x as isize + dx;
-                        if nx < 0 || (nx as usize) >= bw {
-                            continue;
-                        }
-                        let nidx = (ny as usize) * bw + (nx as usize);
-                        if solid[nidx] && prev[nidx] > best {
-                            best = prev[nidx];
-                        }
-                    }
-                }
-                local_r[idx] = best;
-            }
-        }
-    }
-    let local_r = smooth_scalar_field(bw, bh, &solid, &local_r, 10);
-
-    // 4. Layer 2 (`Z_meso`): Chromaticity-Segmented 3D Architectural Sub-Volumes (Roofs, Domes, Panels, Cranes)
-    let mut seg_interior = vec![false; bw * bh];
-    for y in 0..bh {
-        for x in 0..bw {
-            let idx = y * bw + x;
-            if !solid[idx] {
-                continue;
-            }
-            let c0 = rgb_grid[idx];
-            let mut is_seam = false;
-            for &(dy, dx) in &[
-                (-1isize, 0isize),
-                (1, 0),
-                (0, -1),
-                (0, 1),
-                (-2, 0),
-                (2, 0),
-                (0, -2),
-                (0, 2),
-            ] {
-                let ny = y as isize + dy;
-                let nx = x as isize + dx;
-                if ny >= 0
-                    && (ny as usize) < bh
-                    && nx >= 0
-                    && (nx as usize) < bw
-                    && solid[(ny as usize) * bw + (nx as usize)]
-                    && chroma_dist_sq_rgb(c0, rgb_grid[(ny as usize) * bw + (nx as usize)]) > 0.080
-                {
-                    is_seam = true;
-                    break;
-                }
-            }
-            seg_interior[idx] = !is_seam;
-        }
-    }
-    let dist_seg = compute_exact_2d_edt(bw, bh, &seg_interior);
-
     let span = (bw.max(bh).max(1)) as f32;
     let step = 2.2 / span;
     let cx_f = (bw as f32) * 0.5;
     let cy_f = (bh as f32) * 0.5;
 
-    // 4b. Extract True 3D Isometric Ground V-Foundation Envelope `v_ground[x]` & Top Envelope `v_top_env[x]`
     let mut y_min_col = vec![0usize; bw];
     let mut y_max_col = vec![bh.saturating_sub(1); bw];
     let mut col_has_solid = vec![false; bw];
@@ -276,62 +146,32 @@ pub(super) fn emit_crisp_isometric_shp_relief_mesh(
     }
 
     let mut v_min_global = v_apex;
-    let mut v_max_global = v_apex + step * 8.0;
+    let mut v_max_global = v_apex + step * 6.0;
     for (&vb, &vt) in v_bot_raw.iter().zip(v_top_raw.iter()).take(bw) {
         v_min_global = v_min_global.min(vb);
         v_max_global = v_max_global.max(vt);
     }
-    let total_v_span = (v_max_global - v_min_global).max(step * 8.0);
+    let total_v_span = (v_max_global - v_min_global).max(step * 6.0);
     let u_span_total = (bw as f32) * step;
 
     let iso_slope = 0.65 * step;
     let v_corner_cap = v_apex + (0.65 * total_v_span).min(0.32 * u_span_total);
-    let mut v_env = v_bot_raw.clone();
-    v_env[x_apex] = v_bot_raw[x_apex];
+    let mut v_ground = v_bot_raw.clone();
+    v_ground[x_apex] = v_bot_raw[x_apex];
     for x in (0..x_apex).rev() {
-        let allowed = (v_env[x + 1] + iso_slope)
+        let allowed = (v_ground[x + 1] + iso_slope)
             .min(v_bot_raw[x])
             .min(v_corner_cap);
-        v_env[x] = allowed.max(v_env[x + 1]);
+        v_ground[x] = allowed.max(v_ground[x + 1]);
     }
     for x in (x_apex + 1)..bw {
-        let allowed = (v_env[x - 1] + iso_slope)
+        let allowed = (v_ground[x - 1] + iso_slope)
             .min(v_bot_raw[x])
             .min(v_corner_cap);
-        v_env[x] = allowed.max(v_env[x - 1]);
+        v_ground[x] = allowed.max(v_ground[x - 1]);
     }
 
-    let mut v_ground = v_env.clone();
-    let mut v_bot_smooth = v_bot_raw.clone();
-    let mut v_top_smooth = v_top_raw.clone();
-    for _ in 0..6 {
-        let prev_g = v_ground.clone();
-        let prev_b = v_bot_smooth.clone();
-        let prev_t = v_top_smooth.clone();
-        for (((x, vg), vb), vt) in v_ground
-            .iter_mut()
-            .enumerate()
-            .zip(v_bot_smooth.iter_mut())
-            .zip(v_top_smooth.iter_mut())
-            .take(bw)
-        {
-            let mut sg = 0.0f32;
-            let mut sb = 0.0f32;
-            let mut st = 0.0f32;
-            let mut cnt = 0.0f32;
-            for dx in -3isize..=3 {
-                let nx = (x as isize + dx).clamp(0, bw as isize - 1) as usize;
-                sg += prev_g[nx];
-                sb += prev_b[nx];
-                st += prev_t[nx];
-                cnt += 1.0;
-            }
-            *vg = sg / cnt;
-            *vb = (sb / cnt).max(v_bot_raw[x]);
-            *vt = (st / cnt).min(v_top_raw[x]);
-        }
-    }
-
+    let v_bot_smooth = v_bot_raw.clone();
     let yaw = 38.0f32.to_radians();
     let pitch = 26.0f32.to_radians();
     let (syaw, cyaw) = yaw.sin_cos();
@@ -353,7 +193,7 @@ pub(super) fn emit_crisp_isometric_shp_relief_mesh(
         let w_f = -(v_ground[x] - v_mid_ground) / spit;
         let dv_front = (v_c - v_ground[x]).max(0.0);
         let tau_x = 4.0 * tx * (1.0 - tx);
-        let max_safe_dv = ((v_top_smooth[x] - v_ground[x]).max(step * 2.0)) * 0.72;
+        let max_safe_dv = ((v_top_raw[x] - v_ground[x]).max(step * 2.0)) * 0.72;
         let dv_back = (dv_front * 0.78)
             .max(u_span_total * 0.16 * spit * tau_x)
             .min(max_safe_dv);
@@ -364,31 +204,8 @@ pub(super) fn emit_crisp_isometric_shp_relief_mesh(
         w_back_col[x] = (w_c - d_back).min(w_f - step * 0.25);
     }
 
-    // Measure contiguous horizontal run length per pixel to distinguish cylindrical towers/domes
-    // from flat architectural halls
-    let mut run_len_grid = vec![bw as f32; bw * bh];
-    for y in 0..bh {
-        let mut x = 0usize;
-        while x < bw {
-            if !solid[y * bw + x] {
-                x += 1;
-                continue;
-            }
-            let x_start = x;
-            while x < bw && solid[y * bw + x] {
-                x += 1;
-            }
-            let rlen = (x - x_start) as f32;
-            for rx in x_start..x {
-                run_len_grid[y * bw + rx] = rlen;
-            }
-        }
-    }
-
     let mut raw_depth = vec![0.0f32; bw * bh];
     let mut raw_ao = vec![1.0f32; bw * bh];
-    let bw_f = (bw.max(1)) as f32;
-
     for y in 0..bh {
         for x in 0..bw {
             let idx = y * bw + x;
@@ -396,105 +213,23 @@ pub(super) fn emit_crisp_isometric_shp_relief_mesh(
                 continue;
             }
             let d = dist_sil[idx];
-            let r_med = local_r[idx].max(d).max(1.0);
-            let rlen = run_len_grid[idx];
-            let width_ratio = (rlen / bw_f).clamp(0.0, 1.0);
-            let tower_factor = if max_raw_dim <= 82 {
-                1.0
-            } else {
-                let t = ((0.58 - width_ratio) / 0.20).clamp(0.0, 1.0);
-                t * t * (3.0 - 2.0 * t)
-            };
-            let r_cyl = r_med.min(rlen * 0.44).min(span * 0.22);
-            let r_box = r_med.min(span * 0.032);
-            let r_eff = r_box + (r_cyl - r_box) * tower_factor;
+            let r_eff = (span * 0.16).max(1.5);
             let d_eff = d.min(r_eff);
             let z_macro = (2.0 * r_eff * d_eff - d_eff * d_eff).max(0.0).sqrt();
-
-            // Crisp C1 architectural panel/dome bevel
-            let r_s = 6.5f32 + 3.5 * tower_factor;
-            let d_s = dist_seg[idx].min(r_s);
-            let z_meso = (2.0 * r_s * d_s - d_s * d_s).max(0.0).sqrt() * (d / 3.5).clamp(0.0, 1.0);
-
-            let lum = color_luma(rgb_grid[idx]);
-            raw_depth[idx] = (z_macro * 0.85 + z_meso * 0.45 + lum * 0.70) * step;
-            raw_ao[idx] = 0.84 + 0.16 * (dist_seg[idx] / 4.0).clamp(0.0, 1.0);
+            raw_depth[idx] = (z_macro * 0.72 + lum_grid[idx] * 0.55) * step;
+            raw_ao[idx] = 0.88 + 0.12 * (d / 3.0).clamp(0.0, 1.0);
         }
     }
+    let depth_grid = smooth_scalar_field(bw, bh, &solid, &raw_depth, 4);
+    let ao_grid = smooth_scalar_field(bw, bh, &solid, &raw_ao, 2);
 
-    let depth_grid = smooth_scalar_field(bw, bh, &solid, &raw_depth, 14);
-    let ao_grid = smooth_scalar_field(bw, bh, &solid, &raw_ao, 5);
-
-    // 2D isotropic upper-silhouette distance field (`dist_upper_sil`)
-    let inf_d = 1e9f32;
-    let mut dist_upper_raw = vec![inf_d; bw * bh];
-    for (x, &y_top) in y_min_col.iter().enumerate().take(bw) {
-        for y in 0..y_top.min(bh) {
-            dist_upper_raw[y * bw + x] = 0.0;
-        }
-    }
-    for y in 0..bh {
-        for x in 0..bw {
-            let idx = y * bw + x;
-            let mut d = dist_upper_raw[idx];
-            if y == 0 {
-                d = d.min(1.0);
-            } else {
-                d = d.min(dist_upper_raw[(y - 1) * bw + x] + 1.0);
-                if x > 0 {
-                    d = d.min(dist_upper_raw[(y - 1) * bw + (x - 1)] + std::f32::consts::SQRT_2);
-                }
-                if x + 1 < bw {
-                    d = d.min(dist_upper_raw[(y - 1) * bw + (x + 1)] + std::f32::consts::SQRT_2);
-                }
-            }
-            if x > 0 {
-                d = d.min(dist_upper_raw[idx - 1] + 1.0);
-            }
-            dist_upper_raw[idx] = d;
-        }
-    }
-    for y in (0..bh).rev() {
-        for x in (0..bw).rev() {
-            let idx = y * bw + x;
-            let mut d = dist_upper_raw[idx];
-            if y + 1 < bh {
-                d = d.min(dist_upper_raw[(y + 1) * bw + x] + 1.0);
-                if x + 1 < bw {
-                    d = d.min(dist_upper_raw[(y + 1) * bw + (x + 1)] + std::f32::consts::SQRT_2);
-                }
-                if x > 0 {
-                    d = d.min(dist_upper_raw[(y + 1) * bw + (x - 1)] + std::f32::consts::SQRT_2);
-                }
-            }
-            if x + 1 < bw {
-                d = d.min(dist_upper_raw[idx + 1] + 1.0);
-            }
-            dist_upper_raw[idx] = d;
-        }
-    }
     let mut dist_upper_world = vec![0.0f32; bw * bh];
-    for idx in 0..(bw * bh) {
-        dist_upper_world[idx] = dist_upper_raw[idx] * step;
+    for y in 0..bh {
+        for (x, &y_top) in y_min_col.iter().enumerate().take(bw) {
+            dist_upper_world[y * bw + x] = (y.saturating_sub(y_top) as f32) * step;
+        }
     }
-    let dist_upper_grid = smooth_scalar_field(bw, bh, &solid, &dist_upper_world, 12);
-
-    // Smoothed structural material color grid for clean rear architectural walls
-    let mut arch_r = vec![0.0f32; bw * bh];
-    let mut arch_g = vec![0.0f32; bw * bh];
-    let mut arch_b = vec![0.0f32; bw * bh];
-    for idx in 0..(bw * bh) {
-        arch_r[idx] = rgb_grid[idx][0];
-        arch_g[idx] = rgb_grid[idx][1];
-        arch_b[idx] = rgb_grid[idx][2];
-    }
-    let arch_r = smooth_scalar_field(bw, bh, &solid, &arch_r, 14);
-    let arch_g = smooth_scalar_field(bw, bh, &solid, &arch_g, 14);
-    let arch_b = smooth_scalar_field(bw, bh, &solid, &arch_b, 14);
-    let mut arch_rgb_grid = vec![[0.0f32; 3]; bw * bh];
-    for idx in 0..(bw * bh) {
-        arch_rgb_grid[idx] = [arch_r[idx], arch_g[idx], arch_b[idx]];
-    }
+    let dist_upper_grid = smooth_scalar_field(bw, bh, &solid, &dist_upper_world, 3);
 
     let fields = IsoBuildingReliefFields {
         bw,
@@ -511,8 +246,6 @@ pub(super) fn emit_crisp_isometric_shp_relief_mesh(
         spit,
         cpit,
         solid,
-        rgb_grid,
-        arch_rgb_grid,
         depth_grid,
         dist_upper_grid,
         ao_grid,
@@ -524,11 +257,31 @@ pub(super) fn emit_crisp_isometric_shp_relief_mesh(
         w_back_col,
     };
 
-    emit_welded_isometric_building_mesh(
+    let mut positions = Vec::new();
+    let mut normals = Vec::new();
+    let mut uvs = Vec::new();
+    let mut colors = Vec::new();
+    let mut indices = Vec::new();
+    emit_welded_isometric_building_uv_mesh(
         &fields,
-        out_positions,
-        out_normals,
-        out_colors,
-        out_indices,
+        &mut positions,
+        &mut normals,
+        &mut uvs,
+        &mut colors,
+        &mut indices,
     );
+    if positions.is_empty() || indices.is_empty() {
+        return None;
+    }
+
+    Some(ShpUvTexturedMesh {
+        positions,
+        normals,
+        uvs,
+        colors,
+        indices,
+        texture_width: hd_img.width as u32,
+        texture_height: hd_img.height as u32,
+        texture_rgba8: tex_rgba8,
+    })
 }

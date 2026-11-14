@@ -57,41 +57,48 @@ fn discover_articulated_descendants(
             Without<preview_stage::PreviewStageEntity>,
         ),
     >,
-) -> Option<Vec<(Entity, ArticulatedPartKind)>> {
+) -> Option<Vec<CachedArticulatedPart>> {
     let root_children = children_q.get(root).ok()?;
     if root_children.is_empty() {
         return None;
     }
-    // Wait until at least one named glTF node is spawned beneath `SceneRoot`
     let mut any_named = false;
     let mut parts = Vec::new();
-    let mut stack = vec![root];
-    while let Some(curr) = stack.pop() {
+    let mut stack = vec![(root, false)];
+    while let Some((curr, anc_turret)) = stack.pop() {
         if let Ok(children) = children_q.get(curr) {
             for &child in children.iter() {
-                if let Ok((name, _)) = name_q.get(child) {
+                let mut child_anc_turret = anc_turret;
+                if let Ok((name, tf)) = name_q.get(child) {
                     any_named = true;
-                    match name.as_str() {
-                        "Turret" => parts.push((child, ArticulatedPartKind::Turret)),
-                        "Barrel" => parts.push((child, ArticulatedPartKind::Barrel)),
-                        "Rotor" => parts.push((child, ArticulatedPartKind::Rotor)),
-                        _ => {}
+                    let kind_opt = match name.as_str() {
+                        "Turret" => {
+                            child_anc_turret = true;
+                            Some(ArticulatedPartKind::Turret)
+                        }
+                        "Barrel" => Some(ArticulatedPartKind::Barrel),
+                        "Rotor" => Some(ArticulatedPartKind::Rotor),
+                        _ => None,
+                    };
+                    if let Some(kind) = kind_opt {
+                        parts.push(CachedArticulatedPart {
+                            entity: child,
+                            kind,
+                            rest_translation: tf.translation,
+                            parent_is_turret: anc_turret,
+                        });
                     }
                 }
-                stack.push(child);
+                stack.push((child, child_anc_turret));
             }
         }
     }
-    if any_named {
-        Some(parts)
-    } else {
-        None
-    }
+    any_named.then_some(parts)
 }
 
 #[allow(clippy::type_complexity)]
 fn apply_cached_articulation(
-    parts: &[(Entity, ArticulatedPartKind)],
+    parts: &[CachedArticulatedPart],
     rel_yaw: f32,
     turret_elevation_rad: f32,
     barrel_recoil_z: f32,
@@ -108,34 +115,19 @@ fn apply_cached_articulation(
 ) {
     let has_separate_barrel = parts
         .iter()
-        .any(|(_, k)| matches!(k, ArticulatedPartKind::Barrel));
-    for &(part_ent, kind) in parts {
-        if let Ok((_, mut tf)) = turret_node_q.get_mut(part_ent) {
-            match kind {
-                ArticulatedPartKind::Turret => {
-                    let pitch_rot = if has_separate_barrel {
-                        Quat::IDENTITY
-                    } else {
-                        Quat::from_rotation_x(-turret_elevation_rad)
-                    };
-                    let desired_rot = Quat::from_rotation_y(rel_yaw) * pitch_rot;
-                    set_rotation_if_dirty(&mut tf, desired_rot);
-                    let recoil_vec = desired_rot * Vec3::new(0.0, 0.0, -barrel_recoil_z);
-                    let desired_pos = Vec3::new(recoil_vec.x, tf.translation.y, recoil_vec.z);
-                    set_translation_if_dirty(&mut tf, desired_pos);
-                }
-                ArticulatedPartKind::Barrel => {
-                    let desired_rot = Quat::from_rotation_x(-turret_elevation_rad);
-                    set_rotation_if_dirty(&mut tf, desired_rot);
-                    let desired_pos =
-                        Vec3::new(tf.translation.x, tf.translation.y, -barrel_recoil_z);
-                    set_translation_if_dirty(&mut tf, desired_pos);
-                }
-                ArticulatedPartKind::Rotor => {
-                    let desired_rot = Quat::from_rotation_y(rotor_spin_angle);
-                    set_rotation_if_dirty(&mut tf, desired_rot);
-                }
-            }
+        .any(|p| matches!(p.kind, ArticulatedPartKind::Barrel));
+    for part in parts {
+        if let Ok((_, mut tf)) = turret_node_q.get_mut(part.entity) {
+            let (desired_rot, desired_pos) = compute_articulated_part_pose(
+                part,
+                has_separate_barrel,
+                rel_yaw,
+                turret_elevation_rad,
+                barrel_recoil_z,
+                rotor_spin_angle,
+            );
+            set_rotation_if_dirty(&mut tf, desired_rot);
+            set_translation_if_dirty(&mut tf, desired_pos);
         }
     }
 }
@@ -159,12 +151,14 @@ pub fn sync_sim_entities_to_3d(
             ),
         >,
     ),
-    (asset_server, asset_root, mod_res, sim_res, interaction): (
+    (asset_server, asset_root, mod_res, sim_res, interaction, visual_mode, sprite_catalog): (
         Res<AssetServer>,
         Res<AssetRootResource>,
         Res<ModResource>,
         Res<SimWorldResource>,
         Res<ClientInteractionState>,
+        Option<Res<Ra2EntityVisualMode>>,
+        Option<Res<Ra2ShpSpriteCatalog>>,
     ),
     mut cached_fow: ResMut<CachedFogVisibility>,
     fow_img_res: Option<Res<FogOfWarOverlayImage>>,
@@ -472,8 +466,11 @@ pub fn sync_sim_entities_to_3d(
                     if let Some(discovered) =
                         discover_articulated_descendants(bevy_ent, &children_q, &turret_node_q)
                     {
-                        vis.has_3d_turret_node = discovered.iter().any(|(_, k)| {
-                            matches!(k, ArticulatedPartKind::Turret | ArticulatedPartKind::Barrel)
+                        vis.has_3d_turret_node = discovered.iter().any(|p| {
+                            matches!(
+                                p.kind,
+                                ArticulatedPartKind::Turret | ArticulatedPartKind::Barrel
+                            )
                         });
                         vis.cached_articulated_parts = Some(discovered);
                     }
@@ -629,47 +626,67 @@ pub fn sync_sim_entities_to_3d(
             } else {
                 Visibility::Hidden
             };
-            let mut ent_cmds = commands.spawn((
-                SimVisualEntity {
-                    sim_id,
-                    entity_type_id: type_id_str,
-                    building_footprint: b_footprint,
-                    world_pos,
-                    spawn_progress: initial_progress,
-                    deconstruct_progress: None,
-                    death_anim_progress: None,
-                    is_infantry: is_infantry_spawn,
-                    cached_articulated_parts: None,
-                    has_3d_turret_node: false,
-                },
-                SceneRoot(scene_handle),
-                initial_vis,
-                Transform::from_translation(world_pos)
-                    .with_rotation(Quat::from_rotation_y(
-                        sim_ent.facing_radians + shp_iso_align_yaw,
-                    ))
-                    .with_scale(Vec3::new(
-                        base_mult,
-                        initial_progress * base_mult,
-                        base_mult,
-                    )),
-            ));
-            if b_footprint.is_some() {
-                ent_cmds.with_children(|parent| {
+            let hide_gltf_for_hd_sprite = visual_mode
+                .as_deref()
+                .copied()
+                .unwrap_or_default()
+                == Ra2EntityVisualMode::HybridHdSprites
+                && (b_footprint.is_some() || is_infantry_spawn)
+                && sprite_catalog
+                    .as_deref()
+                    .is_some_and(|cat| cat.covers_entity(&type_id_str, b_footprint.is_some()));
+            let gltf_child_vis = if hide_gltf_for_hd_sprite {
+                Visibility::Hidden
+            } else {
+                Visibility::Inherited
+            };
+            commands
+                .spawn((
+                    SimVisualEntity {
+                        sim_id,
+                        entity_type_id: type_id_str,
+                        building_footprint: b_footprint,
+                        world_pos,
+                        spawn_progress: initial_progress,
+                        deconstruct_progress: None,
+                        death_anim_progress: None,
+                        is_infantry: is_infantry_spawn,
+                        cached_articulated_parts: None,
+                        has_3d_turret_node: false,
+                    },
+                    initial_vis,
+                    Transform::from_translation(world_pos)
+                        .with_rotation(Quat::from_rotation_y(
+                            sim_ent.facing_radians + shp_iso_align_yaw,
+                        ))
+                        .with_scale(Vec3::new(
+                            base_mult,
+                            initial_progress * base_mult,
+                            base_mult,
+                        )),
+                ))
+                .with_children(|parent| {
                     parent.spawn((
-                        BuildingPointLight,
-                        PointLight {
-                            color: Color::srgb(1.0, 0.85, 0.50),
-                            intensity: 0.0,
-                            range: 20.0,
-                            shadows_enabled: false,
-                            ..default()
-                        },
-                        Visibility::Hidden,
-                        Transform::from_xyz(0.0, 3.2, 0.0),
+                        SimGltfSceneChild { sim_id },
+                        SceneRoot(scene_handle),
+                        gltf_child_vis,
+                        Transform::IDENTITY,
                     ));
+                    if b_footprint.is_some() {
+                        parent.spawn((
+                            BuildingPointLight,
+                            PointLight {
+                                color: Color::srgb(1.0, 0.85, 0.50),
+                                intensity: 0.0,
+                                range: 20.0,
+                                shadows_enabled: false,
+                                ..default()
+                            },
+                            Visibility::Hidden,
+                            Transform::from_xyz(0.0, 3.2, 0.0),
+                        ));
+                    }
                 });
-            }
         }
     }
 
