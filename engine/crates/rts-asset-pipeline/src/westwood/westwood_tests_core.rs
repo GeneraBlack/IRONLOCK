@@ -511,3 +511,133 @@ fn parses_and_converts_westwood_csf_string_tables_to_locale_toml() {
         Some("Einheit bereit — ÄÖÜß!")
     );
 }
+
+pub(super) fn decode_glb_embedded_png(json: &serde_json::Value, bin: &[u8]) -> (u32, u32, Vec<u8>) {
+    let bv_idx = json["images"][0]["bufferView"].as_u64().expect("image bufferView") as usize;
+    let bv = &json["bufferViews"][bv_idx];
+    assert!(bv.get("target").is_none(), "image bufferView must not set GPU buffer target");
+    let off = bv["byteOffset"].as_u64().unwrap() as usize;
+    let len = bv["byteLength"].as_u64().unwrap() as usize;
+    let mut dec = png::Decoder::new(std::io::Cursor::new(&bin[off..off + len]));
+    dec.set_transformations(png::Transformations::EXPAND | png::Transformations::STRIP_16);
+    let mut reader = dec.read_info().expect("valid embedded PNG");
+    let mut buf = vec![0u8; reader.output_buffer_size().unwrap()];
+    let info = reader.next_frame(&mut buf).expect("decode PNG frame");
+    assert_eq!(info.color_type, png::ColorType::Rgba);
+    (info.width, info.height, buf[..info.buffer_size()].to_vec())
+}
+
+#[test]
+fn glb_optimizer_preserves_vxl_uv_atlas_team_mask_and_hard_creases_across_qem_lods() {
+    use super::westwood_tests_advanced::build_authored_test_vxl;
+
+    // Dense checkered armor hull + turret + barrel so pre-QEM vertex count exceeds `target_lod0 = 320`
+    let hull = build_authored_test_vxl(12, 10, 5, 4, |x, y, z| {
+        let c = if (x + y + z) % 3 == 0 {
+            48 // Crimson non-remap panel (`Alpha = 255`)
+        } else if y == 0 || y == 9 {
+            4 // Dark tread (`Alpha = 255`)
+        } else {
+            16 + ((x + z * 2) % 16) // House-color remap ramp `16..=31` (`Alpha = 0`)
+        };
+        Some((c, 232))
+    });
+    let turret = build_authored_test_vxl(8, 8, 4, 4, |x, y, _z| {
+        let c = if (x + y) % 2 == 0 { 20 } else { 140 };
+        Some((c, 232))
+    });
+    let barrel = build_authored_test_vxl(8, 3, 3, 4, |x, y, _z| {
+        let n = if y <= 1 { 232 } else { 214 };
+        Some((if x == 7 { 12 } else { 24 }, n))
+    });
+
+    let glb = convert_multipart_vxl_to_glb(
+        &[
+            (&hull, [0.0, 0.0, 0.0]),
+            (&turret, [0.0, 0.9, 0.0]),
+            (&barrel, [0.0, 0.95, 1.1]),
+        ],
+        None,
+        "apocalypse_tank",
+    )
+    .expect("convert multipart textured vxl");
+
+    let (pre_json, pre_bin) = crate::glb_optimizer::parse_glb_chunks(&glb).unwrap();
+    let (pre_w, pre_h, pre_rgba) = decode_glb_embedded_png(&pre_json, pre_bin);
+    let pre_info = crate::glb_optimizer::inspect_glb_bytes(&glb).unwrap();
+    assert!(
+        pre_info.lod0_vertices > 400,
+        "Expected dense multipart mesh (>400 verts) to exercise QEM decimation, got {}",
+        pre_info.lod0_vertices
+    );
+
+    let (opt_glb, rep) = crate::glb_optimizer::optimize_glb_bytes(&glb, 320, 0.30, true)
+        .expect("optimize UV-textured VXL GLB");
+    assert!(rep.lod0_vertices < rep.original_vertices && rep.lod0_vertices <= 320);
+    assert!(rep.lod1_vertices > 0 && rep.lod1_vertices < rep.lod0_vertices);
+
+    let post_info = crate::glb_optimizer::inspect_glb_bytes(&opt_glb).unwrap();
+    assert!(post_info.has_lod1_for_all_meshes);
+    assert!(
+        (post_info.bounds_min[0] - pre_info.bounds_min[0]).abs() < 1e-2,
+        "bounds mismatch: pre={:?}..{:?} post={:?}..{:?} rep={:?}",
+        pre_info.bounds_min,
+        pre_info.bounds_max,
+        post_info.bounds_min,
+        post_info.bounds_max,
+        rep
+    );
+    assert!((post_info.bounds_max[1] - pre_info.bounds_max[1]).abs() < 1e-2);
+    assert!((post_info.bounds_max[2] - pre_info.bounds_max[2]).abs() < 1e-2);
+
+    let (opt_json, opt_bin) = crate::glb_optimizer::parse_glb_chunks(&opt_glb).unwrap();
+    let (opt_w, opt_h, opt_rgba) = decode_glb_embedded_png(&opt_json, opt_bin);
+    assert_eq!((opt_w, opt_h), (pre_w, pre_h));
+    assert_eq!(opt_rgba, pre_rgba, "Embedded PNG atlas bytes must survive bufferView rebuild intact");
+
+    assert_eq!(opt_json["samplers"][0]["magFilter"], 9728);
+    assert_eq!(opt_json["textures"][0]["source"], 0);
+    assert_eq!(opt_json["materials"][0]["alphaMode"], "OPAQUE");
+    assert_eq!(opt_json["materials"][0]["pbrMetallicRoughness"]["baseColorTexture"]["index"], 0);
+
+    let meshes = opt_json["meshes"].as_array().unwrap();
+    assert_eq!(meshes.len(), 6, "3 LOD0 meshes + 3 _LOD1 meshes");
+    for m in meshes {
+        for prim in m["primitives"].as_array().unwrap() {
+            let attrs = &prim["attributes"];
+            assert!(attrs["POSITION"].is_number() && attrs["NORMAL"].is_number());
+            assert!(attrs["TEXCOORD_0"].is_number(), "Every LOD0/LOD1 primitive must retain TEXCOORD_0");
+            assert!(attrs["COLOR_0"].is_number(), "Every LOD0/LOD1 primitive must retain COLOR_0");
+        }
+    }
+
+    let opt_tris = crate::glb_optimizer::extract_world_triangles_from_glb(&opt_glb).unwrap();
+    let mut saw_remap = false;
+    let mut saw_non_remap = false;
+    for tri in &opt_tris {
+        let a0 = tri.rgba[0][3];
+        assert!(
+            (a0 == 0.0 && tri.rgba[1][3] == 0.0 && tri.rgba[2][3] == 0.0)
+                || (a0 == 1.0 && tri.rgba[1][3] == 1.0 && tri.rgba[2][3] == 1.0),
+            "QEM optimization must never collapse across UV seams to cause Alpha=0/Alpha=255 bleed: {:?}",
+            tri.rgba
+        );
+        if a0 == 0.0 {
+            saw_remap = true;
+            assert!(tri.is_primary_slot, "Alpha=0 remap triangles must set is_primary_slot for cameo baker");
+        } else {
+            saw_non_remap = true;
+        }
+    }
+    assert!(saw_remap && saw_non_remap);
+
+    let cameo = crate::cameo_renderer::render_glb_to_cameo_png(
+        &opt_glb,
+        [0.15, 0.35, 0.90],
+        [0.95, 0.85, 0.20],
+        true,
+        false,
+    )
+    .expect("cameo renderer must sample embedded PNG + Alpha=0 team mask");
+    assert!(cameo.starts_with(&[137, 80, 78, 71]));
+}

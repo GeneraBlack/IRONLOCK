@@ -1,4 +1,8 @@
 use super::DecodedPrimitive;
+use std::collections::{BTreeMap, BTreeSet};
+
+/// Cosine threshold (`cos(~34.9°) = 0.82`) below which adjacent normals are treated as hard creases.
+pub(super) const HARD_CREASE_DOT_THRESHOLD: f32 = 0.82;
 
 #[derive(Debug, Clone, Copy)]
 pub(super) struct TriRecord {
@@ -19,12 +23,197 @@ pub(super) struct SurvivingTri {
     pub area_w: f32,
 }
 
+pub(super) struct MeshSeamAnalysis {
+    pub uv_chart: Vec<u32>,
+    pub is_crease_vert: Vec<bool>,
+    pub is_uv_seam_vert: Vec<bool>,
+}
+
+#[inline]
+pub(super) fn pack_grid_key_xyz(p: [f32; 3], bmin: [f32; 3], inv_cell: [f32; 3]) -> u64 {
+    let gx = (((p[0] - bmin[0]) * inv_cell[0]).floor().max(0.0) as u64).min(0xF_FFFF);
+    let gy = (((p[1] - bmin[1]) * inv_cell[1]).floor().max(0.0) as u64).min(0xF_FFFF);
+    let gz = (((p[2] - bmin[2]) * inv_cell[2]).floor().max(0.0) as u64).min(0xF_FFFF);
+    (gx << 40) | (gy << 20) | gz
+}
+
 #[inline]
 pub(super) fn pack_grid_key(p: [f32; 3], bmin: [f32; 3], inv_cell: f32) -> u64 {
-    let gx = (((p[0] - bmin[0]) * inv_cell).floor().max(0.0) as u64).min(0xF_FFFF);
-    let gy = (((p[1] - bmin[1]) * inv_cell).floor().max(0.0) as u64).min(0xF_FFFF);
-    let gz = (((p[2] - bmin[2]) * inv_cell).floor().max(0.0) as u64).min(0xF_FFFF);
-    (gx << 40) | (gy << 20) | gz
+    pack_grid_key_xyz(p, bmin, [inv_cell; 3])
+}
+
+fn dsu_find(parent: &mut [u32], mut x: u32) -> u32 {
+    while parent[x as usize] != x {
+        let gp = parent[parent[x as usize] as usize];
+        parent[x as usize] = gp;
+        x = gp;
+    }
+    x
+}
+
+fn dsu_union(parent: &mut [u32], a: u32, b: u32) {
+    let ra = dsu_find(parent, a);
+    let rb = dsu_find(parent, b);
+    if ra != rb {
+        if ra < rb {
+            parent[rb as usize] = ra;
+        } else {
+            parent[ra as usize] = rb;
+        }
+    }
+}
+
+/// Identifies connected continuous `TEXCOORD_0` UV charts, UV-seam edges, open boundary edges,
+/// and hard-crease edges (`normal dot < 0.82`) so QEM preserves silhouettes and UV islands.
+pub(super) fn analyze_mesh_seams(
+    prim: &DecodedPrimitive,
+    tris: &[TriRecord],
+    used: &[bool],
+    bmin: [f32; 3],
+    bmax: [f32; 3],
+) -> MeshSeamAnalysis {
+    let n_verts = prim.positions.len();
+    let span = [bmax[0] - bmin[0], bmax[1] - bmin[1], bmax[2] - bmin[2]];
+    let max_span = span[0].max(span[1]).max(span[2]).max(1e-5);
+    let fine_inv = 262_143.0 / max_span;
+
+    let mut pos_keys = vec![0u64; n_verts];
+    let mut colocated: Vec<(u64, u32)> = Vec::with_capacity(n_verts);
+    for (vi, &is_u) in used.iter().enumerate() {
+        if is_u {
+            let pk = pack_grid_key(prim.positions[vi], bmin, fine_inv);
+            pos_keys[vi] = pk;
+            colocated.push((pk, vi as u32));
+        }
+    }
+    colocated.sort_unstable();
+
+    let mut uv_chart = vec![0u32; n_verts];
+    if let Some(uvs) = &prim.texcoords {
+        let mut parent: Vec<u32> = (0..n_verts as u32).collect();
+        for t in tris {
+            dsu_union(&mut parent, t.i0, t.i1);
+            dsu_union(&mut parent, t.i1, t.i2);
+        }
+        // Union vertices that reference the exact same quantized `(u, v)` coordinate
+        // (such as non-adjacent quads sharing the same `3x3` solid swatch or deduplicated patch).
+        let mut uv_map: BTreeMap<u64, u32> = BTreeMap::new();
+        for (vi, &is_u) in used.iter().enumerate() {
+            if !is_u {
+                continue;
+            }
+            let u = uvs[vi];
+            let qu = (u[0].clamp(0.0, 1.0) * 1_048_576.0).round() as u64;
+            let qv = (u[1].clamp(0.0, 1.0) * 1_048_576.0).round() as u64;
+            let uvk = (qu << 32) | qv;
+            if let Some(&prev_vi) = uv_map.get(&uvk) {
+                dsu_union(&mut parent, prev_vi, vi as u32);
+            } else {
+                uv_map.insert(uvk, vi as u32);
+            }
+        }
+        for vi in 0..n_verts {
+            if used[vi] {
+                uv_chart[vi] = dsu_find(&mut parent, vi as u32);
+            }
+        }
+    }
+
+    let mut crease_pos_keys: BTreeSet<u64> = BTreeSet::new();
+    let mut uv_seam_pos_keys: BTreeSet<u64> = BTreeSet::new();
+    let mut s = 0usize;
+    while s < colocated.len() {
+        let pk = colocated[s].0;
+        let mut e = s + 1;
+        while e < colocated.len() && colocated[e].0 == pk {
+            e += 1;
+        }
+        if e - s > 1 {
+            let v0 = colocated[s].1 as usize;
+            let n0 = prim.normals[v0];
+            let ch0 = uv_chart[v0];
+            for item in &colocated[(s + 1)..e] {
+                let vk = item.1 as usize;
+                let nk = prim.normals[vk];
+                let dot = n0[0] * nk[0] + n0[1] * nk[1] + n0[2] * nk[2];
+                if dot < HARD_CREASE_DOT_THRESHOLD {
+                    crease_pos_keys.insert(pk);
+                }
+                if uv_chart[vk] != ch0 {
+                    uv_seam_pos_keys.insert(pk);
+                }
+            }
+        }
+        s = e;
+    }
+
+    struct EdgeInfo {
+        tn: [f64; 3],
+        chart: u32,
+        is_hard_crease: bool,
+        is_uv_seam: bool,
+    }
+    let mut edge_map: BTreeMap<(u64, u64), EdgeInfo> = BTreeMap::new();
+    for t in tris {
+        let chart = uv_chart[t.i0 as usize];
+        let tn = [t.nx, t.ny, t.nz];
+        for &(va, vb) in &[(t.i0, t.i1), (t.i1, t.i2), (t.i2, t.i0)] {
+            let pka = pos_keys[va as usize];
+            let pkb = pos_keys[vb as usize];
+            if pka == pkb {
+                continue;
+            }
+            let key = if pka < pkb { (pka, pkb) } else { (pkb, pka) };
+            match edge_map.get_mut(&key) {
+                None => {
+                    edge_map.insert(
+                        key,
+                        EdgeInfo {
+                            tn,
+                            chart,
+                            is_hard_crease: false,
+                            is_uv_seam: false,
+                        },
+                    );
+                }
+                Some(info) => {
+                    let dot = (info.tn[0] * tn[0] + info.tn[1] * tn[1] + info.tn[2] * tn[2]) as f32;
+                    if dot < HARD_CREASE_DOT_THRESHOLD {
+                        info.is_hard_crease = true;
+                    }
+                    if info.chart != chart {
+                        info.is_uv_seam = true;
+                    }
+                }
+            }
+        }
+    }
+
+    for ((pka, pkb), info) in edge_map {
+        if info.is_hard_crease {
+            crease_pos_keys.insert(pka);
+            crease_pos_keys.insert(pkb);
+        }
+        if info.is_uv_seam {
+            uv_seam_pos_keys.insert(pka);
+            uv_seam_pos_keys.insert(pkb);
+        }
+    }
+
+    let mut is_crease_vert = vec![false; n_verts];
+    let mut is_uv_seam_vert = vec![false; n_verts];
+    for (vi, &is_u) in used.iter().enumerate() {
+        if is_u {
+            is_crease_vert[vi] = crease_pos_keys.contains(&pos_keys[vi]);
+            is_uv_seam_vert[vi] = uv_seam_pos_keys.contains(&pos_keys[vi]);
+        }
+    }
+
+    MeshSeamAnalysis {
+        uv_chart,
+        is_crease_vert,
+        is_uv_seam_vert,
+    }
 }
 
 pub(super) fn solve_qem_3x3(
@@ -33,7 +222,7 @@ pub(super) fn solve_qem_3x3(
     fallback: [f64; 3],
     weight: f64,
 ) -> [f32; 3] {
-    let reg = (weight * 1.5e-3).max(1e-9);
+    let reg = (weight * 1e-5).max(1e-10);
     let m00 = a[0] + reg;
     let m01 = a[1];
     let m02 = a[2];

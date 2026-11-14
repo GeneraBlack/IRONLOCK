@@ -384,11 +384,103 @@ pub fn inspect_glb_bytes(glb_bytes: &[u8]) -> Result<GlbInspection> {
     })
 }
 
+#[derive(Clone)]
+struct DecodedPngTexture {
+    width: u32,
+    height: u32,
+    rgba: Vec<u8>,
+}
+
+impl DecodedPngTexture {
+    #[inline]
+    fn sample_nearest(&self, uv: [f32; 2]) -> [f32; 4] {
+        if self.width == 0 || self.height == 0 || self.rgba.len() < 4 {
+            return [1.0, 1.0, 1.0, 1.0];
+        }
+        let u = uv[0].clamp(0.0, 1.0);
+        let v = uv[1].clamp(0.0, 1.0);
+        let x = ((u * self.width as f32).floor() as i64).clamp(0, self.width as i64 - 1) as u32;
+        let y = ((v * self.height as f32).floor() as i64).clamp(0, self.height as i64 - 1) as u32;
+        let base = ((y * self.width + x) * 4) as usize;
+        [
+            self.rgba[base] as f32 / 255.0,
+            self.rgba[base + 1] as f32 / 255.0,
+            self.rgba[base + 2] as f32 / 255.0,
+            self.rgba[base + 3] as f32 / 255.0,
+        ]
+    }
+}
+
+fn decode_embedded_images(json: &Value, bin: &[u8]) -> Vec<Option<DecodedPngTexture>> {
+    let Some(images) = json.get("images").and_then(Value::as_array) else {
+        return Vec::new();
+    };
+    let Some(bvs) = json.get("bufferViews").and_then(Value::as_array) else {
+        return vec![None; images.len()];
+    };
+
+    images
+        .iter()
+        .map(|img| {
+            let bv_idx = img.get("bufferView").and_then(Value::as_u64)? as usize;
+            let bv = bvs.get(bv_idx)?;
+            let off = bv.get("byteOffset").and_then(Value::as_u64).unwrap_or(0) as usize;
+            let len = bv.get("byteLength").and_then(Value::as_u64).unwrap_or(0) as usize;
+            if len == 0 || off + len > bin.len() {
+                return None;
+            }
+            let mut decoder = png::Decoder::new(std::io::Cursor::new(&bin[off..off + len]));
+            decoder.set_transformations(png::Transformations::EXPAND | png::Transformations::STRIP_16);
+            let mut reader = decoder.read_info().ok()?;
+            let mut buf = vec![0u8; reader.output_buffer_size()?];
+            let info = reader.next_frame(&mut buf).ok()?;
+            let raw = &buf[..info.buffer_size()];
+            let px_count = (info.width * info.height) as usize;
+            let rgba = match info.color_type {
+                png::ColorType::Rgba => raw.get(..px_count * 4)?.to_vec(),
+                png::ColorType::Rgb => {
+                    let mut out = Vec::with_capacity(px_count * 4);
+                    for c in raw.get(..px_count * 3)?.chunks_exact(3) {
+                        out.extend_from_slice(&[c[0], c[1], c[2], 255]);
+                    }
+                    out
+                }
+                png::ColorType::GrayscaleAlpha => {
+                    let mut out = Vec::with_capacity(px_count * 4);
+                    for c in raw.get(..px_count * 2)?.chunks_exact(2) {
+                        out.extend_from_slice(&[c[0], c[0], c[0], c[1]]);
+                    }
+                    out
+                }
+                png::ColorType::Grayscale => {
+                    let mut out = Vec::with_capacity(px_count * 4);
+                    for &g in raw.get(..px_count)? {
+                        out.extend_from_slice(&[g, g, g, 255]);
+                    }
+                    out
+                }
+                _ => return None,
+            };
+            Some(DecodedPngTexture {
+                width: info.width,
+                height: info.height,
+                rgba,
+            })
+        })
+        .collect()
+}
+
 /// Extracts all `LOD0` (non-`_LOD1`) triangles transformed into root scene coordinates for
 /// software cameo rasterization (`cameo_renderer.rs`).
 pub fn extract_world_triangles_from_glb(glb_bytes: &[u8]) -> Result<Vec<WorldRenderTri>> {
     let (json, bin) = parse_glb_chunks(glb_bytes)?;
     let world_mats = compute_node_world_transforms(&json);
+    let decoded_images = decode_embedded_images(&json, bin);
+    let empty_texs = Vec::new();
+    let textures = json
+        .get("textures")
+        .and_then(Value::as_array)
+        .unwrap_or(&empty_texs);
     let empty_nodes = Vec::new();
     let nodes = json
         .get("nodes")
@@ -439,6 +531,7 @@ pub fn extract_world_triangles_from_glb(glb_bytes: &[u8]) -> Result<Vec<WorldRen
             let mut emissive = [0.0f32; 3];
             let mut double_sided = false;
             let mut is_primary_slot = false;
+            let mut base_tex: Option<&DecodedPngTexture> = None;
 
             if let Some(mi) = dec.material {
                 if let Some(mat) = materials.get(mi) {
@@ -472,6 +565,18 @@ pub fn extract_world_triangles_from_glb(glb_bytes: &[u8]) -> Result<Vec<WorldRen
                                 ];
                             }
                         }
+                        if let Some(ti) = pbr
+                            .get("baseColorTexture")
+                            .and_then(|t| t.get("index"))
+                            .and_then(Value::as_u64)
+                        {
+                            base_tex = textures
+                                .get(ti as usize)
+                                .and_then(|tx| tx.get("source"))
+                                .and_then(Value::as_u64)
+                                .and_then(|si| decoded_images.get(si as usize))
+                                .and_then(Option::as_ref);
+                        }
                         if let Some(mf) = pbr.get("metallicFactor").and_then(Value::as_f64) {
                             metallic = mf as f32;
                         }
@@ -500,28 +605,45 @@ pub fn extract_world_triangles_from_glb(glb_bytes: &[u8]) -> Result<Vec<WorldRen
                     mat4_transform_normal(&wm, dec.normals[i1]),
                     mat4_transform_normal(&wm, dec.normals[i2]),
                 ];
+                let uv_mid = dec.texcoords.as_ref().map(|uvs| {
+                    let (u0, u1, u2) = (uvs[i0], uvs[i1], uvs[i2]);
+                    [(u0[0] + u1[0] + u2[0]) / 3.0, (u0[1] + u1[1] + u2[1]) / 3.0]
+                });
                 let c_of = |vi: usize| -> [f32; 4] {
                     let vc = dec
                         .colors
                         .as_ref()
                         .and_then(|c| c.get(vi).copied())
                         .unwrap_or([1.0, 1.0, 1.0, 1.0]);
+                    let tc = match (base_tex, dec.texcoords.as_ref(), uv_mid) {
+                        (Some(tex), Some(uvs), Some(mid)) => {
+                            let u = uvs[vi];
+                            tex.sample_nearest([
+                                0.99 * u[0] + 0.01 * mid[0],
+                                0.99 * u[1] + 0.01 * mid[1],
+                            ])
+                        }
+                        _ => [1.0, 1.0, 1.0, 1.0],
+                    };
                     [
-                        (vc[0] * base_factor[0]).clamp(0.0, 1.0),
-                        (vc[1] * base_factor[1]).clamp(0.0, 1.0),
-                        (vc[2] * base_factor[2]).clamp(0.0, 1.0),
-                        (vc[3] * base_factor[3]).clamp(0.0, 1.0),
+                        (vc[0] * base_factor[0] * tc[0]).clamp(0.0, 1.0),
+                        (vc[1] * base_factor[1] * tc[1]).clamp(0.0, 1.0),
+                        (vc[2] * base_factor[2] * tc[2]).clamp(0.0, 1.0),
+                        (vc[3] * base_factor[3] * tc[3]).clamp(0.0, 1.0),
                     ]
                 };
+                let rgba = [c_of(i0), c_of(i1), c_of(i2)];
+                let alpha_masked_team =
+                    base_tex.is_some() && rgba[0][3] < 0.5 && rgba[1][3] < 0.5 && rgba[2][3] < 0.5;
                 out_tris.push(WorldRenderTri {
                     p,
                     n,
-                    rgba: [c_of(i0), c_of(i1), c_of(i2)],
+                    rgba,
                     metallic,
                     roughness,
                     emissive,
                     double_sided,
-                    is_primary_slot,
+                    is_primary_slot: is_primary_slot || alpha_masked_team,
                 });
             }
         }

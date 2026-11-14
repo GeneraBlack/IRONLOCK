@@ -6,9 +6,12 @@ pub use super::voxel_hva::{
     build_sample_multiframe_hva_bytes, parse_hva_animation, parse_hva_offsets, HvaAnimation,
     HvaSectionTransform,
 };
+pub use super::voxel_meshing::{
+    decode_westwood_voxel_normal_gltf, WESTWOOD_RA2_NORMALS_244, WESTWOOD_TS_NORMALS_36,
+};
 
 /// Converts a Westwood `.vxl` (Voxel Animation) binary buffer and optional 768-byte 6-bit VGA `.pal`
-/// into a standard Binary glTF 2.0 (`.glb`) 3D mesh with `POSITION`, `NORMAL`, and `COLOR_0`.
+/// into a standard Binary glTF 2.0 (`.glb`) 3D mesh with hard-surface crease normals and UV-textured PNG atlas.
 pub fn convert_vxl_bytes_to_glb(
     vxl: &[u8],
     external_pal: Option<&[u8]>,
@@ -107,7 +110,6 @@ pub fn convert_multipart_vxl_with_hva_to_glb(
         bail!("No .vxl parts provided");
     }
 
-    let remap_rgb = team_color.unwrap_or_else(|| infer_default_westwood_team_color(mesh_name));
     let mesh_lower = mesh_name.to_ascii_lowercase();
     let is_helicopter_mesh = mesh_lower.contains("chopper")
         || mesh_lower.contains("heli")
@@ -117,6 +119,7 @@ pub fn convert_multipart_vxl_with_hva_to_glb(
 
     let mut named_parts: Vec<ColoredMeshPart> = Vec::new();
     let mut anim_tracks: Vec<GlbNodeAnimationTrack> = Vec::new();
+    let mut atlas_builder = VoxelAtlasBuilder::default();
     let mut rotor_counter = 0usize;
 
     let find_or_create_part = |list: &mut Vec<ColoredMeshPart>, name: &str| -> usize {
@@ -130,6 +133,7 @@ pub fn convert_multipart_vxl_with_hva_to_glb(
                 positions: Vec::new(),
                 normals: Vec::new(),
                 colors: Vec::new(),
+                texcoords: Vec::new(),
                 indices: Vec::new(),
             });
             idx
@@ -168,31 +172,39 @@ pub fn convert_multipart_vxl_with_hva_to_glb(
             Some(p) if p.len() >= 768 => &p[0..768],
             _ => &vxl[34..802],
         };
-        let mut palette_rgb = [[0.5f32, 0.5, 0.5]; 256];
-        let r_lo = if remap_start <= remap_end && remap_end < 256 {
-            remap_start
+        let (r_lo, r_hi) = if remap_start <= remap_end && remap_end < 256 {
+            (remap_start, remap_end)
         } else {
-            16
-        };
-        let r_hi = if remap_start <= remap_end && remap_end < 256 {
-            remap_end
-        } else {
-            31
+            (16, 31)
         };
         let r_span = ((r_hi.saturating_sub(r_lo)).max(1) as f32) + 2.0;
-        for i in 0..256 {
-            if external_pal.is_some() && i >= r_lo && i <= r_hi {
-                let t = 1.0 - ((i - r_lo) as f32) / r_span;
-                palette_rgb[i] = [
-                    (remap_rgb[0] * t).clamp(0.0, 1.0),
-                    (remap_rgb[1] * t).clamp(0.0, 1.0),
-                    (remap_rgb[2] * t).clamp(0.0, 1.0),
-                ];
+        let mut palette = [VoxelPaletteEntry {
+            rgb: [0.5, 0.5, 0.5],
+            is_remap: false,
+        }; 256];
+        for (i, slot) in palette.iter_mut().enumerate() {
+            if i >= r_lo && i <= r_hi {
+                let lum = (1.0 - ((i - r_lo) as f32 / r_span)).clamp(0.18, 1.0);
+                let rgb = match team_color {
+                    None => [lum, lum, lum],
+                    Some(tc) => [
+                        (tc[0] * lum).clamp(0.0, 1.0),
+                        (tc[1] * lum).clamp(0.0, 1.0),
+                        (tc[2] * lum).clamp(0.0, 1.0),
+                    ],
+                };
+                *slot = VoxelPaletteEntry {
+                    rgb,
+                    is_remap: true,
+                };
             } else {
                 let r6 = pal_slice[i * 3].min(63) as f32 / 63.0;
                 let g6 = pal_slice[i * 3 + 1].min(63) as f32 / 63.0;
                 let b6 = pal_slice[i * 3 + 2].min(63) as f32 / 63.0;
-                palette_rgb[i] = [r6, g6, b6];
+                *slot = VoxelPaletteEntry {
+                    rgb: [r6, g6, b6],
+                    is_remap: false,
+                };
             }
         }
 
@@ -248,11 +260,12 @@ pub fn convert_multipart_vxl_with_hva_to_glb(
             let size_x = tailer[88] as usize;
             let size_y = tailer[89] as usize;
             let size_z = tailer[90] as usize;
+            let normals_mode = tailer[91];
             if size_x == 0 || size_y == 0 || size_z == 0 {
                 continue;
             }
 
-            let mut grid: Vec<Option<u8>> = vec![None; size_x * size_y * size_z];
+            let mut grid: Vec<Option<VoxelCell>> = vec![None; size_x * size_y * size_z];
             let idx_3d = |x: usize, y: usize, z: usize| -> usize { (z * size_y + y) * size_x + x };
 
             for y in 0..size_y {
@@ -280,9 +293,12 @@ pub fn convert_multipart_vxl_with_hva_to_glb(
                                 break;
                             }
                             let color_idx = body[cursor];
-                            let _normal_idx = body[cursor + 1];
+                            let normal_idx = body[cursor + 1];
                             cursor += 2;
-                            grid[idx_3d(x, y, z)] = Some(color_idx);
+                            grid[idx_3d(x, y, z)] = Some(VoxelCell {
+                                color_idx,
+                                normal_idx,
+                            });
                             z += 1;
                         }
                         if cursor < body.len() {
@@ -373,7 +389,6 @@ pub fn convert_multipart_vxl_with_hva_to_glb(
                 _ => "Barrel".to_string(),
             };
 
-            // Record glTF keyframe track for this section when `num_frames > 1`
             if let Some(ref anim) = parsed_hva {
                 if anim.num_frames > 1
                     && !anim_tracks
@@ -413,27 +428,32 @@ pub fn convert_multipart_vxl_with_hva_to_glb(
 
             let dst_idx = find_or_create_part(&mut named_parts, &target_role);
             let dst = &mut named_parts[dst_idx];
-            emit_crisp_vxl_limb_faces(
+            emit_hard_surface_vxl_limb_faces(
                 &grid,
-                &palette_rgb,
+                &palette,
+                normals_mode,
                 size_x,
                 size_y,
                 size_z,
                 bounds_min,
                 bounds_max,
                 extra_offset,
-                &mut dst.positions,
-                &mut dst.normals,
-                &mut dst.colors,
-                &mut dst.indices,
+                dst_idx,
+                dst,
+                &mut atlas_builder,
             );
         }
     }
 
-    named_parts.retain(|p| !p.positions.is_empty() && !p.indices.is_empty());
-    if named_parts.is_empty() {
+    if !named_parts
+        .iter()
+        .any(|p| !p.positions.is_empty() && !p.indices.is_empty())
+    {
         bail!("Westwood .vxl contained 0 non-empty voxels");
     }
+
+    let atlas_png = atlas_builder.finalize_into_parts(&mut named_parts)?;
+    named_parts.retain(|p| !p.positions.is_empty() && !p.indices.is_empty());
 
     // Center X/Z around Hull center (so Turret pivots around the hull center) and ground overall min_y at 0.0
     let mut hull_min_x = f32::MAX;
@@ -505,16 +525,18 @@ pub fn convert_multipart_vxl_with_hva_to_glb(
     }
 
     if parts.len() == 1 && named_parts.len() == 1 && named_parts[0].name == "Hull" {
-        let p = &named_parts[0];
-        return pack_colored_mesh_to_glb_with_tracks(
-            &p.positions,
-            &p.normals,
-            &p.colors,
-            &p.indices,
+        return pack_textured_mesh_to_glb_with_tracks(
+            &named_parts[0],
             mesh_name,
             &anim_tracks,
+            &atlas_png,
         );
     }
 
-    pack_multipart_colored_meshes_to_glb_with_tracks(&named_parts, mesh_name, &anim_tracks)
+    pack_multipart_textured_meshes_to_glb_with_tracks(
+        &named_parts,
+        mesh_name,
+        &anim_tracks,
+        &atlas_png,
+    )
 }
