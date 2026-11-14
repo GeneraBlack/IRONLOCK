@@ -259,10 +259,12 @@ pub(super) fn preserve_non_mesh_buffers(
         }
     }
 
+    let mut image_bvs = BTreeSet::new();
     if let Some(images) = json.get("images").and_then(Value::as_array) {
         for img in images {
             if let Some(bv) = img.get("bufferView").and_then(Value::as_u64) {
                 needed_bvs.insert(bv as usize);
+                image_bvs.insert(bv as usize);
             }
         }
     }
@@ -308,6 +310,12 @@ pub(super) fn preserve_non_mesh_buffers(
         bv["buffer"] = json!(0);
         bv["byteOffset"] = json!(new_off);
         bv["byteLength"] = json!(len);
+        if image_bvs.contains(&bv_i) {
+            if let Some(obj) = bv.as_object_mut() {
+                obj.remove("target");
+                obj.remove("byteStride");
+            }
+        }
         let mapped_bv = new_buffer_views.len();
         new_buffer_views.push(bv);
         bv_map.insert(bv_i, mapped_bv);

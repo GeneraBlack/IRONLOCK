@@ -1,28 +1,64 @@
 use super::qem_math::{
-    build_clean_tri_records, compact_unreduced_primitive, pack_grid_key, solve_qem_3x3,
-    SurvivingTri, TriRecord,
+    analyze_mesh_seams, build_clean_tri_records, compact_unreduced_primitive, pack_grid_key_xyz,
+    solve_qem_3x3, MeshSeamAnalysis, SurvivingTri, TriRecord, HARD_CREASE_DOT_THRESHOLD,
 };
 use super::DecodedPrimitive;
 use std::collections::BTreeSet;
 
+struct CellCluster {
+    uv_chart: u32,
+    rep_n: [f32; 3],
+    rep_c: [f32; 4],
+    n_sum: [f64; 3],
+    c_sum: [f64; 4],
+    w_sum: f64,
+    uv_sum: [f64; 2],
+    uv_w_sum: f64,
+    best_uv: [f32; 2],
+    best_dist2: f32,
+    out_vi: u32,
+}
+
+#[derive(Clone, Copy)]
+enum SeamSplitMode {
+    FineSeamGrid,
+    UniformGridSplitCharts,
+}
+
+#[allow(clippy::too_many_arguments)]
 fn run_qem_grid_pass(
     prim: &DecodedPrimitive,
     tris: &[TriRecord],
     used: &[bool],
+    analysis: &MeshSeamAnalysis,
     bmin: [f32; 3],
-    inv_cell: f32,
+    inv_cell: [f32; 3],
     target_verts: usize,
+    mode: SeamSplitMode,
 ) -> Option<DecodedPrimitive> {
+    let fine_inv = [inv_cell[0] * 2.0, inv_cell[1] * 2.0, inv_cell[2] * 2.0];
+    let key_of = |vi: usize| -> u64 {
+        let p = prim.positions[vi];
+        match mode {
+            SeamSplitMode::FineSeamGrid
+                if analysis.is_crease_vert[vi] || analysis.is_uv_seam_vert[vi] =>
+            {
+                (1u64 << 62) | pack_grid_key_xyz(p, bmin, fine_inv)
+            }
+            _ => pack_grid_key_xyz(p, bmin, inv_cell),
+        }
+    };
+
     let mut unique_keys: Vec<u64> = Vec::with_capacity(prim.positions.len());
     for (vi, &is_u) in used.iter().enumerate() {
         if is_u {
-            unique_keys.push(pack_grid_key(prim.positions[vi], bmin, inv_cell));
+            unique_keys.push(key_of(vi));
         }
     }
     unique_keys.sort_unstable();
     unique_keys.dedup();
     let num_cells = unique_keys.len();
-    if num_cells < 3 || num_cells > target_verts {
+    if num_cells == 0 || num_cells > target_verts {
         return None;
     }
 
@@ -37,7 +73,7 @@ fn run_qem_grid_pass(
             continue;
         }
         let p = prim.positions[vi];
-        let key = pack_grid_key(p, bmin, inv_cell);
+        let key = key_of(vi);
         let ci = unique_keys.binary_search(&key).unwrap();
         vert_to_cell[vi] = ci as u32;
         for a in 0..3 {
@@ -48,7 +84,7 @@ fn run_qem_grid_pass(
         cell_vcnt[ci] += 1;
     }
 
-    // Accumulate fundamental triangle plane quadrics per cell
+    // Accumulate fundamental triangle plane quadrics + hard-crease / UV-seam penalties per cell
     let mut qem_a = vec![[0.0f64; 6]; num_cells];
     let mut qem_b = vec![[0.0f64; 3]; num_cells];
     let mut qem_w = vec![0.0f64; num_cells];
@@ -58,21 +94,27 @@ fn run_qem_grid_pass(
         let p0 = prim.positions[t.i0 as usize];
         let p0_f64 = [p0[0] as f64, p0[1] as f64, p0[2] as f64];
         let [nx, ny, nz] = [t.nx, t.ny, t.nz];
-        let w = t.dbl_area;
         let np0 = nx * p0_f64[0] + ny * p0_f64[1] + nz * p0_f64[2];
-        let a_add = [
-            w * nx * nx,
-            w * nx * ny,
-            w * nx * nz,
-            w * ny * ny,
-            w * ny * nz,
-            w * nz * nz,
-        ];
-        let b_add = [w * np0 * nx, w * np0 * ny, w * np0 * nz];
 
         for vi_u32 in [t.i0, t.i1, t.i2] {
             let vi = vi_u32 as usize;
             let ci = vert_to_cell[vi] as usize;
+            let w = if analysis.is_crease_vert[vi] {
+                t.dbl_area * 6.0
+            } else if analysis.is_uv_seam_vert[vi] {
+                t.dbl_area * 2.0
+            } else {
+                t.dbl_area
+            };
+            let a_add = [
+                w * nx * nx,
+                w * nx * ny,
+                w * nx * nz,
+                w * ny * ny,
+                w * ny * nz,
+                w * nz * nz,
+            ];
+            let b_add = [w * np0 * nx, w * np0 * ny, w * np0 * nz];
             for k in 0..6 {
                 qem_a[ci][k] += a_add[k];
             }
@@ -150,7 +192,6 @@ fn run_qem_grid_pass(
         }
         let fn_unit = [fx / flen, fy / flen, fz / flen];
 
-        // Reject triangles whose geometric winding inverted relative to their pre-clustering face normal
         let orig_dot =
             fn_unit[0] * (t.nx as f32) + fn_unit[1] * (t.ny as f32) + fn_unit[2] * (t.nz as f32);
         if orig_dot < -0.55 {
@@ -169,7 +210,6 @@ fn run_qem_grid_pass(
         return None;
     }
 
-    // Build flat CSR corner table per cell so we can average attributes & split sharp color/crease seams
     let mut cell_deg = vec![0u32; num_cells];
     for st in &surviving {
         for &ci in &st.c {
@@ -177,12 +217,8 @@ fn run_qem_grid_pass(
         }
     }
 
-    let mut used_cell_count = 0usize;
     let mut offsets = vec![0usize; num_cells + 1];
     for ci in 0..num_cells {
-        if cell_deg[ci] > 0 {
-            used_cell_count += 1;
-        }
         offsets[ci + 1] = offsets[ci] + cell_deg[ci] as usize;
     }
     let total_corners = offsets[num_cells];
@@ -197,256 +233,184 @@ fn run_qem_grid_pass(
         }
     }
 
-    let split_allowance = target_verts.saturating_sub(used_cell_count);
     let has_colors = prim.colors.is_some();
     let has_uvs = prim.texcoords.is_some();
 
-    let corner_norm_and_col = |ti: usize, slot: usize| -> ([f32; 3], [f32; 4], [f32; 2], f32) {
-        let st = &surviving[ti];
-        let orig_vi = st.orig[slot] as usize;
-        let on = prim.normals[orig_vi];
-        let fsign =
-            if on[0] * st.face_norm[0] + on[1] * st.face_norm[1] + on[2] * st.face_norm[2] < 0.0 {
-                -0.38
-            } else {
-                0.38
-            };
-        let bx = 0.62 * on[0] + fsign * st.face_norm[0];
-        let by = 0.62 * on[1] + fsign * st.face_norm[1];
-        let bz = 0.62 * on[2] + fsign * st.face_norm[2];
-        let bl = (bx * bx + by * by + bz * bz).sqrt();
-        let nrm = if bl > 1e-6 {
-            [bx / bl, by / bl, bz / bl]
-        } else {
-            st.face_norm
-        };
-        let col = prim
-            .colors
-            .as_ref()
-            .map(|c| c[orig_vi])
-            .unwrap_or([1.0, 1.0, 1.0, 1.0]);
-        let uv = prim
-            .texcoords
-            .as_ref()
-            .map(|u| u[orig_vi])
-            .unwrap_or([0.0, 0.0]);
-        (nrm, col, uv, st.area_w.max(1e-9))
-    };
-
-    let mut primary_nrm = vec![[0.0f32, 1.0, 0.0]; num_cells];
-    let mut primary_col = vec![[1.0f32; 4]; num_cells];
-    let mut primary_uv = vec![[0.0f32; 2]; num_cells];
-    let mut split_candidates: Vec<(f32, usize, usize)> = Vec::new();
-
-    for ci in 0..num_cells {
-        let start = offsets[ci];
-        let end = offsets[ci + 1];
-        if start == end {
-            continue;
-        }
-        let mut ns = [0.0f64; 3];
-        let mut cs = [0.0f64; 4];
-        let mut us = [0.0f64; 2];
-        let mut ws = 0.0f64;
-        for &(ti, slot) in &corner_refs[start..end] {
-            let (n, c, u, w) = corner_norm_and_col(ti as usize, slot as usize);
-            let wf = w as f64;
-            ns[0] += wf * n[0] as f64;
-            ns[1] += wf * n[1] as f64;
-            ns[2] += wf * n[2] as f64;
-            for k in 0..4 {
-                cs[k] += wf * c[k] as f64;
-            }
-            us[0] += wf * u[0] as f64;
-            us[1] += wf * u[1] as f64;
-            ws += wf;
-        }
-        let inv_w = 1.0 / ws.max(1e-12);
-        let nl = (ns[0] * ns[0] + ns[1] * ns[1] + ns[2] * ns[2]).sqrt();
-        let avg_n = if nl > 1e-9 {
-            [
-                (ns[0] / nl) as f32,
-                (ns[1] / nl) as f32,
-                (ns[2] / nl) as f32,
-            ]
-        } else {
-            [0.0, 1.0, 0.0]
-        };
-        let avg_c = [
-            (cs[0] * inv_w).clamp(0.0, 1.0) as f32,
-            (cs[1] * inv_w).clamp(0.0, 1.0) as f32,
-            (cs[2] * inv_w).clamp(0.0, 1.0) as f32,
-            (cs[3] * inv_w).clamp(0.0, 1.0) as f32,
-        ];
-        primary_nrm[ci] = avg_n;
-        primary_col[ci] = avg_c;
-        primary_uv[ci] = [(us[0] * inv_w) as f32, (us[1] * inv_w) as f32];
-
-        if split_allowance > 0 && end - start >= 2 {
-            let mut max_dev = 0.0f32;
-            let mut farthest_idx = start;
-            for (k_idx, &(ti, slot)) in corner_refs[start..end].iter().enumerate() {
-                let (n, c, _, _) = corner_norm_and_col(ti as usize, slot as usize);
-                let dr = c[0] - avg_c[0];
-                let dg = c[1] - avg_c[1];
-                let db = c[2] - avg_c[2];
-                let col_d2 = dr * dr + dg * dg + db * db;
-                let dot = (n[0] * avg_n[0] + n[1] * avg_n[1] + n[2] * avg_n[2]).clamp(-1.0, 1.0);
-                let crease = if dot < 0.35 { (0.35 - dot) * 0.65 } else { 0.0 };
-                let dev = col_d2 * 3.0 + crease;
-                if dev > max_dev {
-                    max_dev = dev;
-                    farthest_idx = start + k_idx;
-                }
-            }
-            if max_dev > 0.09 {
-                split_candidates.push((max_dev * (ws as f32).sqrt(), ci, farthest_idx));
-            }
-        }
-    }
-
-    split_candidates.sort_by(|a, b| b.0.total_cmp(&a.0).then_with(|| a.1.cmp(&b.1)));
-    let mut cell_seed_b = vec![usize::MAX; num_cells];
-    for &(_, ci, seed_idx) in split_candidates.iter().take(split_allowance) {
-        cell_seed_b[ci] = seed_idx;
-    }
-
-    let mut out_positions = Vec::with_capacity(used_cell_count + split_allowance);
-    let mut out_normals = Vec::with_capacity(used_cell_count + split_allowance);
-    let mut out_colors = has_colors.then(|| Vec::with_capacity(used_cell_count + split_allowance));
-    let mut out_uvs = has_uvs.then(|| Vec::with_capacity(used_cell_count + split_allowance));
-    let mut out_indices = vec![0u32; surviving.len() * 3];
-
-    for ci in 0..num_cells {
-        let start = offsets[ci];
-        let end = offsets[ci + 1];
-        if start == end {
-            continue;
-        }
-        let seed_b = cell_seed_b[ci];
-        if seed_b == usize::MAX {
-            let v_idx = out_positions.len() as u32;
-            out_positions.push(cell_pos[ci]);
-            out_normals.push(primary_nrm[ci]);
-            if let Some(dst) = &mut out_colors {
-                dst.push(primary_col[ci]);
-            }
-            if let Some(dst) = &mut out_uvs {
-                dst.push(primary_uv[ci]);
-            }
-            for &(ti, slot) in &corner_refs[start..end] {
-                out_indices[ti as usize * 3 + slot as usize] = v_idx;
-            }
-        } else {
-            let (seed_ti, seed_slot) = corner_refs[seed_b];
-            let (bn0, bc0, _, _) = corner_norm_and_col(seed_ti as usize, seed_slot as usize);
-            let an0 = primary_nrm[ci];
-            let ac0 = primary_col[ci];
-
-            let mut acc_a = ([0.0f64; 3], [0.0f64; 4], [0.0f64; 2], 0.0f64, 0usize);
-            let mut acc_b = ([0.0f64; 3], [0.0f64; 4], [0.0f64; 2], 0.0f64, 0usize);
-
-            for &(ti, slot) in &corner_refs[start..end] {
-                let (n, c, u, w) = corner_norm_and_col(ti as usize, slot as usize);
-                let dist_a = (c[0] - ac0[0]).powi(2)
-                    + (c[1] - ac0[1]).powi(2)
-                    + (c[2] - ac0[2]).powi(2)
-                    + 0.35 * (1.0 - (n[0] * an0[0] + n[1] * an0[1] + n[2] * an0[2]));
-                let dist_b = (c[0] - bc0[0]).powi(2)
-                    + (c[1] - bc0[1]).powi(2)
-                    + (c[2] - bc0[2]).powi(2)
-                    + 0.35 * (1.0 - (n[0] * bn0[0] + n[1] * bn0[1] + n[2] * bn0[2]));
-                let dst = if dist_b < dist_a {
-                    &mut acc_b
+    let corner_attrs =
+        |ti: usize, slot: usize| -> ([f32; 3], [f32; 4], [f32; 2], u32, [f32; 3], f32) {
+            let st = &surviving[ti];
+            let orig_vi = st.orig[slot] as usize;
+            let on = prim.normals[orig_vi];
+            let dot_fn = on[0] * st.face_norm[0] + on[1] * st.face_norm[1] + on[2] * st.face_norm[2];
+            let nrm = if dot_fn >= 0.25 {
+                let bx = 0.85 * on[0] + 0.15 * st.face_norm[0];
+                let by = 0.85 * on[1] + 0.15 * st.face_norm[1];
+                let bz = 0.85 * on[2] + 0.15 * st.face_norm[2];
+                let bl = (bx * bx + by * by + bz * bz).sqrt();
+                if bl > 1e-6 {
+                    [bx / bl, by / bl, bz / bl]
                 } else {
-                    &mut acc_a
-                };
-                let wf = w as f64;
-                dst.0[0] += wf * n[0] as f64;
-                dst.0[1] += wf * n[1] as f64;
-                dst.0[2] += wf * n[2] as f64;
-                for (dst_c, &src_c) in dst.1.iter_mut().zip(c.iter()) {
-                    *dst_c += wf * src_c as f64;
-                }
-                dst.2[0] += wf * u[0] as f64;
-                dst.2[1] += wf * u[1] as f64;
-                dst.3 += wf;
-                dst.4 += 1;
-            }
-
-            if acc_a.4 == 0 || acc_b.4 == 0 {
-                let v_idx = out_positions.len() as u32;
-                out_positions.push(cell_pos[ci]);
-                out_normals.push(primary_nrm[ci]);
-                if let Some(dst) = &mut out_colors {
-                    dst.push(primary_col[ci]);
-                }
-                if let Some(dst) = &mut out_uvs {
-                    dst.push(primary_uv[ci]);
-                }
-                for &(ti, slot) in &corner_refs[start..end] {
-                    out_indices[ti as usize * 3 + slot as usize] = v_idx;
+                    st.face_norm
                 }
             } else {
-                let finalize = |acc: &([f64; 3], [f64; 4], [f64; 2], f64, usize)| {
-                    let iw = 1.0 / acc.3.max(1e-12);
-                    let nl =
-                        (acc.0[0] * acc.0[0] + acc.0[1] * acc.0[1] + acc.0[2] * acc.0[2]).sqrt();
-                    let n = if nl > 1e-9 {
-                        [
-                            (acc.0[0] / nl) as f32,
-                            (acc.0[1] / nl) as f32,
-                            (acc.0[2] / nl) as f32,
-                        ]
-                    } else {
-                        primary_nrm[ci]
-                    };
-                    let c = [
-                        (acc.1[0] * iw).clamp(0.0, 1.0) as f32,
-                        (acc.1[1] * iw).clamp(0.0, 1.0) as f32,
-                        (acc.1[2] * iw).clamp(0.0, 1.0) as f32,
-                        (acc.1[3] * iw).clamp(0.0, 1.0) as f32,
-                    ];
-                    let u = [(acc.2[0] * iw) as f32, (acc.2[1] * iw) as f32];
-                    (n, c, u)
-                };
-                let (na, ca, ua) = finalize(&acc_a);
-                let (nb, cb, ub) = finalize(&acc_b);
+                st.face_norm
+            };
+            let col = prim
+                .colors
+                .as_ref()
+                .map(|c| c[orig_vi])
+                .unwrap_or([1.0, 1.0, 1.0, 1.0]);
+            let uv = prim
+                .texcoords
+                .as_ref()
+                .map(|u| u[orig_vi])
+                .unwrap_or([0.0, 0.0]);
+            let chart = analysis.uv_chart[orig_vi];
+            (
+                nrm,
+                col,
+                uv,
+                chart,
+                prim.positions[orig_vi],
+                st.area_w.max(1e-9),
+            )
+        };
 
-                let va = out_positions.len() as u32;
-                out_positions.push(cell_pos[ci]);
-                out_normals.push(na);
-                if let Some(dst) = &mut out_colors {
-                    dst.push(ca);
-                }
-                if let Some(dst) = &mut out_uvs {
-                    dst.push(ua);
-                }
+    let mut out_positions = Vec::with_capacity(target_verts);
+    let mut out_normals = Vec::with_capacity(target_verts);
+    let mut out_colors = has_colors.then(|| Vec::with_capacity(target_verts));
+    let mut out_uvs = has_uvs.then(|| Vec::with_capacity(target_verts));
+    let mut out_indices = vec![0u32; surviving.len() * 3];
+    let mut clusters: Vec<CellCluster> = Vec::with_capacity(8);
+    let mut corner_cluster_idx: Vec<usize> = Vec::new();
 
-                let vb = out_positions.len() as u32;
-                out_positions.push(cell_pos[ci]);
-                out_normals.push(nb);
-                if let Some(dst) = &mut out_colors {
-                    dst.push(cb);
-                }
-                if let Some(dst) = &mut out_uvs {
-                    dst.push(ub);
-                }
+    for ci in 0..num_cells {
+        let start = offsets[ci];
+        let end = offsets[ci + 1];
+        if start == end {
+            continue;
+        }
+        let solved_p = cell_pos[ci];
+        clusters.clear();
+        corner_cluster_idx.clear();
 
-                for &(ti, slot) in &corner_refs[start..end] {
-                    let (n, c, _, _) = corner_norm_and_col(ti as usize, slot as usize);
-                    let dist_a = (c[0] - ac0[0]).powi(2)
-                        + (c[1] - ac0[1]).powi(2)
-                        + (c[2] - ac0[2]).powi(2)
-                        + 0.35 * (1.0 - (n[0] * an0[0] + n[1] * an0[1] + n[2] * an0[2]));
-                    let dist_b = (c[0] - bc0[0]).powi(2)
-                        + (c[1] - bc0[1]).powi(2)
-                        + (c[2] - bc0[2]).powi(2)
-                        + 0.35 * (1.0 - (n[0] * bn0[0] + n[1] * bn0[1] + n[2] * bn0[2]));
-                    out_indices[ti as usize * 3 + slot as usize] =
-                        if dist_b < dist_a { vb } else { va };
+        for &(ti, slot) in &corner_refs[start..end] {
+            let (n, c, u, chart, orig_p, w) = corner_attrs(ti as usize, slot as usize);
+            let dx = solved_p[0] - orig_p[0];
+            let dy = solved_p[1] - orig_p[1];
+            let dz = solved_p[2] - orig_p[2];
+            let dist2 = dx * dx + dy * dy + dz * dz;
+            let uv_w = 1.0 / ((dist2 as f64) + 1e-7);
+
+            let mut best_match: Option<(usize, f32)> = None;
+            for ( cli, cl ) in clusters.iter().enumerate() {
+                if has_uvs && cl.uv_chart != chart {
+                    continue;
+                }
+                let dot = n[0] * cl.rep_n[0] + n[1] * cl.rep_n[1] + n[2] * cl.rep_n[2];
+                if dot < HARD_CREASE_DOT_THRESHOLD {
+                    continue;
+                }
+                let col_d2 = (c[0] - cl.rep_c[0]).powi(2)
+                    + (c[1] - cl.rep_c[1]).powi(2)
+                    + (c[2] - cl.rep_c[2]).powi(2);
+                if col_d2 > 0.03 {
+                    continue;
+                }
+                if best_match.is_none_or(|(_, prev_dot)| dot > prev_dot) {
+                    best_match = Some((cli, dot));
                 }
             }
+
+            let assigned = if let Some((cli, _)) = best_match {
+                let cl = &mut clusters[cli];
+                let wf = w as f64;
+                cl.n_sum[0] += wf * (n[0] as f64);
+                cl.n_sum[1] += wf * (n[1] as f64);
+                cl.n_sum[2] += wf * (n[2] as f64);
+                for (dst_c, &src_c) in cl.c_sum.iter_mut().zip(&c) {
+                    *dst_c += wf * (src_c as f64);
+                }
+                cl.w_sum += wf;
+                cl.uv_sum[0] += uv_w * (u[0] as f64);
+                cl.uv_sum[1] += uv_w * (u[1] as f64);
+                cl.uv_w_sum += uv_w;
+                if dist2 < cl.best_dist2 {
+                    cl.best_dist2 = dist2;
+                    cl.best_uv = u;
+                }
+                cli
+            } else {
+                let cli = clusters.len();
+                let wf = w as f64;
+                clusters.push(CellCluster {
+                    uv_chart: chart,
+                    rep_n: n,
+                    rep_c: c,
+                    n_sum: [wf * n[0] as f64, wf * n[1] as f64, wf * n[2] as f64],
+                    c_sum: [
+                        wf * c[0] as f64,
+                        wf * c[1] as f64,
+                        wf * c[2] as f64,
+                        wf * c[3] as f64,
+                    ],
+                    w_sum: wf,
+                    uv_sum: [uv_w * u[0] as f64, uv_w * u[1] as f64],
+                    uv_w_sum: uv_w,
+                    best_uv: u,
+                    best_dist2: dist2,
+                    out_vi: 0,
+                });
+                cli
+            };
+            corner_cluster_idx.push(assigned);
+        }
+
+        if out_positions.len() + clusters.len() > target_verts {
+            return None;
+        }
+
+        for cl in &mut clusters {
+            let v_idx = out_positions.len() as u32;
+            cl.out_vi = v_idx;
+            out_positions.push(solved_p);
+
+            let nl =
+                (cl.n_sum[0] * cl.n_sum[0] + cl.n_sum[1] * cl.n_sum[1] + cl.n_sum[2] * cl.n_sum[2])
+                    .sqrt();
+            out_normals.push(if nl > 1e-9 {
+                [
+                    (cl.n_sum[0] / nl) as f32,
+                    (cl.n_sum[1] / nl) as f32,
+                    (cl.n_sum[2] / nl) as f32,
+                ]
+            } else {
+                cl.rep_n
+            });
+
+            if let Some(dst) = &mut out_colors {
+                let iw = 1.0 / cl.w_sum.max(1e-12);
+                dst.push([
+                    (cl.c_sum[0] * iw).clamp(0.0, 1.0) as f32,
+                    (cl.c_sum[1] * iw).clamp(0.0, 1.0) as f32,
+                    (cl.c_sum[2] * iw).clamp(0.0, 1.0) as f32,
+                    (cl.c_sum[3] * iw).clamp(0.0, 1.0) as f32,
+                ]);
+            }
+
+            if let Some(dst) = &mut out_uvs {
+                let uv = if cl.best_dist2 <= 1e-6 {
+                    cl.best_uv
+                } else {
+                    let iuw = 1.0 / cl.uv_w_sum.max(1e-12);
+                    [(cl.uv_sum[0] * iuw) as f32, (cl.uv_sum[1] * iuw) as f32]
+                };
+                dst.push(uv);
+            }
+        }
+
+        for (&(ti, slot), &cli) in corner_refs[start..end].iter().zip(&corner_cluster_idx) {
+            out_indices[ti as usize * 3 + slot as usize] = clusters[cli].out_vi;
         }
     }
 
@@ -461,7 +425,7 @@ fn run_qem_grid_pass(
 }
 
 /// Simplifies a single triangle primitive to `<= target_verts` using deterministic QEM plane-error
-/// vertex clustering and budgeted sharp color/crease preservation.
+/// vertex clustering while penalizing UV-seam and hard-crease (`normal dot < 0.82`) collapses.
 pub(super) fn simplify_primitive_qem(
     prim: &DecodedPrimitive,
     target_verts: usize,
@@ -477,79 +441,147 @@ pub(super) fn simplify_primitive_qem(
         return compacted;
     }
 
+    let analysis = analyze_mesh_seams(prim, &tris, &used, bmin, bmax);
     let span = [bmax[0] - bmin[0], bmax[1] - bmin[1], bmax[2] - bmin[2]];
     let max_span = span[0].max(span[1]).max(span[2]).max(1e-5);
-    let cell_budget = if target_verts >= 64 {
-        ((target_verts * 84) / 100).max(8)
-    } else {
-        target_verts
-    };
-
-    let mut scratch_keys = Vec::with_capacity(prim.positions.len());
-    let mut count_cells = |res: usize| -> usize {
-        let inv_cell = (res as f32) / max_span;
-        scratch_keys.clear();
-        for (vi, &is_u) in used.iter().enumerate() {
-            if is_u {
-                scratch_keys.push(pack_grid_key(prim.positions[vi], bmin, inv_cell));
+    let inv_cell_for_res = |res: usize| -> [f32; 3] {
+        std::array::from_fn(|a| {
+            if span[a] <= max_span * 1e-4 {
+                0.0
+            } else {
+                let cells = ((res as f32) * (span[a] / max_span)).round().max(2.0);
+                cells * 0.9999 / span[a]
             }
-        }
-        scratch_keys.sort_unstable();
-        scratch_keys.dedup();
-        scratch_keys.len()
+        })
     };
 
-    let mut lo = 2usize;
-    let mut hi = 2048usize;
-    let mut best_res = 2usize;
-    while lo <= hi {
-        let mid = (lo + hi) / 2;
-        let cnt = count_cells(mid);
-        if cnt <= cell_budget {
-            best_res = mid;
-            lo = mid + 1;
-        } else if mid == 0 {
-            break;
-        } else {
+    for mode in [
+        SeamSplitMode::FineSeamGrid,
+        SeamSplitMode::UniformGridSplitCharts,
+    ] {
+        let mut lo = 2usize;
+        let mut hi = 1024usize;
+        let mut best_res = 0usize;
+        let mut best_simplified: Option<DecodedPrimitive> = None;
+
+        while lo <= hi {
+            let mid = (lo + hi) / 2;
+            let inv_cell = inv_cell_for_res(mid);
+            if let Some(simp) = run_qem_grid_pass(
+                prim,
+                &tris,
+                &used,
+                &analysis,
+                bmin,
+                inv_cell,
+                target_verts,
+                mode,
+            ) {
+                if !simp.indices.is_empty() && simp.positions.len() <= target_verts {
+                    best_res = mid;
+                    if best_simplified
+                        .as_ref()
+                        .is_none_or(|prev| simp.positions.len() > prev.positions.len())
+                    {
+                        best_simplified = Some(simp);
+                    }
+                    lo = mid + 1;
+                    continue;
+                }
+            }
+            if mid <= 2 {
+                break;
+            }
             hi = mid - 1;
         }
-    }
 
-    // Evaluate candidate resolutions around best_res and pick the highest-detail mesh within target_verts
-    let mut best_simplified: Option<DecodedPrimitive> = None;
-    let mut candidates = vec![
-        best_res,
-        best_res + 1,
-        best_res + 2,
-        (best_res * 5) / 4,
-        (best_res * 3) / 2,
-        best_res * 2,
-    ];
-    candidates.sort_unstable();
-    candidates.dedup();
-    for candidate_res in candidates {
-        let inv_cell = (candidate_res.max(2) as f32) / max_span;
-        if let Some(simplified) =
-            run_qem_grid_pass(prim, &tris, &used, bmin, inv_cell, target_verts)
-        {
-            if !simplified.indices.is_empty() && simplified.positions.len() <= target_verts {
-                let replace = best_simplified
-                    .as_ref()
-                    .is_none_or(|prev| simplified.positions.len() > prev.positions.len());
-                if replace {
-                    best_simplified = Some(simplified);
+        if best_res > 0 {
+            let mut probes = vec![
+                best_res.saturating_sub(1).max(2),
+                best_res + 1,
+                best_res + 2,
+                (best_res * 5) / 4,
+            ];
+            probes.sort_unstable();
+            probes.dedup();
+            for res in probes {
+                let inv_cell = inv_cell_for_res(res.max(2));
+                if let Some(simp) = run_qem_grid_pass(
+                    prim,
+                    &tris,
+                    &used,
+                    &analysis,
+                    bmin,
+                    inv_cell,
+                    target_verts,
+                    mode,
+                ) {
+                    if !simp.indices.is_empty()
+                        && simp.positions.len() <= target_verts
+                        && best_simplified
+                            .as_ref()
+                            .is_none_or(|prev| simp.positions.len() > prev.positions.len())
+                    {
+                        best_simplified = Some(simp);
+                    }
                 }
             }
         }
-    }
-    if let Some(best) = best_simplified {
-        return best;
+
+        if let Some(best) = best_simplified {
+            return best;
+        }
     }
 
-    // Deterministic fallback: keep largest-area triangles up to target_verts / 3
+    // Deterministic extreme-budget fallback: pin the 6 AABB-extreme silhouette triangles first,
+    // then fill up to `target_verts / 3` by largest area so bounds & UV islands stay 100% intact.
     let max_tris = (target_verts / 3).max(1);
-    let mut sorted_tris = tris;
-    sorted_tris.sort_by(|a, b| b.dbl_area.total_cmp(&a.dbl_area));
-    sorted_tris.truncate(max_tris);
-    compact_unreduced_primitive(prim, &sorted_tris)
+    let mut order: Vec<(bool, f64, usize)> = tris
+        .iter()
+        .enumerate()
+        .map(|(ti, t)| {
+            let touches_extrema = [t.i0, t.i1, t.i2].into_iter().any(|vi| {
+                let p = prim.positions[vi as usize];
+                (0..3).any(|a| (p[a] - bmin[a]).abs() <= 1e-4 || (p[a] - bmax[a]).abs() <= 1e-4)
+            });
+            (touches_extrema, t.dbl_area, ti)
+        })
+        .collect();
+    let mut pinned_axes = [false; 6];
+    let mut picked = Vec::with_capacity(max_tris);
+    let mut used_ti = vec![false; tris.len()];
+    order.sort_by(|a, b| b.1.total_cmp(&a.1));
+    for &(_, _, ti) in &order {
+        if picked.len() >= max_tris {
+            break;
+        }
+        let t = tris[ti];
+        let mut claims_new_axis = false;
+        for vi in [t.i0, t.i1, t.i2] {
+            let p = prim.positions[vi as usize];
+            for a in 0..3 {
+                if (p[a] - bmin[a]).abs() <= 1e-4 && !pinned_axes[a * 2] {
+                    pinned_axes[a * 2] = true;
+                    claims_new_axis = true;
+                }
+                if (p[a] - bmax[a]).abs() <= 1e-4 && !pinned_axes[a * 2 + 1] {
+                    pinned_axes[a * 2 + 1] = true;
+                    claims_new_axis = true;
+                }
+            }
+        }
+        if claims_new_axis {
+            used_ti[ti] = true;
+            picked.push(t);
+        }
+    }
+    for &(_, _, ti) in &order {
+        if picked.len() >= max_tris {
+            break;
+        }
+        if !used_ti[ti] {
+            picked.push(tris[ti]);
+        }
+    }
+    compact_unreduced_primitive(prim, &picked)
 }

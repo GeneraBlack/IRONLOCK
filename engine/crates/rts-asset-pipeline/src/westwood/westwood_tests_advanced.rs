@@ -481,3 +481,233 @@ Russian=seva002
     );
     let _ = fs::remove_dir_all(&tmp_root);
 }
+
+pub(super) fn build_authored_test_vxl(
+    sx: u8,
+    sy: u8,
+    sz: u8,
+    normals_mode: u8,
+    mut voxel_fn: impl FnMut(u8, u8, u8) -> Option<(u8, u8)>,
+) -> Vec<u8> {
+    let mut vxl = Vec::new();
+    let mut magic = [0u8; 16];
+    magic[..15].copy_from_slice(b"Voxel Animation");
+    vxl.extend_from_slice(&magic);
+    vxl.extend_from_slice(&1u32.to_le_bytes());
+    vxl.extend_from_slice(&1u32.to_le_bytes());
+    vxl.extend_from_slice(&1u32.to_le_bytes());
+
+    let num_cols = (sx as usize) * (sy as usize);
+    let mut col_blobs: Vec<Vec<u8>> = Vec::with_capacity(num_cols);
+    for y in 0..sy {
+        for x in 0..sx {
+            let mut packet = Vec::new();
+            let mut z = 0u8;
+            while z < sz {
+                let skip_start = z;
+                while z < sz && voxel_fn(x, y, z).is_none() {
+                    z += 1;
+                }
+                let skip = z - skip_start;
+                let mut run = Vec::new();
+                while z < sz {
+                    if let Some(cn) = voxel_fn(x, y, z) {
+                        run.push(cn);
+                        z += 1;
+                    } else {
+                        break;
+                    }
+                }
+                if !run.is_empty() || skip > 0 {
+                    packet.push(skip);
+                    packet.push(run.len() as u8);
+                    for (c, n) in &run {
+                        packet.push(*c);
+                        packet.push(*n);
+                    }
+                    packet.push(run.len() as u8);
+                }
+            }
+            col_blobs.push(packet);
+        }
+    }
+
+    let span_start_size = num_cols * 4;
+    let span_end_size = num_cols * 4;
+    let span_data_size: usize = col_blobs.iter().map(Vec::len).sum();
+    let body_size = (span_start_size + span_end_size + span_data_size) as u32;
+    vxl.extend_from_slice(&body_size.to_le_bytes());
+    vxl.extend_from_slice(&[16u8, 31u8]);
+
+    // Distinct 6-bit VGA palette entries outside 16..=31
+    for i in 0..256u16 {
+        let (r, g, b) = match i {
+            4 => (8, 10, 12),
+            12 => (16, 18, 22),
+            48 => (58, 12, 8),
+            140 => (10, 52, 22),
+            220 => (14, 38, 60),
+            _ => (((i * 17 + 5) % 64) as u8, ((i * 31 + 11) % 64) as u8, ((i * 43 + 19) % 64) as u8),
+        };
+        vxl.extend_from_slice(&[r, g, b]);
+    }
+
+    let mut limb_name = [0u8; 16];
+    limb_name[..4].copy_from_slice(b"BODY");
+    vxl.extend_from_slice(&limb_name);
+    vxl.extend_from_slice(&0u32.to_le_bytes());
+    vxl.extend_from_slice(&1u32.to_le_bytes());
+    vxl.extend_from_slice(&0u32.to_le_bytes());
+
+    let mut cur = 0i32;
+    for blob in &col_blobs {
+        if blob.is_empty() {
+            vxl.extend_from_slice(&(-1i32).to_le_bytes());
+        } else {
+            vxl.extend_from_slice(&cur.to_le_bytes());
+            cur += blob.len() as i32;
+        }
+    }
+    cur = 0;
+    for blob in &col_blobs {
+        if blob.is_empty() {
+            vxl.extend_from_slice(&(-1i32).to_le_bytes());
+        } else {
+            let end = cur + blob.len() as i32 - 1;
+            vxl.extend_from_slice(&end.to_le_bytes());
+            cur += blob.len() as i32;
+        }
+    }
+    for blob in &col_blobs {
+        vxl.extend_from_slice(blob);
+    }
+
+    vxl.extend_from_slice(&0u32.to_le_bytes());
+    vxl.extend_from_slice(&(span_start_size as u32).to_le_bytes());
+    vxl.extend_from_slice(&((span_start_size + span_end_size) as u32).to_le_bytes());
+    vxl.extend_from_slice(&0.25f32.to_le_bytes());
+    for i in 0..12 {
+        let v = if i == 0 || i == 5 || i == 10 { 1.0f32 } else { 0.0f32 };
+        vxl.extend_from_slice(&v.to_le_bytes());
+    }
+    for _ in 0..6 {
+        vxl.extend_from_slice(&0.0f32.to_le_bytes());
+    }
+    vxl.extend_from_slice(&[sx, sy, sz, normals_mode]);
+    vxl
+}
+
+#[test]
+fn decodes_ra2_244_and_ts_36_voxel_normals_with_35_deg_crease_splitting() {
+    assert_eq!(WESTWOOD_TS_NORMALS_36.len(), 36);
+    assert_eq!(WESTWOOD_RA2_NORMALS_244.len(), 244);
+    assert!(decode_westwood_voxel_normal_gltf(2, 36).is_none());
+    assert!(decode_westwood_voxel_normal_gltf(4, 244).is_none());
+
+    // RA2 index 232 is Westwood `[0.040639, 0.024465, 0.998874]` -> glTF `[y, z, x]` (~+Y up)
+    let up_ra2 = decode_westwood_voxel_normal_gltf(4, 232).unwrap();
+    assert!(up_ra2[1] > 0.99, "RA2 +Z normal must map to glTF +Y, got {up_ra2:?}");
+    let up_ts = decode_westwood_voxel_normal_gltf(2, 32).unwrap();
+    assert!(up_ts[1] > 0.99, "TS +Z normal must map to glTF +Y, got {up_ts:?}");
+
+    // 1. Hard-surface armor box (`> 35°` across edges): normals must stay planar with zero ballooning
+    let box_vxl = build_authored_test_vxl(6, 6, 4, 4, |_x, _y, z| {
+        Some((48, if z == 3 { 232 } else { 16 }))
+    });
+    let box_glb = convert_vxl_bytes_to_glb(&box_vxl, None, "armor_box").unwrap();
+    let box_tris = crate::glb_optimizer::extract_world_triangles_from_glb(&box_glb).unwrap();
+    assert!(!box_tris.is_empty());
+    for tri in &box_tris {
+        for n in &tri.n {
+            let max_axis = n[0].abs().max(n[1].abs()).max(n[2].abs());
+            assert!(max_axis > 0.99, "Hard-surface 90-deg box edge must split cleanly (>35 deg), got {n:?}");
+        }
+    }
+
+    // 2. Curved dome/barrel (`<= 35°` between adjacent RA2 normal indices 232 and 214: ~14° apart)
+    let dome_vxl = build_authored_test_vxl(4, 4, 2, 4, |_x, y, _z| {
+        Some((20, if y < 2 { 232 } else { 214 }))
+    });
+    let dome_glb = convert_vxl_bytes_to_glb(&dome_vxl, None, "kirov_dome").unwrap();
+    let dome_tris = crate::glb_optimizer::extract_world_triangles_from_glb(&dome_glb).unwrap();
+    let has_interpolated = dome_tris
+        .iter()
+        .flat_map(|t| t.n.iter())
+        .any(|n| n[1] > 0.95 && n[0] > 0.10 && n[0] < 0.20);
+    assert!(has_interpolated, "Adjacent Westwood normals <= 35 deg must smoothly interpolate");
+}
+
+#[test]
+fn encodes_lossless_png_uv_atlas_texcoord0_and_exact_16_to_31_alpha_team_mask() {
+    let vxl = build_authored_test_vxl(8, 6, 4, 4, |x, y, z| {
+        let c_idx = if z == 3 {
+            if x < 4 { 16 } else { 31 }
+        } else if y == 0 {
+            4
+        } else if y == 5 {
+            48
+        } else {
+            22
+        };
+        Some((c_idx, 232))
+    });
+
+    let glb = convert_vxl_bytes_to_glb(&vxl, None, "grizzly_tank").expect("convert textured vxl");
+    let (json, bin) = crate::glb_optimizer::parse_glb_chunks(&glb).expect("parse glb");
+
+    let mat = &json["materials"][0];
+    assert_eq!(mat["alphaMode"], "OPAQUE");
+    assert_eq!(mat["pbrMetallicRoughness"]["baseColorTexture"]["index"], 0);
+    assert!((mat["pbrMetallicRoughness"]["metallicFactor"].as_f64().unwrap() - 0.32).abs() < 1e-5);
+    assert!((mat["pbrMetallicRoughness"]["roughnessFactor"].as_f64().unwrap() - 0.58).abs() < 1e-5);
+    assert_eq!(json["samplers"][0]["magFilter"], 9728);
+    assert_eq!(json["images"][0]["mimeType"], "image/png");
+
+    let attrs = &json["meshes"][0]["primitives"][0]["attributes"];
+    assert!(attrs["POSITION"].is_number() && attrs["NORMAL"].is_number());
+    assert!(attrs["COLOR_0"].is_number() && attrs["TEXCOORD_0"].is_number());
+
+    let (w, h, rgba) = super::westwood_tests_core::decode_glb_embedded_png(&json, bin);
+    assert!(w >= 16 && h >= 16);
+
+    let tris = crate::glb_optimizer::extract_world_triangles_from_glb(&glb).unwrap();
+    let (mut saw_bright_remap, mut saw_dark_remap) = (false, false);
+    let (mut saw_non_remap_tread, mut saw_non_remap_trim) = (false, false);
+
+    for tri in &tris {
+        let a0 = tri.rgba[0][3];
+        assert!(
+            (a0 == 0.0 && tri.rgba[1][3] == 0.0 && tri.rgba[2][3] == 0.0)
+                || (a0 == 1.0 && tri.rgba[1][3] == 1.0 && tri.rgba[2][3] == 1.0),
+            "Zero alpha bleed allowed across remap/non-remap quads, got {:?}",
+            tri.rgba
+        );
+        if a0 == 0.0 {
+            for c in &tri.rgba {
+                assert!((c[0] - c[1]).abs() < 1e-5 && (c[1] - c[2]).abs() < 1e-5);
+                assert!(c[0] >= 0.179 && c[0] <= 1.0, "Remap lum out of [0.18, 1.0]: {}", c[0]);
+                saw_bright_remap |= c[0] > 0.85;
+                saw_dark_remap |= c[0] < 0.25;
+            }
+        } else {
+            for c in &tri.rgba {
+                saw_non_remap_trim |= c[0] > 0.65 && c[1] < 0.25;
+                saw_non_remap_tread |= c[0] < 0.25 && c[2] < 0.25;
+            }
+        }
+    }
+    assert!(saw_bright_remap && saw_dark_remap, "Must encode 16..=31 grayscale ramp with Alpha=0");
+    assert!(saw_non_remap_tread && saw_non_remap_trim, "Must preserve 0..15 & 32..255 with Alpha=255");
+    assert!(rgba.chunks_exact(4).any(|px| px[3] == 0 && px[0] == px[1] && px[1] == px[2]));
+    assert!(rgba.chunks_exact(4).any(|px| px[3] == 255));
+
+    let tinted = convert_multipart_vxl_to_glb_with_team_color(
+        &[(&vxl, [0.0, 0.0, 0.0])],
+        None,
+        Some([0.85, 0.15, 0.12]),
+        "soviet_tank",
+    )
+    .unwrap();
+    let tinted_tris = crate::glb_optimizer::extract_world_triangles_from_glb(&tinted).unwrap();
+    assert!(tinted_tris.iter().any(|t| t.rgba[0][3] == 0.0 && t.rgba[0][0] > t.rgba[0][2]));
+}
