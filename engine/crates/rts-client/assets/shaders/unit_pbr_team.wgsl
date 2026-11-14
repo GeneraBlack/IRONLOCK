@@ -97,15 +97,21 @@ fn fragment(
 
     var mask_w = 0.0;
     if mode == 0 {
-        // AutoNeutralGray: tints neutral armor plates (`sat < threshold`) while preserving dark rubber/treads
-        // (`luma < 0.12`), bright specular glass (`luma > 0.93`), and distinct camouflage/hazard accents.
-        let neutral_w = 1.0 - smoothstep(threshold * 0.65, threshold + 0.18, sat);
-        let mid_luma_w = smoothstep(0.10, 0.24, luma) * (1.0 - smoothstep(0.86, 0.97, luma));
-        mask_w = clamp(neutral_w * mid_luma_w * 0.78 + 0.16, 0.0, 1.0) * tint_strength;
+        if base_rgba.a < 0.98 {
+            // Explicit Westwood 16..=31 house-color mask packed in base_color.a (`1.0 - a` => team weight)
+            mask_w = clamp(1.0 - base_rgba.a, 0.0, 1.0) * tint_strength;
+            base_rgba.a = 1.0;
+        } else {
+            // Tightened AutoNeutralGray fallback ONLY when `base_rgba.a >= 0.98`: preserves dark steel,
+            // gun barrels, treads (`luma < 0.34`), specular glass (`luma > 0.92`), and zero floor (`0.0`).
+            let neutral_w = 1.0 - smoothstep(threshold * 0.45, threshold + 0.06, sat);
+            let mid_luma_w = smoothstep(0.34, 0.50, luma) * (1.0 - smoothstep(0.84, 0.93, luma));
+            mask_w = clamp(neutral_w * mid_luma_w * 0.76, 0.0, 1.0) * tint_strength;
+        }
     } else if mode == 1 {
-        // AlphaMask: uses base alpha channel (`1.0 - alpha` when glTF packs mask into alpha < 1, or `alpha` if masked)
-        let alpha_mask = select(base_rgba.a, 1.0 - base_rgba.a, base_rgba.a > 0.52 && base_rgba.a < 0.995);
-        mask_w = clamp(alpha_mask, 0.0, 1.0) * tint_strength;
+        // Exact Westwood AlphaMask contract: `base_rgba.a == 1.0` => 0% team color (steel/treads/concrete/glass);
+        // `base_rgba.a < 1.0` => explicit house-color mask weight `1.0 - base_rgba.a` (`a = 0.0` => 100% team).
+        mask_w = clamp(1.0 - base_rgba.a, 0.0, 1.0) * tint_strength;
         base_rgba.a = 1.0;
     } else if mode == 2 {
         // VertexColorMask / LuminanceTint: uses `COLOR_0` saturation / mask weight
@@ -123,7 +129,7 @@ fn fragment(
     }
 
     // Luminance-preserving PBR team paint so panel rivets, AO, and baked shading stay razor-sharp!
-    let shaded_team = team_rgb * clamp(luma * 1.48 + 0.10, 0.12, 1.38);
+    let shaded_team = team_rgb * clamp(luma * 1.54 + 0.08, 0.10, 1.38);
     albedo = mix(albedo, shaded_team, mask_w);
 
     // Optional VisualDef PBR overrides (`metallic`, `roughness`, `emissive_boost`)
@@ -140,17 +146,18 @@ fn fragment(
     }
 
     // Fragment-shader procedural soot/char damage darkening + glowing Red25 ember fissures (`Task 236`)
+    // Capped at `0.52` max so damaged hulls retain readable faction livery instead of over-blackening.
     let damage_soot = clamp(team_ext.damage_and_fx.x, 0.0, 1.0);
     if damage_soot > 0.01 {
         let char_n = soot_noise3(world_pos * 2.6) * 0.65 + soot_noise3(world_pos * 6.8) * 0.35;
-        let soot_patch = clamp(damage_soot * (0.58 + char_n * 0.72), 0.0, 0.92);
-        albedo = mix(albedo, albedo * vec3<f32>(0.20, 0.17, 0.15), soot_patch);
+        let soot_patch = clamp(damage_soot * (0.36 + char_n * 0.44), 0.0, 0.52);
+        albedo = mix(albedo, albedo * vec3<f32>(0.26, 0.22, 0.19), soot_patch);
         pbr_input.material.perceptual_roughness = mix(
             pbr_input.material.perceptual_roughness,
-            0.94,
-            soot_patch * 0.85,
+            0.92,
+            soot_patch * 0.75,
         );
-        pbr_input.material.metallic = pbr_input.material.metallic * (1.0 - soot_patch * 0.65);
+        pbr_input.material.metallic = pbr_input.material.metallic * (1.0 - soot_patch * 0.55);
 
         if damage_soot > 0.65 {
             let ember_fissure = smoothstep(0.70, 0.90, char_n) * ((damage_soot - 0.65) / 0.35);
