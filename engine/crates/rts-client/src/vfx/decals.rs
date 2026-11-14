@@ -13,13 +13,8 @@ use rts_sdk::schema::common::LocomotorKind;
 use rts_sdk::schema::MovementDomain;
 use rts_simulation::pathfinding::CollisionGrid;
 use rts_simulation::world::{EntityKind, TileVisibility};
-use std::collections::{BTreeMap, VecDeque};
 use std::hash::{Hash, Hasher};
 
-/// Maximum number of fading ground vehicle tread / tire track quads kept in the ring buffer.
-pub const MAX_VEHICLE_TRACK_MARKS: usize = 256;
-/// Maximum number of data-driven `VfxEffectDef.ground_decal` stamps kept in the ring buffer (`Task 244`).
-pub const MAX_VFX_LINKED_DECAL_STAMPS: usize = 192;
 const DECAL_SURFACE_OFFSET_Y: f32 = 0.025;
 
 /// Single GPU-batched height-conforming decal mesh entity rendering craters, scorch rings,
@@ -31,72 +26,6 @@ pub struct BattlefieldDecalBatchEntity;
 #[derive(Component, Debug, Clone)]
 pub struct ScarWreckVisualEntity {
     pub scar_index: usize,
-}
-
-#[derive(Debug, Clone, Copy)]
-pub struct VehicleTrackMark {
-    pub center_xz: [f32; 2],
-    pub forward_xz: [f32; 2],
-    pub half_width: f32,
-    pub half_length: f32,
-    pub age_secs: f32,
-    pub lifetime_secs: f32,
-    pub is_tracked: bool,
-}
-
-/// Persistent ground decal stamped by a data-driven `VfxEffectDef` (`ground_decal: Option<VfxDecalLinkSpec>`).
-#[derive(Debug, Clone, Copy)]
-pub struct VfxLinkedDecalStamp {
-    pub center_xz: [f32; 2],
-    pub radius: f32,
-    pub age_secs: f32,
-    pub fade_time_secs: f32,
-    pub tile: DecalAtlasTile,
-}
-
-#[derive(Resource, Default)]
-pub struct DecalSystemState {
-    pub initialized: bool,
-    pub albedo_atlas: Handle<Image>,
-    pub normal_atlas: Handle<Image>,
-    pub decal_mesh: Handle<Mesh>,
-    pub decal_mat: Handle<StandardMaterial>,
-    pub wreck_mesh: Handle<Mesh>,
-    pub wreck_mat: Handle<StandardMaterial>,
-    pub track_ring: VecDeque<VehicleTrackMark>,
-    pub vfx_stamp_ring: VecDeque<VfxLinkedDecalStamp>,
-    pub last_vehicle_stamp_xz: BTreeMap<u64, [f32; 2]>,
-    pub last_tick: u64,
-    pub last_decal_mesh_signature: Option<u64>,
-    pub mesh_rebuild_count: u64,
-}
-
-impl DecalSystemState {
-    pub fn push_track_mark(&mut self, mark: VehicleTrackMark) {
-        if self.track_ring.len() >= MAX_VEHICLE_TRACK_MARKS {
-            self.track_ring.pop_front();
-        }
-        self.track_ring.push_back(mark);
-    }
-
-    pub fn stamp_vfx_decal(
-        &mut self,
-        center_xz: [f32; 2],
-        decal_kind: &str,
-        radius: f32,
-        fade_time_secs: f32,
-    ) {
-        if self.vfx_stamp_ring.len() >= MAX_VFX_LINKED_DECAL_STAMPS {
-            self.vfx_stamp_ring.pop_front();
-        }
-        self.vfx_stamp_ring.push_back(VfxLinkedDecalStamp {
-            center_xz,
-            radius: radius.clamp(0.4, 9.0),
-            age_secs: 0.0,
-            fade_time_secs: fade_time_secs.max(1.0),
-            tile: DecalAtlasTile::from_decal_kind_str(decal_kind),
-        });
-    }
 }
 
 #[derive(Default)]
@@ -765,6 +694,11 @@ mod tests {
             });
         }
         assert_eq!(st.track_ring.len(), MAX_VEHICLE_TRACK_MARKS);
-        assert!((st.track_ring.front().unwrap().center_xz[0] - 64.0).abs() < 1e-5);
+        let front_x = st
+            .track_ring
+            .front()
+            .map(|m| m.center_xz[0])
+            .unwrap_or(-1.0);
+        assert!((front_x - 64.0).abs() < 1e-5);
     }
 }

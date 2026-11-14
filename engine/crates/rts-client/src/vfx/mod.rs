@@ -1,16 +1,24 @@
+mod combat_events;
+pub mod damage_smoke;
 pub mod data_driven_vfx;
 pub mod data_driven_vfx_emitters;
 pub mod decal_atlas;
 pub mod decals;
+mod destruction_events;
 pub mod gpu_particles;
+pub mod signature_beams;
+mod signature_beams_waves;
 mod systems;
 pub mod weather_vfx;
 
+use combat_events::spawn_combat_and_destruction_events;
+use damage_smoke::emit_battlefield_ambient_and_damage_vfx;
+pub use damage_smoke::*;
 pub use data_driven_vfx::*;
 pub use decal_atlas::*;
 pub use decals::*;
 pub use gpu_particles::*;
-use systems::spawn_combat_and_destruction_events;
+pub use signature_beams::*;
 pub use systems::update_and_draw_vfx;
 pub use weather_vfx::*;
 
@@ -21,7 +29,7 @@ use crate::{AssetRootResource, ModResource, SimWorldResource};
 use bevy::prelude::*;
 use rts_sdk::loader::LoadedMod;
 use rts_sdk::schema::ProjectileStyle;
-use rts_simulation::world::{EntityKind, HarvesterPhase, TileVisibility, VeterancyRank};
+use rts_simulation::world::{EntityKind, VeterancyRank};
 use std::collections::BTreeMap;
 use std::path::Path;
 
@@ -167,6 +175,8 @@ pub struct EnergyBeamVfx {
     pub end: Vec3,
     pub is_tesla: bool,
     pub style: ProjectileStyle,
+    pub beam_kind: SignatureBeamKind,
+    pub splinter_count: u8,
     pub age: f32,
     pub lifetime: f32,
     pub seed: u64,
@@ -326,253 +336,18 @@ pub fn spawn_combat_and_destruction_vfx(
         tracker.reset();
     }
 
-    // 1. Emit continuous rising smoke & fire plumes anchored on `DamageSmoke_01`, track dust on `Exhaust_01`,
-    //    and ore mining sparks into the GPU-batched `GpuParticleBurstBuffer` (zero ECS entity spawns per puff!)
+    // 1. Emit localized socket-bound `<50%` yellow smoke, `<25%` red critical fire, & `Exhaust_01` plumes
     tracker.smoke_timer += dt;
     if tracker.smoke_timer >= 0.16 {
         tracker.smoke_timer = 0.0;
-        for ent in world.entities.values() {
-            if ent.health <= 0.0 || !cached_fow.is_entity_visible(world, loaded, ent) {
-                continue;
-            }
-            match &ent.kind {
-                EntityKind::Building { .. } => {
-                    if ent.construction_progress < 0.99 {
-                        let hash = ent.id.wrapping_mul(2654435761) ^ world.tick;
-                        let angle = ((hash & 0xff) as f32 / 255.0) * std::f32::consts::TAU;
-                        let ground_y = world
-                            .grid
-                            .sample_world_height(ent.position[0], ent.position[2]);
-                        let active_y = ground_y + 0.20 + ent.construction_progress * 2.15;
-                        let spark_pos = Vec3::new(
-                            ent.position[0] + angle.cos() * 1.15,
-                            active_y,
-                            ent.position[2] + angle.sin() * 1.15,
-                        );
-                        if let Some(pool) = gpu_pool.as_deref_mut() {
-                            pool.burst_buffer.emit(GpuParticleInstance {
-                                position: spark_pos,
-                                velocity: Vec3::new(angle.cos() * 2.8, 3.2, angle.sin() * 2.8),
-                                age: 0.0,
-                                lifetime: 0.34,
-                                gravity: 11.0,
-                                start_size: 0.24,
-                                end_size: 0.06,
-                                color_rgba: if hash & 1 == 0 {
-                                    [0.35, 0.95, 1.0, 0.95]
-                                } else {
-                                    [1.0, 0.85, 0.32, 0.95]
-                                },
-                            });
-                            pool.burst_buffer.emit(GpuParticleInstance {
-                                position: Vec3::new(
-                                    ent.position[0] - angle.cos() * 1.4,
-                                    ground_y + 0.18,
-                                    ent.position[2] - angle.sin() * 1.4,
-                                ),
-                                velocity: Vec3::new(angle.cos() * 0.9, 0.7, angle.sin() * 0.9),
-                                age: 0.0,
-                                lifetime: 0.58,
-                                gravity: -0.25,
-                                start_size: 0.36,
-                                end_size: 0.82,
-                                color_rgba: [0.52, 0.48, 0.42, 0.52],
-                            });
-                        }
-                    }
-
-                    if ent.upgrading_to.is_some() {
-                        let hash = ent.id.wrapping_mul(2246822519) ^ world.tick;
-                        let angle = ((hash & 0xff) as f32 / 255.0) * std::f32::consts::TAU;
-                        if let Some(pool) = gpu_pool.as_deref_mut() {
-                            pool.burst_buffer.emit(GpuParticleInstance {
-                                position: Vec3::new(
-                                    ent.position[0] + angle.cos() * 1.4,
-                                    ent.position[1].max(0.0) + 1.1,
-                                    ent.position[2] + angle.sin() * 1.4,
-                                ),
-                                velocity: Vec3::new(angle.cos() * 1.8, 3.6, angle.sin() * 1.8),
-                                age: 0.0,
-                                lifetime: 0.38,
-                                gravity: 6.0,
-                                start_size: 0.26,
-                                end_size: 0.08,
-                                color_rgba: [1.0, 0.88, 0.28, 0.96],
-                            });
-                        }
-                    }
-
-                    let hp_ratio = ent.health / ent.max_health.max(1.0);
-                    if hp_ratio < 0.65 {
-                        let hash = ent.id.wrapping_mul(2654435761) ^ world.tick;
-                        let ox = (((hash & 0xff) as f32 / 255.0) - 0.5) * 0.85;
-                        let oz = ((((hash >> 8) & 0xff) as f32 / 255.0) - 0.5) * 0.85;
-                        let anchor = socket_reg
-                            .as_deref()
-                            .and_then(|reg| reg.damage_smoke_pos(ent.id))
-                            .unwrap_or_else(|| {
-                                Vec3::new(
-                                    ent.position[0],
-                                    ent.position[1].max(0.0) + 1.8,
-                                    ent.position[2],
-                                )
-                            });
-                        let spawn_pos = anchor + Vec3::new(ox, 0.0, oz);
-                        if let Some(pool) = gpu_pool.as_deref_mut() {
-                            pool.burst_buffer.emit(GpuParticleInstance {
-                                position: spawn_pos,
-                                velocity: Vec3::new(ox * 0.35, 2.35, oz * 0.35),
-                                age: 0.0,
-                                lifetime: 1.35,
-                                gravity: -0.55,
-                                start_size: 0.55,
-                                end_size: 1.35,
-                                color_rgba: [0.20, 0.21, 0.23, 0.72],
-                            });
-                            if hp_ratio < 0.35 {
-                                pool.burst_buffer.emit(GpuParticleInstance {
-                                    position: spawn_pos,
-                                    velocity: Vec3::new(ox * 0.8, 3.2, oz * 0.8),
-                                    age: 0.0,
-                                    lifetime: 0.46,
-                                    gravity: 3.8,
-                                    start_size: 0.42,
-                                    end_size: 0.12,
-                                    color_rgba: [1.0, 0.48, 0.12, 0.92],
-                                });
-                            }
-                        }
-                    }
-                }
-                EntityKind::Unit { .. } => {
-                    if !ent.path_waypoints.is_empty() && ent.max_health >= 250.0 {
-                        let exhaust_origin = socket_reg
-                            .as_deref()
-                            .and_then(|reg| reg.exhaust_pos(ent.id))
-                            .unwrap_or_else(|| {
-                                Vec3::new(
-                                    ent.position[0] - ent.facing_radians.sin() * 1.1,
-                                    ent.position[1].max(0.0) + 0.22,
-                                    ent.position[2] - ent.facing_radians.cos() * 1.1,
-                                )
-                            });
-                        if let Some(pool) = gpu_pool.as_deref_mut() {
-                            pool.burst_buffer.emit(GpuParticleInstance {
-                                position: exhaust_origin,
-                                velocity: Vec3::new(0.0, 0.85, 0.0),
-                                age: 0.0,
-                                lifetime: 0.55,
-                                gravity: -0.2,
-                                start_size: 0.30,
-                                end_size: 0.68,
-                                color_rgba: [0.46, 0.43, 0.38, 0.48],
-                            });
-                        }
-                    }
-
-                    let hp_ratio = ent.health / ent.max_health.max(1.0);
-                    if ent.max_health >= 180.0 && hp_ratio < 0.50 {
-                        let dmg_origin = socket_reg
-                            .as_deref()
-                            .and_then(|reg| reg.damage_smoke_pos(ent.id))
-                            .unwrap_or_else(|| {
-                                Vec3::new(ent.position[0], ent.position[1] + 1.05, ent.position[2])
-                            });
-                        if let Some(pool) = gpu_pool.as_deref_mut() {
-                            pool.burst_buffer.emit(GpuParticleInstance {
-                                position: dmg_origin,
-                                velocity: Vec3::new(0.0, 1.9, 0.0),
-                                age: 0.0,
-                                lifetime: 0.95,
-                                gravity: -0.4,
-                                start_size: 0.38,
-                                end_size: 0.92,
-                                color_rgba: [0.18, 0.19, 0.21, 0.68],
-                            });
-                            if hp_ratio < 0.25 {
-                                pool.burst_buffer.emit(GpuParticleInstance {
-                                    position: dmg_origin - Vec3::Y * 0.08,
-                                    velocity: Vec3::new(0.0, 2.6, 0.0),
-                                    age: 0.0,
-                                    lifetime: 0.36,
-                                    gravity: 3.5,
-                                    start_size: 0.34,
-                                    end_size: 0.10,
-                                    color_rgba: [1.0, 0.50, 0.14, 0.92],
-                                });
-                            }
-                        }
-                    }
-
-                    if ent.burrowed {
-                        if let Some(pool) = gpu_pool.as_deref_mut() {
-                            pool.burst_buffer.emit(GpuParticleInstance {
-                                position: Vec3::new(
-                                    ent.position[0],
-                                    world
-                                        .grid
-                                        .sample_world_height(ent.position[0], ent.position[2])
-                                        + 0.16,
-                                    ent.position[2],
-                                ),
-                                velocity: Vec3::new(0.0, 2.2, 0.0),
-                                age: 0.0,
-                                lifetime: 0.45,
-                                gravity: 6.5,
-                                start_size: 0.38,
-                                end_size: 0.56,
-                                color_rgba: [0.36, 0.28, 0.18, 0.78],
-                            });
-                        }
-                    }
-
-                    if let Some(harv) = &ent.harvester_state {
-                        if matches!(harv.phase, HarvesterPhase::Harvesting(_)) {
-                            let front_x = ent.position[0] + ent.facing_radians.sin() * 1.25;
-                            let front_z = ent.position[2] + ent.facing_radians.cos() * 1.25;
-                            if let Some(pool) = gpu_pool.as_deref_mut() {
-                                pool.burst_buffer.emit(GpuParticleInstance {
-                                    position: Vec3::new(
-                                        front_x,
-                                        world.grid.sample_world_height(front_x, front_z) + 0.45,
-                                        front_z,
-                                    ),
-                                    velocity: Vec3::new(0.0, 2.8, 0.0),
-                                    age: 0.0,
-                                    lifetime: 0.35,
-                                    gravity: 9.0,
-                                    start_size: 0.24,
-                                    end_size: 0.06,
-                                    color_rgba: [1.0, 0.88, 0.24, 0.95],
-                                });
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        for scar in &world.battlefield_scars {
-            if scar.is_wreck
-                && scar.remaining_secs > 5.0
-                && cached_fow.world_pos_visibility(world, scar.position)
-                    != TileVisibility::Unexplored
-            {
-                let ground_y = world
-                    .grid
-                    .sample_world_height(scar.position[0], scar.position[2]);
-                if let Some(pool) = gpu_pool.as_deref_mut() {
-                    pool.burst_buffer.emit(GpuParticleInstance {
-                        position: Vec3::new(scar.position[0], ground_y + 0.52, scar.position[2]),
-                        velocity: Vec3::new(0.16, 1.75, -0.10),
-                        age: 0.0,
-                        lifetime: 0.95,
-                        gravity: -0.55,
-                        start_size: 0.38,
-                        end_size: 0.96,
-                        color_rgba: [0.16, 0.16, 0.18, 0.65],
-                    });
-                }
-            }
+        if let Some(pool) = gpu_pool.as_deref_mut() {
+            emit_battlefield_ambient_and_damage_vfx(
+                world,
+                loaded,
+                &cached_fow,
+                socket_reg.as_deref(),
+                &mut pool.burst_buffer,
+            );
         }
     }
 
@@ -582,7 +357,6 @@ pub fn spawn_combat_and_destruction_vfx(
     }
     tracker.last_sim_tick = world.tick;
 
-    // Check for unit Veterancy Promotions (Rookie -> Veteran -> Elite) & Building Construction Completion
     for ent in world.entities.values() {
         let ent_vis = cached_fow.is_entity_visible(world, loaded, ent);
         if matches!(ent.kind, EntityKind::Building { .. }) {

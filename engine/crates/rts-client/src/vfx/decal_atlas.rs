@@ -2,9 +2,80 @@ use bevy::prelude::*;
 use bevy::render::mesh::{Indices, PrimitiveTopology};
 use bevy::render::render_asset::RenderAssetUsages;
 use bevy::render::render_resource::{Extent3d, TextureDimension, TextureFormat};
+use std::collections::{BTreeMap, VecDeque};
 
 pub const DECAL_ATLAS_SIZE: u32 = 256;
 pub const DECAL_TILE_UV_PAD: f32 = 0.025;
+/// Maximum number of fading ground vehicle tread / tire track quads kept in the ring buffer.
+pub const MAX_VEHICLE_TRACK_MARKS: usize = 256;
+/// Maximum number of data-driven `VfxEffectDef.ground_decal` stamps kept in the ring buffer (`Task 244`).
+pub const MAX_VFX_LINKED_DECAL_STAMPS: usize = 192;
+
+#[derive(Debug, Clone, Copy)]
+pub struct VehicleTrackMark {
+    pub center_xz: [f32; 2],
+    pub forward_xz: [f32; 2],
+    pub half_width: f32,
+    pub half_length: f32,
+    pub age_secs: f32,
+    pub lifetime_secs: f32,
+    pub is_tracked: bool,
+}
+
+/// Persistent ground decal stamped by a data-driven `VfxEffectDef` (`ground_decal: Option<VfxDecalLinkSpec>`).
+#[derive(Debug, Clone, Copy)]
+pub struct VfxLinkedDecalStamp {
+    pub center_xz: [f32; 2],
+    pub radius: f32,
+    pub age_secs: f32,
+    pub fade_time_secs: f32,
+    pub tile: DecalAtlasTile,
+}
+
+#[derive(Resource, Default)]
+pub struct DecalSystemState {
+    pub initialized: bool,
+    pub albedo_atlas: Handle<Image>,
+    pub normal_atlas: Handle<Image>,
+    pub decal_mesh: Handle<Mesh>,
+    pub decal_mat: Handle<StandardMaterial>,
+    pub wreck_mesh: Handle<Mesh>,
+    pub wreck_mat: Handle<StandardMaterial>,
+    pub track_ring: VecDeque<VehicleTrackMark>,
+    pub vfx_stamp_ring: VecDeque<VfxLinkedDecalStamp>,
+    pub last_vehicle_stamp_xz: BTreeMap<u64, [f32; 2]>,
+    pub last_tick: u64,
+    pub last_decal_mesh_signature: Option<u64>,
+    pub mesh_rebuild_count: u64,
+}
+
+impl DecalSystemState {
+    pub fn push_track_mark(&mut self, mark: VehicleTrackMark) {
+        if self.track_ring.len() >= MAX_VEHICLE_TRACK_MARKS {
+            self.track_ring.pop_front();
+        }
+        self.track_ring.push_back(mark);
+    }
+
+    pub fn stamp_vfx_decal(
+        &mut self,
+        center_xz: [f32; 2],
+        decal_kind: &str,
+        radius: f32,
+        fade_time_secs: f32,
+    ) {
+        if self.vfx_stamp_ring.len() >= MAX_VFX_LINKED_DECAL_STAMPS {
+            self.vfx_stamp_ring.pop_front();
+        }
+        self.vfx_stamp_ring.push_back(VfxLinkedDecalStamp {
+            center_xz,
+            radius: radius.clamp(0.4, 9.0),
+            age_secs: 0.0,
+            fade_time_secs: fade_time_secs.max(1.0),
+            tile: DecalAtlasTile::from_decal_kind_str(decal_kind),
+        });
+    }
+}
 
 /// Quadrant index inside the cached `2x2` procedural Albedo + Tangent-Space Normal decal atlas (`Task 238`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]

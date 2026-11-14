@@ -554,17 +554,7 @@ pub fn sync_gpu_particle_shader_uniforms(
     mat.params.camera_up_and_floor = Vec4::new(cam_up.x, cam_up.y, cam_up.z, floor_y);
 }
 
-pub fn new_empty_vfx_batch_mesh() -> Mesh {
-    let mut mesh = Mesh::new(
-        PrimitiveTopology::TriangleList,
-        RenderAssetUsages::default(),
-    );
-    mesh.insert_attribute(Mesh::ATTRIBUTE_POSITION, Vec::<[f32; 3]>::new());
-    mesh.insert_attribute(Mesh::ATTRIBUTE_NORMAL, Vec::<[f32; 3]>::new());
-    mesh.insert_attribute(Mesh::ATTRIBUTE_COLOR, Vec::<[f32; 4]>::new());
-    mesh.insert_indices(Indices::U32(Vec::new()));
-    mesh
-}
+pub use super::signature_beams::{new_empty_vfx_batch_mesh, VfxBeamAndRingBatchBuilder};
 
 pub fn new_empty_particle_billboard_mesh() -> Mesh {
     let mut mesh = Mesh::new(
@@ -579,105 +569,6 @@ pub fn new_empty_particle_billboard_mesh() -> Mesh {
     mesh.insert_attribute(Mesh::ATTRIBUTE_COLOR, Vec::<[f32; 4]>::new());
     mesh.insert_indices(Indices::U32(Vec::new()));
     mesh
-}
-
-#[derive(Default)]
-pub struct VfxBeamAndRingBatchBuilder {
-    positions: Vec<[f32; 3]>,
-    normals: Vec<[f32; 3]>,
-    colors: Vec<[f32; 4]>,
-    indices: Vec<u32>,
-}
-
-impl VfxBeamAndRingBatchBuilder {
-    #[inline]
-    pub fn push_quad(&mut self, p0: Vec3, p1: Vec3, p2: Vec3, p3: Vec3, n: Vec3, rgba: [f32; 4]) {
-        let base = self.positions.len() as u32;
-        self.positions.extend_from_slice(&[
-            p0.to_array(),
-            p1.to_array(),
-            p2.to_array(),
-            p3.to_array(),
-        ]);
-        let na = n.to_array();
-        self.normals.extend_from_slice(&[na, na, na, na]);
-        self.colors.extend_from_slice(&[rgba, rgba, rgba, rgba]);
-        self.indices
-            .extend_from_slice(&[base, base + 2, base + 1, base, base + 3, base + 2]);
-    }
-
-    pub fn push_3d_beam_segment(
-        &mut self,
-        a: Vec3,
-        b: Vec3,
-        cam_forward: Vec3,
-        half_width: f32,
-        rgba: [f32; 4],
-    ) {
-        let dir = b - a;
-        let len_sq = dir.length_squared();
-        if len_sq < 1e-6 {
-            return;
-        }
-        let unit_dir = dir / len_sq.sqrt();
-        let mut side_a = unit_dir.cross(cam_forward);
-        if side_a.length_squared() < 1e-4 {
-            side_a = unit_dir.cross(Vec3::Y);
-        }
-        if side_a.length_squared() < 1e-4 {
-            side_a = Vec3::X;
-        }
-        side_a = side_a.normalize() * half_width;
-        let side_b = unit_dir.cross(side_a).normalize_or_zero() * half_width;
-
-        self.push_quad(
-            a - side_a,
-            a + side_a,
-            b + side_a,
-            b - side_a,
-            Vec3::Y,
-            rgba,
-        );
-        self.push_quad(
-            a - side_b,
-            a + side_b,
-            b + side_b,
-            b - side_b,
-            Vec3::Y,
-            rgba,
-        );
-    }
-
-    pub fn push_ground_ring(
-        &mut self,
-        center: Vec3,
-        radius: f32,
-        thickness: f32,
-        segments: usize,
-        rgba: [f32; 4],
-    ) {
-        let segs = segments.max(12);
-        let r_in = (radius - thickness * 0.5).max(0.02);
-        let r_out = radius + thickness * 0.5;
-        for i in 0..segs {
-            let a0 = (i as f32 / segs as f32) * std::f32::consts::TAU;
-            let a1 = ((i + 1) as f32 / segs as f32) * std::f32::consts::TAU;
-            let (s0, c0) = a0.sin_cos();
-            let (s1, c1) = a1.sin_cos();
-            let p0 = Vec3::new(center.x + c0 * r_in, center.y, center.z + s0 * r_in);
-            let p1 = Vec3::new(center.x + c0 * r_out, center.y, center.z + s0 * r_out);
-            let p2 = Vec3::new(center.x + c1 * r_out, center.y, center.z + s1 * r_out);
-            let p3 = Vec3::new(center.x + c1 * r_in, center.y, center.z + s1 * r_in);
-            self.push_quad(p0, p1, p2, p3, Vec3::Y, rgba);
-        }
-    }
-
-    pub fn write_into_mesh(&self, mesh: &mut Mesh) {
-        mesh.insert_attribute(Mesh::ATTRIBUTE_POSITION, self.positions.clone());
-        mesh.insert_attribute(Mesh::ATTRIBUTE_NORMAL, self.normals.clone());
-        mesh.insert_attribute(Mesh::ATTRIBUTE_COLOR, self.colors.clone());
-        mesh.insert_indices(Indices::U32(self.indices.clone()));
-    }
 }
 
 #[cfg(test)]
