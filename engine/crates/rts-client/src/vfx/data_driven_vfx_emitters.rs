@@ -192,9 +192,9 @@ pub fn synthesize_fallback_vfx_effect(style: ProjectileStyle) -> VfxEffectDef {
         ProjectileStyle::Radiation => (
             "fallback_radiation",
             [
-                [0.35, 2.40, 0.28, 1.0],
-                [0.20, 1.35, 0.16, 0.72],
-                [0.08, 0.35, 0.06, 0.0],
+                [0.45, 2.50, 0.35, 1.0],
+                [0.18, 1.00, 0.14, 0.78],
+                [0.06, 0.35, 0.05, 0.0],
             ],
             VfxEmitterShape::Ring,
             14,
@@ -212,8 +212,8 @@ pub fn synthesize_fallback_vfx_effect(style: ProjectileStyle) -> VfxEffectDef {
         ProjectileStyle::MindControl => (
             "fallback_mind_control",
             [
-                [2.10, 0.45, 2.50, 1.0],
-                [1.25, 0.22, 1.65, 0.75],
+                [2.30, 0.55, 2.50, 1.0],
+                [0.92, 0.22, 1.00, 0.80],
                 [0.35, 0.08, 0.55, 0.0],
             ],
             VfxEmitterShape::Beam,

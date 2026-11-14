@@ -329,7 +329,7 @@ fn resolve_preview_effect(
         ProjectileStyle::Radiation
     } else if low.contains("sonic") {
         ProjectileStyle::Sonic
-    } else if low.contains("psi") || low.contains("mind") {
+    } else if low.contains("psy") || low.contains("psi") || low.contains("mind") {
         ProjectileStyle::MindControl
     } else if low.contains("missile") || low.contains("rocket") {
         ProjectileStyle::Missile
