@@ -35,7 +35,7 @@ pub use shader_uniforms::TeamDamageUniform;
 impl Default for TeamDamageUniform {
     fn default() -> Self {
         Self {
-            team_color: Vec4::new(0.22, 0.56, 1.0, 0.85),
+            team_color: Vec4::new(0.06, 0.36, 1.0, 0.92),
             pbr_overrides: Vec4::new(-1.0, -1.0, 0.0, 0.22),
             damage_and_fx: Vec4::new(0.0, 0.0, 0.0, 1.0),
             shield_color: Vec4::new(0.30, 0.85, 1.0, 1.0),
@@ -165,12 +165,16 @@ pub fn build_unit_pbr_team_material(
             (true, TeamMaskMode::AutoNeutralGray, 0.22, -1.0, -1.0, 0.0)
         };
 
+    if mask_mode == TeamMaskMode::AlphaMask {
+        base.alpha_mode = AlphaMode::Opaque;
+    }
+
     let tint_strength = if !tint_enabled {
         0.0
     } else if slot_is_neutral {
         0.22
     } else {
-        0.92
+        0.95
     };
     let (shield_strength, shield_col) = shield.strength_and_color();
 
@@ -227,5 +231,44 @@ impl UnitPbrTeamMaterialCache {
     pub fn clear(&mut self) {
         self.entries.clear();
         self.preview_entries.clear();
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn alpha_mask_mode_forces_opaque_alpha_mode_and_shader_enforces_westwood_contract() {
+        let blend_base = StandardMaterial {
+            alpha_mode: AlphaMode::Blend,
+            ..default()
+        };
+        let alpha_mask_vis = VisualDef {
+            team_mask_mode: TeamMaskMode::AlphaMask,
+            ..Default::default()
+        };
+        let built_alpha = build_unit_pbr_team_material(
+            &blend_base,
+            Some(&alpha_mask_vis),
+            [0.94, 0.05, 0.06, 1.0],
+            false,
+            DamageVisualTier::Intact,
+            ShieldFresnelKind::None,
+            None,
+            None,
+            Handle::default(),
+            Vec2::splat(128.0),
+            1.0,
+            1.0,
+            0.0,
+        );
+        assert_eq!(built_alpha.base.alpha_mode, AlphaMode::Opaque);
+        assert!((built_alpha.extension.params.damage_and_fx.z - 1.0).abs() < 1e-5);
+
+        let wgsl = include_str!("../../../assets/shaders/unit_pbr_team.wgsl");
+        assert!(wgsl.contains("if base_rgba.a < 0.98"));
+        assert!(wgsl.contains("clamp(1.0 - base_rgba.a, 0.0, 1.0) * tint_strength"));
+        assert!(wgsl.contains("0.52"));
     }
 }

@@ -184,16 +184,16 @@ impl DamageVisualTier {
 
 pub fn team_color_rgb_for_slot(slot: u8) -> [f32; 3] {
     match slot % TEAM_COLOR_PALETTE_SLOTS {
-        0 => [0.78, 0.80, 0.84],
-        1 => [0.22, 0.56, 1.00],
-        2 => [0.98, 0.20, 0.18],
-        3 => [0.76, 0.24, 0.98],
-        4 => [0.98, 0.80, 0.16],
-        5 => [0.18, 0.88, 0.38],
-        6 => [0.16, 0.90, 0.94],
-        7 => [1.00, 0.48, 0.12],
-        8 => [0.96, 0.26, 0.70],
-        _ => [0.64, 0.84, 0.98],
+        0 => [0.76, 0.78, 0.82], // Neutral / Civilian Steel
+        1 => [0.06, 0.36, 1.00], // Allied Cobalt Blue
+        2 => [0.94, 0.05, 0.06], // Soviet Crimson Red
+        3 => [0.58, 0.07, 0.96], // Yuri Psi-Purple
+        4 => [1.00, 0.76, 0.04], // Gold / Sovereign Yellow
+        5 => [0.06, 0.80, 0.20], // Emerald Green
+        6 => [0.04, 0.82, 0.92], // Chrono Cyan
+        7 => [1.00, 0.36, 0.03], // Blaze Orange
+        8 => [0.94, 0.08, 0.56], // Comandante Pink / Magenta
+        _ => [0.42, 0.76, 1.00], // Sky Ice Blue
     }
 }
 
@@ -341,5 +341,24 @@ impl TeamDamageMaterialPalette {
 
     pub fn is_empty(&self) -> bool {
         self.entries.is_empty()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn ra2_faction_palette_slots_deliver_punchy_allied_blue_soviet_red_and_yuri_purple() {
+        let allied = team_color_rgb_for_slot(default_faction_slot("allies"));
+        let soviet = team_color_rgb_for_slot(default_faction_slot("soviet"));
+        let yuri = team_color_rgb_for_slot(default_faction_slot("yuri"));
+
+        // Allied Cobalt Blue: deep blue primary, crisp low red crosstalk
+        assert!(allied[2] >= 0.95 && allied[0] <= 0.12 && allied[2] > allied[1] * 2.0);
+        // Soviet Crimson Red: punchy red primary, non-pastel low green/blue crosstalk
+        assert!(soviet[0] >= 0.90 && soviet[1] <= 0.10 && soviet[2] <= 0.10);
+        // Yuri Psi-Purple: vibrant violet-magenta (strong blue + red, low green)
+        assert!(yuri[2] >= 0.90 && yuri[0] >= 0.50 && yuri[1] <= 0.12);
     }
 }
