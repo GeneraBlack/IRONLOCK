@@ -315,6 +315,31 @@
       },
       "type": "object"
     },
+    "PlayerColorDef": {
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "rgb": {
+          "items": {
+            "format": "float",
+            "type": "number"
+          },
+          "maxItems": 3,
+          "minItems": 3,
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "rgb"
+      ],
+      "type": "object"
+    },
     "SurvivalWaveDef": {
       "properties": {
         "count": {
@@ -412,6 +437,13 @@
     },
     "name": {
       "type": "string"
+    },
+    "player_colors": {
+      "default": [],
+      "items": {
+        "$ref": "#/definitions/PlayerColorDef"
+      },
+      "type": "array"
     },
     "rules": {
       "allOf": [

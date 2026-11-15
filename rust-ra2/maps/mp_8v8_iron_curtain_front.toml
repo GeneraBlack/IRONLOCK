@@ -1,0 +1,490 @@
+id = "mp_8v8_iron_curtain_front"
+name = "[8v8] Iron Curtain Front"
+width = 128
+height = 128
+tile_size = 2.0
+ore_regen_per_sec = 8.0
+mission_objective = "Command the West Coalition (Slots 1-8) or East Pact (Slots 9-16), seize the central gem plateau, neutral oil derricks, and hospitals, and crush enemy forces across the Iron Curtain."
+
+# Dedicated per-base ore fields (16) + contested mid-front expansion patches (4)
+ore_patches = [
+    { position = [20, 12], radius = 3, amount_per_tile = 1650 },
+    { position = [20, 44], radius = 3, amount_per_tile = 1650 },
+    { position = [20, 76], radius = 3, amount_per_tile = 1650 },
+    { position = [20, 108], radius = 3, amount_per_tile = 1650 },
+    { position = [41, 16], radius = 3, amount_per_tile = 1650 },
+    { position = [41, 48], radius = 3, amount_per_tile = 1650 },
+    { position = [41, 80], radius = 3, amount_per_tile = 1650 },
+    { position = [41, 112], radius = 3, amount_per_tile = 1650 },
+    { position = [107, 12], radius = 3, amount_per_tile = 1650 },
+    { position = [107, 44], radius = 3, amount_per_tile = 1650 },
+    { position = [107, 76], radius = 3, amount_per_tile = 1650 },
+    { position = [107, 108], radius = 3, amount_per_tile = 1650 },
+    { position = [86, 16], radius = 3, amount_per_tile = 1650 },
+    { position = [86, 48], radius = 3, amount_per_tile = 1650 },
+    { position = [86, 80], radius = 3, amount_per_tile = 1650 },
+    { position = [86, 112], radius = 3, amount_per_tile = 1650 },
+    { position = [46, 32], radius = 3, amount_per_tile = 1800 },
+    { position = [81, 32], radius = 3, amount_per_tile = 1800 },
+    { position = [46, 95], radius = 3, amount_per_tile = 1800 },
+    { position = [81, 95], radius = 3, amount_per_tile = 1800 },
+]
+
+# High-yield Central Gem Plateau (4) + North/South riverhead gem deposits (4)
+gem_patches = [
+    { position = [63, 49], radius = 3, amount_per_tile = 2600 },
+    { position = [64, 58], radius = 3, amount_per_tile = 2600 },
+    { position = [63, 69], radius = 3, amount_per_tile = 2600 },
+    { position = [64, 78], radius = 3, amount_per_tile = 2600 },
+    { position = [55, 20], radius = 2, amount_per_tile = 2300 },
+    { position = [72, 20], radius = 2, amount_per_tile = 2300 },
+    { position = [55, 107], radius = 2, amount_per_tile = 2300 },
+    { position = [72, 107], radius = 2, amount_per_tile = 2300 },
+]
+
+# Navigable Iron Curtain river splitting around the fortified Central Gem Island
+water_rects = [
+    { min = [61, 0], max = [66, 33] },
+    { min = [51, 34], max = [76, 36] },
+    { min = [51, 37], max = [54, 90] },
+    { min = [73, 37], max = [76, 90] },
+    { min = [51, 91], max = [76, 93] },
+    { min = [61, 94], max = [66, 127] },
+]
+
+# Eight 6-tile-wide highway & assault bridges across the Iron Curtain river
+bridge_rects = [
+    { min = [61, 12], max = [66, 17] },
+    { min = [61, 26], max = [66, 31] },
+    { min = [51, 46], max = [54, 51] },
+    { min = [51, 76], max = [54, 81] },
+    { min = [73, 46], max = [76, 51] },
+    { min = [73, 76], max = [76, 81] },
+    { min = [61, 96], max = [66, 101] },
+    { min = [61, 110], max = [66, 115] },
+]
+
+# Elevated Central Gem Plateau + symmetric West/East/North/South assault ramps
+elevation_rects = [
+    { min = [58, 42], max = [69, 85] },
+]
+
+ramp_rects = [
+    { min = [57, 46], max = [59, 51] },
+    { min = [57, 76], max = [59, 81] },
+    { min = [68, 46], max = [70, 51] },
+    { min = [68, 76], max = [70, 81] },
+    { min = [61, 41], max = [66, 43] },
+    { min = [61, 84], max = [66, 86] },
+]
+
+obstacles = [
+    { min = [47, 22], max = [48, 23] },
+    { min = [79, 22], max = [80, 23] },
+    { min = [47, 104], max = [48, 105] },
+    { min = [79, 104], max = [80, 105] },
+    { min = [56, 63], max = [57, 64] },
+    { min = [70, 63], max = [71, 64] },
+]
+
+# Garrisonable urban checkpoint blocks flanking the river crossings
+civilian_structures = [
+    { id = "ic_west_north_checkpoint", tile_pos = [48, 13], footprint = [2, 2], max_health = 750.0, cover_bonus = 0.45 },
+    { id = "ic_east_north_checkpoint", tile_pos = [78, 13], footprint = [2, 2], max_health = 750.0, cover_bonus = 0.45 },
+    { id = "ic_west_citadel_north", tile_pos = [48, 43], footprint = [2, 2], max_health = 800.0, cover_bonus = 0.45 },
+    { id = "ic_east_citadel_north", tile_pos = [78, 43], footprint = [2, 2], max_health = 800.0, cover_bonus = 0.45 },
+    { id = "ic_west_citadel_south", tile_pos = [48, 83], footprint = [2, 2], max_health = 800.0, cover_bonus = 0.45 },
+    { id = "ic_east_citadel_south", tile_pos = [78, 83], footprint = [2, 2], max_health = 800.0, cover_bonus = 0.45 },
+    { id = "ic_west_south_checkpoint", tile_pos = [48, 113], footprint = [2, 2], max_health = 750.0, cover_bonus = 0.45 },
+    { id = "ic_east_south_checkpoint", tile_pos = [78, 113], footprint = [2, 2], max_health = 750.0, cover_bonus = 0.45 },
+]
+
+capture_zones = [
+    { id = "iron_curtain_north_crossing", tile_pos = [63, 22], radius = 6.0, capture_time_secs = 10.0 },
+    { id = "iron_curtain_gem_citadel", tile_pos = [63, 63], radius = 7.0, capture_time_secs = 12.0 },
+    { id = "iron_curtain_south_crossing", tile_pos = [63, 105], radius = 6.0, capture_time_secs = 10.0 },
+]
+
+# Neutral tech objectives: 8 Oil Derricks, 2 Hospitals, 2 Machine Shops, 2 Airports, 2 Secret Labs
+preplaced_entities = [
+    { player_id = 0, building_id = "tech_oil_derrick", tile_pos = [55, 6] },
+    { player_id = 0, building_id = "tech_oil_derrick", tile_pos = [71, 6] },
+    { player_id = 0, building_id = "tech_oil_derrick", tile_pos = [55, 120] },
+    { player_id = 0, building_id = "tech_oil_derrick", tile_pos = [71, 120] },
+    { player_id = 0, building_id = "tech_oil_derrick", tile_pos = [46, 56] },
+    { player_id = 0, building_id = "tech_oil_derrick", tile_pos = [80, 56] },
+    { player_id = 0, building_id = "tech_oil_derrick", tile_pos = [46, 70] },
+    { player_id = 0, building_id = "tech_oil_derrick", tile_pos = [80, 70] },
+    { player_id = 0, building_id = "tech_hospital", tile_pos = [45, 62] },
+    { player_id = 0, building_id = "tech_hospital", tile_pos = [79, 62] },
+    { player_id = 0, building_id = "tech_machine_shop", tile_pos = [54, 27] },
+    { player_id = 0, building_id = "tech_machine_shop", tile_pos = [71, 27] },
+    { player_id = 0, building_id = "tech_airport", tile_pos = [54, 98] },
+    { player_id = 0, building_id = "tech_airport", tile_pos = [71, 98] },
+    { player_id = 0, building_id = "tech_secret_lab", tile_pos = [62, 38] },
+    { player_id = 0, building_id = "tech_secret_lab", tile_pos = [63, 87] },
+]
+
+# Temperate woodland clusters, urban avenue streetlights, and industrial fuel barrels
+props = [
+    { kind = "tree", tile_pos = [25, 28] },
+    { kind = "tree", tile_pos = [26, 29] },
+    { kind = "tree", tile_pos = [25, 60] },
+    { kind = "tree", tile_pos = [26, 61] },
+    { kind = "tree", tile_pos = [25, 92] },
+    { kind = "tree", tile_pos = [26, 93] },
+    { kind = "tree", tile_pos = [102, 28] },
+    { kind = "tree", tile_pos = [101, 29] },
+    { kind = "tree", tile_pos = [102, 60] },
+    { kind = "tree", tile_pos = [101, 61] },
+    { kind = "tree", tile_pos = [102, 92] },
+    { kind = "tree", tile_pos = [101, 93] },
+    { kind = "streetlight", tile_pos = [59, 12] },
+    { kind = "streetlight", tile_pos = [68, 12] },
+    { kind = "streetlight", tile_pos = [59, 26] },
+    { kind = "streetlight", tile_pos = [68, 26] },
+    { kind = "streetlight", tile_pos = [50, 46] },
+    { kind = "streetlight", tile_pos = [77, 46] },
+    { kind = "streetlight", tile_pos = [50, 81] },
+    { kind = "streetlight", tile_pos = [77, 81] },
+    { kind = "streetlight", tile_pos = [59, 101] },
+    { kind = "streetlight", tile_pos = [68, 101] },
+    { kind = "streetlight", tile_pos = [59, 115] },
+    { kind = "streetlight", tile_pos = [68, 115] },
+    { kind = "explosive_barrel", tile_pos = [54, 6] },
+    { kind = "explosive_barrel", tile_pos = [73, 6] },
+    { kind = "explosive_barrel", tile_pos = [45, 56] },
+    { kind = "explosive_barrel", tile_pos = [82, 56] },
+    { kind = "explosive_barrel", tile_pos = [45, 71] },
+    { kind = "explosive_barrel", tile_pos = [82, 71] },
+    { kind = "explosive_barrel", tile_pos = [54, 120] },
+    { kind = "explosive_barrel", tile_pos = [73, 120] },
+]
+
+# ==============================================================================
+# WEST COALITION SPAWNS (Slots 1..8, team_id = 1)
+# ==============================================================================
+
+[[spawns]]
+player_id = 1
+faction = "allies"
+sub_faction = "usa"
+base_tile = [9, 10]
+team_id = 1
+initial_buildings = [
+    { building_id = "allied_conyard", tile_pos = [9, 10] },
+    { building_id = "allied_power_plant", tile_pos = [5, 10] },
+    { building_id = "allied_refinery", tile_pos = [13, 10] },
+    { building_id = "allied_barracks", tile_pos = [9, 14] },
+    { building_id = "allied_war_factory", tile_pos = [13, 14] },
+]
+initial_units = [
+    { unit_id = "chrono_miner", tile_pos = [17, 11] },
+    { unit_id = "grizzly_tank", tile_pos = [17, 15] },
+    { unit_id = "allied_gi", tile_pos = [11, 15] },
+    { unit_id = "allied_gi", tile_pos = [11, 16] },
+]
+
+[[spawns]]
+player_id = 2
+faction = "allies"
+sub_faction = "great_britain"
+base_tile = [9, 42]
+team_id = 1
+initial_buildings = [
+    { building_id = "allied_conyard", tile_pos = [9, 42] },
+    { building_id = "allied_power_plant", tile_pos = [5, 42] },
+    { building_id = "allied_refinery", tile_pos = [13, 42] },
+    { building_id = "allied_barracks", tile_pos = [9, 46] },
+    { building_id = "allied_war_factory", tile_pos = [13, 46] },
+]
+initial_units = [
+    { unit_id = "chrono_miner", tile_pos = [17, 43] },
+    { unit_id = "grizzly_tank", tile_pos = [17, 47] },
+    { unit_id = "allied_gi", tile_pos = [11, 47] },
+    { unit_id = "allied_gi", tile_pos = [11, 48] },
+]
+
+[[spawns]]
+player_id = 3
+faction = "allies"
+sub_faction = "france"
+base_tile = [9, 74]
+team_id = 1
+initial_buildings = [
+    { building_id = "allied_conyard", tile_pos = [9, 74] },
+    { building_id = "allied_power_plant", tile_pos = [5, 74] },
+    { building_id = "allied_refinery", tile_pos = [13, 74] },
+    { building_id = "allied_barracks", tile_pos = [9, 78] },
+    { building_id = "allied_war_factory", tile_pos = [13, 78] },
+]
+initial_units = [
+    { unit_id = "chrono_miner", tile_pos = [17, 75] },
+    { unit_id = "grizzly_tank", tile_pos = [17, 79] },
+    { unit_id = "allied_gi", tile_pos = [11, 79] },
+    { unit_id = "allied_gi", tile_pos = [11, 80] },
+]
+
+[[spawns]]
+player_id = 4
+faction = "allies"
+sub_faction = "germany"
+base_tile = [9, 106]
+team_id = 1
+initial_buildings = [
+    { building_id = "allied_conyard", tile_pos = [9, 106] },
+    { building_id = "allied_power_plant", tile_pos = [5, 106] },
+    { building_id = "allied_refinery", tile_pos = [13, 106] },
+    { building_id = "allied_barracks", tile_pos = [9, 110] },
+    { building_id = "allied_war_factory", tile_pos = [13, 110] },
+]
+initial_units = [
+    { unit_id = "chrono_miner", tile_pos = [17, 107] },
+    { unit_id = "grizzly_tank", tile_pos = [17, 111] },
+    { unit_id = "allied_gi", tile_pos = [11, 111] },
+    { unit_id = "allied_gi", tile_pos = [11, 112] },
+]
+
+[[spawns]]
+player_id = 5
+faction = "allies"
+sub_faction = "korea"
+base_tile = [30, 14]
+team_id = 1
+initial_buildings = [
+    { building_id = "allied_conyard", tile_pos = [30, 14] },
+    { building_id = "allied_power_plant", tile_pos = [26, 14] },
+    { building_id = "allied_refinery", tile_pos = [34, 14] },
+    { building_id = "allied_barracks", tile_pos = [30, 18] },
+    { building_id = "allied_war_factory", tile_pos = [34, 18] },
+]
+initial_units = [
+    { unit_id = "chrono_miner", tile_pos = [38, 15] },
+    { unit_id = "grizzly_tank", tile_pos = [38, 19] },
+    { unit_id = "allied_gi", tile_pos = [32, 19] },
+    { unit_id = "allied_gi", tile_pos = [32, 20] },
+]
+
+[[spawns]]
+player_id = 6
+faction = "allies"
+sub_faction = "usa"
+base_tile = [30, 46]
+team_id = 1
+initial_buildings = [
+    { building_id = "allied_conyard", tile_pos = [30, 46] },
+    { building_id = "allied_power_plant", tile_pos = [26, 46] },
+    { building_id = "allied_refinery", tile_pos = [34, 46] },
+    { building_id = "allied_barracks", tile_pos = [30, 50] },
+    { building_id = "allied_war_factory", tile_pos = [34, 50] },
+]
+initial_units = [
+    { unit_id = "chrono_miner", tile_pos = [38, 47] },
+    { unit_id = "grizzly_tank", tile_pos = [38, 51] },
+    { unit_id = "allied_gi", tile_pos = [32, 51] },
+    { unit_id = "allied_gi", tile_pos = [32, 52] },
+]
+
+[[spawns]]
+player_id = 7
+faction = "allies"
+sub_faction = "great_britain"
+base_tile = [30, 78]
+team_id = 1
+initial_buildings = [
+    { building_id = "allied_conyard", tile_pos = [30, 78] },
+    { building_id = "allied_power_plant", tile_pos = [26, 78] },
+    { building_id = "allied_refinery", tile_pos = [34, 78] },
+    { building_id = "allied_barracks", tile_pos = [30, 82] },
+    { building_id = "allied_war_factory", tile_pos = [34, 82] },
+]
+initial_units = [
+    { unit_id = "chrono_miner", tile_pos = [38, 79] },
+    { unit_id = "grizzly_tank", tile_pos = [38, 83] },
+    { unit_id = "allied_gi", tile_pos = [32, 83] },
+    { unit_id = "allied_gi", tile_pos = [32, 84] },
+]
+
+[[spawns]]
+player_id = 8
+faction = "allies"
+sub_faction = "france"
+base_tile = [30, 110]
+team_id = 1
+initial_buildings = [
+    { building_id = "allied_conyard", tile_pos = [30, 110] },
+    { building_id = "allied_power_plant", tile_pos = [26, 110] },
+    { building_id = "allied_refinery", tile_pos = [34, 110] },
+    { building_id = "allied_barracks", tile_pos = [30, 114] },
+    { building_id = "allied_war_factory", tile_pos = [34, 114] },
+]
+initial_units = [
+    { unit_id = "chrono_miner", tile_pos = [38, 111] },
+    { unit_id = "grizzly_tank", tile_pos = [38, 115] },
+    { unit_id = "allied_gi", tile_pos = [32, 115] },
+    { unit_id = "allied_gi", tile_pos = [32, 116] },
+]
+
+# ==============================================================================
+# EAST PACT SPAWNS (Slots 9..16, team_id = 2)
+# ==============================================================================
+
+[[spawns]]
+player_id = 9
+faction = "soviets"
+sub_faction = "russia"
+base_tile = [116, 10]
+team_id = 2
+initial_buildings = [
+    { building_id = "soviet_conyard", tile_pos = [116, 10] },
+    { building_id = "soviet_tesla_reactor", tile_pos = [120, 10] },
+    { building_id = "soviet_refinery", tile_pos = [112, 10] },
+    { building_id = "soviet_barracks", tile_pos = [117, 14] },
+    { building_id = "soviet_war_factory", tile_pos = [112, 14] },
+]
+initial_units = [
+    { unit_id = "war_miner", tile_pos = [110, 11] },
+    { unit_id = "rhino_tank", tile_pos = [110, 15] },
+    { unit_id = "soviet_conscript", tile_pos = [115, 15] },
+    { unit_id = "soviet_conscript", tile_pos = [115, 16] },
+]
+
+[[spawns]]
+player_id = 10
+faction = "soviets"
+sub_faction = "iraq"
+base_tile = [116, 42]
+team_id = 2
+initial_buildings = [
+    { building_id = "soviet_conyard", tile_pos = [116, 42] },
+    { building_id = "soviet_tesla_reactor", tile_pos = [120, 42] },
+    { building_id = "soviet_refinery", tile_pos = [112, 42] },
+    { building_id = "soviet_barracks", tile_pos = [117, 46] },
+    { building_id = "soviet_war_factory", tile_pos = [112, 46] },
+]
+initial_units = [
+    { unit_id = "war_miner", tile_pos = [110, 43] },
+    { unit_id = "rhino_tank", tile_pos = [110, 47] },
+    { unit_id = "soviet_conscript", tile_pos = [115, 47] },
+    { unit_id = "soviet_conscript", tile_pos = [115, 48] },
+]
+
+[[spawns]]
+player_id = 11
+faction = "soviets"
+sub_faction = "libya"
+base_tile = [116, 74]
+team_id = 2
+initial_buildings = [
+    { building_id = "soviet_conyard", tile_pos = [116, 74] },
+    { building_id = "soviet_tesla_reactor", tile_pos = [120, 74] },
+    { building_id = "soviet_refinery", tile_pos = [112, 74] },
+    { building_id = "soviet_barracks", tile_pos = [117, 78] },
+    { building_id = "soviet_war_factory", tile_pos = [112, 78] },
+]
+initial_units = [
+    { unit_id = "war_miner", tile_pos = [110, 75] },
+    { unit_id = "rhino_tank", tile_pos = [110, 79] },
+    { unit_id = "soviet_conscript", tile_pos = [115, 79] },
+    { unit_id = "soviet_conscript", tile_pos = [115, 80] },
+]
+
+[[spawns]]
+player_id = 12
+faction = "soviets"
+sub_faction = "cuba"
+base_tile = [116, 106]
+team_id = 2
+initial_buildings = [
+    { building_id = "soviet_conyard", tile_pos = [116, 106] },
+    { building_id = "soviet_tesla_reactor", tile_pos = [120, 106] },
+    { building_id = "soviet_refinery", tile_pos = [112, 106] },
+    { building_id = "soviet_barracks", tile_pos = [117, 110] },
+    { building_id = "soviet_war_factory", tile_pos = [112, 110] },
+]
+initial_units = [
+    { unit_id = "war_miner", tile_pos = [110, 107] },
+    { unit_id = "rhino_tank", tile_pos = [110, 111] },
+    { unit_id = "soviet_conscript", tile_pos = [115, 111] },
+    { unit_id = "soviet_conscript", tile_pos = [115, 112] },
+]
+
+[[spawns]]
+player_id = 13
+faction = "yuri"
+sub_faction = "yuri"
+base_tile = [95, 14]
+team_id = 2
+initial_buildings = [
+    { building_id = "yuri_conyard", tile_pos = [95, 14] },
+    { building_id = "yuri_bio_reactor", tile_pos = [99, 14] },
+    { building_id = "yuri_slave_refinery", tile_pos = [91, 14] },
+    { building_id = "yuri_barracks", tile_pos = [96, 18] },
+    { building_id = "yuri_war_factory", tile_pos = [91, 18] },
+]
+initial_units = [
+    { unit_id = "yuri_slave_miner", tile_pos = [89, 15] },
+    { unit_id = "lasher_tank", tile_pos = [89, 19] },
+    { unit_id = "yuri_initiate", tile_pos = [94, 19] },
+    { unit_id = "yuri_initiate", tile_pos = [94, 20] },
+]
+
+[[spawns]]
+player_id = 14
+faction = "soviets"
+sub_faction = "russia"
+base_tile = [95, 46]
+team_id = 2
+initial_buildings = [
+    { building_id = "soviet_conyard", tile_pos = [95, 46] },
+    { building_id = "soviet_tesla_reactor", tile_pos = [99, 46] },
+    { building_id = "soviet_refinery", tile_pos = [91, 46] },
+    { building_id = "soviet_barracks", tile_pos = [96, 50] },
+    { building_id = "soviet_war_factory", tile_pos = [91, 50] },
+]
+initial_units = [
+    { unit_id = "war_miner", tile_pos = [89, 47] },
+    { unit_id = "rhino_tank", tile_pos = [89, 51] },
+    { unit_id = "soviet_conscript", tile_pos = [94, 51] },
+    { unit_id = "soviet_conscript", tile_pos = [94, 52] },
+]
+
+[[spawns]]
+player_id = 15
+faction = "yuri"
+sub_faction = "yuri"
+base_tile = [95, 78]
+team_id = 2
+initial_buildings = [
+    { building_id = "yuri_conyard", tile_pos = [95, 78] },
+    { building_id = "yuri_bio_reactor", tile_pos = [99, 78] },
+    { building_id = "yuri_slave_refinery", tile_pos = [91, 78] },
+    { building_id = "yuri_barracks", tile_pos = [96, 82] },
+    { building_id = "yuri_war_factory", tile_pos = [91, 82] },
+]
+initial_units = [
+    { unit_id = "yuri_slave_miner", tile_pos = [89, 79] },
+    { unit_id = "lasher_tank", tile_pos = [89, 83] },
+    { unit_id = "yuri_initiate", tile_pos = [94, 83] },
+    { unit_id = "yuri_initiate", tile_pos = [94, 84] },
+]
+
+[[spawns]]
+player_id = 16
+faction = "soviets"
+sub_faction = "iraq"
+base_tile = [95, 110]
+team_id = 2
+initial_buildings = [
+    { building_id = "soviet_conyard", tile_pos = [95, 110] },
+    { building_id = "soviet_tesla_reactor", tile_pos = [99, 110] },
+    { building_id = "soviet_refinery", tile_pos = [91, 110] },
+    { building_id = "soviet_barracks", tile_pos = [96, 114] },
+    { building_id = "soviet_war_factory", tile_pos = [91, 114] },
+]
+initial_units = [
+    { unit_id = "war_miner", tile_pos = [89, 111] },
+    { unit_id = "rhino_tank", tile_pos = [89, 115] },
+    { unit_id = "soviet_conscript", tile_pos = [94, 115] },
+    { unit_id = "soviet_conscript", tile_pos = [94, 116] },
+]
