@@ -14,7 +14,9 @@ Coordinate Convention:
 
 from __future__ import annotations
 
-from typing import Tuple
+import json
+import os
+from typing import Any, Dict, Tuple
 
 # ==============================================================================
 # Procedural PBR Material Identifiers (used by `materials.py` & `kitbash_primitives.py`)
@@ -51,6 +53,44 @@ MAT_GLOW_TESLA_BLUE = "RA2_Glow_Tesla_Blue"
 MAT_GLOW_HEADLIGHT = "RA2_Glow_Headlight"
 MAT_GLOW_CRIMSON = "RA2_Glow_Crimson"
 
+# Wave-2 Shared Material Extensions (`is_team=False`, `Alpha=255`)
+# 1. Yuri & Psychic
+MAT_YURI_PURPLE_STEEL = "RA2_Yuri_Purple_Steel"
+MAT_YURI_BRONZE = "RA2_Yuri_Bronze"
+MAT_BIO_SLIME = "RA2_Bio_Slime"
+MAT_GLOW_PSYCHIC = "RA2_Glow_Psychic"
+MAT_GLOW_BIO_GREEN = "RA2_Glow_Bio_Green"
+
+# 2. Energy & Crystals
+MAT_GLOW_RAD_GREEN = "RA2_Glow_Rad_Green"
+MAT_GLOW_CHRONO_BLUE = "RA2_Glow_Chrono_Blue"
+MAT_PRISM_CRYSTAL = "RA2_Prism_Crystal"
+
+# 3. Landmarks, Terrain & Props
+MAT_WHITE_MARBLE = "RA2_White_Marble"
+MAT_SANDSTONE = "RA2_Sandstone"
+MAT_VERDIGRIS = "RA2_Verdigris_Copper"
+MAT_WOOD = "RA2_Weathered_Wood"
+MAT_FOLIAGE_GREEN = "RA2_Foliage_Green"
+MAT_FOLIAGE_DARK = "RA2_Foliage_Dark"
+MAT_ASPHALT = "RA2_Asphalt_Tarmac"
+MAT_ORE_GOLD = "RA2_Ore_Gold"
+MAT_GEMS_MAGENTA = "RA2_Gems_Magenta"
+
+# 4. Infantry, Cloth, Skin & Organics
+MAT_CLOTH_KHAKI = "RA2_Cloth_Khaki"
+MAT_CLOTH_OLIVE = "RA2_Cloth_Olive"
+MAT_CLOTH_NAVY = "RA2_Cloth_Navy"
+MAT_CLOTH_CRIMSON = "RA2_Cloth_Crimson"
+MAT_CLOTH_WHITE = "RA2_Cloth_White"
+MAT_LEATHER_DARK = "RA2_Leather_Dark"
+MAT_SKIN_LIGHT = "RA2_Skin_Light"
+MAT_SKIN_TAN = "RA2_Skin_Tan"
+MAT_FUR_SHEPHERD = "RA2_Fur_Shepherd"
+MAT_FUR_HUSKY = "RA2_Fur_Husky"
+MAT_DOLPHIN_SKIN = "RA2_Dolphin_Skin"
+MAT_SQUID_FLESH = "RA2_Squid_Flesh"
+
 TEAM_MATERIAL_NAMES = frozenset(
     {
         MAT_TEAM_LIGHT,
@@ -81,3 +121,10 @@ def footprint_world_size(fw: int, fh: int) -> Tuple[float, float]:
 def g2b_pt(x: float, y_up: float, z_fwd: float) -> Tuple[float, float, float]:
     """Maps Game/glTF point `(x, y_up, z_fwd)` to Blender Z-up `(bx, by, bz) = (x, -z_fwd, y_up)`."""
     return (float(x), -float(z_fwd), float(y_up))
+
+
+def load_wave2_manifest() -> Dict[str, Any]:
+    """Loads the read-only canonical 187-asset `wave2_manifest.json` partition table."""
+    manifest_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "wave2_manifest.json")
+    with open(manifest_path, "r", encoding="utf-8") as f:
+        return json.load(f)

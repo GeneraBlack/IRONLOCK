@@ -9,7 +9,6 @@ Pointiness curvature wear) with instant AOV switching for `< 1.5s` GPU baking.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 from typing import Dict, Tuple
 
 import bpy
@@ -41,20 +40,7 @@ from . import (
     MAT_TREADS,
     MAT_YELLOW_PAINT,
 )
-
-
-@dataclass(frozen=True)
-class MatRecipe:
-    name: str
-    base_rgb: Tuple[float, float, float]  # Linear space
-    alt_rgb: Tuple[float, float, float]   # Secondary procedural variation color (Linear)
-    roughness: float
-    metallic: float
-    is_team: bool = False
-    pattern: str = "panel"  # panel, ribbed, brick, concrete, treads, copper, hazard, smooth, glow
-    bump_strength: float = 0.42
-    bevel_radius: float = 0.015
-    emissive_rgb: Tuple[float, float, float] = (0.0, 0.0, 0.0)
+from .materials_extra import WAVE2_EXTRA_RECIPES, MatRecipe
 
 
 MATERIAL_RECIPES: Dict[str, MatRecipe] = {
@@ -143,6 +129,7 @@ MATERIAL_RECIPES: Dict[str, MatRecipe] = {
         MAT_GLOW_CRIMSON, (0.95, 0.10, 0.08), (1.0, 0.32, 0.22), roughness=0.18, metallic=0.08, pattern="glow", bump_strength=0.08,
         emissive_rgb=(1.0, 0.14, 0.10)
     ),
+    **WAVE2_EXTRA_RECIPES,
 }
 
 
@@ -313,6 +300,67 @@ def build_procedural_material(recipe: MatRecipe) -> bpy.types.Material:
         else:
             pat_out = wave.outputs["Fac"]
             height_out = wave.outputs["Fac"]
+
+    elif recipe.pattern in ("wood", "marble"):
+        wave = nt.nodes.new("ShaderNodeTexWave")
+        wave.location = (-620, 40)
+        wave.wave_type = "BANDS"
+        if recipe.pattern == "wood":
+            wave.bands_direction = "Z"
+            wave.inputs["Scale"].default_value = 15.0
+            wave.inputs["Distortion"].default_value = 3.8
+            wave.inputs["Detail"].default_value = 4.0
+        else:
+            wave.bands_direction = "DIAGONAL"
+            wave.inputs["Scale"].default_value = 2.8
+            wave.inputs["Distortion"].default_value = 5.4
+            wave.inputs["Detail"].default_value = 6.0
+        nt.links.new(geom.outputs["Position"], wave.inputs["Vector"])
+        pat_out = wave.outputs["Fac"]
+        height_out = wave.outputs["Fac"]
+
+    elif recipe.pattern == "cloth":
+        wx = nt.nodes.new("ShaderNodeTexWave")
+        wx.wave_type = "BANDS"
+        wx.bands_direction = "X"
+        wx.inputs["Scale"].default_value = 38.0
+        nt.links.new(geom.outputs["Position"], wx.inputs["Vector"])
+        wz = nt.nodes.new("ShaderNodeTexWave")
+        wz.wave_type = "BANDS"
+        wz.bands_direction = "Z"
+        wz.inputs["Scale"].default_value = 38.0
+        nt.links.new(geom.outputs["Position"], wz.inputs["Vector"])
+        weave = nt.nodes.new("ShaderNodeMath")
+        weave.operation = "MULTIPLY_ADD"
+        weave.inputs[1].default_value = 0.5
+        nt.links.new(wx.outputs["Fac"], weave.inputs[0])
+        half_z = nt.nodes.new("ShaderNodeMath")
+        half_z.operation = "MULTIPLY"
+        half_z.inputs[1].default_value = 0.5
+        nt.links.new(wz.outputs["Fac"], half_z.inputs[0])
+        nt.links.new(half_z.outputs["Value"], weave.inputs[2])
+        pat_out = noise_fine.outputs["Fac"]
+        height_out = weave.outputs["Value"]
+
+    elif recipe.pattern in ("crystal", "organic"):
+        ncell = nt.nodes.new("ShaderNodeTexNoise")
+        ncell.location = (-620, 40)
+        if recipe.pattern == "crystal":
+            ncell.inputs["Scale"].default_value = 11.5
+            ncell.inputs["Detail"].default_value = 7.0
+            ncell.inputs["Roughness"].default_value = 0.80
+        else:
+            ncell.inputs["Scale"].default_value = 14.5
+            ncell.inputs["Detail"].default_value = 5.5
+            ncell.inputs["Roughness"].default_value = 0.68
+        nt.links.new(geom.outputs["Position"], ncell.inputs["Vector"])
+        sharp = nt.nodes.new("ShaderNodeMapRange")
+        sharp.clamp = True
+        sharp.inputs["From Min"].default_value = 0.30 if recipe.pattern == "crystal" else 0.22
+        sharp.inputs["From Max"].default_value = 0.70 if recipe.pattern == "crystal" else 0.78
+        nt.links.new(ncell.outputs["Fac"], sharp.inputs["Value"])
+        pat_out = sharp.outputs["Result"]
+        height_out = sharp.outputs["Result"]
 
     # Mix base_rgb and alt_rgb via `pat_out`
     mix_col = nt.nodes.new("ShaderNodeMix")

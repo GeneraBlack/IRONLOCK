@@ -17,11 +17,12 @@ from __future__ import annotations
 
 import json
 import struct
-from dataclasses import dataclass
-from typing import Dict, List, Optional, Tuple
+from dataclasses import dataclass, field
+from typing import Dict, List, Optional, Sequence, Tuple
 
 import numpy as np
 
+from .animation_clips import AnimationClipSpec, inject_animations_into_gltf, verify_gltf_animations
 from .png_io import decode_png_rgba
 
 GLTF_MAGIC = 0x46546C67
@@ -56,6 +57,7 @@ class GlbVerificationSummary:
     rough_min_max: Tuple[int, int]
     metal_min_max: Tuple[int, int]
     team_alpha0_pct: float
+    animation_clips: Tuple[str, ...] = field(default_factory=tuple)
 
 
 def parse_glb(raw: bytes) -> Tuple[dict, bytes]:
@@ -203,13 +205,16 @@ def inject_pbr_and_finalize_glb(
     out_glb_path: str,
     payload: BakedTexturesPayload,
     max_lod0_verts: Optional[int] = None,
+    animations: Optional[Sequence[AnimationClipSpec]] = None,
 ) -> GlbVerificationSummary:
-    """Injects the 4 lossless PNG textures into `raw_glb_path`, normalizes hierarchy, and writes `out_glb_path`."""
+    """Injects the 4 lossless PNG textures (and optional glTF animations) into `raw_glb_path`, normalizes hierarchy, and writes `out_glb_path`."""
     gltf, old_bin = parse_glb(open(raw_glb_path, "rb").read())
     bin_buf = bytearray(old_bin)
 
     _reorder_hull_first(gltf)
     _ground_lod0_at_zero(gltf, bin_buf)
+    if animations:
+        inject_animations_into_gltf(gltf, bin_buf, animations)
 
     def add_image_view(png_bytes: bytes, img_name: str) -> int:
         while len(bin_buf) % 4 != 0:
@@ -403,6 +408,7 @@ def verify_baked_glb(glb_path: str, max_lod0_verts: Optional[int] = None) -> Glb
     assert 0 < lod0_v <= budget, f"{glb_path}: LOD0={lod0_v} exceeds budget (<={budget})"
     assert lod1_v > 0, f"{glb_path}: LOD1==0"
     assert abs(float(wmin[1])) < 0.001, f"{glb_path}: min_y={wmin[1]:.5f} != 0.0"
+    anim_names = verify_gltf_animations(gltf, bin_chunk, glb_path=glb_path)
 
     return GlbVerificationSummary(
         glb_path=glb_path,
@@ -417,4 +423,5 @@ def verify_baked_glb(glb_path: str, max_lod0_verts: Optional[int] = None) -> Glb
         rough_min_max=(int(rough_ch.min()), int(rough_ch.max())),
         metal_min_max=(int(metal_ch.min()), int(metal_ch.max())),
         team_alpha0_pct=round(100.0 * float(np.count_nonzero(a0_mask)) / float(tw * th), 1),
+        animation_clips=tuple(anim_names),
     )

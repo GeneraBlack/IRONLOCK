@@ -18,6 +18,8 @@ npm-debug.log*
 **/saves/
 /dist/
 
-# OS metadata
+# OS & Python bytecode metadata
 .DS_Store
 Thumbs.db
+__pycache__/
+*.py[cod]

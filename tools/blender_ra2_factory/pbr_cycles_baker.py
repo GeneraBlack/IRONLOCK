@@ -12,13 +12,14 @@ from __future__ import annotations
 
 import os
 import tempfile
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Sequence, Tuple
 
 import bmesh
 import bpy
 import numpy as np
 
 from . import is_team_material
+from .animation_clips import AnimationClipSpec
 from .glb_postprocess import BakedTexturesPayload, GlbVerificationSummary, inject_pbr_and_finalize_glb
 from .kitbash_primitives import apply_crisp_hard_surface_normals
 from .materials import attach_bake_image_target, set_library_bake_mode
@@ -498,16 +499,20 @@ def bake_and_export_ra2_glb(
     lod1_ratio: float = 0.25,
     emissive_factor: Tuple[float, float, float] = (1.8, 1.8, 1.8),
     is_unit: Optional[bool] = None,
+    animations: Optional[Sequence[AnimationClipSpec]] = None,
 ) -> GlbVerificationSummary:
     """
     End-to-end Blender 5.3 + Cycles HIP GPU bake -> LOD1 generation -> glTF 2.0 export ->
-    lossless PNG injection -> strict verification!
+    lossless PNG & optional grounded-rest animation injection -> strict verification!
     """
     os.makedirs(os.path.dirname(os.path.abspath(out_glb_path)), exist_ok=True)
     resolved_is_unit = (
         bool(is_unit)
         if is_unit is not None
-        else any(o.name in ("Turret", "Barrel") for o in mesh_objs)
+        else (
+            bool(animations)
+            or any(o.name in ("Turret", "Barrel", "Torso", "LeftLeg", "FrontLeftLeg") for o in mesh_objs)
+        )
     )
     payload = bake_cycles_pbr_maps(
         mesh_objs=mesh_objs,
@@ -533,7 +538,13 @@ def bake_and_export_ra2_glb(
         export_apply=True,
     )
     max_verts = 5800 if resolved_is_unit else 11800
-    summary = inject_pbr_and_finalize_glb(raw_glb, out_glb_path, payload, max_lod0_verts=max_verts)
+    summary = inject_pbr_and_finalize_glb(
+        raw_glb,
+        out_glb_path,
+        payload,
+        max_lod0_verts=max_verts,
+        animations=animations,
+    )
     try:
         os.remove(raw_glb)
     except OSError:

@@ -1,0 +1,4137 @@
+{
+  "schema_version": 1,
+  "total_assets": 187,
+  "bucket_order": [
+    "pilot_6",
+    "bld_allied_soviet",
+    "bld_yuri_landmarks",
+    "veh_ground",
+    "veh_air_naval",
+    "infantry_3d"
+  ],
+  "bucket_counts": {
+    "pilot_6": 6,
+    "bld_allied_soviet": 31,
+    "bld_yuri_landmarks": 56,
+    "veh_ground": 29,
+    "veh_air_naval": 24,
+    "infantry_3d": 41
+  },
+  "assets": [
+    {
+      "rel_path": "aegis_cruiser.glb",
+      "stem": "aegis_cruiser",
+      "bucket": "veh_air_naval",
+      "is_unit": true,
+      "tex_size": 1024,
+      "footprint": null,
+      "faction": "allies",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Turret"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Muzzle_02",
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "air_force_chapel.glb",
+      "stem": "air_force_chapel",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        4,
+        3
+      ],
+      "faction": "shared",
+      "team_color_tint": false,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "aircraft_carrier.glb",
+      "stem": "aircraft_carrier",
+      "bucket": "veh_air_naval",
+      "is_unit": true,
+      "tex_size": 1024,
+      "footprint": null,
+      "faction": "allies",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "alcatraz_prison.glb",
+      "stem": "alcatraz_prison",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        4,
+        4
+      ],
+      "faction": "shared",
+      "team_color_tint": false,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "allied_airforce_command.glb",
+      "stem": "allied_airforce_command",
+      "bucket": "bld_allied_soviet",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        3,
+        2
+      ],
+      "faction": "allies",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Rotor"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "allied_attack_dog.glb",
+      "stem": "allied_attack_dog",
+      "bucket": "infantry_3d",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "allies",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Torso",
+        "Head",
+        "WeaponArm",
+        "LeftLeg",
+        "RightLeg"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": [
+        "Idle",
+        "Walk",
+        "Prone",
+        "Attack",
+        "Die"
+      ]
+    },
+    {
+      "rel_path": "allied_barracks.glb",
+      "stem": "allied_barracks",
+      "bucket": "bld_allied_soviet",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        2,
+        2
+      ],
+      "faction": "allies",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "allied_battle_lab.glb",
+      "stem": "allied_battle_lab",
+      "bucket": "bld_allied_soviet",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        2,
+        2
+      ],
+      "faction": "allies",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Rotor"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "allied_chronosphere.glb",
+      "stem": "allied_chronosphere",
+      "bucket": "bld_allied_soviet",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        3,
+        3
+      ],
+      "faction": "allies",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "allied_conyard.glb",
+      "stem": "allied_conyard",
+      "bucket": "pilot_6",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        3,
+        3
+      ],
+      "faction": "allies",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01",
+        "Exhaust_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "allied_destroyer.glb",
+      "stem": "allied_destroyer",
+      "bucket": "veh_air_naval",
+      "is_unit": true,
+      "tex_size": 1024,
+      "footprint": null,
+      "faction": "allies",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Turret",
+        "Barrel"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "allied_engineer.glb",
+      "stem": "allied_engineer",
+      "bucket": "infantry_3d",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "allies",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Torso",
+        "Head",
+        "WeaponArm",
+        "LeftLeg",
+        "RightLeg"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": [
+        "Idle",
+        "Walk",
+        "Prone",
+        "Attack",
+        "Die"
+      ]
+    },
+    {
+      "rel_path": "allied_gap_generator.glb",
+      "stem": "allied_gap_generator",
+      "bucket": "bld_allied_soviet",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        1,
+        1
+      ],
+      "faction": "allies",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "allied_gi.glb",
+      "stem": "allied_gi",
+      "bucket": "infantry_3d",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "allies",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Torso",
+        "Head",
+        "WeaponArm",
+        "LeftLeg",
+        "RightLeg"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": [
+        "Idle",
+        "Walk",
+        "Prone",
+        "Attack",
+        "Die"
+      ]
+    },
+    {
+      "rel_path": "allied_grand_cannon.glb",
+      "stem": "allied_grand_cannon",
+      "bucket": "bld_allied_soviet",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        2,
+        2
+      ],
+      "faction": "allies",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Turret",
+        "Barrel"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "allied_infantry.glb",
+      "stem": "allied_infantry",
+      "bucket": "infantry_3d",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "allies",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Torso",
+        "Head",
+        "WeaponArm",
+        "LeftLeg",
+        "RightLeg"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": [
+        "Idle",
+        "Walk",
+        "Prone",
+        "Attack",
+        "Die"
+      ]
+    },
+    {
+      "rel_path": "allied_lcv.glb",
+      "stem": "allied_lcv",
+      "bucket": "veh_ground",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "allies",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "allied_mcv.glb",
+      "stem": "allied_mcv",
+      "bucket": "veh_ground",
+      "is_unit": true,
+      "tex_size": 1024,
+      "footprint": null,
+      "faction": "allies",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "allied_naval_shipyard.glb",
+      "stem": "allied_naval_shipyard",
+      "bucket": "bld_allied_soviet",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        3,
+        3
+      ],
+      "faction": "allies",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "allied_ore_purifier.glb",
+      "stem": "allied_ore_purifier",
+      "bucket": "bld_allied_soviet",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        3,
+        3
+      ],
+      "faction": "allies",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "allied_patriot_missile.glb",
+      "stem": "allied_patriot_missile",
+      "bucket": "bld_allied_soviet",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        1,
+        1
+      ],
+      "faction": "allies",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Turret",
+        "Barrel"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "allied_pillbox.glb",
+      "stem": "allied_pillbox",
+      "bucket": "bld_allied_soviet",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        1,
+        1
+      ],
+      "faction": "allies",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Turret",
+        "Barrel"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Muzzle_02",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "allied_power_plant.glb",
+      "stem": "allied_power_plant",
+      "bucket": "pilot_6",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        2,
+        2
+      ],
+      "faction": "allies",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01",
+        "Exhaust_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "allied_prism_tower.glb",
+      "stem": "allied_prism_tower",
+      "bucket": "bld_allied_soviet",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        1,
+        1
+      ],
+      "faction": "allies",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "allied_refinery.glb",
+      "stem": "allied_refinery",
+      "bucket": "bld_allied_soviet",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        3,
+        2
+      ],
+      "faction": "allies",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "allied_robot_control.glb",
+      "stem": "allied_robot_control",
+      "bucket": "bld_allied_soviet",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        2,
+        2
+      ],
+      "faction": "allies",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "allied_service_depot.glb",
+      "stem": "allied_service_depot",
+      "bucket": "bld_allied_soviet",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        3,
+        3
+      ],
+      "faction": "allies",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "FactoryDoor"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "allied_spy.glb",
+      "stem": "allied_spy",
+      "bucket": "infantry_3d",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "allies",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Torso",
+        "Head",
+        "WeaponArm",
+        "LeftLeg",
+        "RightLeg"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": [
+        "Idle",
+        "Walk",
+        "Prone",
+        "Attack",
+        "Die"
+      ]
+    },
+    {
+      "rel_path": "allied_war_factory.glb",
+      "stem": "allied_war_factory",
+      "bucket": "bld_allied_soviet",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        3,
+        3
+      ],
+      "faction": "allies",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "FactoryDoor"
+      ],
+      "existing_socket_nodes": [
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "allied_weather_controller.glb",
+      "stem": "allied_weather_controller",
+      "bucket": "bld_allied_soviet",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        3,
+        3
+      ],
+      "faction": "allies",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "apocalypse_tank.glb",
+      "stem": "apocalypse_tank",
+      "bucket": "pilot_6",
+      "is_unit": true,
+      "tex_size": 1024,
+      "footprint": null,
+      "faction": "soviets",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Turret",
+        "Barrel"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01",
+        "Exhaust_01",
+        "Muzzle_01",
+        "Muzzle_02"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "attack_dog.glb",
+      "stem": "attack_dog",
+      "bucket": "infantry_3d",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "allies",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Torso",
+        "Head",
+        "WeaponArm",
+        "LeftLeg",
+        "RightLeg"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": [
+        "Idle",
+        "Walk",
+        "Prone",
+        "Attack",
+        "Die"
+      ]
+    },
+    {
+      "rel_path": "battle_fortress.glb",
+      "stem": "battle_fortress",
+      "bucket": "veh_ground",
+      "is_unit": true,
+      "tex_size": 1024,
+      "footprint": null,
+      "faction": "allies",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Turret",
+        "Barrel"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "black_eagle.glb",
+      "stem": "black_eagle",
+      "bucket": "veh_air_naval",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "allies",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Muzzle_02",
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "boomer_cruise_missile.glb",
+      "stem": "boomer_cruise_missile",
+      "bucket": "veh_air_naval",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "yuri",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "boomer_sub.glb",
+      "stem": "boomer_sub",
+      "bucket": "veh_air_naval",
+      "is_unit": true,
+      "tex_size": 1024,
+      "footprint": null,
+      "faction": "yuri",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Muzzle_02",
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "boris.glb",
+      "stem": "boris",
+      "bucket": "infantry_3d",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "soviets",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Torso",
+        "Head",
+        "WeaponArm",
+        "LeftLeg",
+        "RightLeg"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": [
+        "Idle",
+        "Walk",
+        "Prone",
+        "Attack",
+        "Die"
+      ]
+    },
+    {
+      "rel_path": "brute.glb",
+      "stem": "brute",
+      "bucket": "infantry_3d",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "yuri",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Torso",
+        "Head",
+        "WeaponArm",
+        "LeftLeg",
+        "RightLeg"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": [
+        "Idle",
+        "Walk",
+        "Prone",
+        "Attack",
+        "Die"
+      ]
+    },
+    {
+      "rel_path": "chaos_drone.glb",
+      "stem": "chaos_drone",
+      "bucket": "veh_ground",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "yuri",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "chrono_commando.glb",
+      "stem": "chrono_commando",
+      "bucket": "infantry_3d",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "allies",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Torso",
+        "Head",
+        "WeaponArm",
+        "LeftLeg",
+        "RightLeg"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": [
+        "Idle",
+        "Walk",
+        "Prone",
+        "Attack",
+        "Die"
+      ]
+    },
+    {
+      "rel_path": "chrono_ivan.glb",
+      "stem": "chrono_ivan",
+      "bucket": "infantry_3d",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "soviets",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Torso",
+        "Head",
+        "WeaponArm",
+        "LeftLeg",
+        "RightLeg"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": [
+        "Idle",
+        "Walk",
+        "Prone",
+        "Attack",
+        "Die"
+      ]
+    },
+    {
+      "rel_path": "chrono_legionnaire.glb",
+      "stem": "chrono_legionnaire",
+      "bucket": "infantry_3d",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "allies",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Torso",
+        "Head",
+        "WeaponArm",
+        "LeftLeg",
+        "RightLeg"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": [
+        "Idle",
+        "Walk",
+        "Prone",
+        "Attack",
+        "Die"
+      ]
+    },
+    {
+      "rel_path": "chrono_miner.glb",
+      "stem": "chrono_miner",
+      "bucket": "veh_ground",
+      "is_unit": true,
+      "tex_size": 1024,
+      "footprint": null,
+      "faction": "allies",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "concrete_wall.glb",
+      "stem": "concrete_wall",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        1,
+        1
+      ],
+      "faction": "shared",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "conscript.glb",
+      "stem": "conscript",
+      "bucket": "infantry_3d",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "soviets",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Torso",
+        "Head",
+        "WeaponArm",
+        "LeftLeg",
+        "RightLeg"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": [
+        "Idle",
+        "Walk",
+        "Prone",
+        "Attack",
+        "Die"
+      ]
+    },
+    {
+      "rel_path": "crashed_ufo.glb",
+      "stem": "crashed_ufo",
+      "bucket": "veh_ground",
+      "is_unit": true,
+      "tex_size": 1024,
+      "footprint": null,
+      "faction": "yuri",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "crazy_ivan.glb",
+      "stem": "crazy_ivan",
+      "bucket": "infantry_3d",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "soviets",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Torso",
+        "Head",
+        "WeaponArm",
+        "LeftLeg",
+        "RightLeg"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": [
+        "Idle",
+        "Walk",
+        "Prone",
+        "Attack",
+        "Die"
+      ]
+    },
+    {
+      "rel_path": "demolition_truck.glb",
+      "stem": "demolition_truck",
+      "bucket": "veh_ground",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "soviets",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "desolator.glb",
+      "stem": "desolator",
+      "bucket": "infantry_3d",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "soviets",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Torso",
+        "Head",
+        "WeaponArm",
+        "LeftLeg",
+        "RightLeg"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": [
+        "Idle",
+        "Walk",
+        "Prone",
+        "Attack",
+        "Die"
+      ]
+    },
+    {
+      "rel_path": "dolphin.glb",
+      "stem": "dolphin",
+      "bucket": "veh_air_naval",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "allies",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "dreadnought.glb",
+      "stem": "dreadnought",
+      "bucket": "veh_air_naval",
+      "is_unit": true,
+      "tex_size": 1024,
+      "footprint": null,
+      "faction": "soviets",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Turret"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Muzzle_02",
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "dreadnought_missile.glb",
+      "stem": "dreadnought_missile",
+      "bucket": "veh_air_naval",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "soviets",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "eiffel_tower.glb",
+      "stem": "eiffel_tower",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        4,
+        4
+      ],
+      "faction": "shared",
+      "team_color_tint": false,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "einstein_lab.glb",
+      "stem": "einstein_lab",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        3,
+        4
+      ],
+      "faction": "shared",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "engineer.glb",
+      "stem": "engineer",
+      "bucket": "infantry_3d",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "shared",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Torso",
+        "Head",
+        "WeaponArm",
+        "LeftLeg",
+        "RightLeg"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": [
+        "Idle",
+        "Walk",
+        "Prone",
+        "Attack",
+        "Die"
+      ]
+    },
+    {
+      "rel_path": "flak_track.glb",
+      "stem": "flak_track",
+      "bucket": "veh_ground",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "soviets",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Turret",
+        "Barrel"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Muzzle_02",
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "flak_trooper.glb",
+      "stem": "flak_trooper",
+      "bucket": "infantry_3d",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "soviets",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Torso",
+        "Head",
+        "WeaponArm",
+        "LeftLeg",
+        "RightLeg"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": [
+        "Idle",
+        "Walk",
+        "Prone",
+        "Attack",
+        "Die"
+      ]
+    },
+    {
+      "rel_path": "floating_disc.glb",
+      "stem": "floating_disc",
+      "bucket": "veh_air_naval",
+      "is_unit": true,
+      "tex_size": 1024,
+      "footprint": null,
+      "faction": "yuri",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Turret",
+        "Rotor"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "gatling_tank.glb",
+      "stem": "gatling_tank",
+      "bucket": "veh_ground",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "yuri",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Turret"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Muzzle_02",
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "gattling_tank.glb",
+      "stem": "gattling_tank",
+      "bucket": "veh_ground",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "yuri",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Turret"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Muzzle_02",
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "gi.glb",
+      "stem": "gi",
+      "bucket": "infantry_3d",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "allies",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Torso",
+        "Head",
+        "WeaponArm",
+        "LeftLeg",
+        "RightLeg"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": [
+        "Idle",
+        "Walk",
+        "Prone",
+        "Attack",
+        "Die"
+      ]
+    },
+    {
+      "rel_path": "giant_squid.glb",
+      "stem": "giant_squid",
+      "bucket": "veh_air_naval",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "soviets",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "great_pyramid.glb",
+      "stem": "great_pyramid",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        4,
+        4
+      ],
+      "faction": "shared",
+      "team_color_tint": false,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "grizzly_tank.glb",
+      "stem": "grizzly_tank",
+      "bucket": "pilot_6",
+      "is_unit": true,
+      "tex_size": 1024,
+      "footprint": null,
+      "faction": "allies",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Turret",
+        "Barrel"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01",
+        "Exhaust_01",
+        "Muzzle_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "guardian_gi.glb",
+      "stem": "guardian_gi",
+      "bucket": "infantry_3d",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "allies",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Torso",
+        "Head",
+        "WeaponArm",
+        "LeftLeg",
+        "RightLeg"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": [
+        "Idle",
+        "Walk",
+        "Prone",
+        "Attack",
+        "Die"
+      ]
+    },
+    {
+      "rel_path": "harrier.glb",
+      "stem": "harrier",
+      "bucket": "veh_air_naval",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "allies",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "hornet_fighter.glb",
+      "stem": "hornet_fighter",
+      "bucket": "veh_air_naval",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "allies",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "ifv.glb",
+      "stem": "ifv",
+      "bucket": "veh_ground",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "allies",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Turret"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "initiate.glb",
+      "stem": "initiate",
+      "bucket": "infantry_3d",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "yuri",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Torso",
+        "Head",
+        "WeaponArm",
+        "LeftLeg",
+        "RightLeg"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": [
+        "Idle",
+        "Walk",
+        "Prone",
+        "Attack",
+        "Die"
+      ]
+    },
+    {
+      "rel_path": "kirov_airship.glb",
+      "stem": "kirov_airship",
+      "bucket": "veh_air_naval",
+      "is_unit": true,
+      "tex_size": 1024,
+      "footprint": null,
+      "faction": "soviets",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "kirov_bomb.glb",
+      "stem": "kirov_bomb",
+      "bucket": "veh_air_naval",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "soviets",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "kremlin_palace.glb",
+      "stem": "kremlin_palace",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        3,
+        4
+      ],
+      "faction": "shared",
+      "team_color_tint": false,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "lasher_tank.glb",
+      "stem": "lasher_tank",
+      "bucket": "veh_ground",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "yuri",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Turret",
+        "Barrel"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "london_big_ben.glb",
+      "stem": "london_big_ben",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        2,
+        2
+      ],
+      "faction": "shared",
+      "team_color_tint": false,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "magnetron.glb",
+      "stem": "magnetron",
+      "bucket": "veh_ground",
+      "is_unit": true,
+      "tex_size": 1024,
+      "footprint": null,
+      "faction": "yuri",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Turret"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "mastermind.glb",
+      "stem": "mastermind",
+      "bucket": "veh_ground",
+      "is_unit": true,
+      "tex_size": 1024,
+      "footprint": null,
+      "faction": "yuri",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "maya_prism_pyramid.glb",
+      "stem": "maya_prism_pyramid",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        3,
+        2
+      ],
+      "faction": "shared",
+      "team_color_tint": false,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "mirage_tank.glb",
+      "stem": "mirage_tank",
+      "bucket": "veh_ground",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "allies",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Turret",
+        "Barrel"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "navy_seal.glb",
+      "stem": "navy_seal",
+      "bucket": "infantry_3d",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "allies",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Torso",
+        "Head",
+        "WeaponArm",
+        "LeftLeg",
+        "RightLeg"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": [
+        "Idle",
+        "Walk",
+        "Prone",
+        "Attack",
+        "Die"
+      ]
+    },
+    {
+      "rel_path": "nighthawk_chopper.glb",
+      "stem": "nighthawk_chopper",
+      "bucket": "veh_air_naval",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "allies",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Rotor"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "nuclear_icbm.glb",
+      "stem": "nuclear_icbm",
+      "bucket": "veh_air_naval",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "soviets",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "osprey_asw.glb",
+      "stem": "osprey_asw",
+      "bucket": "veh_air_naval",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "allies",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Rotor"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "paradrop_plane.glb",
+      "stem": "paradrop_plane",
+      "bucket": "veh_air_naval",
+      "is_unit": true,
+      "tex_size": 1024,
+      "footprint": null,
+      "faction": "shared",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "prism_tank.glb",
+      "stem": "prism_tank",
+      "bucket": "veh_ground",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "allies",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Turret"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "props/civilian_building_intact.glb",
+      "stem": "civilian_building_intact",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": [
+        1,
+        1
+      ],
+      "faction": "shared",
+      "team_color_tint": false,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "props/civilian_building_ruin.glb",
+      "stem": "civilian_building_ruin",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "neutral",
+      "team_color_tint": false,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "props/explosive_barrel.glb",
+      "stem": "explosive_barrel",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "neutral",
+      "team_color_tint": false,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "props/gem_stage_1.glb",
+      "stem": "gem_stage_1",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "neutral",
+      "team_color_tint": false,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "props/gem_stage_2.glb",
+      "stem": "gem_stage_2",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "neutral",
+      "team_color_tint": false,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "props/gem_stage_3.glb",
+      "stem": "gem_stage_3",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "neutral",
+      "team_color_tint": false,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "props/gem_stage_4.glb",
+      "stem": "gem_stage_4",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "neutral",
+      "team_color_tint": false,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "props/landmine.glb",
+      "stem": "landmine",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "neutral",
+      "team_color_tint": false,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "props/ore_stage_1.glb",
+      "stem": "ore_stage_1",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "neutral",
+      "team_color_tint": false,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "props/ore_stage_2.glb",
+      "stem": "ore_stage_2",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "neutral",
+      "team_color_tint": false,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "props/ore_stage_3.glb",
+      "stem": "ore_stage_3",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "neutral",
+      "team_color_tint": false,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "props/ore_stage_4.glb",
+      "stem": "ore_stage_4",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "neutral",
+      "team_color_tint": false,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "props/streetlight.glb",
+      "stem": "streetlight",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "neutral",
+      "team_color_tint": false,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "props/supply_crate.glb",
+      "stem": "supply_crate",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "neutral",
+      "team_color_tint": false,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "props/tree_pine.glb",
+      "stem": "tree_pine",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "neutral",
+      "team_color_tint": false,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "props/tree_temperate.glb",
+      "stem": "tree_temperate",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "neutral",
+      "team_color_tint": false,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "psi_commando.glb",
+      "stem": "psi_commando",
+      "bucket": "infantry_3d",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "yuri",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Torso",
+        "Head",
+        "WeaponArm",
+        "LeftLeg",
+        "RightLeg"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": [
+        "Idle",
+        "Walk",
+        "Prone",
+        "Attack",
+        "Die"
+      ]
+    },
+    {
+      "rel_path": "psychic_amplifier.glb",
+      "stem": "psychic_amplifier",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        4,
+        4
+      ],
+      "faction": "shared",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "psychic_beacon.glb",
+      "stem": "psychic_beacon",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        2,
+        2
+      ],
+      "faction": "shared",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "rhino_tank.glb",
+      "stem": "rhino_tank",
+      "bucket": "veh_ground",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "soviets",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Turret",
+        "Barrel"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "robot_tank.glb",
+      "stem": "robot_tank",
+      "bucket": "veh_ground",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "allies",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Turret"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "rocketeer.glb",
+      "stem": "rocketeer",
+      "bucket": "infantry_3d",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "allies",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Torso",
+        "Head",
+        "WeaponArm",
+        "LeftLeg",
+        "RightLeg"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": [
+        "Idle",
+        "Walk",
+        "Prone",
+        "Attack",
+        "Die"
+      ]
+    },
+    {
+      "rel_path": "scout.glb",
+      "stem": "scout",
+      "bucket": "infantry_3d",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "shared",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Torso",
+        "Head",
+        "WeaponArm",
+        "LeftLeg",
+        "RightLeg"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": [
+        "Idle",
+        "Walk",
+        "Prone",
+        "Attack",
+        "Die"
+      ]
+    },
+    {
+      "rel_path": "sea_scorpion.glb",
+      "stem": "sea_scorpion",
+      "bucket": "veh_air_naval",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "soviets",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Turret",
+        "Barrel"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "security_gate.glb",
+      "stem": "security_gate",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        1,
+        1
+      ],
+      "faction": "shared",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "siege_chopper.glb",
+      "stem": "siege_chopper",
+      "bucket": "veh_air_naval",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "soviets",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Turret",
+        "Barrel",
+        "Rotor"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "sniper.glb",
+      "stem": "sniper",
+      "bucket": "infantry_3d",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "allies",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Torso",
+        "Head",
+        "WeaponArm",
+        "LeftLeg",
+        "RightLeg"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": [
+        "Idle",
+        "Walk",
+        "Prone",
+        "Attack",
+        "Die"
+      ]
+    },
+    {
+      "rel_path": "soviet_attack_dog.glb",
+      "stem": "soviet_attack_dog",
+      "bucket": "infantry_3d",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "soviets",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Torso",
+        "Head",
+        "WeaponArm",
+        "LeftLeg",
+        "RightLeg"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": [
+        "Idle",
+        "Walk",
+        "Prone",
+        "Attack",
+        "Die"
+      ]
+    },
+    {
+      "rel_path": "soviet_barracks.glb",
+      "stem": "soviet_barracks",
+      "bucket": "bld_allied_soviet",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        2,
+        2
+      ],
+      "faction": "soviets",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "soviet_battle_bunker.glb",
+      "stem": "soviet_battle_bunker",
+      "bucket": "bld_allied_soviet",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        2,
+        2
+      ],
+      "faction": "soviets",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "soviet_battle_lab.glb",
+      "stem": "soviet_battle_lab",
+      "bucket": "bld_allied_soviet",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        2,
+        2
+      ],
+      "faction": "soviets",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "soviet_conscript.glb",
+      "stem": "soviet_conscript",
+      "bucket": "infantry_3d",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "soviets",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Torso",
+        "Head",
+        "WeaponArm",
+        "LeftLeg",
+        "RightLeg"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": [
+        "Idle",
+        "Walk",
+        "Prone",
+        "Attack",
+        "Die"
+      ]
+    },
+    {
+      "rel_path": "soviet_conyard.glb",
+      "stem": "soviet_conyard",
+      "bucket": "pilot_6",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        3,
+        3
+      ],
+      "faction": "soviets",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01",
+        "Exhaust_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "soviet_dog.glb",
+      "stem": "soviet_dog",
+      "bucket": "infantry_3d",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "soviets",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Torso",
+        "Head",
+        "WeaponArm",
+        "LeftLeg",
+        "RightLeg"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": [
+        "Idle",
+        "Walk",
+        "Prone",
+        "Attack",
+        "Die"
+      ]
+    },
+    {
+      "rel_path": "soviet_engineer.glb",
+      "stem": "soviet_engineer",
+      "bucket": "infantry_3d",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "soviets",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Torso",
+        "Head",
+        "WeaponArm",
+        "LeftLeg",
+        "RightLeg"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": [
+        "Idle",
+        "Walk",
+        "Prone",
+        "Attack",
+        "Die"
+      ]
+    },
+    {
+      "rel_path": "soviet_flak_cannon.glb",
+      "stem": "soviet_flak_cannon",
+      "bucket": "bld_allied_soviet",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        1,
+        1
+      ],
+      "faction": "soviets",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Turret",
+        "Barrel"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Muzzle_02",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "soviet_industrial_plant.glb",
+      "stem": "soviet_industrial_plant",
+      "bucket": "bld_allied_soviet",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        3,
+        3
+      ],
+      "faction": "soviets",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "soviet_infantry.glb",
+      "stem": "soviet_infantry",
+      "bucket": "infantry_3d",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "soviets",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Torso",
+        "Head",
+        "WeaponArm",
+        "LeftLeg",
+        "RightLeg"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": [
+        "Idle",
+        "Walk",
+        "Prone",
+        "Attack",
+        "Die"
+      ]
+    },
+    {
+      "rel_path": "soviet_iron_curtain.glb",
+      "stem": "soviet_iron_curtain",
+      "bucket": "bld_allied_soviet",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        3,
+        3
+      ],
+      "faction": "soviets",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "soviet_mcv.glb",
+      "stem": "soviet_mcv",
+      "bucket": "veh_ground",
+      "is_unit": true,
+      "tex_size": 1024,
+      "footprint": null,
+      "faction": "soviets",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "soviet_naval_shipyard.glb",
+      "stem": "soviet_naval_shipyard",
+      "bucket": "bld_allied_soviet",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        3,
+        3
+      ],
+      "faction": "soviets",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "soviet_nuclear_reactor.glb",
+      "stem": "soviet_nuclear_reactor",
+      "bucket": "bld_allied_soviet",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        3,
+        3
+      ],
+      "faction": "soviets",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "soviet_nuclear_silo.glb",
+      "stem": "soviet_nuclear_silo",
+      "bucket": "bld_allied_soviet",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        3,
+        3
+      ],
+      "faction": "soviets",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "soviet_radar_tower.glb",
+      "stem": "soviet_radar_tower",
+      "bucket": "bld_allied_soviet",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        2,
+        2
+      ],
+      "faction": "soviets",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Rotor"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "soviet_refinery.glb",
+      "stem": "soviet_refinery",
+      "bucket": "bld_allied_soviet",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        3,
+        2
+      ],
+      "faction": "soviets",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "soviet_sentry_gun.glb",
+      "stem": "soviet_sentry_gun",
+      "bucket": "bld_allied_soviet",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        1,
+        1
+      ],
+      "faction": "soviets",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Turret",
+        "Barrel"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Muzzle_02",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "soviet_service_depot.glb",
+      "stem": "soviet_service_depot",
+      "bucket": "bld_allied_soviet",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        3,
+        3
+      ],
+      "faction": "soviets",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "FactoryDoor"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "soviet_sub_apc.glb",
+      "stem": "soviet_sub_apc",
+      "bucket": "veh_ground",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "soviets",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "soviet_tesla_coil.glb",
+      "stem": "soviet_tesla_coil",
+      "bucket": "pilot_6",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        1,
+        1
+      ],
+      "faction": "soviets",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01",
+        "Muzzle_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "soviet_tesla_reactor.glb",
+      "stem": "soviet_tesla_reactor",
+      "bucket": "bld_allied_soviet",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        2,
+        2
+      ],
+      "faction": "soviets",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "soviet_war_factory.glb",
+      "stem": "soviet_war_factory",
+      "bucket": "bld_allied_soviet",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        3,
+        3
+      ],
+      "faction": "soviets",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "FactoryDoor"
+      ],
+      "existing_socket_nodes": [
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "soviet_zubr_transport.glb",
+      "stem": "soviet_zubr_transport",
+      "bucket": "veh_ground",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "soviets",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "spy_plane.glb",
+      "stem": "spy_plane",
+      "bucket": "veh_air_naval",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "soviets",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "st_basil_cathedral.glb",
+      "stem": "st_basil_cathedral",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        4,
+        4
+      ],
+      "faction": "shared",
+      "team_color_tint": false,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "statue_of_liberty.glb",
+      "stem": "statue_of_liberty",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        3,
+        3
+      ],
+      "faction": "shared",
+      "team_color_tint": false,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "tank_destroyer.glb",
+      "stem": "tank_destroyer",
+      "bucket": "veh_ground",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "allies",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "tanya.glb",
+      "stem": "tanya",
+      "bucket": "infantry_3d",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "allies",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Torso",
+        "Head",
+        "WeaponArm",
+        "LeftLeg",
+        "RightLeg"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Muzzle_02",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": [
+        "Idle",
+        "Walk",
+        "Prone",
+        "Attack",
+        "Die"
+      ]
+    },
+    {
+      "rel_path": "tech_airport.glb",
+      "stem": "tech_airport",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        3,
+        3
+      ],
+      "faction": "shared",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "tech_hospital.glb",
+      "stem": "tech_hospital",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        4,
+        4
+      ],
+      "faction": "shared",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "tech_machine_shop.glb",
+      "stem": "tech_machine_shop",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        3,
+        3
+      ],
+      "faction": "shared",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "tech_oil_derrick.glb",
+      "stem": "tech_oil_derrick",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        2,
+        2
+      ],
+      "faction": "shared",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "tech_outpost.glb",
+      "stem": "tech_outpost",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        4,
+        3
+      ],
+      "faction": "shared",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "tech_power_plant.glb",
+      "stem": "tech_power_plant",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        2,
+        2
+      ],
+      "faction": "shared",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "tech_secret_lab.glb",
+      "stem": "tech_secret_lab",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        3,
+        3
+      ],
+      "faction": "shared",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "terror_drone.glb",
+      "stem": "terror_drone",
+      "bucket": "veh_ground",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "soviets",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Torso",
+        "Head",
+        "WeaponArm",
+        "LeftLeg",
+        "RightLeg"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": [
+        "Idle",
+        "Walk",
+        "Prone",
+        "Attack",
+        "Die"
+      ]
+    },
+    {
+      "rel_path": "terrorist.glb",
+      "stem": "terrorist",
+      "bucket": "infantry_3d",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "soviets",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Torso",
+        "Head",
+        "WeaponArm",
+        "LeftLeg",
+        "RightLeg"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": [
+        "Idle",
+        "Walk",
+        "Prone",
+        "Attack",
+        "Die"
+      ]
+    },
+    {
+      "rel_path": "tesla_tank.glb",
+      "stem": "tesla_tank",
+      "bucket": "veh_ground",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "soviets",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Turret"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Muzzle_02",
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "tesla_trooper.glb",
+      "stem": "tesla_trooper",
+      "bucket": "infantry_3d",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "soviets",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Torso",
+        "Head",
+        "WeaponArm",
+        "LeftLeg",
+        "RightLeg"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": [
+        "Idle",
+        "Walk",
+        "Prone",
+        "Attack",
+        "Die"
+      ]
+    },
+    {
+      "rel_path": "time_machine.glb",
+      "stem": "time_machine",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        4,
+        3
+      ],
+      "faction": "shared",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "transylvania_fortress.glb",
+      "stem": "transylvania_fortress",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        4,
+        4
+      ],
+      "faction": "shared",
+      "team_color_tint": false,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "typhoon_sub.glb",
+      "stem": "typhoon_sub",
+      "bucket": "veh_air_naval",
+      "is_unit": true,
+      "tex_size": 1024,
+      "footprint": null,
+      "faction": "soviets",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Muzzle_02",
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "v3_rocket.glb",
+      "stem": "v3_rocket",
+      "bucket": "veh_air_naval",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "soviets",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "v3_rocket_launcher.glb",
+      "stem": "v3_rocket_launcher",
+      "bucket": "veh_ground",
+      "is_unit": true,
+      "tex_size": 1024,
+      "footprint": null,
+      "faction": "soviets",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "war_miner.glb",
+      "stem": "war_miner",
+      "bucket": "veh_ground",
+      "is_unit": true,
+      "tex_size": 1024,
+      "footprint": null,
+      "faction": "soviets",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Turret"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "white_house.glb",
+      "stem": "white_house",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        4,
+        4
+      ],
+      "faction": "shared",
+      "team_color_tint": false,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "yuri.glb",
+      "stem": "yuri",
+      "bucket": "infantry_3d",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "yuri",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Torso",
+        "Head",
+        "WeaponArm",
+        "LeftLeg",
+        "RightLeg"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": [
+        "Idle",
+        "Walk",
+        "Prone",
+        "Attack",
+        "Die"
+      ]
+    },
+    {
+      "rel_path": "yuri_barracks.glb",
+      "stem": "yuri_barracks",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        2,
+        2
+      ],
+      "faction": "yuri",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "yuri_battle_lab.glb",
+      "stem": "yuri_battle_lab",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        2,
+        2
+      ],
+      "faction": "yuri",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "yuri_bio_reactor.glb",
+      "stem": "yuri_bio_reactor",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        2,
+        2
+      ],
+      "faction": "yuri",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "yuri_brute.glb",
+      "stem": "yuri_brute",
+      "bucket": "infantry_3d",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "yuri",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Torso",
+        "Head",
+        "WeaponArm",
+        "LeftLeg",
+        "RightLeg"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": [
+        "Idle",
+        "Walk",
+        "Prone",
+        "Attack",
+        "Die"
+      ]
+    },
+    {
+      "rel_path": "yuri_clone.glb",
+      "stem": "yuri_clone",
+      "bucket": "infantry_3d",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "yuri",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Torso",
+        "Head",
+        "WeaponArm",
+        "LeftLeg",
+        "RightLeg"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": [
+        "Idle",
+        "Walk",
+        "Prone",
+        "Attack",
+        "Die"
+      ]
+    },
+    {
+      "rel_path": "yuri_cloning_vats.glb",
+      "stem": "yuri_cloning_vats",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        2,
+        2
+      ],
+      "faction": "yuri",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "yuri_conyard.glb",
+      "stem": "yuri_conyard",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        3,
+        3
+      ],
+      "faction": "yuri",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "yuri_engineer.glb",
+      "stem": "yuri_engineer",
+      "bucket": "infantry_3d",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "yuri",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Torso",
+        "Head",
+        "WeaponArm",
+        "LeftLeg",
+        "RightLeg"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": [
+        "Idle",
+        "Walk",
+        "Prone",
+        "Attack",
+        "Die"
+      ]
+    },
+    {
+      "rel_path": "yuri_gatling_cannon.glb",
+      "stem": "yuri_gatling_cannon",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        1,
+        1
+      ],
+      "faction": "yuri",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Turret",
+        "Barrel"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Muzzle_02",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "yuri_gattling_cannon.glb",
+      "stem": "yuri_gattling_cannon",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": true,
+      "tex_size": 1024,
+      "footprint": [
+        1,
+        1
+      ],
+      "faction": "yuri",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Turret",
+        "Barrel"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Muzzle_02",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "yuri_genetic_mutator.glb",
+      "stem": "yuri_genetic_mutator",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        3,
+        3
+      ],
+      "faction": "yuri",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "yuri_grinder.glb",
+      "stem": "yuri_grinder",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        2,
+        2
+      ],
+      "faction": "yuri",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "yuri_hover_transport.glb",
+      "stem": "yuri_hover_transport",
+      "bucket": "veh_ground",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "yuri",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "yuri_infantry.glb",
+      "stem": "yuri_infantry",
+      "bucket": "infantry_3d",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "yuri",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Torso",
+        "Head",
+        "WeaponArm",
+        "LeftLeg",
+        "RightLeg"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": [
+        "Idle",
+        "Walk",
+        "Prone",
+        "Attack",
+        "Die"
+      ]
+    },
+    {
+      "rel_path": "yuri_initiate.glb",
+      "stem": "yuri_initiate",
+      "bucket": "infantry_3d",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "yuri",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Torso",
+        "Head",
+        "WeaponArm",
+        "LeftLeg",
+        "RightLeg"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": [
+        "Idle",
+        "Walk",
+        "Prone",
+        "Attack",
+        "Die"
+      ]
+    },
+    {
+      "rel_path": "yuri_mcv.glb",
+      "stem": "yuri_mcv",
+      "bucket": "veh_ground",
+      "is_unit": true,
+      "tex_size": 1024,
+      "footprint": null,
+      "faction": "yuri",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "yuri_prime.glb",
+      "stem": "yuri_prime",
+      "bucket": "infantry_3d",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "yuri",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Torso",
+        "Head",
+        "WeaponArm",
+        "LeftLeg",
+        "RightLeg"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": [
+        "Idle",
+        "Walk",
+        "Prone",
+        "Attack",
+        "Die"
+      ]
+    },
+    {
+      "rel_path": "yuri_psi_commando.glb",
+      "stem": "yuri_psi_commando",
+      "bucket": "infantry_3d",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "yuri",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Torso",
+        "Head",
+        "WeaponArm",
+        "LeftLeg",
+        "RightLeg"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": [
+        "Idle",
+        "Walk",
+        "Prone",
+        "Attack",
+        "Die"
+      ]
+    },
+    {
+      "rel_path": "yuri_psychic_dominator.glb",
+      "stem": "yuri_psychic_dominator",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        3,
+        3
+      ],
+      "faction": "yuri",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "yuri_psychic_sensor.glb",
+      "stem": "yuri_psychic_sensor",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        2,
+        2
+      ],
+      "faction": "yuri",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Rotor"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "yuri_psychic_tower.glb",
+      "stem": "yuri_psychic_tower",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        1,
+        1
+      ],
+      "faction": "yuri",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "yuri_slave_miner.glb",
+      "stem": "yuri_slave_miner",
+      "bucket": "veh_ground",
+      "is_unit": true,
+      "tex_size": 1024,
+      "footprint": null,
+      "faction": "yuri",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Turret"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "yuri_slave_refinery.glb",
+      "stem": "yuri_slave_refinery",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        3,
+        2
+      ],
+      "faction": "yuri",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "Exhaust_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "yuri_submarine_pen.glb",
+      "stem": "yuri_submarine_pen",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        3,
+        3
+      ],
+      "faction": "yuri",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "yuri_tank_bunker.glb",
+      "stem": "yuri_tank_bunker",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        2,
+        2
+      ],
+      "faction": "yuri",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    },
+    {
+      "rel_path": "yuri_virus.glb",
+      "stem": "yuri_virus",
+      "bucket": "infantry_3d",
+      "is_unit": true,
+      "tex_size": 512,
+      "footprint": null,
+      "faction": "yuri",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "Torso",
+        "Head",
+        "WeaponArm",
+        "LeftLeg",
+        "RightLeg"
+      ],
+      "existing_socket_nodes": [
+        "Muzzle_01",
+        "DamageSmoke_01"
+      ],
+      "existing_animations": [
+        "Idle",
+        "Walk",
+        "Prone",
+        "Attack",
+        "Die"
+      ]
+    },
+    {
+      "rel_path": "yuri_war_factory.glb",
+      "stem": "yuri_war_factory",
+      "bucket": "bld_yuri_landmarks",
+      "is_unit": false,
+      "tex_size": 1024,
+      "footprint": [
+        3,
+        3
+      ],
+      "faction": "yuri",
+      "team_color_tint": true,
+      "existing_mesh_nodes": [
+        "Hull",
+        "FactoryDoor"
+      ],
+      "existing_socket_nodes": [
+        "DamageSmoke_01"
+      ],
+      "existing_animations": []
+    }
+  ]
+}
