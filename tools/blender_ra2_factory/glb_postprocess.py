@@ -18,7 +18,7 @@ from __future__ import annotations
 import json
 import struct
 from dataclasses import dataclass
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Tuple
 
 import numpy as np
 
@@ -202,6 +202,7 @@ def inject_pbr_and_finalize_glb(
     raw_glb_path: str,
     out_glb_path: str,
     payload: BakedTexturesPayload,
+    max_lod0_verts: Optional[int] = None,
 ) -> GlbVerificationSummary:
     """Injects the 4 lossless PNG textures into `raw_glb_path`, normalizes hierarchy, and writes `out_glb_path`."""
     gltf, old_bin = parse_glb(open(raw_glb_path, "rb").read())
@@ -281,10 +282,10 @@ def inject_pbr_and_finalize_glb(
     with open(out_glb_path, "wb") as f:
         f.write(final_bytes)
 
-    return verify_baked_glb(out_glb_path)
+    return verify_baked_glb(out_glb_path, max_lod0_verts=max_lod0_verts)
 
 
-def verify_baked_glb(glb_path: str) -> GlbVerificationSummary:
+def verify_baked_glb(glb_path: str, max_lod0_verts: Optional[int] = None) -> GlbVerificationSummary:
     """
     Exhaustively verifies all engine + `verifier-2` technical & PBR texture contracts on `glb_path`:
       - 4-byte aligned GLB v2, `Hull` at `nodes[0]`, `<Node>_LOD1` on every mesh node
@@ -394,7 +395,12 @@ def verify_baked_glb(glb_path: str) -> GlbVerificationSummary:
             walk(int(ch), tr, cur_lod1)
 
     walk(0, np.zeros(3, dtype=np.float64), False)
-    assert 0 < lod0_v < 14500, f"{glb_path}: LOD0={lod0_v} out of budget (<14,500)"
+    if max_lod0_verts is None:
+        has_turret = any(n.get("name") in ("Turret", "Barrel") for n in nodes)
+        budget = 5950 if has_turret else 11950
+    else:
+        budget = int(max_lod0_verts)
+    assert 0 < lod0_v <= budget, f"{glb_path}: LOD0={lod0_v} exceeds budget (<={budget})"
     assert lod1_v > 0, f"{glb_path}: LOD1==0"
     assert abs(float(wmin[1])) < 0.001, f"{glb_path}: min_y={wmin[1]:.5f} != 0.0"
 

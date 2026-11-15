@@ -395,7 +395,7 @@ def _bind_glb_textures_to_imported_meshes(
     links.new(sep_orm.outputs["Blue"], bsdf.inputs["Metallic"])
     links.new(nrm_map.outputs["Normal"], bsdf.inputs["Normal"])
     links.new(t_emis.outputs["Color"], bsdf.inputs["Emission Color"])
-    bsdf.inputs["Emission Strength"].default_value = float(max(emis_fac)) * 1.35
+    bsdf.inputs["Emission Strength"].default_value = float(max(emis_fac))
     links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
 
     for obj in imported_meshes:

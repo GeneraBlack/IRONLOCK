@@ -122,18 +122,18 @@ MATERIAL_RECIPES: Dict[str, MatRecipe] = {
         MAT_GLASS, (0.04, 0.15, 0.34), (0.08, 0.28, 0.55), roughness=0.10, metallic=0.18, pattern="smooth", bump_strength=0.08, bevel_radius=0.008,
         emissive_rgb=(0.04, 0.16, 0.36)
     ),
-    # Dedicated glowing emissive materials
+    # Dedicated glowing emissive materials (rich saturated base + pure hue-locked emissive so tone-mappers never bleach!)
     MAT_GLOW_PLASMA_GOLD: MatRecipe(
-        MAT_GLOW_PLASMA_GOLD, (1.0, 0.74, 0.22), (1.0, 0.92, 0.55), roughness=0.14, metallic=0.05, pattern="glow", bump_strength=0.10,
-        emissive_rgb=(1.45, 1.02, 0.28)
+        MAT_GLOW_PLASMA_GOLD, (0.14, 0.03, 0.002), (0.26, 0.07, 0.005), roughness=0.45, metallic=0.0, pattern="glow", bump_strength=0.10,
+        emissive_rgb=(1.0, 0.36, 0.01)
     ),
     MAT_GLOW_PLASMA_CYAN: MatRecipe(
-        MAT_GLOW_PLASMA_CYAN, (0.14, 0.75, 1.0), (0.55, 0.94, 1.0), roughness=0.14, metallic=0.05, pattern="glow", bump_strength=0.10,
-        emissive_rgb=(0.16, 0.78, 1.0)
+        MAT_GLOW_PLASMA_CYAN, (0.02, 0.28, 0.54), (0.06, 0.46, 0.80), roughness=0.30, metallic=0.05, pattern="glow", bump_strength=0.10,
+        emissive_rgb=(0.06, 0.68, 1.0)
     ),
     MAT_GLOW_TESLA_BLUE: MatRecipe(
-        MAT_GLOW_TESLA_BLUE, (0.45, 0.82, 1.0), (0.85, 0.96, 1.0), roughness=0.12, metallic=0.25, pattern="glow", bump_strength=0.12,
-        emissive_rgb=(0.48, 0.84, 1.0)
+        MAT_GLOW_TESLA_BLUE, (0.06, 0.34, 0.68), (0.15, 0.54, 0.90), roughness=0.26, metallic=0.18, pattern="glow", bump_strength=0.12,
+        emissive_rgb=(0.18, 0.72, 1.0)
     ),
     MAT_GLOW_HEADLIGHT: MatRecipe(
         MAT_GLOW_HEADLIGHT, (1.0, 0.86, 0.52), (1.0, 0.95, 0.78), roughness=0.12, metallic=0.10, pattern="glow", bump_strength=0.05,

@@ -79,7 +79,7 @@ def build_grizzly_tank(out_glb_path: str) -> GlbVerificationSummary:
             skirt_style="allied",
             mat_skirt_primary=MAT_ALLIED_GREY,
             mat_skirt_team=MAT_TEAM_MID,
-            num_cleats_bottom=12,
+            num_cleats_bottom=8,
         )
 
     # Sloped NATO composite center hull tub (`add_lofted_prism` along Z from `-1.54` stern to `+1.58` nose!)
@@ -94,22 +94,22 @@ def build_grizzly_tank(out_glb_path: str) -> GlbVerificationSummary:
 
     # Allied Team-Color (`Alpha=0`) beveled shoulder & upper glacis livery plates (matching `grizzly_tank.vxl`!)
     for sx in (-1.0, 1.0):
-        hb.add_box(sx * 0.40, 0.73, 0.58, 0.28, 0.12, 0.96, mat=MAT_TEAM_LIGHT, rot_x=0.12, chamfer=0.015)
-        hb.add_box(sx * 0.44, 0.76, -0.22, 0.24, 0.10, 0.66, mat=MAT_TEAM_MID, chamfer=0.012)
+        hb.add_box(sx * 0.40, 0.73, 0.58, 0.28, 0.12, 0.96, mat=MAT_TEAM_LIGHT, rot_x=0.12, chamfer=0.014)
+        hb.add_box(sx * 0.44, 0.76, -0.22, 0.24, 0.10, 0.66, mat=MAT_TEAM_MID, chamfer=0.0)
         # Front tow shackles on lower glacis
         hb.add_torus(sx * 0.30, 0.42, 1.59, 0.055, 0.018, maj_segs=10, min_segs=6, mat=MAT_GUNMETAL, axis="x")
 
     # Driver armored hatch & wide-angle periscope block on center glacis + armored headlights!
-    hb.add_box(0.0, 0.74, 0.92, 0.34, 0.10, 0.28, mat=MAT_STEEL_WEATHERED, top_scale=(0.85, 0.85), chamfer=0.012)
-    hb.add_box(0.0, 0.77, 1.04, 0.24, 0.05, 0.06, mat=MAT_GLASS, chamfer=0.004)
+    hb.add_box(0.0, 0.74, 0.92, 0.34, 0.10, 0.28, mat=MAT_STEEL_WEATHERED, top_scale=(0.85, 0.85), chamfer=0.010)
+    hb.add_box(0.0, 0.77, 1.04, 0.24, 0.05, 0.06, mat=MAT_GLASS, chamfer=0.0)
     hb.add_headlight_cluster((-0.68, +0.68), y_pos=0.66, z_pos=1.50, mat_housing=MAT_STEEL_WEATHERED)
 
     # Raised turret race ring + 2x2 rear engine cooling louver grilles + twin exhausts & tail lights!
-    hb.add_cylinder_y(0.0, 0.75, -0.02, 0.54, 0.81, 0.52, sides=18, mat=MAT_GUNMETAL)
-    hb.add_engine_louver_deck(0.0, 0.74, -1.04, width=0.92, length=0.78, cols=2, rows=2, slats_per_vent=5)
+    hb.add_cylinder_y(0.0, 0.75, -0.02, 0.54, 0.81, 0.52, sides=18, mat=MAT_GUNMETAL, smooth=True)
+    hb.add_engine_louver_deck(0.0, 0.74, -1.04, width=0.92, length=0.78, cols=2, rows=2, slats_per_vent=4)
     for sx in (-0.34, +0.34):
         hb.add_tube((sx, 0.52, -1.50), (sx, 0.50, -1.62), 0.058, 0.052, sides=10, mat=MAT_GUNMETAL)
-        hb.add_box(sx * 1.9, 0.62, -1.54, 0.10, 0.06, 0.04, mat=MAT_GLOW_CRIMSON, chamfer=0.004)
+        hb.add_box(sx * 1.9, 0.62, -1.54, 0.10, 0.06, 0.04, mat=MAT_GLOW_CRIMSON, chamfer=0.0)
 
     hull_obj = hb.to_blender_object()
 
@@ -127,8 +127,8 @@ def build_grizzly_tank(out_glb_path: str) -> GlbVerificationSummary:
 
     # Beveled Allied Team-Color (`Alpha=0`) cheek & roof livery panels
     for sx in (-1.0, 1.0):
-        tb.add_box(sx * 0.54, 0.22, 0.08, 0.18, 0.26, 0.64, mat=MAT_TEAM_LIGHT, top_scale=(0.78, 0.90), rot_y=sx * 0.16, chamfer=0.016)
-    tb.add_box(0.0, 0.41, -0.36, 0.68, 0.06, 0.52, mat=MAT_TEAM_MID, chamfer=0.012)
+        tb.add_box(sx * 0.54, 0.22, 0.08, 0.18, 0.26, 0.64, mat=MAT_TEAM_LIGHT, top_scale=(0.78, 0.90), rot_y=sx * 0.16, chamfer=0.014)
+    tb.add_box(0.0, 0.41, -0.36, 0.68, 0.06, 0.52, mat=MAT_TEAM_MID, chamfer=0.0)
 
     tb.add_turret_cupola_and_optics(
         cupola_x=-0.24,
@@ -162,7 +162,9 @@ def build_grizzly_tank(out_glb_path: str) -> GlbVerificationSummary:
     add_socket_empty("Exhaust_01", hull_obj, (0.0, 0.52, -1.62))
     add_socket_empty("DamageSmoke_01", hull_obj, (0.0, 0.95, -0.35))
 
-    return bake_and_export_ra2_glb([hull_obj, tur_obj, bar_obj], mats, out_glb_path, tex_size=1024, ao_samples=24)
+    return bake_and_export_ra2_glb(
+        [hull_obj, tur_obj, bar_obj], mats, out_glb_path, tex_size=1024, ao_samples=24, is_unit=True
+    )
 
 
 # ==============================================================================
@@ -190,13 +192,13 @@ def build_apocalypse_tank(out_glb_path: str) -> GlbVerificationSummary:
                 skirt_style="soviet",
                 mat_skirt_primary=MAT_SOVIET_OLIVE,
                 mat_skirt_team=team_m,
-                num_cleats_bottom=7,
+                num_cleats_bottom=5,
             )
         # Heavy cast-iron central bogie rocker bridge linking front & rear track pods!
-        hb.add_box(sx * 0.74, 0.46, -0.01, 0.28, 0.28, 0.44, mat=MAT_GUNMETAL, chamfer=0.018)
-        hb.add_tube((sx * 0.62, 0.46, -0.01), (sx * 0.94, 0.46, -0.01), 0.12, sides=12, mat=MAT_STEEL_WEATHERED)
+        hb.add_box(sx * 0.74, 0.46, -0.01, 0.28, 0.28, 0.44, mat=MAT_GUNMETAL, chamfer=0.0)
+        hb.add_tube((sx * 0.62, 0.46, -0.01), (sx * 0.94, 0.46, -0.01), 0.12, sides=14, mat=MAT_STEEL_WEATHERED, smooth=True)
         # Crimson rear over-fender shoulder armor (prominent red rear fenders in `apocalypse_tank.vxl`!)
-        hb.add_box(sx * 0.84, 0.72, -1.16, 0.56, 0.16, 1.18, mat=MAT_TEAM_LIGHT, top_scale=(0.86, 0.92), chamfer=0.018)
+        hb.add_box(sx * 0.84, 0.72, -1.16, 0.56, 0.16, 1.18, mat=MAT_TEAM_LIGHT, top_scale=(0.86, 0.92), chamfer=0.016)
 
     # Massive sloped Soviet cast/welded center hull superstructure
     apoc_hull_stations = [
@@ -206,22 +208,22 @@ def build_apocalypse_tank(out_glb_path: str) -> GlbVerificationSummary:
         (+1.55, [(-0.60, 0.30), (+0.60, 0.30), (+0.52, 0.68), (-0.52, 0.68)]),
         (+1.80, [(-0.50, 0.38), (+0.50, 0.38), (+0.46, 0.54), (-0.46, 0.54)]),
     ]
-    hb.add_lofted_prism(apoc_hull_stations, mat=MAT_SOVIET_OLIVE, chamfer=0.025)
+    hb.add_lofted_prism(apoc_hull_stations, mat=MAT_SOVIET_OLIVE, chamfer=0.024)
 
     # Explosive Reactive Armor (ERA) bricks on upper glacis + Soviet crimson front shoulder & turret-ring armor!
     for ex in (-0.34, 0.0, +0.34):
-        hb.add_box(ex, 0.74, 1.32, 0.26, 0.08, 0.32, mat=MAT_STEEL_WEATHERED, rot_x=0.38, chamfer=0.010)
+        hb.add_box(ex, 0.74, 1.32, 0.26, 0.08, 0.32, mat=MAT_STEEL_WEATHERED, rot_x=0.38, chamfer=0.0)
     for sx in (-1.0, 1.0):
-        hb.add_box(sx * 0.48, 0.83, 0.88, 0.32, 0.12, 0.84, mat=MAT_TEAM_LIGHT, rot_x=0.08, chamfer=0.015)
+        hb.add_box(sx * 0.48, 0.83, 0.88, 0.32, 0.12, 0.84, mat=MAT_TEAM_LIGHT, rot_x=0.08, chamfer=0.0)
         hb.add_box(sx * 0.84, 0.71, 0.94, 0.52, 0.11, 0.88, mat=MAT_TEAM_MID, top_scale=(0.88, 0.92), chamfer=0.014)
-    hb.add_cylinder_y(0.0, 0.86, 0.02, 0.68, 0.95, 0.64, sides=18, mat=MAT_TEAM_MID)
+    hb.add_cylinder_y(0.0, 0.86, 0.02, 0.68, 0.95, 0.64, sides=18, mat=MAT_TEAM_MID, smooth=True)
 
     # Front steel dozer crossbeam + 4 heavy bulldozer spades + twin Mammoth ramming tusks + armored headlights!
     hb.add_dozer_ram_teeth(z_front=1.78, y_base=0.14, span_x=1.24, num_teeth=4, has_mammoth_tusks=True)
     hb.add_headlight_cluster((-0.52, +0.52), y_pos=0.72, z_pos=1.66, mat_housing=MAT_GUNMETAL)
 
     # Rear diesel engine louver deck, twin external crimson Soviet fuel drums, & twin upturned exhaust stacks!
-    hb.add_engine_louver_deck(0.0, 0.86, -1.22, width=1.02, length=0.78, cols=2, rows=2, slats_per_vent=5)
+    hb.add_engine_louver_deck(0.0, 0.86, -1.22, width=1.02, length=0.78, cols=2, rows=2, slats_per_vent=4)
     hb.add_soviet_fuel_drums(y_center=0.72, z_rear=-1.84, drum_x_offsets=(-0.44, +0.44), drum_len=0.56, drum_r=0.17, mat_drum=MAT_TEAM_MID)
     for sx in (-0.36, +0.36):
         hb.add_pipe_run(
@@ -245,10 +247,10 @@ def build_apocalypse_tank(out_glb_path: str) -> GlbVerificationSummary:
     tb.add_lofted_prism(apoc_tur_stations, mat=MAT_SOVIET_OLIVE, chamfer=0.026)
 
     # Crimson (`Alpha=0`) wraparound turret collar, sloped cheek armor bands, & rear armored bustle block
-    tb.add_cylinder_y(0.0, 0.0, 0.04, 0.68, 0.14, 0.65, sides=18, mat=MAT_TEAM_LIGHT)
+    tb.add_cylinder_y(0.0, 0.0, 0.04, 0.68, 0.14, 0.65, sides=18, mat=MAT_TEAM_LIGHT, smooth=True)
     for sx in (-1.0, 1.0):
-        tb.add_box(sx * 0.56, 0.24, 0.14, 0.22, 0.24, 0.86, mat=MAT_TEAM_LIGHT, top_scale=(0.80, 0.90), rot_y=sx * 0.12, chamfer=0.016)
-    tb.add_box(0.0, 0.24, -0.88, 0.88, 0.28, 0.28, mat=MAT_TEAM_MID, top_scale=(0.90, 0.85), chamfer=0.018)
+        tb.add_box(sx * 0.56, 0.24, 0.14, 0.22, 0.24, 0.86, mat=MAT_TEAM_LIGHT, top_scale=(0.80, 0.90), rot_y=sx * 0.12, chamfer=0.014)
+    tb.add_box(0.0, 0.24, -0.88, 0.88, 0.28, 0.28, mat=MAT_TEAM_MID, top_scale=(0.90, 0.85), chamfer=0.014)
 
     # Commander circular hatch cupola, electro-optical rangefinder (`MAT_GLOW_CRIMSON`), & twin antennas
     tb.add_turret_cupola_and_optics(
@@ -263,7 +265,7 @@ def build_apocalypse_tank(out_glb_path: str) -> GlbVerificationSummary:
         bustle_w=1.08,
         mat_armor=MAT_SOVIET_OLIVE,
     )
-    tb.add_box(-0.34, 0.53, 0.42, 0.10, 0.06, 0.04, mat=MAT_GLOW_CRIMSON, chamfer=0.004)
+    tb.add_box(-0.34, 0.53, 0.42, 0.10, 0.06, 0.04, mat=MAT_GLOW_CRIMSON, chamfer=0.0)
     tb.add_tube((+0.44, 0.44, -0.82), (+0.47, 1.12, -0.90), 0.015, 0.006, sides=6, mat=MAT_CHROME)
 
     # Twin side-mounted armored Mammoth Tusk 6-tube AA/AT missile pods!
@@ -302,7 +304,9 @@ def build_apocalypse_tank(out_glb_path: str) -> GlbVerificationSummary:
     add_socket_empty("Exhaust_01", hull_obj, (0.0, 1.40, -1.72))
     add_socket_empty("DamageSmoke_01", hull_obj, (0.0, 1.15, -0.45))
 
-    return bake_and_export_ra2_glb([hull_obj, tur_obj, bar_obj], mats, out_glb_path, tex_size=1024, ao_samples=24)
+    return bake_and_export_ra2_glb(
+        [hull_obj, tur_obj, bar_obj], mats, out_glb_path, tex_size=1024, ao_samples=24, is_unit=True
+    )
 
 
 PILOT_BUILDERS: Dict[str, Callable[[str], GlbVerificationSummary]] = {

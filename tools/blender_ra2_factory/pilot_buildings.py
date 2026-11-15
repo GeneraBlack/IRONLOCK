@@ -160,31 +160,33 @@ def build_allied_conyard(out_glb_path: str) -> GlbVerificationSummary:
     # Screen-Left elevated steel catwalk platform, command observation booth, & yellow articulated crane!
     y_deck = y0 + 0.74
     hb.add_catwalk_platform(
-        cx=-1.56,
+        cx=-1.72,
         y_deck=y_deck,
         cz=0.68,
-        sx=1.76,
+        sx=1.56,
         sz=2.14,
         y_ground=y0,
-        rail_sides=("-x", "+z", "-z"),
+        rail_sides=("-x", "-z"),
         stair_side="+z",
     )
     # Command observation booth with illuminated cyan control windows + supply crates on deck
-    hb.add_box(-1.92, y_deck + 0.42, -0.06, 0.76, 0.84, 0.84, mat=MAT_STEEL_BRUSHED, mat_sides=MAT_TEAM_MID, top_scale=(0.90, 0.90), chamfer=0.02)
-    hb.add_box(-1.88, y_deck + 0.54, 0.36, 0.60, 0.28, 0.06, mat=MAT_GLOW_PLASMA_CYAN, chamfer=0.006)
-    hb.add_box(-1.52, y_deck + 0.54, -0.06, 0.06, 0.28, 0.60, mat=MAT_GLASS, chamfer=0.006)
-    hb.add_box(-2.12, y_deck + 0.18, 1.02, 0.36, 0.36, 0.36, mat=MAT_STEEL_WEATHERED, chamfer=0.012)
-    hb.add_box(-1.82, y_deck + 0.14, 1.22, 0.28, 0.28, 0.28, mat=MAT_ALLIED_GREY, chamfer=0.010)
+    hb.add_box(-1.98, y_deck + 0.42, 0.02, 0.74, 0.84, 0.80, mat=MAT_STEEL_BRUSHED, mat_sides=MAT_TEAM_MID, top_scale=(0.90, 0.90), chamfer=0.02)
+    hb.add_box(-1.94, y_deck + 0.54, 0.42, 0.58, 0.28, 0.06, mat=MAT_GLOW_PLASMA_CYAN, chamfer=0.006)
+    hb.add_box(-1.60, y_deck + 0.54, 0.02, 0.06, 0.28, 0.58, mat=MAT_GLASS, chamfer=0.006)
+    hb.add_box(-1.26, y_deck + 0.18, 0.14, 0.34, 0.36, 0.34, mat=MAT_STEEL_WEATHERED, chamfer=0.012)
+    hb.add_box(-1.24, y_deck + 0.14, 0.54, 0.28, 0.28, 0.28, mat=MAT_ALLIED_GREY, chamfer=0.010)
 
-    # Articulated Yellow Crane (`(-1.42, +0.86)`) reaching forward-left (`(-0.66, +1.86)`) so hangar door & Eagle crest stay 100% clear!
-    crane_tx, crane_tz = -0.66, 1.86
-    crane_yaw = math.atan2(crane_tx - (-1.42), crane_tz - 0.86)
-    crane_dist = math.hypot(crane_tx - (-1.42), crane_tz - 0.86)
+    # Articulated Yellow Crane (`(-1.98, +1.22)` -> `(-0.62, +1.52)`: `dx=+1.36m, dz=+0.30m`!)
+    # Sweeps boldly in broadside profile across the left at `+45°` yaw while keeping Hangar 1's door & Eagle crest 100% clear!
+    crane_x0, crane_z0 = -1.98, 1.22
+    crane_tx, crane_tz = -0.62, 1.52
+    crane_yaw = math.atan2(crane_tx - crane_x0, crane_tz - crane_z0)
+    crane_dist = math.hypot(crane_tx - crane_x0, crane_tz - crane_z0)
     hb.add_lattice_gantry_crane(
-        x0=-1.42,
+        x0=crane_x0,
         y0=y_deck,
-        z0=0.86,
-        pedestal_h=1.72,
+        z0=crane_z0,
+        pedestal_h=1.74,
         boom_len=crane_dist,
         boom_yaw=crane_yaw,
         claw_drop_y=y0 + 0.50,
@@ -192,14 +194,14 @@ def build_allied_conyard(out_glb_path: str) -> GlbVerificationSummary:
         mat_pedestal=MAT_TEAM_LIGHT,
     )
     # Hazard safety pad & steel girder staged beneath the left crane claw!
-    hb.add_hazard_drop_pad(-0.66, y0, 1.86, 0.92, 0.88, with_rails=False)
-    hb.add_oriented_beam((-0.92, y0 + 0.36, 1.72), (-0.40, y0 + 0.36, 2.00), 0.18, 0.16, mat=MAT_STEEL_BRUSHED, chamfer=0.01)
+    hb.add_hazard_drop_pad(-0.64, y0, 1.62, 0.64, 0.72, with_rails=False)
+    hb.add_oriented_beam((-0.82, y0 + 0.34, 1.46), (-0.46, y0 + 0.34, 1.78), 0.18, 0.16, mat=MAT_STEEL_BRUSHED, chamfer=0.01)
 
     hull_obj = hb.to_blender_object()
     add_socket_empty("Exhaust_01", hull_obj, (-0.88, y0 + 2.84, -1.62))
     add_socket_empty("DamageSmoke_01", hull_obj, (0.45, y0 + 2.25, 0.0))
 
-    return bake_and_export_ra2_glb([hull_obj], mats, out_glb_path, tex_size=1024, ao_samples=24)
+    return bake_and_export_ra2_glb([hull_obj], mats, out_glb_path, tex_size=1024, ao_samples=24, is_unit=False)
 
 
 # ==============================================================================
@@ -229,14 +231,14 @@ def build_allied_power_plant(out_glb_path: str) -> GlbVerificationSummary:
     hb.add_lathe(0.0, 0.0, dish_prof, sides=22, mat=MAT_GOLD, smooth=True)
     hb.add_sphere(0.0, 1.72, 0.0, 0.68, 0.30, 0.68, rings=8, sides=20, mat=MAT_GLOW_PLASMA_GOLD)
 
-    # Vertical glowing plasma-core cylinder rising from cauldron (`y = 1.68..2.76m`) + chrome containment rods
-    hb.add_cylinder_y(0.0, 1.68, 0.0, 0.30, 2.74, 0.25, sides=16, mat=MAT_GLOW_PLASMA_GOLD, smooth=True)
-    for py_ring in (2.08, 2.44):
-        hb.add_torus(0.0, py_ring, 0.0, 0.35, 0.038, maj_segs=16, min_segs=8, mat=MAT_GLOW_PLASMA_CYAN, axis="y")
-    hb.add_cylinder_y(0.0, 2.72, 0.0, 0.38, 2.90, 0.30, sides=16, mat=MAT_STEEL_BRUSHED, smooth=True)
+    # Vertical glowing golden plasma-core cylinder rising from cauldron (`y = 1.68..2.62m`) + dark pinch rings & chrome rods
+    hb.add_cylinder_y(0.0, 1.68, 0.0, 0.29, 2.62, 0.24, sides=16, mat=MAT_GLOW_PLASMA_GOLD, smooth=True)
+    for py_ring in (2.04, 2.38):
+        hb.add_torus(0.0, py_ring, 0.0, 0.33, 0.036, maj_segs=16, min_segs=8, mat=MAT_GUNMETAL, axis="y")
+    hb.add_cylinder_y(0.0, 2.60, 0.0, 0.36, 2.78, 0.28, sides=16, mat=MAT_STEEL_BRUSHED, smooth=True)
     for ri in range(4):
         ra = ri * (math.pi * 0.5) + math.pi * 0.25
-        hb.add_cylinder_y(math.cos(ra) * 0.38, 1.78, math.sin(ra) * 0.38, 0.032, 2.76, 0.032, sides=8, mat=MAT_CHROME)
+        hb.add_cylinder_y(math.cos(ra) * 0.37, 1.78, math.sin(ra) * 0.37, 0.032, 2.64, 0.032, sides=8, mat=MAT_CHROME)
 
     # 3 Tall Armored Allied-Blue-and-Steel Ribbed Containment Pylons framing LEFT, TOP-REAR, and RIGHT
     # so Front-Bottom `(+X, +Z)` opens directly onto the blazing golden plasma cauldron (exact `allied_power_plant.png` layout!)
@@ -333,7 +335,8 @@ def build_allied_power_plant(out_glb_path: str) -> GlbVerificationSummary:
         out_glb_path,
         tex_size=1024,
         ao_samples=24,
-        emissive_factor=(2.1, 2.1, 2.1),
+        emissive_factor=(1.45, 1.45, 1.45),
+        is_unit=False,
     )
 
 
@@ -470,7 +473,7 @@ def build_soviet_conyard(out_glb_path: str) -> GlbVerificationSummary:
     add_socket_empty("Exhaust_01", hull_obj, (-2.22, y0 + 1.90, 0.60))
     add_socket_empty("DamageSmoke_01", hull_obj, (-0.85, y0 + 2.35, 0.20))
 
-    return bake_and_export_ra2_glb([hull_obj], mats, out_glb_path, tex_size=1024, ao_samples=24)
+    return bake_and_export_ra2_glb([hull_obj], mats, out_glb_path, tex_size=1024, ao_samples=24, is_unit=False)
 
 
 # ==============================================================================
@@ -562,7 +565,8 @@ def build_soviet_tesla_coil(out_glb_path: str) -> GlbVerificationSummary:
         out_glb_path,
         tex_size=1024,
         ao_samples=24,
-        emissive_factor=(2.4, 2.4, 2.4),
+        emissive_factor=(1.65, 1.65, 1.65),
+        is_unit=False,
     )
 
 

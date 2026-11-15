@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import os
 import tempfile
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Tuple
 
 import bmesh
 import bpy
@@ -20,6 +20,7 @@ import numpy as np
 
 from . import is_team_material
 from .glb_postprocess import BakedTexturesPayload, GlbVerificationSummary, inject_pbr_and_finalize_glb
+from .kitbash_primitives import apply_crisp_hard_surface_normals
 from .materials import attach_bake_image_target, set_library_bake_mode
 from .png_io import dilate_uv_islands, encode_png_bytes, linear_to_srgb
 
@@ -75,7 +76,7 @@ def configure_cycles_gpu(ao_distance: float = 3.0) -> str:
     return selected_backend
 
 
-def unwrap_disjoint_team_uvs(mesh_objs: List[bpy.types.Object]) -> bool:
+def unwrap_disjoint_team_uvs(mesh_objs: List[bpy.types.Object], is_unit: bool = False) -> bool:
     """
     Applies modifiers and unwraps all `mesh_objs` simultaneously in Multi-Object Edit Mode so:
       1. Zero UV overlap across `Hull`, `Turret`, `Barrel`, `FactoryDoor`, `Rotor`!
@@ -90,18 +91,21 @@ def unwrap_disjoint_team_uvs(mesh_objs: List[bpy.types.Object]) -> bool:
         bpy.context.view_layer.objects.active = obj
         obj.select_set(True)
         for mod in list(obj.modifiers):
-            bpy.ops.object.modifier_apply(modifier=mod.name)
+            if mod.type == "WEIGHTED_NORMAL":
+                obj.modifiers.remove(mod)
+            else:
+                bpy.ops.object.modifier_apply(modifier=mod.name)
         obj.select_set(False)
 
-    # Guard the strict `< 14,500` glTF LOD0 vertex budget BEFORE UV unwrapping (hard-shaded
-    # quads average ~2.0 glTF vertices per triangle, so `<= 6,100` triangles guarantees `< 13,500`
-    # exported glTF vertices while preserving all material boundaries & sharp silhouettes!).
+    # Guard strict `glb_optimizer.rs` idempotency budgets (`max_unit_verts=6000`, `max_building_verts=12000`)
+    # BEFORE UV unwrapping & BEFORE computing `WeightedNormal` so custom split normals are never corrupted!
+    max_tris = 2400 if is_unit else 5300
     est_tris = sum(sum(max(1, len(p.vertices) - 2) for p in o.data.polygons) for o in mesh_objs)
-    if est_tris > 6100:
-        target_ratio = max(0.25, min(0.96, 5950.0 / float(est_tris)))
+    if est_tris > max_tris:
+        target_ratio = max(0.25, min(0.96, float(max_tris - 90) / float(est_tris)))
         for obj in mesh_objs:
             obj_tris = sum(max(1, len(p.vertices) - 2) for p in obj.data.polygons)
-            if obj_tris < 120:
+            if obj_tris < 100:
                 continue
             bpy.context.view_layer.objects.active = obj
             obj.select_set(True)
@@ -212,20 +216,32 @@ def unwrap_disjoint_team_uvs(mesh_objs: List[bpy.types.Object]) -> bool:
         bmesh.update_edit_mesh(obj.data, loop_triangles=True, destructive=True)
 
     bpy.ops.object.mode_set(mode="OBJECT")
+    bpy.ops.object.select_all(action="DESELECT")
     for obj in mesh_objs:
         obj.data.validate(clean_customdata=False)
-    bpy.ops.object.select_all(action="DESELECT")
+        # Recompute crisp hard-surface auto-smooth (`28.6°`) + `WeightedNormal` AFTER triangulation!
+        apply_crisp_hard_surface_normals(obj, angle=0.50)
+        bpy.context.view_layer.objects.active = obj
+        obj.select_set(True)
+        bpy.ops.object.modifier_apply(modifier="WeightedNormal")
+        obj.select_set(False)
     return has_team
 
 
 def _create_joined_bake_proxy(mesh_objs: List[bpy.types.Object]) -> bpy.types.Object:
-    """Duplicates all `mesh_objs` in world space and joins into a single temporary `RA2_BakeProxy`."""
+    """
+    Duplicates `mesh_objs` into a temporary `RA2_BakeProxy`, exploding articulated parts (`idx * 25m`
+    along `+X`, `> ao_distance`, preserving vertical Blender `Z` ground weathering) so rotating
+    `Turret` / `Barrel` / `Rotor` nodes NEVER bake static ghost AO shadow stripes onto `Hull`!
+    """
     bpy.ops.object.select_all(action="DESELECT")
     dups = []
-    for src in mesh_objs:
+    for idx, src in enumerate(mesh_objs):
         dup_mesh = src.data.copy()
         dup_obj = bpy.data.objects.new(f"{src.name}_bake_dup", dup_mesh)
-        dup_obj.matrix_world = src.matrix_world.copy()
+        mw = src.matrix_world.copy()
+        mw.translation.x += float(idx) * 25.0
+        dup_obj.matrix_world = mw
         bpy.context.collection.objects.link(dup_obj)
         dups.append(dup_obj)
         src.hide_render = True
@@ -252,13 +268,14 @@ def bake_cycles_pbr_maps(
     tex_size: int = 1024,
     ao_samples: int = 24,
     emissive_factor: Tuple[float, float, float] = (1.8, 1.8, 1.8),
+    is_unit: bool = False,
 ) -> BakedTexturesPayload:
     """
     Unwraps `mesh_objs`, bakes Cycles Raytraced AO, Tangent Normals, Curvature-Shaded Albedo,
     Roughness/Metallic, and Emissive onto `(tex_size, tex_size)` buffers, dilates UV margins
     without crossing the `split_row` Team/Non-Team moat, and encodes lossless PNG payloads.
     """
-    has_team = unwrap_disjoint_team_uvs(mesh_objs)
+    has_team = unwrap_disjoint_team_uvs(mesh_objs, is_unit=is_unit)
     split_row = int(round((1.0 - 0.361) * tex_size)) if has_team else tex_size
 
     proxy = _create_joined_bake_proxy(mesh_objs)
@@ -385,8 +402,10 @@ def bake_cycles_pbr_maps(
     orm_dil, orm_filled = dilate_uv_islands(orm_u8, valid, iterations=14)
     orm_dil[~orm_filled] = (255, 145, 0)
 
-    # Emissive Map (`RGB`, sRGB — strictly `[0,0,0]` everywhere except true emissive islands!)
-    emis_srgb = linear_to_srgb(np.clip(emis_lin, 0.0, 1.0))
+    # Emissive Map (`RGB`, sRGB — hue-preserving normalization so intense HDR gold/cyan never bleaches white!)
+    emis_pos = np.maximum(emis_lin, 0.0)
+    emis_peak = np.maximum(1.0, np.max(emis_pos, axis=2, keepdims=True))
+    emis_srgb = linear_to_srgb(emis_pos / emis_peak)
     emis_u8 = np.clip(np.round(emis_srgb * 255.0), 0, 255).astype(np.uint8)
     emis_active = valid & (np.max(emis_u8, axis=2) > 4)
     if np.any(emis_active):
@@ -478,18 +497,25 @@ def bake_and_export_ra2_glb(
     ao_samples: int = 24,
     lod1_ratio: float = 0.25,
     emissive_factor: Tuple[float, float, float] = (1.8, 1.8, 1.8),
+    is_unit: Optional[bool] = None,
 ) -> GlbVerificationSummary:
     """
     End-to-end Blender 5.3 + Cycles HIP GPU bake -> LOD1 generation -> glTF 2.0 export ->
     lossless PNG injection -> strict verification!
     """
     os.makedirs(os.path.dirname(os.path.abspath(out_glb_path)), exist_ok=True)
+    resolved_is_unit = (
+        bool(is_unit)
+        if is_unit is not None
+        else any(o.name in ("Turret", "Barrel") for o in mesh_objs)
+    )
     payload = bake_cycles_pbr_maps(
         mesh_objs=mesh_objs,
         mats=mats,
         tex_size=tex_size,
         ao_samples=ao_samples,
         emissive_factor=emissive_factor,
+        is_unit=resolved_is_unit,
     )
     attach_lod1_children_and_unify_materials(mesh_objs, lod1_ratio=lod1_ratio)
 
@@ -506,7 +532,8 @@ def bake_and_export_ra2_glb(
         export_attributes=True,
         export_apply=True,
     )
-    summary = inject_pbr_and_finalize_glb(raw_glb, out_glb_path, payload)
+    max_verts = 5800 if resolved_is_unit else 11800
+    summary = inject_pbr_and_finalize_glb(raw_glb, out_glb_path, payload, max_lod0_verts=max_verts)
     try:
         os.remove(raw_glb)
     except OSError:

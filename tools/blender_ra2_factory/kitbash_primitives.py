@@ -637,15 +637,23 @@ class PartBuilder(BuildingKitbashMixin, VehicleKitbashMixin):
             obj.parent = parent
         bpy.context.collection.objects.link(obj)
 
-        # Apply crisp hard-surface auto-smooth + Weighted Normal modifier!
-        bpy.context.view_layer.objects.active = obj
-        obj.select_set(True)
-        bpy.ops.object.shade_smooth_by_angle(angle=0.72, keep_sharp_edges=True)
-        wn = obj.modifiers.new(name="WeightedNormal", type="WEIGHTED_NORMAL")
-        wn.keep_sharp = True
-        wn.weight = 50
-        obj.select_set(False)
+        # Apply crisp hard-surface auto-smooth (`angle=0.50` = 28.6 deg) + Weighted Normal modifier!
+        apply_crisp_hard_surface_normals(obj, angle=0.50)
         return obj
+
+
+def apply_crisp_hard_surface_normals(obj: bpy.types.Object, angle: float = 0.50) -> None:
+    """Applies `shade_smooth_by_angle` (`~28.6°`) and attaches a fresh `WeightedNormal` modifier."""
+    for mod in list(obj.modifiers):
+        if mod.type == "WEIGHTED_NORMAL":
+            obj.modifiers.remove(mod)
+    bpy.context.view_layer.objects.active = obj
+    obj.select_set(True)
+    bpy.ops.object.shade_smooth_by_angle(angle=angle, keep_sharp_edges=True)
+    wn = obj.modifiers.new(name="WeightedNormal", type="WEIGHTED_NORMAL")
+    wn.keep_sharp = True
+    wn.weight = 50
+    obj.select_set(False)
 
 
 def add_socket_empty(
