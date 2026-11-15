@@ -361,6 +361,16 @@ pub(super) fn validate_map_def(
         }
     };
 
+    if map_def.spawns.len() > crate::manifest::MAX_PLAYER_COLORS {
+        report.push_error(
+            "TOO_MANY_MAP_SPAWNS",
+            format!(
+                "Map '{map_id}' defines {} player_spawns (maximum supported is {})",
+                map_def.spawns.len(),
+                crate::manifest::MAX_PLAYER_COLORS
+            ),
+        );
+    }
     for spawn in &map_def.spawns {
         if !loaded.factions.contains_key(&spawn.faction) {
             report.push_error(

@@ -7,6 +7,7 @@ pub mod trigger_graph;
 pub mod vfx_defs;
 pub mod world_defs;
 
+pub use crate::manifest::{PlayerColorDef, MAX_PLAYER_COLORS};
 pub use ai_behavior_tree::*;
 pub use combat_defs::*;
 pub use common::*;

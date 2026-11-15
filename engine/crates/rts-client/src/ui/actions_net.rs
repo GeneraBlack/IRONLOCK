@@ -98,7 +98,7 @@ pub(super) fn handle_network_action(
                 .strip_prefix("127.0.0.1:")
                 .map(|p| format!("0.0.0.0:{p}"))
                 .unwrap_or_else(|| addr_str.clone());
-            let expected = client_state.host_player_slots.max(2);
+            let expected = client_state.host_player_slots.clamp(2, 16);
             let bind_res = LockstepServer::bind_with_udp(
                 effective_bind.as_str(),
                 "0.0.0.0:0",
@@ -121,6 +121,7 @@ pub(super) fn handle_network_action(
                     let pw_opt = (!client_state.lobby_password_input.trim().is_empty())
                         .then(|| client_state.lobby_password_input.trim().to_string());
                     srv.set_join_password(pw_opt.clone());
+                    let want_16 = expected > 8 || mod_res.0.entry_map.spawns.len() > 8;
                     srv.enable_staging_room(LobbyMatchRules {
                         map_id: mod_res.0.entry_map.id.clone(),
                         map_name: mod_res.0.entry_map.name.clone(),
@@ -131,6 +132,7 @@ pub(super) fn handle_network_action(
                         crates_enabled: true,
                         fog_of_war: client_state.fog_of_war_enabled,
                         game_mode: sim_res.0.game_mode.label().to_string(),
+                        target_slot_count: want_16.then_some(16),
                         ..Default::default()
                     });
                     if let Ok(bound_addr) = srv.local_addr() {
@@ -414,6 +416,7 @@ pub(super) fn handle_network_action(
             client_state.host_player_slots = match client_state.host_player_slots {
                 2 => 4,
                 4 => 8,
+                8 => 16,
                 _ => 2,
             };
             last_sig.studio_sig.clear();

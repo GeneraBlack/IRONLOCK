@@ -5,6 +5,30 @@ use rts_simulation::world::SimWorld;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
+pub const MAX_SHARED_TEAM_DAMAGE_MATERIALS: usize = 64;
+pub const TEAM_COLOR_PALETTE_SLOTS: u8 = 17;
+pub const PLAYER_TEAM_COLOR_COUNT: u8 = 16;
+
+/// Canonical 16-player built-in sRGB palette (`1..=16`), overridden slot-for-slot by `ModManifest::player_colors`.
+pub const DEFAULT_PLAYER_COLORS: [(&str, &str, [f32; 3]); 16] = [
+    ("cobalt_blue", "Cobalt Blue", [0.06, 0.36, 1.00]),
+    ("crimson_red", "Crimson Red", [0.94, 0.05, 0.06]),
+    ("psi_purple", "Psi Purple", [0.58, 0.07, 0.96]),
+    ("sovereign_gold", "Sovereign Gold", [1.00, 0.78, 0.04]),
+    ("emerald_green", "Emerald Green", [0.06, 0.80, 0.20]),
+    ("chrono_cyan", "Chrono Cyan", [0.04, 0.82, 0.92]),
+    ("blaze_orange", "Blaze Orange", [1.00, 0.38, 0.03]),
+    ("comandante_pink", "Comandante Pink", [0.94, 0.12, 0.60]),
+    ("sky_ice_blue", "Sky Ice Blue", [0.42, 0.76, 1.00]),
+    ("chartreuse_lime", "Chartreuse Lime", [0.62, 0.94, 0.10]),
+    ("burgundy_maroon", "Burgundy Maroon", [0.52, 0.04, 0.14]),
+    ("navy_indigo", "Navy Indigo", [0.10, 0.16, 0.62]),
+    ("forest_olive", "Forest Olive", [0.26, 0.48, 0.14]),
+    ("teal_turquoise", "Teal Turquoise", [0.04, 0.56, 0.52]),
+    ("desert_amber", "Desert Amber", [0.84, 0.62, 0.30]),
+    ("bronze_brown", "Bronze Brown", [0.50, 0.28, 0.10]),
+];
+
 /// Accessible colorblind & high-contrast team-color palette modes (`Task 240`).
 #[derive(
     Debug, Default, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize,
@@ -77,19 +101,81 @@ pub struct ColorblindSettingsResource {
     pub mode: ColorblindPaletteMode,
 }
 
-/// Resolves an accessible `[r, g, b, a]` team color for `slot_idx` under the active `ColorblindPaletteMode`.
-pub fn resolve_accessible_team_color(
+const DEUTERANOPIA_16: [[f32; 3]; 16] = [
+    [0.00, 0.45, 0.70],
+    [0.84, 0.37, 0.00],
+    [0.80, 0.47, 0.65],
+    [0.94, 0.89, 0.26],
+    [0.34, 0.71, 0.91],
+    [0.90, 0.62, 0.00],
+    [0.15, 0.25, 0.85],
+    [0.98, 0.74, 0.48],
+    [0.56, 0.82, 0.98],
+    [0.78, 0.76, 0.14],
+    [0.52, 0.20, 0.02],
+    [0.08, 0.14, 0.52],
+    [0.44, 0.52, 0.22],
+    [0.18, 0.56, 0.68],
+    [0.86, 0.66, 0.38],
+    [0.48, 0.34, 0.18],
+];
+
+const PROTANOPIA_16: [[f32; 3]; 16] = [
+    [0.08, 0.48, 0.86],
+    [0.92, 0.62, 0.05],
+    [0.42, 0.76, 0.96],
+    [0.96, 0.90, 0.28],
+    [0.22, 0.30, 0.78],
+    [0.82, 0.46, 0.12],
+    [0.64, 0.56, 0.92],
+    [0.95, 0.78, 0.52],
+    [0.58, 0.86, 1.00],
+    [0.80, 0.82, 0.16],
+    [0.54, 0.32, 0.06],
+    [0.10, 0.18, 0.56],
+    [0.46, 0.54, 0.24],
+    [0.16, 0.60, 0.74],
+    [0.84, 0.68, 0.40],
+    [0.46, 0.36, 0.20],
+];
+
+const TRITANOPIA_16: [[f32; 3]; 16] = [
+    [0.00, 0.66, 0.68],
+    [0.92, 0.18, 0.22],
+    [0.96, 0.54, 0.66],
+    [0.58, 0.88, 0.88],
+    [0.12, 0.42, 0.46],
+    [0.84, 0.14, 0.42],
+    [0.98, 0.76, 0.78],
+    [0.26, 0.78, 0.72],
+    [0.44, 0.82, 0.86],
+    [0.68, 0.92, 0.86],
+    [0.56, 0.08, 0.18],
+    [0.08, 0.26, 0.34],
+    [0.24, 0.54, 0.52],
+    [0.06, 0.56, 0.58],
+    [0.86, 0.58, 0.62],
+    [0.48, 0.26, 0.28],
+];
+
+/// Resolves an accessible `[r, g, b, a]` team color for `slot_idx` (`0..=16`), honoring `loaded.manifest.player_colors` when `mode == Off`.
+pub fn resolve_accessible_team_color_in_mod(
     slot_idx: u8,
     is_local: bool,
     is_ally: bool,
     mode: ColorblindPaletteMode,
+    loaded: Option<&LoadedMod>,
 ) -> [f32; 4] {
-    if slot_idx == 0 {
+    let norm = slot_idx % TEAM_COLOR_PALETTE_SLOTS;
+    if norm == 0 {
         return [0.78, 0.80, 0.84, 1.0];
     }
-    let idx = (slot_idx % TEAM_COLOR_PALETTE_SLOTS) as usize;
+    let idx0 = (norm - 1) as usize;
     let rgb = match mode {
-        ColorblindPaletteMode::Off => team_color_rgb_for_slot(slot_idx),
+        ColorblindPaletteMode::Off => match loaded {
+            Some(m) => team_color_rgb_for_slot_in_mod(norm, m),
+            None => team_color_rgb_for_slot(norm),
+        },
         ColorblindPaletteMode::AllyEnemyHighContrast => {
             if is_local {
                 [0.14, 0.72, 1.00]
@@ -99,45 +185,22 @@ pub fn resolve_accessible_team_color(
                 [1.00, 0.22, 0.14]
             }
         }
-        ColorblindPaletteMode::Deuteranopia => match idx {
-            1 => [0.00, 0.45, 0.70],
-            2 => [0.84, 0.37, 0.00],
-            3 => [0.80, 0.47, 0.65],
-            4 => [0.94, 0.89, 0.26],
-            5 => [0.34, 0.71, 0.91],
-            6 => [0.90, 0.62, 0.00],
-            7 => [0.15, 0.25, 0.85],
-            8 => [0.98, 0.74, 0.48],
-            _ => [0.68, 0.82, 0.96],
-        },
-        ColorblindPaletteMode::Protanopia => match idx {
-            1 => [0.08, 0.48, 0.86],
-            2 => [0.92, 0.62, 0.05],
-            3 => [0.42, 0.76, 0.96],
-            4 => [0.96, 0.90, 0.28],
-            5 => [0.22, 0.30, 0.78],
-            6 => [0.82, 0.46, 0.12],
-            7 => [0.64, 0.56, 0.92],
-            8 => [0.95, 0.78, 0.52],
-            _ => [0.72, 0.86, 0.96],
-        },
-        ColorblindPaletteMode::Tritanopia => match idx {
-            1 => [0.00, 0.66, 0.68],
-            2 => [0.92, 0.18, 0.22],
-            3 => [0.96, 0.54, 0.66],
-            4 => [0.58, 0.88, 0.88],
-            5 => [0.12, 0.42, 0.46],
-            6 => [0.84, 0.14, 0.42],
-            7 => [0.98, 0.76, 0.78],
-            8 => [0.26, 0.78, 0.72],
-            _ => [0.76, 0.86, 0.88],
-        },
+        ColorblindPaletteMode::Deuteranopia => DEUTERANOPIA_16[idx0],
+        ColorblindPaletteMode::Protanopia => PROTANOPIA_16[idx0],
+        ColorblindPaletteMode::Tritanopia => TRITANOPIA_16[idx0],
     };
     [rgb[0], rgb[1], rgb[2], 1.0]
 }
 
-pub const MAX_SHARED_TEAM_DAMAGE_MATERIALS: usize = 32;
-pub const TEAM_COLOR_PALETTE_SLOTS: u8 = 10;
+/// Resolves an accessible `[r, g, b, a]` team color for `slot_idx` under the active `ColorblindPaletteMode`.
+pub fn resolve_accessible_team_color(
+    slot_idx: u8,
+    is_local: bool,
+    is_ally: bool,
+    mode: ColorblindPaletteMode,
+) -> [f32; 4] {
+    resolve_accessible_team_color_in_mod(slot_idx, is_local, is_ally, mode, None)
+}
 
 pub fn lod0_visibility_range() -> VisibilityRange {
     VisibilityRange {
@@ -183,21 +246,78 @@ impl DamageVisualTier {
 }
 
 pub fn team_color_rgb_for_slot(slot: u8) -> [f32; 3] {
-    match slot % TEAM_COLOR_PALETTE_SLOTS {
-        0 => [0.76, 0.78, 0.82], // Neutral / Civilian Steel
-        1 => [0.06, 0.36, 1.00], // Allied Cobalt Blue
-        2 => [0.94, 0.05, 0.06], // Soviet Crimson Red
-        3 => [0.58, 0.07, 0.96], // Yuri Psi-Purple
-        4 => [1.00, 0.76, 0.04], // Gold / Sovereign Yellow
-        5 => [0.06, 0.80, 0.20], // Emerald Green
-        6 => [0.04, 0.82, 0.92], // Chrono Cyan
-        7 => [1.00, 0.36, 0.03], // Blaze Orange
-        8 => [0.94, 0.08, 0.56], // Comandante Pink / Magenta
-        _ => [0.42, 0.76, 1.00], // Sky Ice Blue
+    let norm = slot % TEAM_COLOR_PALETTE_SLOTS;
+    if norm == 0 {
+        [0.76, 0.78, 0.82]
+    } else {
+        DEFAULT_PLAYER_COLORS[(norm - 1) as usize].2
     }
 }
 
-fn default_faction_slot(faction_id: &str) -> u8 {
+pub fn team_color_name_for_slot(slot: u8) -> &'static str {
+    let norm = slot % TEAM_COLOR_PALETTE_SLOTS;
+    if norm == 0 {
+        "Neutral"
+    } else {
+        DEFAULT_PLAYER_COLORS[(norm - 1) as usize].1
+    }
+}
+
+pub fn team_color_rgb_for_slot_in_mod(slot: u8, loaded: &LoadedMod) -> [f32; 3] {
+    let norm = slot % TEAM_COLOR_PALETTE_SLOTS;
+    if norm == 0 {
+        return [0.76, 0.78, 0.82];
+    }
+    if let Some(def) = loaded.manifest.player_colors.get((norm - 1) as usize) {
+        return def.rgb;
+    }
+    DEFAULT_PLAYER_COLORS[(norm - 1) as usize].2
+}
+
+pub fn team_color_name_for_slot_in_mod(slot: u8, loaded: &LoadedMod) -> &str {
+    let norm = slot % TEAM_COLOR_PALETTE_SLOTS;
+    if norm == 0 {
+        return "Neutral";
+    }
+    if let Some(def) = loaded.manifest.player_colors.get((norm - 1) as usize) {
+        if !def.name.trim().is_empty() {
+            return def.name.as_str();
+        }
+    }
+    DEFAULT_PLAYER_COLORS[(norm - 1) as usize].1
+}
+
+/// Resolves `(label, preview_rgb)` for a UI `color_index` (`0` = `"Auto"`, `1..=16` = explicit palette slot).
+pub fn resolve_ui_color_swatch<'a>(
+    color_index: u8,
+    faction_hint: Option<&str>,
+    loaded: Option<&'a LoadedMod>,
+) -> (&'a str, [f32; 3]) {
+    if color_index == 0 {
+        let preview_rgb = faction_hint
+            .map(str::trim)
+            .filter(|f| !f.is_empty() && !f.eq_ignore_ascii_case("random"))
+            .map(|f| {
+                let slot = default_faction_slot(f);
+                match loaded {
+                    Some(m) => team_color_rgb_for_slot_in_mod(slot, m),
+                    None => team_color_rgb_for_slot(slot),
+                }
+            })
+            .unwrap_or([0.66, 0.74, 0.86]);
+        return ("Auto", preview_rgb);
+    }
+    let slot = 1 + ((color_index - 1) % PLAYER_TEAM_COLOR_COUNT);
+    match loaded {
+        Some(m) => (
+            team_color_name_for_slot_in_mod(slot, m),
+            team_color_rgb_for_slot_in_mod(slot, m),
+        ),
+        None => (team_color_name_for_slot(slot), team_color_rgb_for_slot(slot)),
+    }
+}
+
+pub fn default_faction_slot(faction_id: &str) -> u8 {
     let low = faction_id.to_ascii_lowercase();
     if low.contains("allies") || low.contains("allied") || low.contains("gdi") {
         1
@@ -210,60 +330,91 @@ fn default_faction_slot(faction_id: &str) -> u8 {
     }
 }
 
+fn default_faction_slot_in_mod(faction_id: &str, loaded: &LoadedMod) -> u8 {
+    let builtin = default_faction_slot(faction_id);
+    if builtin != 4 {
+        return builtin;
+    }
+    if let Some(fac) = loaded.factions.get(faction_id) {
+        let [fr, fg, fb] = fac.color;
+        let mut best: Option<(u8, f32)> = None;
+        for slot in 1..=PLAYER_TEAM_COLOR_COUNT {
+            let [pr, pg, pb] = team_color_rgb_for_slot_in_mod(slot, loaded);
+            let dist_sq = (fr - pr).powi(2) + (fg - pg).powi(2) + (fb - pb).powi(2);
+            if dist_sq <= 0.08 && best.is_none_or(|(_, b_d)| dist_sq < b_d) {
+                best = Some((slot, dist_sq));
+            }
+        }
+        if let Some((slot, _)) = best {
+            return slot;
+        }
+    }
+    builtin
+}
+
+/// Resolves deterministic palette slot `1..=16` (`0` for neutral `player_id == 0`).
+/// - `color_index == 0`: `"Auto (Faction Default)"` (`allies -> 1`, `soviets -> 2`, `yuri -> 3`).
+/// - `color_index == 1..=16`: explicit palette slot `1..=16`.
+///
+/// Explicit choices claim their requested slot first; remaining collisions resolve deterministically across `1..=16`.
 pub fn resolve_player_team_color_slot(world: &SimWorld, loaded: &LoadedMod, player_id: u8) -> u8 {
     if player_id == 0 {
         return 0;
     }
-    let _ = loaded;
-    let Some(econ) = world.players.get(&player_id) else {
-        return 1 + ((player_id.saturating_sub(1)) % 9);
-    };
-
-    let candidate_for = |pid: u8, p: &rts_simulation::world::PlayerEconomy| -> u8 {
-        if p.color_index > 0 {
-            1 + ((p.color_index.saturating_sub(1)) % 9)
-        } else {
-            let f_slot = default_faction_slot(&p.faction);
-            if f_slot > 0 {
-                f_slot
-            } else {
-                1 + ((pid.saturating_sub(1)) % 9)
-            }
-        }
-    };
-
-    let mut chosen = candidate_for(player_id, econ);
-    let mut used_by_earlier = [false; TEAM_COLOR_PALETTE_SLOTS as usize];
-    for (&other_pid, other_econ) in &world.players {
-        if other_pid == 0 || other_pid >= player_id {
-            continue;
-        }
-        let mut earlier_slot = candidate_for(other_pid, other_econ);
-        for step in 0..9u8 {
-            let probe = 1 + ((earlier_slot.saturating_sub(1) + step) % 9);
-            if !used_by_earlier[probe as usize] {
-                earlier_slot = probe;
-                break;
-            }
-        }
-        used_by_earlier[earlier_slot as usize] = true;
+    if !world.players.contains_key(&player_id) {
+        return 1 + ((player_id.saturating_sub(1)) % PLAYER_TEAM_COLOR_COUNT);
     }
 
-    if used_by_earlier[chosen as usize] {
-        for step in 1..=9u8 {
-            let probe = 1 + ((chosen.saturating_sub(1) + step) % 9);
-            if !used_by_earlier[probe as usize] {
+    let mut used = [false; TEAM_COLOR_PALETTE_SLOTS as usize];
+    let mut assigned: Option<u8> = None;
+
+    // Pass 1: Explicit `color_index > 0` claims (`1..=16`) in ascending deterministic `pid` order
+    for (&pid, econ) in &world.players {
+        if pid == 0 || econ.color_index == 0 {
+            continue;
+        }
+        let base = 1 + ((econ.color_index - 1) % PLAYER_TEAM_COLOR_COUNT);
+        let mut chosen = base;
+        for step in 0..PLAYER_TEAM_COLOR_COUNT {
+            let probe = 1 + ((base - 1 + step) % PLAYER_TEAM_COLOR_COUNT);
+            if !used[probe as usize] {
                 chosen = probe;
                 break;
             }
         }
+        used[chosen as usize] = true;
+        if pid == player_id {
+            return chosen;
+        }
     }
-    chosen
+
+    // Pass 2: `color_index == 0` Auto (Faction Default) claims across remaining unused `1..=16` slots
+    for (&pid, econ) in &world.players {
+        if pid == 0 || econ.color_index > 0 {
+            continue;
+        }
+        let base = default_faction_slot_in_mod(&econ.faction, loaded);
+        let mut chosen = base;
+        for step in 0..PLAYER_TEAM_COLOR_COUNT {
+            let probe = 1 + ((base - 1 + step) % PLAYER_TEAM_COLOR_COUNT);
+            if !used[probe as usize] {
+                chosen = probe;
+                break;
+            }
+        }
+        used[chosen as usize] = true;
+        if pid == player_id {
+            assigned = Some(chosen);
+            break;
+        }
+    }
+
+    assigned.unwrap_or_else(|| 1 + ((player_id.saturating_sub(1)) % PLAYER_TEAM_COLOR_COUNT))
 }
 
 pub fn team_color_rgb_for_player(world: &SimWorld, loaded: &LoadedMod, player_id: u8) -> [f32; 3] {
     let slot = resolve_player_team_color_slot(world, loaded, player_id);
-    team_color_rgb_for_slot(slot)
+    team_color_rgb_for_slot_in_mod(slot, loaded)
 }
 
 /// Resolves an accessible `[r, g, b]` team color for `player_id` relative to `local_pid` under `cb_mode`.
@@ -277,13 +428,24 @@ pub fn accessible_team_color_rgb_for_player(
     let slot = resolve_player_team_color_slot(world, loaded, player_id);
     let is_local = player_id == local_pid;
     let is_ally = player_id != 0 && !world.are_hostile(local_pid, player_id);
-    let rgba = resolve_accessible_team_color(slot, is_local, is_ally, cb_mode);
+    let rgba = resolve_accessible_team_color_in_mod(slot, is_local, is_ally, cb_mode, Some(loaded));
     [rgba[0], rgba[1], rgba[2]]
 }
 
-pub fn build_team_damage_standard_material(slot: u8, tier: DamageVisualTier) -> StandardMaterial {
-    let [tr, tg, tb] = team_color_rgb_for_slot(slot);
-    let tint_strength = if slot == 0 { 0.15 } else { 0.46 };
+pub fn build_team_damage_standard_material_in_mod(
+    slot: u8,
+    tier: DamageVisualTier,
+    loaded: Option<&LoadedMod>,
+) -> StandardMaterial {
+    let [tr, tg, tb] = match loaded {
+        Some(m) => team_color_rgb_for_slot_in_mod(slot, m),
+        None => team_color_rgb_for_slot(slot),
+    };
+    let tint_strength = if slot.is_multiple_of(TEAM_COLOR_PALETTE_SLOTS) {
+        0.15
+    } else {
+        0.46
+    };
     let base_r = 1.0 - tint_strength + tr * tint_strength;
     let base_g = 1.0 - tint_strength + tg * tint_strength;
     let base_b = 1.0 - tint_strength + tb * tint_strength;
@@ -313,6 +475,10 @@ pub fn build_team_damage_standard_material(slot: u8, tier: DamageVisualTier) -> 
     }
 }
 
+pub fn build_team_damage_standard_material(slot: u8, tier: DamageVisualTier) -> StandardMaterial {
+    build_team_damage_standard_material_in_mod(slot, tier, None)
+}
+
 #[derive(Resource, Debug, Default, Clone)]
 pub struct TeamDamageMaterialPalette {
     entries: HashMap<(u8, DamageVisualTier), Handle<StandardMaterial>>,
@@ -325,12 +491,24 @@ impl TeamDamageMaterialPalette {
         slot: u8,
         tier: DamageVisualTier,
     ) -> Handle<StandardMaterial> {
+        self.get_or_create_in_mod(materials, slot, tier, None)
+    }
+
+    pub fn get_or_create_in_mod(
+        &mut self,
+        materials: &mut Assets<StandardMaterial>,
+        slot: u8,
+        tier: DamageVisualTier,
+        loaded: Option<&LoadedMod>,
+    ) -> Handle<StandardMaterial> {
         let norm_slot = slot % TEAM_COLOR_PALETTE_SLOTS;
         let key = (norm_slot, tier);
         if let Some(existing) = self.entries.get(&key) {
             return existing.clone();
         }
-        let handle = materials.add(build_team_damage_standard_material(norm_slot, tier));
+        let handle = materials.add(build_team_damage_standard_material_in_mod(
+            norm_slot, tier, loaded,
+        ));
         self.entries.insert(key, handle.clone());
         handle
     }
@@ -354,12 +532,39 @@ mod tests {
         let soviet = team_color_rgb_for_slot(default_faction_slot("soviet"));
         let yuri = team_color_rgb_for_slot(default_faction_slot("yuri"));
 
-        // Allied Cobalt Blue: deep blue primary, crisp low red crosstalk
         assert!(allied[2] >= 0.95 && allied[0] <= 0.12 && allied[2] > allied[1] * 2.0);
-        // Soviet Crimson Red: punchy red primary, non-pastel low green/blue crosstalk
         assert!(soviet[0] >= 0.90 && soviet[1] <= 0.10 && soviet[2] <= 0.10);
-        // Yuri Psi-Purple: vibrant violet-magenta (strong blue + red, low green)
         assert!(yuri[2] >= 0.90 && yuri[0] >= 0.50 && yuri[1] <= 0.12);
+    }
+
+    #[test]
+    fn all_16_player_palette_slots_and_colorblind_modes_are_distinct() {
+        let mut seen_default = std::collections::BTreeSet::new();
+        for slot in 1..=PLAYER_TEAM_COLOR_COUNT {
+            let rgb = team_color_rgb_for_slot(slot);
+            let q = [
+                (rgb[0] * 255.0).round() as u8,
+                (rgb[1] * 255.0).round() as u8,
+                (rgb[2] * 255.0).round() as u8,
+            ];
+            assert!(seen_default.insert(q), "duplicate default slot {slot}: {q:?}");
+        }
+        for mode in [
+            ColorblindPaletteMode::Deuteranopia,
+            ColorblindPaletteMode::Protanopia,
+            ColorblindPaletteMode::Tritanopia,
+        ] {
+            let mut seen_cb = std::collections::BTreeSet::new();
+            for slot in 1..=PLAYER_TEAM_COLOR_COUNT {
+                let rgba = resolve_accessible_team_color(slot, false, false, mode);
+                let q = [
+                    (rgba[0] * 255.0).round() as u8,
+                    (rgba[1] * 255.0).round() as u8,
+                    (rgba[2] * 255.0).round() as u8,
+                ];
+                assert!(seen_cb.insert(q), "duplicate {mode:?} slot {slot}: {q:?}");
+            }
+        }
     }
 
     #[test]

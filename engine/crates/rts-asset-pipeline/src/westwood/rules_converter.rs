@@ -594,6 +594,7 @@ pub fn convert_westwood_ini_files_to_bundle(
         },
         scripts,
         rules: Default::default(),
+        ..Default::default()
     };
 
     Ok(ConvertedModBundle {

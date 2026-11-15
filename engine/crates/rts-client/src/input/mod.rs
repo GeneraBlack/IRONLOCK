@@ -241,6 +241,7 @@ pub struct ClientInteractionState {
     pub selected_encyclopedia_faction: String,
     pub selected_encyclopedia_entry: Option<String>,
     pub skirmish_country_index: usize,
+    pub skirmish_color_index: u8,
     pub loading_target_title: String,
     pub loading_progress: f32,
     pub local_player_id: u8,

@@ -39,6 +39,11 @@ pub(super) fn rebuild_3d_battlefield(
     }
 
     *sim_world = SimWorld::from_mod(loaded);
+    if !client_state.is_multiplayer && client_state.active_campaign_id.is_none() {
+        if let Some(econ) = sim_world.players.get_mut(&client_state.local_player_id) {
+            econ.color_index = client_state.skirmish_color_index % 17;
+        }
+    }
     vfx_state.reset();
     *cached_fow = CachedFogVisibility::default();
     sound_settings.reset_battlefield_state();
@@ -181,6 +186,7 @@ pub(super) fn handle_campaign_and_world_action(
                         client_state.support_power_page = 0;
                         client_state.upgrade_page = 0;
                         client_state.skirmish_country_index = 0;
+                        client_state.skirmish_color_index = 0;
                         mod_res.0 = new_mod;
                         sound_settings.load_from_loaded_mod(&mod_res.0);
                         if let (Some(va), Some(srv)) = (vfx_assets, asset_server) {

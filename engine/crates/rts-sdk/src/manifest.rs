@@ -292,6 +292,15 @@ impl Default for ModRules {
     }
 }
 
+pub const MAX_PLAYER_COLORS: usize = 16;
+
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize, JsonSchema)]
+pub struct PlayerColorDef {
+    pub id: String,
+    pub name: String,
+    pub rgb: [f32; 3],
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, JsonSchema)]
 pub struct ModManifest {
     pub id: String,
@@ -316,6 +325,8 @@ pub struct ModManifest {
     pub scripts: Vec<String>,
     #[serde(default)]
     pub rules: ModRules,
+    #[serde(default)]
+    pub player_colors: Vec<PlayerColorDef>,
 }
 
 impl Default for ModManifest {
@@ -334,6 +345,7 @@ impl Default for ModManifest {
             catalogs: ModCatalogPaths::default(),
             scripts: Vec::new(),
             rules: ModRules::default(),
+            player_colors: Vec::new(),
         }
     }
 }

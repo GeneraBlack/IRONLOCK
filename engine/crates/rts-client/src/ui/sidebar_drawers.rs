@@ -416,7 +416,7 @@ pub(super) fn rebuild_player_menu_modal(
         ui_cache.replay_files.len(),
     );
     let studio_sig = format!(
-        "{studio_sig}:mut={:?}:rb={}:hud_ov={:?}:cb={}:sc={}:ar={}:cmut={}",
+        "{studio_sig}:mut={:?}:rb={}:hud_ov={:?}:cb={}:sc={}:ar={}:cmut={}:skcol={}:hslots={}",
         interaction.active_mutators,
         interaction.use_hybrid_rollback,
         interaction.hud_layout_override,
@@ -424,6 +424,8 @@ pub(super) fn rebuild_player_menu_modal(
         interaction.smart_cast_enabled,
         interaction.auto_resync_on_desync,
         ui_cache.compatible_mutators.len(),
+        interaction.skirmish_color_index,
+        interaction.host_player_slots,
     );
 
     if studio_sig != last_sig.studio_sig {

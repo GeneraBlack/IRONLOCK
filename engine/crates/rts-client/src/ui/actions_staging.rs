@@ -27,6 +27,31 @@ pub fn load_or_sync_player_identity(
     profile
 }
 
+pub fn next_available_lobby_color_index(
+    current: u8,
+    my_slot_idx: u8,
+    room: &rts_network::lobby_room::LobbyRoomState,
+) -> u8 {
+    for step in 1..=17u8 {
+        let cand = current.saturating_add(step) % 17;
+        if cand == 0 {
+            return 0;
+        }
+        let taken = room.slots.iter().any(|other| {
+            other.slot_index != my_slot_idx
+                && matches!(
+                    other.occupant,
+                    LobbySlotOccupant::Human { .. } | LobbySlotOccupant::AiBot { .. }
+                )
+                && other.color_index == cand
+        });
+        if !taken {
+            return cand;
+        }
+    }
+    0
+}
+
 pub(super) fn handle_staging_and_automatch_action(
     action: &SidebarAction,
     client_state: &mut ClientInteractionState,
@@ -258,7 +283,8 @@ pub(super) fn handle_staging_and_automatch_action(
                         .or_else(|| client_state.active_lobby_room.clone())
                     {
                         if let Some(slot) = room.slots.get(*slot_idx as usize) {
-                            let next_color = (slot.color_index + 1) % 8;
+                            let next_color =
+                                next_available_lobby_color_index(slot.color_index, *slot_idx, &room);
                             let is_mine = matches!(
                                 slot.occupant,
                                 LobbySlotOccupant::Human { player_id, .. } if player_id == my_pid
@@ -299,7 +325,7 @@ pub(super) fn handle_staging_and_automatch_action(
                         .or_else(|| client_state.active_lobby_room.clone())
                     {
                         if let Some(slot) = room.slots.get(*slot_idx as usize) {
-                            let next_team = (slot.team_id + 1) % 5;
+                            let next_team = (slot.team_id + 1) % 9;
                             let is_mine = matches!(
                                 slot.occupant,
                                 LobbySlotOccupant::Human { player_id, .. } if player_id == my_pid
@@ -446,7 +472,8 @@ pub(super) fn handle_staging_and_automatch_action(
         | SidebarAction::StagingToggleSuperweapons
         | SidebarAction::StagingToggleCrates
         | SidebarAction::StagingToggleFogOfWar
-        | SidebarAction::StagingCycleGameMode => {
+        | SidebarAction::StagingCycleGameMode
+        | SidebarAction::StagingToggleMaxSlots => {
             if let Some(ref cl_mtx) = net_res.client {
                 if let Ok(mut cl) = cl_mtx.lock() {
                     if let Some(room) = cl
@@ -457,7 +484,9 @@ pub(super) fn handle_staging_and_automatch_action(
                         let mut rules = room.rules.clone();
                         match action {
                             SidebarAction::StagingCycleRuleMap => {
-                                let map_ids: Vec<String> = mod_res.0.maps.keys().cloned().collect();
+                                let mut map_ids: Vec<String> =
+                                    mod_res.0.maps.keys().cloned().collect();
+                                map_ids.sort();
                                 if !map_ids.is_empty() {
                                     let pos = map_ids
                                         .iter()
@@ -468,10 +497,20 @@ pub(super) fn handle_staging_and_automatch_action(
                                         rules.map_id = m_def.id.clone();
                                         rules.map_name = m_def.name.clone();
                                         rules.custom_map_hash = None;
+                                        if m_def.spawns.len() > 8
+                                            && room.slots.len() < m_def.spawns.len()
+                                        {
+                                            rules.target_slot_count =
+                                                Some((m_def.spawns.len() as u8).clamp(8, 16));
+                                        }
                                         mod_res.0.entry_map = m_def.clone();
                                         client_state.active_map_id = next_id;
                                     }
                                 }
+                            }
+                            SidebarAction::StagingToggleMaxSlots => {
+                                let next_cap = if room.slots.len() > 8 { 8u8 } else { 16u8 };
+                                rules.target_slot_count = Some(next_cap);
                             }
                             SidebarAction::StagingCycleRuleCredits => {
                                 rules.starting_credits = match rules.starting_credits {
@@ -546,5 +585,42 @@ pub(super) fn handle_staging_and_automatch_action(
             true
         }
         _ => false,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use rts_network::lobby_room::{LobbyMatchRules, LobbyRoomState};
+
+    #[test]
+    fn next_available_lobby_color_index_skips_taken_colors_and_allows_auto() {
+        let mut room = LobbyRoomState::new(16, LobbyMatchRules::default());
+        assert_eq!(room.slots.len(), 16);
+        room.assign_human(1, "Host".to_string());
+        room.assign_human(2, "Peer".to_string());
+        room.update_own_slot(1, "allies".to_string(), None, 1, 1, None, true, true)
+            .unwrap();
+        room.update_own_slot(2, "soviets".to_string(), None, 2, 2, None, true, true)
+            .unwrap();
+        room.host_configure_slot(
+            2,
+            LobbySlotOccupant::AiBot {
+                difficulty: "Hard".to_string(),
+                personality: "Balanced".to_string(),
+            },
+            "yuri".to_string(),
+            2,
+            3,
+            100,
+        )
+        .unwrap();
+
+        // Slot 0 (currently color 1) cycling skips 2 (Peer) and 3 (AI Bot), landing on 4 (Sovereign Gold)
+        assert_eq!(next_available_lobby_color_index(1, 0, &room), 4);
+        // Wrapping past 16 lands cleanly on 0 ("Auto") even when 1..3 are occupied
+        assert_eq!(next_available_lobby_color_index(16, 0, &room), 0);
+        // Cycling from 0 ("Auto") on Slot 1 (Peer) skips 1 (Host) and 3 (AI), landing on 2 (its own) or 4
+        assert_eq!(next_available_lobby_color_index(0, 1, &room), 2);
     }
 }

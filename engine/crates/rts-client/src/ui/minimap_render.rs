@@ -1,10 +1,9 @@
 use crate::camera::{ray_plane_intersection, ray_terrain_intersection, RtsCameraRig};
 use crate::input::ClientInteractionState;
 use crate::rendering::{
-    resolve_accessible_team_color, resolve_player_team_color_slot, CachedFogVisibility,
-    ColorblindPaletteMode,
+    resolve_accessible_team_color_in_mod, resolve_player_team_color_slot,
+    team_color_rgb_for_player, CachedFogVisibility, ColorblindPaletteMode,
 };
-use crate::ui::screens::mp_staging_room::STAGING_SLOT_COLORS;
 use bevy::prelude::*;
 use rts_sdk::loader::LoadedMod;
 use rts_sdk::schema::MapDef;
@@ -100,6 +99,9 @@ pub fn compute_radar_dynamic_fingerprint(
         }
     }
 
+    for (&pid, econ) in &world.players {
+        h = fnv_mix(h, (u64::from(pid) << 8) | u64::from(econ.color_index));
+    }
     for ping in &world.active_pings {
         let phase_bucket = (ping.remaining_secs * 12.0).round() as i32;
         h = fnv_mix(h, phase_bucket as i64 as u64);
@@ -109,44 +111,16 @@ pub fn compute_radar_dynamic_fingerprint(
     h
 }
 
-/// Resolves real lobby-slot / faction RGB (`alpha = 255`) for players `1..=8` (and neutral `0`).
+/// Resolves unified 16-player palette / mod-overridden RGB (`alpha = 255`) for players `1..=16` (and neutral `0`).
 pub fn resolve_radar_player_rgba(world: &SimWorld, loaded: &LoadedMod, pid: u8) -> [u8; 4] {
     if pid == 0 {
         return [182, 188, 196, 255];
     }
-    if let Some(econ) = world.players.get(&pid) {
-        let p1_color = world.players.get(&1).map(|p| p.color_index).unwrap_or(0);
-        let distinct_slot = econ.color_index > 0 || pid == 1 || p1_color != 0;
-        let idx = if distinct_slot {
-            (econ.color_index as usize) % STAGING_SLOT_COLORS.len()
-        } else if let Some(fac) = loaded.factions.get(&econ.faction) {
-            let [r, g, b] = fac.color;
-            if r + g + b > 0.05 {
-                return [
-                    (r.clamp(0.0, 1.0) * 255.0) as u8,
-                    (g.clamp(0.0, 1.0) * 255.0) as u8,
-                    (b.clamp(0.0, 1.0) * 255.0) as u8,
-                    255,
-                ];
-            }
-            ((pid - 1) as usize) % STAGING_SLOT_COLORS.len()
-        } else {
-            ((pid - 1) as usize) % STAGING_SLOT_COLORS.len()
-        };
-        let (r, g, b, _) = STAGING_SLOT_COLORS[idx];
-        return [
-            (r * 255.0).round() as u8,
-            (g * 255.0).round() as u8,
-            (b * 255.0).round() as u8,
-            255,
-        ];
-    }
-    let idx = ((pid.saturating_sub(1)) as usize) % STAGING_SLOT_COLORS.len();
-    let (r, g, b, _) = STAGING_SLOT_COLORS[idx];
+    let [r, g, b] = team_color_rgb_for_player(world, loaded, pid);
     [
-        (r * 255.0).round() as u8,
-        (g * 255.0).round() as u8,
-        (b * 255.0).round() as u8,
+        (r.clamp(0.0, 1.0) * 255.0).round() as u8,
+        (g.clamp(0.0, 1.0) * 255.0).round() as u8,
+        (b.clamp(0.0, 1.0) * 255.0).round() as u8,
         255,
     ]
 }
@@ -538,7 +512,8 @@ pub fn composite_radar_frame(
             let slot = resolve_player_team_color_slot(world, loaded, ent.player_id);
             let is_local = ent.player_id == pov_pid;
             let is_ally = ent.player_id != 0 && !world.are_hostile(pov_pid, ent.player_id);
-            let c = resolve_accessible_team_color(slot, is_local, is_ally, cb_mode);
+            let c =
+                resolve_accessible_team_color_in_mod(slot, is_local, is_ally, cb_mode, Some(loaded));
             [
                 (c[0].clamp(0.0, 1.0) * 255.0) as u8,
                 (c[1].clamp(0.0, 1.0) * 255.0) as u8,

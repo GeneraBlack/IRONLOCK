@@ -290,16 +290,22 @@ pub fn spawn_multiplayer_screen(
             spawn_styled_button(
                 col,
                 &format!(
-                    "Open Human Slots: {} Players (Click to Cycle 2/4/8)",
+                    "Open Human Slots: {} Players (Click to Cycle 2/4/8/16)",
                     interaction.host_player_slots
                 ),
                 SidebarAction::CycleHostPlayerSlots,
                 Color::srgb(0.22, 0.30, 0.42),
                 Val::Percent(100.0),
             );
+            let room_cap = if interaction.host_player_slots > 8 || loaded.entry_map.spawns.len() > 8
+            {
+                16
+            } else {
+                8
+            };
             spawn_styled_button(
                 col,
-                "HOST 8-SLOT STAGING ROOM (UDP+TCP)",
+                &format!("HOST {room_cap}-SLOT STAGING ROOM (UDP+TCP)"),
                 SidebarAction::HostLocalMultiplayer,
                 Color::srgb(0.18, 0.46, 0.28),
                 Val::Percent(100.0),

@@ -357,6 +357,9 @@ fn apply_overlay_layer(acc: &mut LoadedMod, node: DagLayerNode) -> Result<()> {
     if manifest_val.get("default_hud_layout").is_none() {
         child_manifest.default_hud_layout = acc.manifest.default_hud_layout;
     }
+    if manifest_val.get("player_colors").is_none() {
+        child_manifest.player_colors = acc.manifest.player_colors.clone();
+    }
 
     if let Some(res_rel) = source.resolve_resources_catalog_rel() {
         let res_disp = source.display_entry(res_rel);

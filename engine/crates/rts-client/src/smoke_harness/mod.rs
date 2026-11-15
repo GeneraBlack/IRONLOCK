@@ -1,3 +1,4 @@
+pub mod colors_16_showcase;
 pub mod stages_ext;
 
 use crate::audio::JukeboxState;
@@ -83,6 +84,16 @@ pub fn drive_visual_smoke_test(
     let Some(out_dir) = smoke.output_dir.clone() else {
         return;
     };
+    if std::env::var_os("RTS_SMOKE_16_COLORS").is_some() {
+        colors_16_showcase::drive_16_colors_showcase(
+            &mut commands, &out_dir, asset_server.as_deref(), &mut meshes, &mut materials,
+            &mut mod_res, &mut sim_res, &mut smoke, &mut interaction, &mut cached_fow,
+            &mut vfx_state, &mut subwindows, &mut last_sig, &mut terrain_dirty,
+            &mut terrain_dirty_rects, &env_q, &visual_q, &mut camera_q,
+            visual_mode.as_deref_mut(), &mut exit_events,
+        );
+        return;
+    }
     if std::env::var_os("RTS_SMOKE_RA2_OVERHAUL").is_some() {
         stages_ext::drive_ra2_overhaul_showcase(
             &mut commands, &out_dir, asset_server.as_deref(), &mut meshes, &mut materials,
@@ -144,48 +155,7 @@ pub fn drive_visual_smoke_test(
         1 => {
             let _ = std::fs::create_dir_all(&out_dir);
             if let Some(srv) = asset_server.as_ref() {
-                for p in [
-                    "rust-ra2/assets/ui/loading_screens/observer.png",
-                    "rust-ra2/assets/ui/loading_screens/country_usa.png",
-                    "rust-ra2/assets/ui/loading_screens/ra2_allied_01.png",
-                    "rust-ra2/assets/ui/loading_screens/ra2_soviet_01.png",
-                    "rust-ra2/assets/ui/hud/allied/bkgdlg.png",
-                    "rust-ra2/assets/ui/hud/allied/credits.png",
-                    "rust-ra2/assets/ui/hud/allied/top.png",
-                    "rust-ra2/assets/ui/hud/allied/optbtn.png",
-                    "rust-ra2/assets/ui/hud/allied/diplobtn.png",
-                    "rust-ra2/assets/ui/hud/allied/radar.png",
-                    "rust-ra2/assets/ui/hud/allied/side1.png",
-                    "rust-ra2/assets/ui/hud/allied/repair.png",
-                    "rust-ra2/assets/ui/hud/allied/sell.png",
-                    "rust-ra2/assets/ui/hud/allied/tab00.png",
-                    "rust-ra2/assets/ui/hud/allied/tab01.png",
-                    "rust-ra2/assets/ui/hud/allied/tab02.png",
-                    "rust-ra2/assets/ui/hud/allied/tab03.png",
-                    "rust-ra2/assets/ui/hud/allied/side2.png",
-                    "rust-ra2/assets/ui/hud/allied/side3.png",
-                    "rust-ra2/assets/ui/hud/allied/addon.png",
-                    "rust-ra2/assets/ui/hud/allied/power.png",
-                    "rust-ra2/assets/ui/cameos/powricon.png",
-                    "rust-ra2/assets/ui/cameos/brrkicon.png",
-                    "rust-ra2/assets/ui/cameos/reficon.png",
-                    "rust-ra2/assets/ui/cameos/gwepicon.png",
-                    "rust-ra2/assets/ui/cameos/mtnkicon.png",
-                    "rust-ra2/assets/ui/cameos/harvicon.png",
-                ] {
-                    smoke.preloaded_handles.push(srv.load(p.to_string()));
-                }
-                for scene_p in [
-                    "rust-ra2/assets/models/allied_engineer.glb#Scene0",
-                    "rust-ra2/assets/models/grizzly_tank.glb#Scene0",
-                    "rust-ra2/assets/models/props/tree_temperate.glb#Scene0",
-                    "rust-ra2/assets/models/props/tree_pine.glb#Scene0",
-                    "rust-ra2/assets/models/props/streetlight.glb#Scene0",
-                ] {
-                    smoke
-                        .preloaded_scene_handles
-                        .push(srv.load(scene_p.to_string()));
-                }
+                colors_16_showcase::preload_standard_smoke_assets(srv, &mut smoke);
             }
         }
         65 => {

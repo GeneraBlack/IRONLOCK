@@ -45,6 +45,22 @@ pub fn spawn_skirmish_screen(
                 format!("Active: {country_name} ({fac_id})\nSpecialty: {specialty}"),
                 Color::srgb(0.84, 0.92, 0.98),
             );
+            let (swatch_name, [sr, sg, sb]) = crate::rendering::resolve_ui_color_swatch(
+                interaction.skirmish_color_index,
+                Some(&fac_id),
+                Some(loaded),
+            );
+            spawn_styled_button(
+                col,
+                &format!("Team Color: {swatch_name} (Click to Cycle)"),
+                SidebarAction::CycleSkirmishColor,
+                Color::srgb(
+                    (sr * 0.62).clamp(0.10, 0.85),
+                    (sg * 0.62).clamp(0.10, 0.85),
+                    (sb * 0.62).clamp(0.10, 0.85),
+                ),
+                Val::Percent(100.0),
+            );
 
             let max_scroll = (opt_count as f32 * 34.0 - 220.0).max(0.0);
             col.spawn((

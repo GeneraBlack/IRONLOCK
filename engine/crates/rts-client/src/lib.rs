@@ -173,6 +173,8 @@ pub fn run_rts_client_from_cli(cli: ClientCli) -> Result<()> {
             crates_enabled: true,
             fog_of_war: true,
             game_mode: sim_world.game_mode.label().to_string(),
+            target_slot_count: (cli.expected_players > 8 || loaded.entry_map.spawns.len() > 8)
+                .then_some(16),
             ..Default::default()
         });
         let bound_addr = server.local_addr()?;

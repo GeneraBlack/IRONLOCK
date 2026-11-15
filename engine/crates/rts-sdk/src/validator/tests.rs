@@ -490,7 +490,12 @@ fn validator_checks_phase25_28_eras_heroes_items_trigger_graphs_bt_vfx_and_pbr()
 
 #[test]
 fn existing_ra2_and_workers_squads_mods_validate_with_zero_errors_and_zero_warnings() {
-    for mod_path in ["rust-ra2", "mods/sdk-showcase-workers-squads"] {
+    for mod_path in [
+        "rust-ra2",
+        "mods/openra-classic",
+        "mods/westwood-classic",
+        "mods/sdk-showcase-workers-squads",
+    ] {
         let loaded = LoadedMod::load_from_dir(mod_path)
             .unwrap_or_else(|e| panic!("Failed to load {mod_path}: {e:#}"));
         let report = validate_mod(&loaded, true);
@@ -505,6 +510,107 @@ fn existing_ra2_and_workers_squads_mods_validate_with_zero_errors_and_zero_warni
             0,
             "Mod {mod_path} had warnings: {:?}",
             report.issues
+        );
+    }
+}
+
+#[test]
+fn player_colors_and_sixteen_spawn_maps_validate_and_reject_invalid_bounds() {
+    let manifest_toml = r#"
+id = "palette-test"
+name = "Palette Test"
+version = "1.0.0"
+engine_version = "0.1.0"
+entry_map = "maps/test.toml"
+
+[[player_colors]]
+id = "cobalt_blue"
+name = "Cobalt Blue"
+rgb = [0.06, 0.36, 1.00]
+
+[[player_colors]]
+id = "emerald_green"
+name = "Emerald Green"
+rgb = [0.06, 0.80, 0.20]
+"#;
+    let parsed_manifest: ModManifest =
+        toml::from_str(manifest_toml).expect("manifest with [[player_colors]] must parse");
+    assert_eq!(parsed_manifest.player_colors.len(), 2);
+    assert_eq!(parsed_manifest.player_colors[0].id, "cobalt_blue");
+
+    let mut loaded = sample_loaded_mod();
+    loaded.manifest.player_colors = (1..=16)
+        .map(|i| PlayerColorDef {
+            id: format!("slot_{i:02}"),
+            name: format!("Slot {i}"),
+            rgb: [(i as f32) / 16.0, 0.45, 0.75],
+        })
+        .collect();
+
+    let mut map16 = loaded.entry_map.clone();
+    map16.id = "mp_8v8_test".to_string();
+    map16.width = 128;
+    map16.height = 128;
+    map16.spawns = (0..16u8)
+        .map(|idx| {
+            let r = (idx / 4) as i32;
+            let c = (idx % 4) as i32;
+            PlayerSpawnDef {
+                player_id: idx + 1,
+                faction: "allies".to_string(),
+                sub_faction: None,
+                team_id: if idx < 8 { 1 } else { 2 },
+                base_tile: [12 + c * 28, 12 + r * 28],
+                initial_buildings: vec![],
+                initial_units: vec![],
+            }
+        })
+        .collect();
+    loaded.entry_map = map16.clone();
+    loaded.maps.insert(map16.id.clone(), map16.clone());
+
+    let ok_report = validate_mod(&loaded, false);
+    assert!(
+        ok_report.is_valid()
+            && !ok_report
+                .issues
+                .iter()
+                .any(|i| i.code.contains("PLAYER_COLOR") || i.code.contains("MAP")),
+        "16 player_colors + 16-spawn map must validate cleanly: {:?}",
+        ok_report.issues
+    );
+
+    // Out-of-range RGB, duplicate ID, > 16 colors, and > 16 map spawns
+    loaded.manifest.player_colors[1].id = "slot_01".to_string();
+    loaded.manifest.player_colors[2].rgb = [1.25, 0.5, 0.5];
+    loaded.manifest.player_colors.push(PlayerColorDef {
+        id: "slot_17".to_string(),
+        name: "Overflow".to_string(),
+        rgb: [0.2, 0.3, 0.4],
+    });
+    let mut map17 = map16;
+    map17.spawns.push(PlayerSpawnDef {
+        player_id: 17,
+        faction: "allies".to_string(),
+        sub_faction: None,
+        team_id: 2,
+        base_tile: [118, 118],
+        initial_buildings: vec![],
+        initial_units: vec![],
+    });
+    loaded.maps.insert(map17.id.clone(), map17);
+
+    let bad_report = validate_mod(&loaded, false);
+    for code in [
+        "TOO_MANY_PLAYER_COLORS",
+        "DUPLICATE_PLAYER_COLOR_ID",
+        "INVALID_PLAYER_COLOR_RGB",
+        "TOO_MANY_MAP_SPAWNS",
+    ] {
+        assert!(
+            bad_report.issues.iter().any(|i| i.code == code),
+            "Expected {code} in {:?}",
+            bad_report.issues
         );
     }
 }

@@ -43,6 +43,47 @@ pub(super) fn validate_manifest_resources_factions_and_vfx(
         }
     }
 
+    if loaded.manifest.player_colors.len() > crate::manifest::MAX_PLAYER_COLORS {
+        report.push_error(
+            "TOO_MANY_PLAYER_COLORS",
+            format!(
+                "Mod '{}' defines {} player_colors entries (maximum supported is {})",
+                loaded.manifest.id,
+                loaded.manifest.player_colors.len(),
+                crate::manifest::MAX_PLAYER_COLORS
+            ),
+        );
+    }
+    let mut seen_player_color_ids: BTreeSet<&str> = BTreeSet::new();
+    for (pc_idx, pc) in loaded.manifest.player_colors.iter().enumerate() {
+        if pc.id.trim().is_empty() || pc.name.trim().is_empty() {
+            report.push_error(
+                "INVALID_PLAYER_COLOR",
+                format!(
+                    "Mod '{}' player_colors[{pc_idx}] must have non-empty id and name",
+                    loaded.manifest.id
+                ),
+            );
+        } else if !seen_player_color_ids.insert(pc.id.as_str()) {
+            report.push_error(
+                "DUPLICATE_PLAYER_COLOR_ID",
+                format!(
+                    "Mod '{}' defines duplicate player_colors id '{}'",
+                    loaded.manifest.id, pc.id
+                ),
+            );
+        }
+        if pc.rgb.iter().any(|c| !c.is_finite() || !(0.0..=1.0).contains(c)) {
+            report.push_error(
+                "INVALID_PLAYER_COLOR_RGB",
+                format!(
+                    "Mod '{}' player_colors[{pc_idx}] ('{}') rgb {:?} must have finite components in 0.0..=1.0",
+                    loaded.manifest.id, pc.id, pc.rgb
+                ),
+            );
+        }
+    }
+
     if loaded.factions.is_empty() {
         report.push_error("NO_FACTIONS", "Mod defines zero factions");
     }

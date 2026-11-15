@@ -1,6 +1,6 @@
 use super::preview_stage::PreviewStageCamera;
 use super::{
-    resolve_accessible_team_color, resolve_player_team_color_slot, CachedFogVisibility,
+    resolve_accessible_team_color_in_mod, resolve_player_team_color_slot, CachedFogVisibility,
     ColorblindPaletteMode, ColorblindSettingsResource,
 };
 use crate::{ModResource, SimWorldResource};
@@ -444,7 +444,13 @@ pub fn sync_strategic_zoom_icons(
         let slot = resolve_player_team_color_slot(world, loaded, ent.player_id);
         let is_local = ent.player_id == local_pid;
         let is_ally = ent.player_id != 0 && !world.are_hostile(local_pid, ent.player_id);
-        let team_rgba = resolve_accessible_team_color(slot, is_local, is_ally, cb_mode);
+        let team_rgba = resolve_accessible_team_color_in_mod(
+            slot,
+            is_local,
+            is_ally,
+            cb_mode,
+            Some(loaded),
+        );
         let col = [
             team_rgba[0] * explored_dim,
             team_rgba[1] * explored_dim,

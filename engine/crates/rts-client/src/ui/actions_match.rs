@@ -328,6 +328,11 @@ pub(super) fn handle_match_and_menu_action(
             last_sig.studio_sig.clear();
         }
         SidebarAction::FinishLoadingEnterGame => {
+            if !client_state.is_multiplayer && client_state.active_campaign_id.is_none() {
+                if let Some(econ) = sim_res.0.players.get_mut(&client_state.local_player_id) {
+                    econ.color_index = client_state.skirmish_color_index % 17;
+                }
+            }
             client_state.app_phase = AppPhase::InGame;
             client_state.menu_open = false;
             client_state.studio_open = false;
@@ -388,9 +393,47 @@ pub(super) fn handle_match_and_menu_action(
             sim_res
                 .0
                 .set_player_sub_faction(client_state.local_player_id, sub_fac);
+            for (&other_pid, econ) in sim_res.0.players.iter_mut() {
+                econ.color_index = if other_pid == client_state.local_player_id {
+                    client_state.skirmish_color_index % 17
+                } else {
+                    0
+                };
+            }
             client_state.sidebar_tab_pages = [0; 4];
             client_state.studio_status_message =
                 format!("Faction selected: {country_name} — Specialty: {special_unit}");
+            last_sig.sidebar_sig.clear();
+            last_sig.studio_sig.clear();
+        }
+        SidebarAction::CycleSkirmishColor if !client_state.is_multiplayer => {
+            let mut next_col = (client_state.skirmish_color_index + 1) % 17;
+            for _ in 0..17 {
+                if next_col == 0 {
+                    break;
+                }
+                let taken = sim_res.0.players.iter().any(|(&opid, econ)| {
+                    opid != 0
+                        && opid != client_state.local_player_id
+                        && econ.color_index == next_col
+                });
+                if !taken {
+                    break;
+                }
+                next_col = (next_col + 1) % 17;
+            }
+            client_state.skirmish_color_index = next_col;
+            if let Some(econ) = sim_res.0.players.get_mut(&client_state.local_player_id) {
+                econ.color_index = next_col;
+            }
+            let (_, fac_id, _, _) =
+                resolve_mod_skirmish_descriptor(&mod_res.0, client_state.skirmish_country_index);
+            let (cname, _) = crate::rendering::resolve_ui_color_swatch(
+                next_col,
+                Some(&fac_id),
+                Some(&mod_res.0),
+            );
+            client_state.studio_status_message = format!("Skirmish Team Color set to: {cname}");
             last_sig.sidebar_sig.clear();
             last_sig.studio_sig.clear();
         }
