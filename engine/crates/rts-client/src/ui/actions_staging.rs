@@ -283,8 +283,11 @@ pub(super) fn handle_staging_and_automatch_action(
                         .or_else(|| client_state.active_lobby_room.clone())
                     {
                         if let Some(slot) = room.slots.get(*slot_idx as usize) {
-                            let next_color =
-                                next_available_lobby_color_index(slot.color_index, *slot_idx, &room);
+                            let next_color = next_available_lobby_color_index(
+                                slot.color_index,
+                                *slot_idx,
+                                &room,
+                            );
                             let is_mine = matches!(
                                 slot.occupant,
                                 LobbySlotOccupant::Human { player_id, .. } if player_id == my_pid

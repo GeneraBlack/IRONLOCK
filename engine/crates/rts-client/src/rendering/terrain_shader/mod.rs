@@ -616,9 +616,8 @@ mod tests {
             for gx_half in [31, 32, 33, 34, 35] {
                 let wx = (gx_half as f32 * 0.5) * ts;
                 let wz = (gz_half as f32 * 0.5) * ts;
-                let y = chunk_mesh::sample_continuous_terrain_height(
-                    &hmap, false, &sim_world, wx, wz,
-                );
+                let y =
+                    chunk_mesh::sample_continuous_terrain_height(&hmap, false, &sim_world, wx, wz);
                 assert!(
                     (y - RA2_STEPPED_PLATEAU_HEIGHT).abs() < 1e-5,
                     "Expected flat plateau height {} at ({}, {}), got {}",
@@ -655,8 +654,7 @@ mod tests {
         for gx_half in 26..=30 {
             let wx = (gx_half as f32 * 0.5) * ts;
             let wz = 24.5 * ts;
-            let y =
-                chunk_mesh::sample_continuous_terrain_height(&hmap, false, &sim_world, wx, wz);
+            let y = chunk_mesh::sample_continuous_terrain_height(&hmap, false, &sim_world, wx, wz);
             assert!(
                 y + 1e-4 >= prev_y,
                 "Ramp height must increase monotonically: prev={prev_y}, curr={y} at gx_half={gx_half}"

@@ -79,7 +79,10 @@ fn sixteen_players_resolve_collision_free_and_mod_player_colors_override_slots()
     for pid in 1..=16u8 {
         let slot = resolve_player_team_color_slot(&world, &loaded, pid);
         assert!((1..=16).contains(&slot));
-        assert!(unique_slots.insert(slot), "collision at pid={pid}, slot={slot}");
+        assert!(
+            unique_slots.insert(slot),
+            "collision at pid={pid}, slot={slot}"
+        );
     }
     assert_eq!(unique_slots.len(), 16);
 
@@ -88,8 +91,14 @@ fn sixteen_players_resolve_collision_free_and_mod_player_colors_override_slots()
         name: "Custom Cobalt".to_string(),
         rgb: [0.11, 0.22, 0.99],
     }];
-    assert_eq!(team_color_rgb_for_slot_in_mod(1, &loaded), [0.11, 0.22, 0.99]);
-    assert_eq!(team_color_rgb_for_player(&world, &loaded, 12), [0.11, 0.22, 0.99]);
+    assert_eq!(
+        team_color_rgb_for_slot_in_mod(1, &loaded),
+        [0.11, 0.22, 0.99]
+    );
+    assert_eq!(
+        team_color_rgb_for_player(&world, &loaded, 12),
+        [0.11, 0.22, 0.99]
+    );
     assert_eq!(
         resolve_ui_color_swatch(1, None, Some(&loaded)),
         ("Custom Cobalt", [0.11, 0.22, 0.99])
@@ -235,12 +244,8 @@ fn unit_pbr_team_material_preserves_gltf_textures_and_applies_colorblind_overrid
         false,
         ColorblindPaletteMode::AllyEnemyHighContrast,
     );
-    let hc_self = resolve_accessible_team_color(
-        1,
-        true,
-        true,
-        ColorblindPaletteMode::AllyEnemyHighContrast,
-    );
+    let hc_self =
+        resolve_accessible_team_color(1, true, true, ColorblindPaletteMode::AllyEnemyHighContrast);
     assert_ne!(hc_enemy, hc_self);
 
     let built = build_unit_pbr_team_material(

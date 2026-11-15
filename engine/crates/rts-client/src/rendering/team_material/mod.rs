@@ -155,7 +155,11 @@ pub fn sync_gltf_lod_and_team_damage_materials(
     ),
     cam_rig_q: Query<
         &crate::camera::RtsCameraRig,
-        (Without<PreviewStageCamera>, Without<SimVisualEntity>, Without<PreviewStageEntity>),
+        (
+            Without<PreviewStageCamera>,
+            Without<SimVisualEntity>,
+            Without<PreviewStageEntity>,
+        ),
     >,
     mut palette: ResMut<TeamDamageMaterialPalette>,
     mut pbr_cache: Option<ResMut<UnitPbrTeamMaterialCache>>,
@@ -165,12 +169,20 @@ pub fn sync_gltf_lod_and_team_damage_materials(
         Option<ResMut<Assets<Image>>>,
     ),
     mut root_q: Query<
-        (Entity, &SimVisualEntity, Option<&mut SyncedGltfSceneVisuals>),
+        (
+            Entity,
+            &SimVisualEntity,
+            Option<&mut SyncedGltfSceneVisuals>,
+        ),
         Without<PreviewStageEntity>,
     >,
     children_q: Query<&Children>,
     mesh_node_q: Query<
-        (Option<&Name>, Option<&Mesh3d>, Option<&MeshMaterial3d<StandardMaterial>>),
+        (
+            Option<&Name>,
+            Option<&Mesh3d>,
+            Option<&MeshMaterial3d<StandardMaterial>>,
+        ),
         (
             Without<SimVisualEntity>,
             Without<super::FogOfWarPlaneEntity>,
@@ -186,7 +198,11 @@ pub fn sync_gltf_lod_and_team_damage_materials(
             Option<&mut PreviewMeshOriginalMaterial>,
             Option<&Name>,
         ),
-        (With<PreviewStageEntity>, Without<SimVisualEntity>, Without<PreviewStageCamera>),
+        (
+            With<PreviewStageEntity>,
+            Without<SimVisualEntity>,
+            Without<PreviewStageCamera>,
+        ),
     >,
 ) {
     let (Some(mod_res), Some(sim_res), Some(mut mats)) = (mod_res, sim_res, materials) else {
@@ -195,16 +211,34 @@ pub fn sync_gltf_lod_and_team_damage_materials(
     let world = &sim_res.0;
     let loaded = &mod_res.0;
     let elapsed_secs = time.as_deref().map(|t| t.elapsed_secs()).unwrap_or(0.0);
-    let cb_mode = cb_settings.as_deref().map(|s| s.mode).unwrap_or(ColorblindPaletteMode::Off);
-    let local_pid = interaction.as_deref().map(|i| i.local_player_id).unwrap_or(1);
-    let strategic_fade = 1.0 - cam_rig_q.iter().next().map(|r| r.strategic_zoom_blend()).unwrap_or(0.0);
+    let cb_mode = cb_settings
+        .as_deref()
+        .map(|s| s.mode)
+        .unwrap_or(ColorblindPaletteMode::Off);
+    let local_pid = interaction
+        .as_deref()
+        .map(|i| i.local_player_id)
+        .unwrap_or(1);
+    let strategic_fade = 1.0
+        - cam_rig_q
+            .iter()
+            .next()
+            .map(|r| r.strategic_zoom_blend())
+            .unwrap_or(0.0);
     let world_size = Vec2::new(
         (world.grid.width.max(1) as f32 * world.grid.tile_size).max(1.0),
         (world.grid.height.max(1) as f32 * world.grid.tile_size).max(1.0),
     );
-    let fow_strength = smooth_fow.as_deref().map(|s| s.fow_shader_strength).unwrap_or_else(|| {
-        if cached_fow.as_deref().is_some_and(|c| c.fog_enabled) { 1.0 } else { 0.0 }
-    });
+    let fow_strength = smooth_fow
+        .as_deref()
+        .map(|s| s.fow_shader_strength)
+        .unwrap_or_else(|| {
+            if cached_fow.as_deref().is_some_and(|c| c.fog_enabled) {
+                1.0
+            } else {
+                0.0
+            }
+        });
 
     let fow_tex_handle = if let Some(res) = fow_img_res {
         res.0.clone()

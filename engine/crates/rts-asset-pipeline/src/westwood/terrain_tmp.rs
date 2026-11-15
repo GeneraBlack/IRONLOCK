@@ -79,7 +79,10 @@ pub fn parse_westwood_vga_palette(pal_bytes: &[u8]) -> Result<WestwoodPalette> {
 /// Returns the exact number of packed diamond pixels `(tile_width * tile_height) / 2`
 /// for a valid 2:1 Westwood isometric tile (`60x30 -> 900`, `48x24 -> 576`).
 pub fn diamond_pixel_count(tile_width: u32, tile_height: u32) -> Result<usize> {
-    if tile_height < 2 || !tile_height.is_multiple_of(2) || tile_width != tile_height.saturating_mul(2) {
+    if tile_height < 2
+        || !tile_height.is_multiple_of(2)
+        || tile_width != tile_height.saturating_mul(2)
+    {
         bail!(
             "Invalid Westwood isometric .tmp tile dimensions {}x{} (expected 2:1 even diamond such as 60x30 or 48x24)",
             tile_width,
@@ -630,7 +633,21 @@ mod tests {
         }
         out.extend_from_slice(&[
             0xC0 | (TMP_FLAG_HAS_EXTRA_DATA | TMP_FLAG_HAS_Z_DATA),
-            0xCD, 0xCD, 0xCD, 4, 9, 0, 42, 88, 34, 46, 92, 38, 0xCD, 0xCD, 0xCD,
+            0xCD,
+            0xCD,
+            0xCD,
+            4,
+            9,
+            0,
+            42,
+            88,
+            34,
+            46,
+            92,
+            38,
+            0xCD,
+            0xCD,
+            0xCD,
         ]);
         out.extend((0..RA2_TMP_DIAMOND_PIXELS).map(|i| ((i % 200) + 1) as u8));
         out.extend((0..RA2_TMP_DIAMOND_PIXELS).map(|i| (i % 16) as u8));
@@ -670,7 +687,10 @@ mod tests {
 
         let diamond_rgba = rasterize_tmp_diamond_rgba(t0, 60, 30, &pal).expect("diamond rgba");
         assert_eq!(diamond_rgba.len(), 60 * 30 * 4);
-        let non_transparent = diamond_rgba.chunks_exact(4).filter(|px| px[3] == 255).count();
+        let non_transparent = diamond_rgba
+            .chunks_exact(4)
+            .filter(|px| px[3] == 255)
+            .count();
         assert_eq!(non_transparent, 900);
 
         let (cw, ch, full_rgba) =

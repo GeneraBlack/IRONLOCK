@@ -487,7 +487,10 @@ mod tests {
 
         let (temp_sh, temp_dp, temp_foam) = theater_water_palette(Ra2TerrainTheater::Temperate);
         let (snow_sh, _, snow_foam) = theater_water_palette(Ra2TerrainTheater::Snow);
-        assert!(temp_dp.z > temp_dp.x * 8.0, "deep RA2 water must be vivid sapphire blue");
+        assert!(
+            temp_dp.z > temp_dp.x * 8.0,
+            "deep RA2 water must be vivid sapphire blue"
+        );
         assert!(snow_foam > temp_foam);
         assert_ne!(temp_sh, snow_sh);
     }

@@ -258,12 +258,14 @@ pub(super) fn acquire_and_queue_entity_attack(
             }
             let att_tile = world.grid.world_to_tile(p.att_pos);
             let att_eye_elev = match &p.att_kind {
-                EntityKind::Building { building_id } => loaded
-                    .buildings
-                    .get(building_id)
-                    .map(crate::world::locomotors::effective_building_tower_bonus)
-                    .unwrap_or(0.0)
-                    + p.att_pos[1],
+                EntityKind::Building { building_id } => {
+                    loaded
+                        .buildings
+                        .get(building_id)
+                        .map(crate::world::locomotors::effective_building_tower_bonus)
+                        .unwrap_or(0.0)
+                        + p.att_pos[1]
+                }
                 _ => p.att_pos[1],
             };
             #[allow(clippy::type_complexity)]

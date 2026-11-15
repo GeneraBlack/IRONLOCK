@@ -563,9 +563,14 @@ pub fn drive_ra2_overhaul_showcase(
     if (smoke.frame_count == 25 || smoke.frame_count == 55) && smoke.wait_polls < 240 {
         smoke.wait_polls += 1;
         let ready = !visual_q.is_empty()
-            && visual_q.iter().all(|(_, _, ch)| ch.is_some_and(|c| !c.is_empty()))
+            && visual_q
+                .iter()
+                .all(|(_, _, ch)| ch.is_some_and(|c| !c.is_empty()))
             && asset_server.is_none_or(|srv| {
-                smoke.preloaded_handles.iter().all(|h| srv.is_loaded_with_dependencies(h.id()))
+                smoke
+                    .preloaded_handles
+                    .iter()
+                    .all(|h| srv.is_loaded_with_dependencies(h.id()))
                     && smoke
                         .preloaded_scene_handles
                         .iter()
@@ -649,7 +654,10 @@ pub fn drive_ra2_overhaul_showcase(
             }
             if let Ok((mut rig, mut tf)) = camera_q.get_single_mut() {
                 let map = &mod_res.0.entry_map;
-                rig.map_max = Vec2::new(map.width as f32 * map.tile_size, map.height as f32 * map.tile_size);
+                rig.map_max = Vec2::new(
+                    map.width as f32 * map.tile_size,
+                    map.height as f32 * map.tile_size,
+                );
                 rig.reset_orientation();
                 rig.set_zoom_distance(31.0);
                 let wy = sim_res.0.grid.sample_world_height(30.5, 32.5);
@@ -664,25 +672,41 @@ pub fn drive_ra2_overhaul_showcase(
                     "layer_3_pavement.png",
                     "layer_4_cliff.png",
                 ] {
-                    smoke.preloaded_handles.push(srv.load(format!("rust-ra2/assets/terrain/temperate/{layer}")));
+                    smoke
+                        .preloaded_handles
+                        .push(srv.load(format!("rust-ra2/assets/terrain/temperate/{layer}")));
                 }
                 for ent in sim_res.0.entities.values() {
                     match &ent.kind {
                         EntityKind::Unit { unit_id } => {
                             if let Some(u) = mod_res.0.units.get(unit_id) {
-                                smoke.preloaded_scene_handles.push(srv.load(format!("rust-ra2/{}#Scene0", u.visual.model)));
+                                smoke
+                                    .preloaded_scene_handles
+                                    .push(srv.load(format!("rust-ra2/{}#Scene0", u.visual.model)));
                             }
                             let sp = format!("rust-ra2/assets/sprites/infantry/{unit_id}.png");
-                            if mod_res.0.root_dir.join(format!("assets/sprites/infantry/{unit_id}.png")).is_file() {
+                            if mod_res
+                                .0
+                                .root_dir
+                                .join(format!("assets/sprites/infantry/{unit_id}.png"))
+                                .is_file()
+                            {
                                 smoke.preloaded_handles.push(srv.load(sp));
                             }
                         }
                         EntityKind::Building { building_id } => {
                             if let Some(b) = mod_res.0.buildings.get(building_id) {
-                                smoke.preloaded_scene_handles.push(srv.load(format!("rust-ra2/{}#Scene0", b.visual.model)));
+                                smoke
+                                    .preloaded_scene_handles
+                                    .push(srv.load(format!("rust-ra2/{}#Scene0", b.visual.model)));
                             }
                             let sp = format!("rust-ra2/assets/sprites/buildings/{building_id}.png");
-                            if mod_res.0.root_dir.join(format!("assets/sprites/buildings/{building_id}.png")).is_file() {
+                            if mod_res
+                                .0
+                                .root_dir
+                                .join(format!("assets/sprites/buildings/{building_id}.png"))
+                                .is_file()
+                            {
                                 smoke.preloaded_handles.push(srv.load(sp));
                             }
                         }

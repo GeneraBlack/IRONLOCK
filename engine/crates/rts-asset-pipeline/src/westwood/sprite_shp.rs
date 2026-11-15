@@ -102,7 +102,8 @@ pub fn decode_shp_canvas_frames(shp: &[u8]) -> Result<Vec<ShpCanvasFrame>> {
             let fw = u16::from_le_bytes([shp[f_base + 4], shp[f_base + 5]]) as usize;
             let fh = u16::from_le_bytes([shp[f_base + 6], shp[f_base + 7]]) as usize;
             let fl = u32::from_le_bytes(shp[f_base + 8..f_base + 12].try_into().unwrap());
-            let off = u32::from_le_bytes(shp[f_base + 20..f_base + 24].try_into().unwrap()) as usize;
+            let off =
+                u32::from_le_bytes(shp[f_base + 20..f_base + 24].try_into().unwrap()) as usize;
 
             let mut canvas = vec![0u8; cw * ch];
             if fw > 0 && fh > 0 && off > 0 && off < shp.len() && fw <= 2048 && fh <= 2048 {
@@ -446,11 +447,49 @@ pub fn convert_shp_bytes_to_glb(
 fn is_unit_or_infantry_shp(mesh_name: &str, frames: &[DecodedShpFrame]) -> bool {
     let lower = mesh_name.to_ascii_lowercase();
     let unit_keywords = [
-        "gi", "e1", "e2", "conscript", "cons", "engineer", "engi", "rocketeer", "jumpjet", "seal",
-        "tanya", "tany", "spy", "sniper", "snipe", "legionnaire", "cleg", "dog", "flak_trooper",
-        "flakt", "tesla_trooper", "shk", "desolator", "deso", "ivan", "terrorist", "boris",
-        "terror_drone", "dron", "dolphin", "dlph", "squid", "sqd", "initiate", "init", "brute",
-        "virus", "vrus", "clone", "prime", "yuripr", "commando", "ptroop",
+        "gi",
+        "e1",
+        "e2",
+        "conscript",
+        "cons",
+        "engineer",
+        "engi",
+        "rocketeer",
+        "jumpjet",
+        "seal",
+        "tanya",
+        "tany",
+        "spy",
+        "sniper",
+        "snipe",
+        "legionnaire",
+        "cleg",
+        "dog",
+        "flak_trooper",
+        "flakt",
+        "tesla_trooper",
+        "shk",
+        "desolator",
+        "deso",
+        "ivan",
+        "terrorist",
+        "boris",
+        "terror_drone",
+        "dron",
+        "dolphin",
+        "dlph",
+        "squid",
+        "sqd",
+        "initiate",
+        "init",
+        "brute",
+        "virus",
+        "vrus",
+        "clone",
+        "prime",
+        "yuripr",
+        "commando",
+        "ptroop",
     ];
     let structure_words = [
         "barracks", "cloning", "grinder", "bunker", "cannon", "tower", "reactor", "power", "yard",
@@ -476,7 +515,8 @@ fn is_unit_or_infantry_shp(mesh_name: &str, frames: &[DecodedShpFrame]) -> bool 
 }
 
 fn pack_uv_textured_shp_mesh_to_glb(mesh: &ShpUvTexturedMesh, mesh_name: &str) -> Result<Vec<u8>> {
-    let png_bytes = encode_rgba_to_png(mesh.texture_width, mesh.texture_height, &mesh.texture_rgba8)?;
+    let png_bytes =
+        encode_rgba_to_png(mesh.texture_width, mesh.texture_height, &mesh.texture_rgba8)?;
     let mut min = [f32::MAX; 3];
     let mut max = [f32::MIN; 3];
     for p in &mesh.positions {
@@ -706,7 +746,11 @@ mod tests {
                 0 => assert_eq!(px, &[0, 0, 0, 0]),
                 112 => {
                     saw_shadow = true;
-                    assert_eq!(&px[0..3], &[0, 0, 0], "shadow must never inherit blue pal[1]");
+                    assert_eq!(
+                        &px[0..3],
+                        &[0, 0, 0],
+                        "shadow must never inherit blue pal[1]"
+                    );
                 }
                 192 => {
                     saw_team = true;

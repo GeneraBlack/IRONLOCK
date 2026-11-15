@@ -64,10 +64,14 @@ pub(super) fn emit_crisp_isometric_shp_relief_mesh(
     let mut lum_grid = vec![0.5f32; bw * bh];
     for gy in 0..bh {
         let y0 = (gy * hd_img.height) / bh;
-        let y1 = (((gy + 1) * hd_img.height) / bh).max(y0 + 1).min(hd_img.height);
+        let y1 = (((gy + 1) * hd_img.height) / bh)
+            .max(y0 + 1)
+            .min(hd_img.height);
         for gx in 0..bw {
             let x0 = (gx * hd_img.width) / bw;
-            let x1 = (((gx + 1) * hd_img.width) / bw).max(x0 + 1).min(hd_img.width);
+            let x1 = (((gx + 1) * hd_img.width) / bw)
+                .max(x0 + 1)
+                .min(hd_img.width);
             let mut op_cnt = 0usize;
             let mut lum_sum = 0.0f32;
             for py in y0..y1 {

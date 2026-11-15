@@ -58,7 +58,12 @@ pub struct ActiveTheaterLightingResource {
 
 impl TheaterLightingProfile {
     pub const ALL: [Self; 6] = [
-        Self::Temperate, Self::Snow, Self::Urban, Self::NewUrban, Self::Desert, Self::Lunar,
+        Self::Temperate,
+        Self::Snow,
+        Self::Urban,
+        Self::NewUrban,
+        Self::Desert,
+        Self::Lunar,
     ];
 
     pub fn from_loaded_mod(loaded: &LoadedMod) -> Self {
@@ -66,17 +71,55 @@ impl TheaterLightingProfile {
     }
 
     pub fn infer_from_map_id_and_name(map_id: &str, map_name: &str) -> Self {
-        let low = format!("{} {}", map_id.to_ascii_lowercase(), map_name.to_ascii_lowercase());
+        let low = format!(
+            "{} {}",
+            map_id.to_ascii_lowercase(),
+            map_name.to_ascii_lowercase()
+        );
         let has_any = |keys: &[&str]| keys.iter().any(|k| low.contains(k));
         if has_any(&["lunar", "moon", "apollo", "crater", "escape_velocity"]) {
             Self::Lunar
-        } else if has_any(&["desert", "tomb", "romanov", "egypt", "morocco", "sahara", "dune"]) {
+        } else if has_any(&[
+            "desert", "tomb", "romanov", "egypt", "morocco", "sahara", "dune",
+        ]) {
             Self::Desert
-        } else if has_any(&["snow", "polar", "arctic", "mirage", "blitzen", "antarctica", "frost", "winter"]) {
+        } else if has_any(&[
+            "snow",
+            "polar",
+            "arctic",
+            "mirage",
+            "blitzen",
+            "antarctica",
+            "frost",
+            "winter",
+        ]) {
             Self::Snow
-        } else if has_any(&["new_urban", "newurban", "hollywood", "austin", "sydney", "san_francisco", "alcatraz", "time_shift", "cloning_around"]) {
+        } else if has_any(&[
+            "new_urban",
+            "newurban",
+            "hollywood",
+            "austin",
+            "sydney",
+            "san_francisco",
+            "alcatraz",
+            "time_shift",
+            "cloning_around",
+        ]) {
             Self::NewUrban
-        } else if has_any(&["urban", "liberty", "paris", "city_of_lights", "big_apple", "new_york", "washington", "hail_to_the_chief", "chicago", "st_louis", "desecration", "downtown"]) {
+        } else if has_any(&[
+            "urban",
+            "liberty",
+            "paris",
+            "city_of_lights",
+            "big_apple",
+            "new_york",
+            "washington",
+            "hail_to_the_chief",
+            "chicago",
+            "st_louis",
+            "desecration",
+            "downtown",
+        ]) {
             Self::Urban
         } else {
             Self::Temperate
@@ -85,39 +128,112 @@ impl TheaterLightingProfile {
 
     /// Authentic RA2 NW-to-SE crisp directional sun angle + per-theater color grading & GGX IBL palette.
     pub fn spec(self) -> TheaterLightingSpec {
-        let (sun_d, sun_c, sun_lux, fill_c, fill_lux, amb_c, amb_b, fog_c, zen, hor, gnd, tint, ibl) =
-            match self {
-                Self::Temperate => (
-                    [-0.64, 0.66, 0.39], [1.00, 0.96, 0.88], 12_800.0, [0.56, 0.74, 1.00], 540.0,
-                    [0.72, 0.80, 0.94], 42.0, [0.58, 0.72, 0.88], [0.16, 0.42, 0.92],
-                    [0.64, 0.76, 0.94], [0.14, 0.19, 0.12], [1.45, 1.30, 1.02], 620.0,
-                ),
-                Self::Snow => (
-                    [-0.64, 0.62, 0.45], [0.95, 0.98, 1.00], 13_400.0, [0.68, 0.84, 1.00], 720.0,
-                    [0.80, 0.88, 1.00], 58.0, [0.76, 0.86, 0.96], [0.22, 0.48, 0.94],
-                    [0.76, 0.86, 0.98], [0.36, 0.42, 0.50], [1.36, 1.40, 1.48], 660.0,
-                ),
-                Self::Urban => (
-                    [-0.62, 0.68, 0.39], [1.00, 0.95, 0.86], 12_400.0, [0.60, 0.74, 0.96], 560.0,
-                    [0.74, 0.78, 0.90], 42.0, [0.56, 0.66, 0.78], [0.18, 0.38, 0.84],
-                    [0.66, 0.73, 0.86], [0.18, 0.19, 0.22], [1.40, 1.26, 1.02], 600.0,
-                ),
-                Self::NewUrban => (
-                    [-0.63, 0.66, 0.41], [1.00, 0.92, 0.78], 13_200.0, [0.48, 0.76, 1.00], 600.0,
-                    [0.82, 0.80, 0.88], 46.0, [0.72, 0.74, 0.82], [0.16, 0.44, 0.92],
-                    [0.80, 0.76, 0.72], [0.24, 0.21, 0.19], [1.50, 1.28, 0.92], 630.0,
-                ),
-                Self::Desert => (
-                    [-0.60, 0.70, 0.38], [1.00, 0.91, 0.74], 14_400.0, [0.88, 0.78, 0.62], 640.0,
-                    [0.90, 0.82, 0.70], 50.0, [0.82, 0.74, 0.58], [0.20, 0.46, 0.88],
-                    [0.86, 0.78, 0.64], [0.36, 0.28, 0.17], [1.56, 1.32, 0.88], 650.0,
-                ),
-                Self::Lunar => (
-                    [-0.66, 0.60, 0.45], [1.00, 0.99, 0.98], 14_800.0, [0.42, 0.62, 0.98], 340.0,
-                    [0.60, 0.66, 0.80], 28.0, [0.05, 0.07, 0.12], [0.02, 0.03, 0.08],
-                    [0.14, 0.18, 0.26], [0.20, 0.21, 0.23], [1.62, 1.60, 1.58], 480.0,
-                ),
-            };
+        let (
+            sun_d,
+            sun_c,
+            sun_lux,
+            fill_c,
+            fill_lux,
+            amb_c,
+            amb_b,
+            fog_c,
+            zen,
+            hor,
+            gnd,
+            tint,
+            ibl,
+        ) = match self {
+            Self::Temperate => (
+                [-0.64, 0.66, 0.39],
+                [1.00, 0.96, 0.88],
+                12_800.0,
+                [0.56, 0.74, 1.00],
+                540.0,
+                [0.72, 0.80, 0.94],
+                42.0,
+                [0.58, 0.72, 0.88],
+                [0.16, 0.42, 0.92],
+                [0.64, 0.76, 0.94],
+                [0.14, 0.19, 0.12],
+                [1.45, 1.30, 1.02],
+                620.0,
+            ),
+            Self::Snow => (
+                [-0.64, 0.62, 0.45],
+                [0.95, 0.98, 1.00],
+                13_400.0,
+                [0.68, 0.84, 1.00],
+                720.0,
+                [0.80, 0.88, 1.00],
+                58.0,
+                [0.76, 0.86, 0.96],
+                [0.22, 0.48, 0.94],
+                [0.76, 0.86, 0.98],
+                [0.36, 0.42, 0.50],
+                [1.36, 1.40, 1.48],
+                660.0,
+            ),
+            Self::Urban => (
+                [-0.62, 0.68, 0.39],
+                [1.00, 0.95, 0.86],
+                12_400.0,
+                [0.60, 0.74, 0.96],
+                560.0,
+                [0.74, 0.78, 0.90],
+                42.0,
+                [0.56, 0.66, 0.78],
+                [0.18, 0.38, 0.84],
+                [0.66, 0.73, 0.86],
+                [0.18, 0.19, 0.22],
+                [1.40, 1.26, 1.02],
+                600.0,
+            ),
+            Self::NewUrban => (
+                [-0.63, 0.66, 0.41],
+                [1.00, 0.92, 0.78],
+                13_200.0,
+                [0.48, 0.76, 1.00],
+                600.0,
+                [0.82, 0.80, 0.88],
+                46.0,
+                [0.72, 0.74, 0.82],
+                [0.16, 0.44, 0.92],
+                [0.80, 0.76, 0.72],
+                [0.24, 0.21, 0.19],
+                [1.50, 1.28, 0.92],
+                630.0,
+            ),
+            Self::Desert => (
+                [-0.60, 0.70, 0.38],
+                [1.00, 0.91, 0.74],
+                14_400.0,
+                [0.88, 0.78, 0.62],
+                640.0,
+                [0.90, 0.82, 0.70],
+                50.0,
+                [0.82, 0.74, 0.58],
+                [0.20, 0.46, 0.88],
+                [0.86, 0.78, 0.64],
+                [0.36, 0.28, 0.17],
+                [1.56, 1.32, 0.88],
+                650.0,
+            ),
+            Self::Lunar => (
+                [-0.66, 0.60, 0.45],
+                [1.00, 0.99, 0.98],
+                14_800.0,
+                [0.42, 0.62, 0.98],
+                340.0,
+                [0.60, 0.66, 0.80],
+                28.0,
+                [0.05, 0.07, 0.12],
+                [0.02, 0.03, 0.08],
+                [0.14, 0.18, 0.26],
+                [0.20, 0.21, 0.23],
+                [1.62, 1.60, 1.58],
+                480.0,
+            ),
+        };
         TheaterLightingSpec {
             sun_direction_to_sky: Vec3::from_array(sun_d).normalize(),
             sun_color: Color::srgb(sun_c[0], sun_c[1], sun_c[2]),
@@ -161,10 +277,30 @@ pub fn build_camera_aware_cascade_config(
     let min_d = (eye_dist * 0.70).max(1.0);
     let span = (zoom_dist * 1.02).max(24.0);
     let (num_cascades, first_far, max_d, overlap) = match setting {
-        ShadowQualitySetting::Off => (1, eye_dist + span * 0.90, (eye_dist * 1.80).max(145.0), 0.15),
-        ShadowQualitySetting::Low => (2, eye_dist + span * 0.92, (eye_dist * 1.82).max(150.0), 0.15),
-        ShadowQualitySetting::Medium => (3, eye_dist + span * 0.96, (eye_dist * 1.90).max(170.0), 0.20),
-        ShadowQualitySetting::High => (4, eye_dist + span * 1.02, (eye_dist * 2.05).max(215.0), 0.22),
+        ShadowQualitySetting::Off => (
+            1,
+            eye_dist + span * 0.90,
+            (eye_dist * 1.80).max(145.0),
+            0.15,
+        ),
+        ShadowQualitySetting::Low => (
+            2,
+            eye_dist + span * 0.92,
+            (eye_dist * 1.82).max(150.0),
+            0.15,
+        ),
+        ShadowQualitySetting::Medium => (
+            3,
+            eye_dist + span * 0.96,
+            (eye_dist * 1.90).max(170.0),
+            0.20,
+        ),
+        ShadowQualitySetting::High => (
+            4,
+            eye_dist + span * 1.02,
+            (eye_dist * 2.05).max(215.0),
+            0.22,
+        ),
     };
     CascadeShadowConfigBuilder {
         num_cascades,
@@ -186,7 +322,11 @@ pub fn sync_directional_shadow_quality(
         (Without<PreviewStageCamera>, Without<MainDirectionalLight>),
     >,
     mut last_applied_bucket: Local<
-        Option<(ShadowQualitySetting, crate::camera::CameraProjectionMode, u16)>,
+        Option<(
+            ShadowQualitySetting,
+            crate::camera::CameraProjectionMode,
+            u16,
+        )>,
     >,
     mut sun_q: Query<
         (
@@ -195,7 +335,10 @@ pub fn sync_directional_shadow_quality(
             Option<&mut CascadeShadowConfig>,
             Ref<MainDirectionalLight>,
         ),
-        (Without<crate::camera::RtsCameraRig>, Without<PreviewStageCamera>),
+        (
+            Without<crate::camera::RtsCameraRig>,
+            Without<PreviewStageCamera>,
+        ),
     >,
 ) {
     let desired_map_size = match *shadow_setting {
@@ -213,8 +356,18 @@ pub fn sync_directional_shadow_quality(
     let (zoom_dist, eye_dist, proj_mode) = cam_rig_q
         .iter()
         .next()
-        .map(|r| (r.zoom_distance(), r.effective_eye_distance(), r.projection_mode))
-        .unwrap_or((23.5, default_eye, crate::camera::CameraProjectionMode::TelephotoTactical));
+        .map(|r| {
+            (
+                r.zoom_distance(),
+                r.effective_eye_distance(),
+                r.projection_mode,
+            )
+        })
+        .unwrap_or((
+            23.5,
+            default_eye,
+            crate::camera::CameraProjectionMode::TelephotoTactical,
+        ));
     let desired_key = (*shadow_setting, proj_mode, (eye_dist / 12.0).round() as u16);
     let bucket_changed = *last_applied_bucket != Some(desired_key);
 
@@ -288,10 +441,17 @@ pub fn sync_hdr_camera_ssao_and_ibl(
             Option<&CameraHdrIblConfigured>,
             Option<&ScreenSpaceAmbientOcclusion>,
         ),
-        (With<crate::camera::RtsCameraRig>, Without<PreviewStageCamera>),
+        (
+            With<crate::camera::RtsCameraRig>,
+            Without<PreviewStageCamera>,
+        ),
     >,
 ) {
-    let theater_spec = theater_res.as_deref().map(|t| t.profile).unwrap_or_default().spec();
+    let theater_spec = theater_res
+        .as_deref()
+        .map(|t| t.profile)
+        .unwrap_or_default()
+        .spec();
     let theater_changed = theater_res.as_ref().is_some_and(|t| t.is_changed());
     let ibl_changed = ibl_res.as_ref().is_some_and(|i| i.is_changed());
 
@@ -318,7 +478,9 @@ pub fn sync_hdr_camera_ssao_and_ibl(
                 Tonemapping::TonyMcMapface,
                 build_tactical_hdr_bloom(),
                 Msaa::Off,
-                Smaa { preset: SmaaPreset::Ultra },
+                Smaa {
+                    preset: SmaaPreset::Ultra,
+                },
                 DepthPrepass,
                 NormalPrepass,
             ));
@@ -339,7 +501,12 @@ pub fn sync_hdr_camera_ssao_and_ibl(
             });
         }
 
-        if !is_ortho && matches!(*ssao_setting, SsaoQualitySetting::Medium | SsaoQualitySetting::High) {
+        if !is_ortho
+            && matches!(
+                *ssao_setting,
+                SsaoQualitySetting::Medium | SsaoQualitySetting::High
+            )
+        {
             let want = if *ssao_setting == SsaoQualitySetting::High {
                 ScreenSpaceAmbientOcclusionQualityLevel::High
             } else {
@@ -348,7 +515,10 @@ pub fn sync_hdr_camera_ssao_and_ibl(
             if curr_ssao.map(|s| s.quality_level != want).unwrap_or(true) {
                 commands.entity(ent).insert((
                     Msaa::Off,
-                    ScreenSpaceAmbientOcclusion { quality_level: want, constant_object_thickness: 0.22 },
+                    ScreenSpaceAmbientOcclusion {
+                        quality_level: want,
+                        constant_object_thickness: 0.22,
+                    },
                 ));
             }
         }
@@ -372,7 +542,11 @@ pub struct PlacementGhostModel {
 
 /// Builds a continuous 3D vertex-colored heightmap terrain mesh (`PrimitiveTopology::TriangleList`).
 pub fn build_continuous_terrain_mesh(world: &SimWorld) -> Mesh {
-    let (w, h, ts) = (world.grid.width.max(1) as usize, world.grid.height.max(1) as usize, world.grid.tile_size);
+    let (w, h, ts) = (
+        world.grid.width.max(1) as usize,
+        world.grid.height.max(1) as usize,
+        world.grid.tile_size,
+    );
     let (vw, vh) = (w + 1, h + 1);
     let base_tiles: Vec<[i32; 2]> = world
         .entities
@@ -392,25 +566,38 @@ pub fn build_continuous_terrain_mesh(world: &SimWorld) -> Mesh {
             (-0.18, [0.08, 0.30, 0.58, 1.0])
         } else if world.grid.ore_tiles.contains_key(&t) {
             (0.0, [0.22, 0.18, 0.11, 1.0])
-        } else if base_tiles.iter().any(|bt| (bt[0] - cx).abs() <= 4 && (bt[1] - cz).abs() <= 4) {
+        } else if base_tiles
+            .iter()
+            .any(|bt| (bt[0] - cx).abs() <= 4 && (bt[1] - cz).abs() <= 4)
+        {
             let checker = if (cx + cz) % 2 == 0 { 0.02 } else { -0.01 };
             (0.0, [0.36 + checker, 0.38 + checker, 0.35 + checker, 1.0])
         } else {
-            let hash = ((cx as u32).wrapping_mul(73856093) ^ (cz as u32).wrapping_mul(19349663)) & 0xff;
+            let hash =
+                ((cx as u32).wrapping_mul(73856093) ^ (cz as u32).wrapping_mul(19349663)) & 0xff;
             let micro = (hash as f32 / 255.0 - 0.5) * 0.04;
-            if ((cx / 3) + (cz / 3)) % 2 == 0 { (0.0, [0.27 + micro, 0.42 + micro, 0.21 + micro, 1.0]) }
-            else { (0.0, [0.21 + micro, 0.35 + micro, 0.17 + micro, 1.0]) }
+            if ((cx / 3) + (cz / 3)) % 2 == 0 {
+                (0.0, [0.27 + micro, 0.42 + micro, 0.21 + micro, 1.0])
+            } else {
+                (0.0, [0.21 + micro, 0.35 + micro, 0.17 + micro, 1.0])
+            }
         }
     };
 
-    let (mut positions, mut colors, mut heights) = (Vec::with_capacity(vw * vh), Vec::with_capacity(vw * vh), vec![0.0_f32; vw * vh]);
+    let (mut positions, mut colors, mut heights) = (
+        Vec::with_capacity(vw * vh),
+        Vec::with_capacity(vw * vh),
+        vec![0.0_f32; vw * vh],
+    );
     for vz in 0..vh {
         for vx in 0..vw {
             let (mut sum_h, mut sum_c) = (0.0_f32, [0.0_f32; 4]);
             for (ox, oz) in [(-1, -1), (0, -1), (-1, 0), (0, 0)] {
                 let (th, tc) = sample_tile(vx as i32 + ox, vz as i32 + oz);
                 sum_h += th;
-                for c in 0..4 { sum_c[c] += tc[c]; }
+                for c in 0..4 {
+                    sum_c[c] += tc[c];
+                }
             }
             let avg_h = sum_h * 0.25;
             heights[vz * vw + vx] = avg_h;
@@ -422,8 +609,21 @@ pub fn build_continuous_terrain_mesh(world: &SimWorld) -> Mesh {
     let mut normals = Vec::with_capacity(vw * vh);
     for vz in 0..vh {
         for vx in 0..vw {
-            let (xl, xr, zu, zd) = (vx.saturating_sub(1), (vx + 1).min(vw - 1), vz.saturating_sub(1), (vz + 1).min(vh - 1));
-            normals.push(Vec3::new(heights[vz * vw + xl] - heights[vz * vw + xr], 2.0 * ts, heights[zu * vw + vx] - heights[zd * vw + vx]).normalize_or_zero().to_array());
+            let (xl, xr, zu, zd) = (
+                vx.saturating_sub(1),
+                (vx + 1).min(vw - 1),
+                vz.saturating_sub(1),
+                (vz + 1).min(vh - 1),
+            );
+            normals.push(
+                Vec3::new(
+                    heights[vz * vw + xl] - heights[vz * vw + xr],
+                    2.0 * ts,
+                    heights[zu * vw + vx] - heights[zd * vw + vx],
+                )
+                .normalize_or_zero()
+                .to_array(),
+            );
         }
     }
 
@@ -434,7 +634,10 @@ pub fn build_continuous_terrain_mesh(world: &SimWorld) -> Mesh {
             indices.extend_from_slice(&[i00, i01, i00 + 1, i00 + 1, i01, i01 + 1]);
         }
     }
-    let mut mesh = Mesh::new(PrimitiveTopology::TriangleList, RenderAssetUsages::default());
+    let mut mesh = Mesh::new(
+        PrimitiveTopology::TriangleList,
+        RenderAssetUsages::default(),
+    );
     mesh.insert_attribute(Mesh::ATTRIBUTE_POSITION, positions);
     mesh.insert_attribute(Mesh::ATTRIBUTE_NORMAL, normals);
     mesh.insert_attribute(Mesh::ATTRIBUTE_COLOR, colors);
@@ -454,15 +657,25 @@ pub fn resolve_mod_asset_path(asset_root: &Path, mod_root: &Path, model_rel: &st
     let norm_asset = std::fs::canonicalize(asset_root).unwrap_or_else(|_| asset_root.to_path_buf());
     let norm_mod = std::fs::canonicalize(mod_root).unwrap_or_else(|_| mod_root.to_path_buf());
     if let Ok(prefix) = norm_mod.strip_prefix(&norm_asset) {
-        let (prefix_str, clean_model) = (prefix.to_string_lossy().replace('\\', "/"), model_rel.trim_start_matches('/').replace('\\', "/"));
-        if prefix_str.is_empty() { format!("{clean_model}#Scene0") } else { format!("{prefix_str}/{clean_model}#Scene0") }
+        let (prefix_str, clean_model) = (
+            prefix.to_string_lossy().replace('\\', "/"),
+            model_rel.trim_start_matches('/').replace('\\', "/"),
+        );
+        if prefix_str.is_empty() {
+            format!("{clean_model}#Scene0")
+        } else {
+            format!("{prefix_str}/{clean_model}#Scene0")
+        }
     } else {
         format!("{}#Scene0", model_rel.replace('\\', "/"))
     }
 }
 
 fn prop_glb_library_present(loaded: &LoadedMod) -> bool {
-    loaded.root_dir.join("assets/models/props/ore_stage_1.glb").is_file()
+    loaded
+        .root_dir
+        .join("assets/models/props/ore_stage_1.glb")
+        .is_file()
         || Path::new("rust-ra2/assets/models/props/ore_stage_1.glb").is_file()
 }
 
@@ -474,14 +687,26 @@ pub fn spawn_map_environment_entities(
     world: &SimWorld,
 ) {
     let map = &loaded.entry_map;
-    let fallback_terrain_mat = materials.add(StandardMaterial { base_color: Color::WHITE, perceptual_roughness: 0.92, metallic: 0.02, ..default() });
+    let fallback_terrain_mat = materials.add(StandardMaterial {
+        base_color: Color::WHITE,
+        perceptual_roughness: 0.92,
+        metallic: 0.02,
+        ..default()
+    });
     let (chunks_x, chunks_z) = terrain_chunk_counts(world.grid.width, world.grid.height);
     for cz in 0..chunks_z {
         for cx in 0..chunks_x {
             let chunk_mesh = meshes.add(build_terrain_chunk_mesh(map, world, cx, cz));
             commands.spawn((
-                MapEnvironmentEntity, TerrainChunkEntity { chunk_x: cx, chunk_z: cz }, PendingTerrainSplatUpgrade,
-                Mesh3d(chunk_mesh), MeshMaterial3d(fallback_terrain_mat.clone()), Transform::IDENTITY,
+                MapEnvironmentEntity,
+                TerrainChunkEntity {
+                    chunk_x: cx,
+                    chunk_z: cz,
+                },
+                PendingTerrainSplatUpgrade,
+                Mesh3d(chunk_mesh),
+                MeshMaterial3d(fallback_terrain_mat.clone()),
+                Transform::IDENTITY,
             ));
         }
     }
@@ -489,43 +714,73 @@ pub fn spawn_map_environment_entities(
     if !map.obstacles.is_empty() {
         let shared_rock_mesh = meshes.add(cuboid_with_vertex_color(1.0, 1.0, 1.0, [1.0; 4]));
         let rock_base_mat = materials.add(StandardMaterial {
-            base_color: Color::srgb(0.34, 0.33, 0.31), perceptual_roughness: 0.88, ..default()
+            base_color: Color::srgb(0.34, 0.33, 0.31),
+            perceptual_roughness: 0.88,
+            ..default()
         });
         let rock_top_mat = materials.add(StandardMaterial {
-            base_color: Color::srgb(0.42, 0.40, 0.37), perceptual_roughness: 0.82, ..default()
+            base_color: Color::srgb(0.42, 0.40, 0.37),
+            perceptual_roughness: 0.82,
+            ..default()
         });
         for obs in &map.obstacles {
             let w = (obs.max[0] - obs.min[0] + 1).max(1) as f32 * map.tile_size;
             let d = (obs.max[1] - obs.min[1] + 1).max(1) as f32 * map.tile_size;
-            let (cx, cz) = ((obs.min[0] as f32 * map.tile_size) + w * 0.5, (obs.min[1] as f32 * map.tile_size) + d * 0.5);
+            let (cx, cz) = (
+                (obs.min[0] as f32 * map.tile_size) + w * 0.5,
+                (obs.min[1] as f32 * map.tile_size) + d * 0.5,
+            );
             commands.spawn((
-                MapEnvironmentEntity, Mesh3d(shared_rock_mesh.clone()), MeshMaterial3d(rock_base_mat.clone()),
+                MapEnvironmentEntity,
+                Mesh3d(shared_rock_mesh.clone()),
+                MeshMaterial3d(rock_base_mat.clone()),
                 Transform::from_xyz(cx, 0.9, cz).with_scale(Vec3::new(w, 1.8, d)),
             ));
             commands.spawn((
-                MapEnvironmentEntity, Mesh3d(shared_rock_mesh.clone()), MeshMaterial3d(rock_top_mat.clone()),
+                MapEnvironmentEntity,
+                Mesh3d(shared_rock_mesh.clone()),
+                MeshMaterial3d(rock_top_mat.clone()),
                 Transform::from_xyz(cx, 2.4, cz).with_scale(Vec3::new(w * 0.78, 1.2, d * 0.78)),
             ));
         }
     }
 
     if !world.grid.bridge_tiles.is_empty() {
-        let bridge_mesh = meshes.add(cuboid_with_vertex_color(map.tile_size * 0.98, 0.18, map.tile_size * 0.98, [1.0; 4]));
-        let pier_mesh = meshes.add(cuboid_with_vertex_color(map.tile_size * 0.24, 1.15, map.tile_size * 0.24, [0.82, 0.82, 0.84, 1.0]));
+        let bridge_mesh = meshes.add(cuboid_with_vertex_color(
+            map.tile_size * 0.98,
+            0.18,
+            map.tile_size * 0.98,
+            [1.0; 4],
+        ));
+        let pier_mesh = meshes.add(cuboid_with_vertex_color(
+            map.tile_size * 0.24,
+            1.15,
+            map.tile_size * 0.24,
+            [0.82, 0.82, 0.84, 1.0],
+        ));
         let bridge_mat = materials.add(StandardMaterial {
-            base_color: Color::srgb(0.46, 0.42, 0.36), metallic: 0.35, perceptual_roughness: 0.72, ..default()
+            base_color: Color::srgb(0.46, 0.42, 0.36),
+            metallic: 0.35,
+            perceptual_roughness: 0.72,
+            ..default()
         });
         let deck_center_y = CollisionGrid::BRIDGE_DECK_Y - 0.09;
         for &btile in &world.grid.bridge_tiles {
             let pos = world.grid.tile_to_world(btile);
             commands.spawn((
-                MapEnvironmentEntity, BridgeVisualTile { tile: btile }, Mesh3d(bridge_mesh.clone()),
-                MeshMaterial3d(bridge_mat.clone()), Transform::from_xyz(pos[0], deck_center_y, pos[2]),
+                MapEnvironmentEntity,
+                BridgeVisualTile { tile: btile },
+                Mesh3d(bridge_mesh.clone()),
+                MeshMaterial3d(bridge_mat.clone()),
+                Transform::from_xyz(pos[0], deck_center_y, pos[2]),
             ));
             if world.grid.water_tiles.contains(&btile) && (btile[0] + btile[1]).rem_euclid(2) == 0 {
                 commands.spawn((
-                    MapEnvironmentEntity, BridgeVisualTile { tile: btile }, Mesh3d(pier_mesh.clone()),
-                    MeshMaterial3d(bridge_mat.clone()), Transform::from_xyz(pos[0], -0.15, pos[2]),
+                    MapEnvironmentEntity,
+                    BridgeVisualTile { tile: btile },
+                    Mesh3d(pier_mesh.clone()),
+                    MeshMaterial3d(bridge_mat.clone()),
+                    Transform::from_xyz(pos[0], -0.15, pos[2]),
                 ));
             }
         }
@@ -534,17 +789,32 @@ pub fn spawn_map_environment_entities(
     if !prop_glb_library_present(loaded) {
         let ore_cluster_mesh = meshes.add(build_crystal_cluster_mesh(false));
         let gem_cluster_mesh = meshes.add(build_crystal_cluster_mesh(true));
-        let crystal_unlit_mat = materials.add(StandardMaterial { base_color: Color::WHITE, unlit: true, ..default() });
+        let crystal_unlit_mat = materials.add(StandardMaterial {
+            base_color: Color::WHITE,
+            unlit: true,
+            ..default()
+        });
         for (&tile, &amt) in &world.grid.ore_tiles {
             if amt > 0 {
-                let cluster_mesh = if world.grid.gem_tiles.contains(&tile) { &gem_cluster_mesh } else { &ore_cluster_mesh };
+                let cluster_mesh = if world.grid.gem_tiles.contains(&tile) {
+                    &gem_cluster_mesh
+                } else {
+                    &ore_cluster_mesh
+                };
                 let pos = world.grid.tile_to_world(tile);
-                let seed = (tile[0] as u32).wrapping_mul(2654435761).wrapping_add((tile[1] as u32).wrapping_mul(2246822519));
+                let seed = (tile[0] as u32)
+                    .wrapping_mul(2654435761)
+                    .wrapping_add((tile[1] as u32).wrapping_mul(2246822519));
                 let yaw = ((seed & 0xff) as f32 / 255.0) * std::f32::consts::TAU;
                 commands.spawn((
-                    MapEnvironmentEntity, OreVisualTile { tile }, Mesh3d(cluster_mesh.clone()),
-                    MeshMaterial3d(crystal_unlit_mat.clone()), bevy::pbr::NotShadowCaster, bevy::pbr::NotShadowReceiver,
-                    Transform::from_xyz(pos[0], pos[1], pos[2]).with_rotation(Quat::from_rotation_y(yaw)),
+                    MapEnvironmentEntity,
+                    OreVisualTile { tile },
+                    Mesh3d(cluster_mesh.clone()),
+                    MeshMaterial3d(crystal_unlit_mat.clone()),
+                    bevy::pbr::NotShadowCaster,
+                    bevy::pbr::NotShadowReceiver,
+                    Transform::from_xyz(pos[0], pos[1], pos[2])
+                        .with_rotation(Quat::from_rotation_y(yaw)),
                 ));
             }
         }
@@ -560,9 +830,17 @@ fn build_crystal_cluster_mesh(is_gem: bool) -> Mesh {
         (0.34, 0.34, 0.14, 0.15, -1.65),
     ];
     let (top_col, side_hi, side_lo) = if is_gem {
-        ([1.0, 0.42, 1.0, 1.0], [0.88, 0.18, 0.96, 1.0], [0.62, 0.08, 0.74, 1.0])
+        (
+            [1.0, 0.42, 1.0, 1.0],
+            [0.88, 0.18, 0.96, 1.0],
+            [0.62, 0.08, 0.74, 1.0],
+        )
     } else {
-        ([1.0, 0.88, 0.22, 1.0], [0.95, 0.72, 0.08, 1.0], [0.78, 0.52, 0.04, 1.0])
+        (
+            [1.0, 0.88, 0.22, 1.0],
+            [0.95, 0.72, 0.08, 1.0],
+            [0.78, 0.52, 0.04, 1.0],
+        )
     };
 
     let mut positions: Vec<[f32; 3]> = Vec::with_capacity(100);
@@ -574,8 +852,18 @@ fn build_crystal_cluster_mesh(is_gem: bool) -> Mesh {
         let (s, c) = ry.sin_cos();
         let rot = |lx: f32, lz: f32| -> (f32, f32) { (ox + lx * c - lz * s, oz + lx * s + lz * c) };
         let (y0, y1, top_w) = (0.02_f32, 0.02_f32 + h, half_w * 0.72);
-        let b = [rot(-half_w, -half_w), rot(half_w, -half_w), rot(half_w, half_w), rot(-half_w, half_w)];
-        let t = [rot(-top_w, -top_w), rot(top_w, -top_w), rot(top_w, top_w), rot(-top_w, top_w)];
+        let b = [
+            rot(-half_w, -half_w),
+            rot(half_w, -half_w),
+            rot(half_w, half_w),
+            rot(-half_w, half_w),
+        ];
+        let t = [
+            rot(-top_w, -top_w),
+            rot(top_w, -top_w),
+            rot(top_w, top_w),
+            rot(-top_w, top_w),
+        ];
 
         let mut push_quad = |q: [[f32; 3]; 4], n: [f32; 3], col: [f32; 4]| {
             let base = positions.len() as u32;
@@ -586,15 +874,32 @@ fn build_crystal_cluster_mesh(is_gem: bool) -> Mesh {
         };
 
         push_quad(t.map(|(x, z)| [x, y1, z]), [0.0, 1.0, 0.0], top_col);
-        let side_normals = [[0.0, 0.5, -0.86], [0.86, 0.5, 0.0], [0.0, 0.5, 0.86], [-0.86, 0.5, 0.0]];
+        let side_normals = [
+            [0.0, 0.5, -0.86],
+            [0.86, 0.5, 0.0],
+            [0.0, 0.5, 0.86],
+            [-0.86, 0.5, 0.0],
+        ];
         for (i, &sn) in side_normals.iter().enumerate() {
             let j = (i + 1) & 3;
             let col = if i % 2 == 0 { side_hi } else { side_lo };
-            push_quad([[b[i].0, y0, b[i].1], [b[j].0, y0, b[j].1], [t[j].0, y1, t[j].1], [t[i].0, y1, t[i].1]], sn, col);
+            push_quad(
+                [
+                    [b[i].0, y0, b[i].1],
+                    [b[j].0, y0, b[j].1],
+                    [t[j].0, y1, t[j].1],
+                    [t[i].0, y1, t[i].1],
+                ],
+                sn,
+                col,
+            );
         }
     }
 
-    let mut mesh = Mesh::new(PrimitiveTopology::TriangleList, RenderAssetUsages::default());
+    let mut mesh = Mesh::new(
+        PrimitiveTopology::TriangleList,
+        RenderAssetUsages::default(),
+    );
     mesh.insert_attribute(Mesh::ATTRIBUTE_POSITION, positions);
     mesh.insert_attribute(Mesh::ATTRIBUTE_NORMAL, normals);
     mesh.insert_attribute(Mesh::ATTRIBUTE_COLOR, colors);
@@ -615,7 +920,8 @@ pub fn setup_3d_map_environment(
     ),
 ) {
     if let Some(ref mut inter) = interaction {
-        if inter.ssao_quality.trim().is_empty() || inter.ssao_quality.eq_ignore_ascii_case("medium") {
+        if inter.ssao_quality.trim().is_empty() || inter.ssao_quality.eq_ignore_ascii_case("medium")
+        {
             inter.ssao_quality = SsaoQualitySetting::High.as_str().to_string();
         }
     }
@@ -624,10 +930,21 @@ pub fn setup_3d_map_environment(
             **ssao = SsaoQualitySetting::High;
         }
     }
-    spawn_map_environment_entities(&mut commands, &mut meshes, &mut materials, &mod_res.0, &sim_res.0);
+    spawn_map_environment_entities(
+        &mut commands,
+        &mut meshes,
+        &mut materials,
+        &mod_res.0,
+        &sim_res.0,
+    );
 
-    let (fow_w, fow_h) = (sim_res.0.grid.width.max(1) as u32, sim_res.0.grid.height.max(1) as u32);
-    commands.insert_resource(FogOfWarOverlayImage(images.add(build_default_fow_overlay_image(fow_w, fow_h))));
+    let (fow_w, fow_h) = (
+        sim_res.0.grid.width.max(1) as u32,
+        sim_res.0.grid.height.max(1) as u32,
+    );
+    commands.insert_resource(FogOfWarOverlayImage(
+        images.add(build_default_fow_overlay_image(fow_w, fow_h)),
+    ));
 
     let theater = TheaterLightingProfile::from_loaded_mod(&mod_res.0);
     let spec = theater.spec();
@@ -638,7 +955,10 @@ pub fn setup_3d_map_environment(
         specular_cubemap: images.add(ibl_spec),
     });
     commands.insert_resource(DirectionalLightShadowMap { size: 3072 });
-    commands.insert_resource(AmbientLight { color: spec.ambient_color, brightness: spec.ambient_brightness });
+    commands.insert_resource(AmbientLight {
+        color: spec.ambient_color,
+        brightness: spec.ambient_brightness,
+    });
 
     let center = Vec3::new(
         (sim_res.0.grid.width.max(1) as f32 * sim_res.0.grid.tile_size) * 0.5,
@@ -647,15 +967,31 @@ pub fn setup_3d_map_environment(
     );
     let default_eye = 23.5 * crate::camera::RtsCameraRig::telephoto_eye_scale();
     commands.spawn((
-        MainDirectionalLight { is_primary_sun: true },
-        DirectionalLight { color: spec.sun_color, illuminance: spec.sun_illuminance, shadows_enabled: true, ..default() },
+        MainDirectionalLight {
+            is_primary_sun: true,
+        },
+        DirectionalLight {
+            color: spec.sun_color,
+            illuminance: spec.sun_illuminance,
+            shadows_enabled: true,
+            ..default()
+        },
         build_camera_aware_cascade_config(ShadowQualitySetting::Medium, 23.5, default_eye),
-        Transform::from_translation(center + spec.sun_direction_to_sky * 120.0).looking_at(center, Vec3::Y),
+        Transform::from_translation(center + spec.sun_direction_to_sky * 120.0)
+            .looking_at(center, Vec3::Y),
     ));
     commands.spawn((
-        MainDirectionalLight { is_primary_sun: false },
-        DirectionalLight { color: spec.fill_color, illuminance: spec.fill_illuminance, shadows_enabled: false, ..default() },
-        Transform::from_translation(center + spec.fill_direction_to_sky * 100.0).looking_at(center, Vec3::Y),
+        MainDirectionalLight {
+            is_primary_sun: false,
+        },
+        DirectionalLight {
+            color: spec.fill_color,
+            illuminance: spec.fill_illuminance,
+            shadows_enabled: false,
+            ..default()
+        },
+        Transform::from_translation(center + spec.fill_direction_to_sky * 100.0)
+            .looking_at(center, Vec3::Y),
     ));
 }
 
@@ -666,15 +1002,38 @@ mod theater_tests {
     #[test]
     fn theater_lighting_infers_all_six_ra2_theaters_and_builds_nw_to_se_sun_and_ibl() {
         let cases = [
-            ("skirmish_valley", "Skirmish Valley", TheaterLightingProfile::Temperate),
+            (
+                "skirmish_valley",
+                "Skirmish Valley",
+                TheaterLightingProfile::Temperate,
+            ),
             ("mp_10_arctic_circle", "Polar", TheaterLightingProfile::Snow),
-            ("ra2_allied_06_liberty", "Liberty", TheaterLightingProfile::Urban),
-            ("mp_yr_austin_tx", "Austin, TX", TheaterLightingProfile::NewUrban),
-            ("yr_allied_04_tomb_raided", "Egypt", TheaterLightingProfile::Desert),
-            ("yr_soviet_06_to_the_moon", "Lunar", TheaterLightingProfile::Lunar),
+            (
+                "ra2_allied_06_liberty",
+                "Liberty",
+                TheaterLightingProfile::Urban,
+            ),
+            (
+                "mp_yr_austin_tx",
+                "Austin, TX",
+                TheaterLightingProfile::NewUrban,
+            ),
+            (
+                "yr_allied_04_tomb_raided",
+                "Egypt",
+                TheaterLightingProfile::Desert,
+            ),
+            (
+                "yr_soviet_06_to_the_moon",
+                "Lunar",
+                TheaterLightingProfile::Lunar,
+            ),
         ];
         for (id, name, expected) in cases {
-            assert_eq!(TheaterLightingProfile::infer_from_map_id_and_name(id, name), expected);
+            assert_eq!(
+                TheaterLightingProfile::infer_from_map_id_and_name(id, name),
+                expected
+            );
         }
         let screen_right = Vec3::new(1.0, 0.0, -1.0).normalize();
         for profile in TheaterLightingProfile::ALL {
@@ -692,7 +1051,11 @@ mod theater_tests {
         use bevy::ecs::system::RunSystemOnce;
         let rig = crate::camera::RtsCameraRig::new(128.0, 128.0);
         let eye_d = rig.effective_eye_distance();
-        for q in [ShadowQualitySetting::Low, ShadowQualitySetting::Medium, ShadowQualitySetting::High] {
+        for q in [
+            ShadowQualitySetting::Low,
+            ShadowQualitySetting::Medium,
+            ShadowQualitySetting::High,
+        ] {
             let cfg = build_camera_aware_cascade_config(q, rig.zoom_distance(), eye_d);
             assert!(cfg.minimum_distance < eye_d && cfg.bounds[0] > eye_d + 20.0);
             assert!(*cfg.bounds.last().unwrap() >= eye_d * 1.80);
@@ -702,27 +1065,52 @@ mod theater_tests {
         app.insert_resource(SsaoQualitySetting::High);
         let mut ortho_rig = rig;
         ortho_rig.projection_mode = crate::camera::CameraProjectionMode::ClassicIso2to1;
-        let cam_e = app.world_mut().spawn((
-            ortho_rig.clone(), Camera::default(), ortho_rig.compute_projection(),
-            ScreenSpaceAmbientOcclusion::default(),
-        )).id();
-        app.world_mut().run_system_once(sync_hdr_camera_ssao_and_ibl).expect("run ssao sync");
+        let cam_e = app
+            .world_mut()
+            .spawn((
+                ortho_rig.clone(),
+                Camera::default(),
+                ortho_rig.compute_projection(),
+                ScreenSpaceAmbientOcclusion::default(),
+            ))
+            .id();
+        app.world_mut()
+            .run_system_once(sync_hdr_camera_ssao_and_ibl)
+            .expect("run ssao sync");
         app.world_mut().flush();
-        assert!(app.world().entity(cam_e).get::<ScreenSpaceAmbientOcclusion>().is_none());
+        assert!(app
+            .world()
+            .entity(cam_e)
+            .get::<ScreenSpaceAmbientOcclusion>()
+            .is_none());
     }
 
     #[test]
     fn hdr_energy_only_bloom_and_default_high_ssao_invariants() {
         assert_eq!(SsaoQualitySetting::default(), SsaoQualitySetting::High);
-        assert_eq!(SsaoQualitySetting::from_str_lossy(""), SsaoQualitySetting::High);
-        assert_eq!(SsaoQualitySetting::from_str_lossy("high"), SsaoQualitySetting::High);
-        assert_eq!(SsaoQualitySetting::from_str_lossy("medium"), SsaoQualitySetting::Medium);
-        assert_eq!(SsaoQualitySetting::from_str_lossy("off"), SsaoQualitySetting::Off);
+        assert_eq!(
+            SsaoQualitySetting::from_str_lossy(""),
+            SsaoQualitySetting::High
+        );
+        assert_eq!(
+            SsaoQualitySetting::from_str_lossy("high"),
+            SsaoQualitySetting::High
+        );
+        assert_eq!(
+            SsaoQualitySetting::from_str_lossy("medium"),
+            SsaoQualitySetting::Medium
+        );
+        assert_eq!(
+            SsaoQualitySetting::from_str_lossy("off"),
+            SsaoQualitySetting::Off
+        );
 
         let bloom = build_tactical_hdr_bloom();
         assert!((bloom.intensity - 0.14).abs() < 1e-6);
         assert!((bloom.prefilter.threshold - 1.05).abs() < 1e-6);
-        assert!(bloom.prefilter.threshold_softness > 0.0 && bloom.prefilter.threshold_softness <= 0.35);
+        assert!(
+            bloom.prefilter.threshold_softness > 0.0 && bloom.prefilter.threshold_softness <= 0.35
+        );
         assert_eq!(bloom.composite_mode, BloomCompositeMode::Additive);
     }
 }

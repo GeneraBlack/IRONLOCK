@@ -41,7 +41,11 @@ pub fn f16_bits_to_f32(h: u16) -> f32 {
             f32::from_bits(sign)
         } else {
             let v = (mant as f32) / 1024.0 * 2.0_f32.powi(-14);
-            if sign != 0 { -v } else { v }
+            if sign != 0 {
+                -v
+            } else {
+                v
+            }
         }
     } else if exp == 31 {
         f32::from_bits(sign | 0x7f80_0000 | (mant << 13))
@@ -134,7 +138,8 @@ pub fn sample_theater_hdri_environment(spec: &TheaterLightingSpec, dir: Vec3) ->
         // turrets reflect organic sunlit cloud bands instead of a sterile uniform gradient.
         let cloud_uv = Vec2::new(dir.x, dir.z) / (up + 0.24);
         let cloud_raw = cloud_fbm(cloud_uv);
-        let cloud_mask = ((cloud_raw - 0.48) / 0.34).clamp(0.0, 1.0) * up.clamp(0.0, 1.0).powf(0.35);
+        let cloud_mask =
+            ((cloud_raw - 0.48) / 0.34).clamp(0.0, 1.0) * up.clamp(0.0, 1.0).powf(0.35);
         let sun_align = (dir.dot(sun_dir) * 0.5 + 0.5).clamp(0.0, 1.0);
         let cloud_lit = (spec.ibl_zenith * 0.62)
             .lerp(spec.ibl_sun_tint * 1.28, 0.32 + 0.68 * sun_align.powf(1.6));
@@ -422,13 +427,15 @@ mod tests {
             let f_base = face * face_stride_bytes;
             for t in 0..(128 * 128) {
                 let p = f_base + t * 8;
-                let r = f16_bits_to_f32(u16::from_le_bytes([spec_img.data[p], spec_img.data[p + 1]]));
+                let r =
+                    f16_bits_to_f32(u16::from_le_bytes([spec_img.data[p], spec_img.data[p + 1]]));
                 assert!(r.is_finite() && r >= 0.0);
                 max_mip0 = max_mip0.max(r);
             }
             for t in 0..mip6_texels {
                 let p = f_base + mip6_offset_within_face + t * 8;
-                let r = f16_bits_to_f32(u16::from_le_bytes([spec_img.data[p], spec_img.data[p + 1]]));
+                let r =
+                    f16_bits_to_f32(u16::from_le_bytes([spec_img.data[p], spec_img.data[p + 1]]));
                 assert!(r.is_finite() && r >= 0.0);
                 max_mip6 = max_mip6.max(r);
             }

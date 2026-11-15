@@ -47,7 +47,8 @@ fn set_visibility_if_dirty(vis: &mut Mut<Visibility>, target: Visibility) {
 #[path = "entity_articulation.rs"]
 mod entity_articulation;
 use entity_articulation::{
-    apply_cached_articulation, discover_articulated_descendants, resolve_entity_base_mult_and_iso_yaw,
+    apply_cached_articulation, discover_articulated_descendants,
+    resolve_entity_base_mult_and_iso_yaw,
 };
 
 #[allow(clippy::too_many_arguments, clippy::type_complexity)]
@@ -532,10 +533,7 @@ pub fn sync_sim_entities_to_3d(
             } else {
                 Visibility::Hidden
             };
-            let hide_gltf_for_hd_sprite = visual_mode
-                .as_deref()
-                .copied()
-                .unwrap_or_default()
+            let hide_gltf_for_hd_sprite = visual_mode.as_deref().copied().unwrap_or_default()
                 == Ra2EntityVisualMode::HybridHdSprites
                 && (b_footprint.is_some() || is_infantry_spawn)
                 && sprite_catalog

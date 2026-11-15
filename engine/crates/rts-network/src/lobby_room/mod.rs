@@ -303,12 +303,7 @@ impl LobbyRoomState {
                                 .position(|s| matches!(s.occupant, LobbySlotOccupant::AiBot { .. }))
                         })
                         .or_else(|| {
-                            is_host.then(|| {
-                                self.slots
-                                    .iter()
-                                    .rposition(|_| true)
-                                    .unwrap_or(0)
-                            })
+                            is_host.then(|| self.slots.iter().rposition(|_| true).unwrap_or(0))
                         });
                     if let Some(pos) = replace_pos {
                         let slot_idx = self.slots[pos].slot_index;
@@ -484,7 +479,10 @@ impl LobbyRoomState {
 
         if let Some(sp) = spawn_index {
             if sp >= Self::MAX_SLOTS {
-                return Err(format!("Spawn index {sp} out of range 0..{}", Self::MAX_SLOTS));
+                return Err(format!(
+                    "Spawn index {sp} out of range 0..{}",
+                    Self::MAX_SLOTS
+                ));
             }
             let conflict = self.slots.iter().enumerate().any(|(idx, s)| {
                 idx != my_pos

@@ -54,17 +54,31 @@ pub fn setup_rts_camera(
     mod_res: Option<Res<crate::ModResource>>,
     sim_res: Option<Res<SimWorldResource>>,
     interaction: Option<Res<ClientInteractionState>>,
-    existing_q: Query<Entity, (With<RtsCameraRig>, Without<crate::rendering::PreviewStageCamera>)>,
+    existing_q: Query<
+        Entity,
+        (
+            With<RtsCameraRig>,
+            Without<crate::rendering::PreviewStageCamera>,
+        ),
+    >,
 ) {
     if !existing_q.is_empty() {
         return;
     }
     let (map_w, map_h) = mod_res
         .as_deref()
-        .map(|m| (m.0.entry_map.width as f32 * m.0.entry_map.tile_size, m.0.entry_map.height as f32 * m.0.entry_map.tile_size))
+        .map(|m| {
+            (
+                m.0.entry_map.width as f32 * m.0.entry_map.tile_size,
+                m.0.entry_map.height as f32 * m.0.entry_map.tile_size,
+            )
+        })
         .unwrap_or((128.0, 128.0));
     let mut rig = RtsCameraRig::new(map_w, map_h);
-    let local_pid = interaction.as_deref().map(|i| i.local_player_id).unwrap_or(1);
+    let local_pid = interaction
+        .as_deref()
+        .map(|i| i.local_player_id)
+        .unwrap_or(1);
 
     if let (Some(mr), Some(sr)) = (mod_res.as_deref(), sim_res.as_deref()) {
         let map = &mr.0.entry_map;
@@ -75,9 +89,16 @@ pub fn setup_rts_camera(
         }
         if count > 0.0 {
             let focus = sum / count;
-            rig.snap_to(Vec3::new(focus.x, sr.0.grid.sample_world_height(focus.x, focus.z), focus.z));
+            rig.snap_to(Vec3::new(
+                focus.x,
+                sr.0.grid.sample_world_height(focus.x, focus.z),
+                focus.z,
+            ));
         } else if let Some(spawn) = map.spawns.iter().find(|s| s.player_id == local_pid) {
-            let (wx, wz) = (spawn.base_tile[0] as f32 * map.tile_size, spawn.base_tile[1] as f32 * map.tile_size);
+            let (wx, wz) = (
+                spawn.base_tile[0] as f32 * map.tile_size,
+                spawn.base_tile[1] as f32 * map.tile_size,
+            );
             rig.snap_to(Vec3::new(wx, sr.0.grid.sample_world_height(wx, wz), wz));
         }
     }
@@ -90,7 +111,10 @@ pub fn setup_rts_camera(
         Tonemapping::TonyMcMapface,
         DistanceFog {
             color: Color::srgba(0.58, 0.72, 0.88, 1.0),
-            falloff: FogFalloff::Linear { start: fog_start, end: fog_end },
+            falloff: FogFalloff::Linear {
+                start: fog_start,
+                end: fog_end,
+            },
             ..default()
         },
         transform,
@@ -135,7 +159,11 @@ impl RtsCameraRig {
     pub const STRATEGIC_ZOOM_CROSSFADE_END: f32 = 210.0;
 
     pub fn new(map_width_world: f32, map_height_world: f32) -> Self {
-        let initial_focus = Vec3::new(map_width_world.max(1.0) * 0.74, 0.0, map_height_world.max(1.0) * 0.74);
+        let initial_focus = Vec3::new(
+            map_width_world.max(1.0) * 0.74,
+            0.0,
+            map_height_world.max(1.0) * 0.74,
+        );
         Self {
             focus: initial_focus,
             target_focus: initial_focus,
@@ -173,7 +201,10 @@ impl RtsCameraRig {
     pub fn compute_projection(&self) -> Projection {
         if self.cutscene_override || self.projection_mode == CameraProjectionMode::FreePerspective {
             Projection::Perspective(PerspectiveProjection {
-                fov: Self::DEFAULT_FOV_RADIANS, near: 0.25, far: 2_500.0, ..default()
+                fov: Self::DEFAULT_FOV_RADIANS,
+                near: 0.25,
+                far: 2_500.0,
+                ..default()
             })
         } else if self.projection_mode == CameraProjectionMode::ClassicIso2to1
             && self.distance < Self::STRATEGIC_ZOOM_CROSSFADE_START
@@ -187,13 +218,18 @@ impl RtsCameraRig {
             })
         } else {
             Projection::Perspective(PerspectiveProjection {
-                fov: Self::TELEPHOTO_FOV_RADIANS, near: 0.5, far: 4_000.0, ..default()
+                fov: Self::TELEPHOTO_FOV_RADIANS,
+                near: 0.5,
+                far: 4_000.0,
+                ..default()
             })
         }
     }
 
     pub fn add_trauma(&mut self, world_pos: Vec3, base_amount: f32) {
-        let dist = self.focus.distance(Vec3::new(world_pos.x, 0.0, world_pos.z));
+        let dist = self
+            .focus
+            .distance(Vec3::new(world_pos.x, 0.0, world_pos.z));
         if dist < 56.0 {
             let falloff = (1.0 - dist / 56.0).clamp(0.0, 1.0);
             self.trauma = (self.trauma + base_amount * falloff).clamp(0.0, 1.0);
@@ -256,7 +292,8 @@ impl RtsCameraRig {
         } else {
             let t = ((distance - 85.0) / (Self::MAX_ZOOM_DISTANCE - 85.0)).clamp(0.0, 1.0);
             let eased = t * t * (3.0 - 2.0 * t);
-            Self::DEFAULT_PITCH_RADIANS + eased * (88.0_f32.to_radians() - Self::DEFAULT_PITCH_RADIANS)
+            Self::DEFAULT_PITCH_RADIANS
+                + eased * (88.0_f32.to_radians() - Self::DEFAULT_PITCH_RADIANS)
         }
     }
 
@@ -282,9 +319,17 @@ impl RtsCameraRig {
         self.target_focus.z = self.target_focus.z.clamp(0.0, max_z);
         self.focus.x = self.focus.x.clamp(0.0, max_x);
         self.focus.z = self.focus.z.clamp(0.0, max_z);
-        self.target_distance = self.target_distance.clamp(Self::MIN_ZOOM_DISTANCE, Self::MAX_ZOOM_DISTANCE);
-        self.distance = self.distance.clamp(Self::MIN_ZOOM_DISTANCE, Self::MAX_ZOOM_DISTANCE);
-        let (min_pitch, max_pitch) = if self.cutscene_override { (0.18, 1.54) } else { (0.42, 1.536) };
+        self.target_distance = self
+            .target_distance
+            .clamp(Self::MIN_ZOOM_DISTANCE, Self::MAX_ZOOM_DISTANCE);
+        self.distance = self
+            .distance
+            .clamp(Self::MIN_ZOOM_DISTANCE, Self::MAX_ZOOM_DISTANCE);
+        let (min_pitch, max_pitch) = if self.cutscene_override {
+            (0.18, 1.54)
+        } else {
+            (0.42, 1.536)
+        };
         self.target_pitch_radians = self.target_pitch_radians.clamp(min_pitch, max_pitch);
         self.pitch_radians = self.pitch_radians.clamp(min_pitch, max_pitch);
     }
@@ -309,9 +354,18 @@ impl RtsCameraRig {
         Transform::from_translation(shaken_focus + offset).looking_at(shaken_focus, Vec3::Y)
     }
 
-    pub fn compute_cursor_ray(&self, cursor: Vec2, win_size: Vec2, cam_tf: &Transform) -> (Vec3, Vec3) {
+    pub fn compute_cursor_ray(
+        &self,
+        cursor: Vec2,
+        win_size: Vec2,
+        cam_tf: &Transform,
+    ) -> (Vec3, Vec3) {
         let (w, h) = (win_size.x.max(1.0), win_size.y.max(1.0));
-        let (aspect, ndc_x, ndc_y) = (w / h, (cursor.x / w) * 2.0 - 1.0, 1.0 - (cursor.y / h) * 2.0);
+        let (aspect, ndc_x, ndc_y) = (
+            w / h,
+            (cursor.x / w) * 2.0 - 1.0,
+            1.0 - (cursor.y / h) * 2.0,
+        );
         if !self.cutscene_override
             && self.projection_mode == CameraProjectionMode::ClassicIso2to1
             && self.distance < Self::STRATEGIC_ZOOM_CROSSFADE_START
@@ -330,8 +384,12 @@ impl RtsCameraRig {
                 Self::TELEPHOTO_FOV_RADIANS
             };
             let half_tan = (fov * 0.5).tan();
-            let local_dir = Vec3::new(ndc_x * aspect * half_tan, ndc_y * half_tan, -1.0).normalize();
-            (cam_tf.translation, (cam_tf.rotation * local_dir).normalize())
+            let local_dir =
+                Vec3::new(ndc_x * aspect * half_tan, ndc_y * half_tan, -1.0).normalize();
+            (
+                cam_tf.translation,
+                (cam_tf.rotation * local_dir).normalize(),
+            )
         }
     }
 }
@@ -352,7 +410,8 @@ pub fn ray_terrain_intersection(
     ray_dir: Vec3,
     grid: &rts_simulation::pathfinding::CollisionGrid,
 ) -> Option<Vec3> {
-    if let Some(hit) = grid.raycast_heightfield(ray_origin.to_array(), ray_dir.to_array(), 3_500.0) {
+    if let Some(hit) = grid.raycast_heightfield(ray_origin.to_array(), ray_dir.to_array(), 3_500.0)
+    {
         return Some(Vec3::from_array(hit));
     }
     let mut base_hit = ray_ground_intersection(ray_origin, ray_dir)?;
@@ -362,10 +421,17 @@ pub fn ray_terrain_intersection(
 
 pub fn compute_cursor_world_ray(cursor: Vec2, win_size: Vec2, cam_tf: &Transform) -> (Vec3, Vec3) {
     let (w, h) = (win_size.x.max(1.0), win_size.y.max(1.0));
-    let (aspect, ndc_x, ndc_y) = (w / h, (cursor.x / w) * 2.0 - 1.0, 1.0 - (cursor.y / h) * 2.0);
+    let (aspect, ndc_x, ndc_y) = (
+        w / h,
+        (cursor.x / w) * 2.0 - 1.0,
+        1.0 - (cursor.y / h) * 2.0,
+    );
     let half_tan = (std::f32::consts::FRAC_PI_4 * 0.5).tan();
     let local_dir = Vec3::new(ndc_x * aspect * half_tan, ndc_y * half_tan, -1.0).normalize();
-    (cam_tf.translation, (cam_tf.rotation * local_dir).normalize())
+    (
+        cam_tf.translation,
+        (cam_tf.rotation * local_dir).normalize(),
+    )
 }
 
 fn sync_camera_projection(proj: &mut Projection, desired: Projection) {
@@ -375,10 +441,18 @@ fn sync_camera_projection(proj: &mut Projection, desired: Projection) {
         }
         (
             Projection::Orthographic(OrthographicProjection {
-                scaling_mode: ScalingMode::FixedVertical { viewport_height: ha }, ..
+                scaling_mode:
+                    ScalingMode::FixedVertical {
+                        viewport_height: ha,
+                    },
+                ..
             }),
             Projection::Orthographic(OrthographicProjection {
-                scaling_mode: ScalingMode::FixedVertical { viewport_height: hb }, ..
+                scaling_mode:
+                    ScalingMode::FixedVertical {
+                        viewport_height: hb,
+                    },
+                ..
             }),
         ) => (ha - hb).abs() < 1e-4,
         _ => false,
@@ -401,7 +475,12 @@ pub fn update_rts_camera(
     cached_fow: Option<Res<crate::rendering::CachedFogVisibility>>,
     mut scroll_evr: EventReader<MouseWheel>,
     mut query: Query<
-        (&mut RtsCameraRig, &mut Transform, Option<&mut Projection>, Option<&mut DistanceFog>),
+        (
+            &mut RtsCameraRig,
+            &mut Transform,
+            Option<&mut Projection>,
+            Option<&mut DistanceFog>,
+        ),
         Without<crate::rendering::PreviewStageCamera>,
     >,
 ) {
@@ -423,10 +502,10 @@ pub fn update_rts_camera(
         return;
     }
 
-    let cursor_opt = window_q
-        .get_single()
-        .ok()
-        .and_then(|w| w.cursor_position().map(|p| (p, Vec2::new(w.width(), w.height()))));
+    let cursor_opt = window_q.get_single().ok().and_then(|w| {
+        w.cursor_position()
+            .map(|p| (p, Vec2::new(w.width(), w.height())))
+    });
     let cursor_pos = cursor_opt.map(|(p, _)| p);
 
     let text_input_modal_active = interaction.chat_input_open
@@ -436,10 +515,12 @@ pub fn update_rts_camera(
         || interaction.staging_chat_editing
         || interaction.save_slot_editing
         || interaction.rebinding_hotkey_slot.is_some()
-        || ui_blocker.as_deref().is_some_and(|b| b.blocks_world_keyboard(interaction.menu_open));
-    let pointer_blocked = ui_blocker
-        .as_deref()
-        .is_some_and(|b| b.blocks_world_pointer(interaction.studio_open, interaction.menu_open, cursor_pos));
+        || ui_blocker
+            .as_deref()
+            .is_some_and(|b| b.blocks_world_keyboard(interaction.menu_open));
+    let pointer_blocked = ui_blocker.as_deref().is_some_and(|b| {
+        b.blocks_world_pointer(interaction.studio_open, interaction.menu_open, cursor_pos)
+    });
 
     let alt_held = keys.pressed(KeyCode::AltLeft) || keys.pressed(KeyCode::AltRight);
     let allow_wasd_pan = interaction.studio_open || alt_held || interaction.wasd_pan_enabled;
@@ -460,7 +541,11 @@ pub fn update_rts_camera(
         if !text_input_modal_active && keys.just_pressed(KeyCode::ScrollLock) {
             interaction.edge_scroll_enabled = !interaction.edge_scroll_enabled;
             rig.edge_scroll_enabled = interaction.edge_scroll_enabled;
-            let st = if interaction.edge_scroll_enabled { "ENABLED" } else { "DISABLED" };
+            let st = if interaction.edge_scroll_enabled {
+                "ENABLED"
+            } else {
+                "DISABLED"
+            };
             interaction.push_eva_alert(format!("EVA: Mouse Edge-Scroll {st} [ScrollLock]."));
         }
         if !text_input_modal_active && keys.just_pressed(KeyCode::F7) {
@@ -486,8 +571,9 @@ pub fn update_rts_camera(
             }
         }
 
-        let grid_captures_center =
-            interaction.grid_hotkeys_enabled && !interaction.studio_open && center_key == KeyCode::KeyC;
+        let grid_captures_center = interaction.grid_hotkeys_enabled
+            && !interaction.studio_open
+            && center_key == KeyCode::KeyC;
         if !text_input_modal_active
             && !alt_held
             && !grid_captures_center
@@ -495,7 +581,11 @@ pub fn update_rts_camera(
             && !interaction.selected_ids.is_empty()
         {
             let (mut sum, mut count) = (Vec3::ZERO, 0.0);
-            for ent in interaction.selected_ids.iter().filter_map(|id| sim_res.0.entities.get(id)) {
+            for ent in interaction
+                .selected_ids
+                .iter()
+                .filter_map(|id| sim_res.0.entities.get(id))
+            {
                 let visible = ent.player_id == interaction.local_player_id
                     || match (&cached_fow, &mod_res) {
                         (Some(fow), Some(mr)) => fow.is_entity_visible(&sim_res.0, &mr.0, ent),
@@ -513,10 +603,14 @@ pub fn update_rts_camera(
 
         let mut local_move = Vec2::ZERO;
         if !text_input_modal_active {
-            let up = keys.pressed(KeyCode::ArrowUp) || (allow_wasd_pan && keys.pressed(KeyCode::KeyW));
-            let dn = keys.pressed(KeyCode::ArrowDown) || (allow_wasd_pan && keys.pressed(KeyCode::KeyS));
-            let lt = keys.pressed(KeyCode::ArrowLeft) || (allow_wasd_pan && keys.pressed(KeyCode::KeyA));
-            let rt = keys.pressed(KeyCode::ArrowRight) || (allow_wasd_pan && keys.pressed(KeyCode::KeyD));
+            let up =
+                keys.pressed(KeyCode::ArrowUp) || (allow_wasd_pan && keys.pressed(KeyCode::KeyW));
+            let dn =
+                keys.pressed(KeyCode::ArrowDown) || (allow_wasd_pan && keys.pressed(KeyCode::KeyS));
+            let lt =
+                keys.pressed(KeyCode::ArrowLeft) || (allow_wasd_pan && keys.pressed(KeyCode::KeyA));
+            let rt = keys.pressed(KeyCode::ArrowRight)
+                || (allow_wasd_pan && keys.pressed(KeyCode::KeyD));
             local_move = Vec2::new(f32::from(rt) - f32::from(lt), f32::from(dn) - f32::from(up));
         }
         if !text_input_modal_active
@@ -526,13 +620,18 @@ pub fn update_rts_camera(
             && interaction.drag_start_screen.is_none()
         {
             if let Some((cursor, win_size)) = cursor_opt {
-                local_move.x += f32::from(cursor.x > win_size.x - 18.0) - f32::from(cursor.x < 18.0);
-                local_move.y += f32::from(cursor.y > win_size.y - 18.0) - f32::from(cursor.y < 18.0);
+                local_move.x +=
+                    f32::from(cursor.x > win_size.x - 18.0) - f32::from(cursor.x < 18.0);
+                local_move.y +=
+                    f32::from(cursor.y > win_size.y - 18.0) - f32::from(cursor.y < 18.0);
             }
         }
 
         if let Some((cursor, _)) = cursor_opt {
-            if !text_input_modal_active && !pointer_blocked && mouse_buttons.pressed(MouseButton::Middle) {
+            if !text_input_modal_active
+                && !pointer_blocked
+                && mouse_buttons.pressed(MouseButton::Middle)
+            {
                 if let Some(prev) = rig.last_cursor_pos {
                     let delta = cursor - prev;
                     if alt_held {
@@ -556,10 +655,12 @@ pub fn update_rts_camera(
         let allow_qe = !interaction.grid_hotkeys_enabled || interaction.studio_open || alt_held;
         if !text_input_modal_active {
             if allow_qe {
-                let spin = f32::from(keys.pressed(KeyCode::KeyE)) - f32::from(keys.pressed(KeyCode::KeyQ));
+                let spin =
+                    f32::from(keys.pressed(KeyCode::KeyE)) - f32::from(keys.pressed(KeyCode::KeyQ));
                 rig.target_yaw_radians += spin * 1.6 * dt;
             }
-            let tilt = f32::from(keys.pressed(KeyCode::PageDown)) - f32::from(keys.pressed(KeyCode::PageUp));
+            let tilt = f32::from(keys.pressed(KeyCode::PageDown))
+                - f32::from(keys.pressed(KeyCode::PageUp));
             rig.target_pitch_radians += tilt * 0.9 * dt;
         }
 
@@ -577,13 +678,16 @@ pub fn update_rts_camera(
         let over_sidebar = ui_blocker.is_none()
             && !interaction.studio_open
             && cursor_opt.is_some_and(|(c, win)| c.x > win.x - 268.0);
-        if !text_input_modal_active && !pointer_blocked && !over_sidebar && scroll_delta.abs() > 0.0 {
+        if !text_input_modal_active && !pointer_blocked && !over_sidebar && scroll_delta.abs() > 0.0
+        {
             if alt_held {
                 rig.target_pitch_radians -= scroll_delta * 0.06;
             } else {
                 let old_dist = rig.target_distance.max(RtsCameraRig::MIN_ZOOM_DISTANCE);
-                let new_dist = (old_dist * (-scroll_delta * 0.145).exp())
-                    .clamp(RtsCameraRig::MIN_ZOOM_DISTANCE, rig.effective_max_zoom_distance());
+                let new_dist = (old_dist * (-scroll_delta * 0.145).exp()).clamp(
+                    RtsCameraRig::MIN_ZOOM_DISTANCE,
+                    rig.effective_max_zoom_distance(),
+                );
                 if let Some((cursor, win_size)) = cursor_opt {
                     let (ray_o, ray_d) = rig.compute_cursor_ray(cursor, win_size, &transform);
                     if let Some(hit) = ray_terrain_intersection(ray_o, ray_d, &sim_res.0.grid) {
@@ -598,7 +702,10 @@ pub fn update_rts_camera(
         }
 
         rig.clamp_focus();
-        rig.target_focus.y = sim_res.0.grid.sample_world_height(rig.target_focus.x, rig.target_focus.z);
+        rig.target_focus.y = sim_res
+            .0
+            .grid
+            .sample_world_height(rig.target_focus.x, rig.target_focus.z);
 
         let smooth = (16.0 * dt).clamp(0.05, 1.0);
         rig.focus = rig.focus.lerp(rig.target_focus, smooth);
@@ -610,7 +717,10 @@ pub fn update_rts_camera(
 
         if let Some(ref mut fog) = fog_opt {
             let (f_start, f_end) = RtsCameraRig::adaptive_fog_bounds(rig.distance);
-            fog.falloff = FogFalloff::Linear { start: f_start, end: f_end };
+            fog.falloff = FogFalloff::Linear {
+                start: f_start,
+                end: f_end,
+            };
         }
         if let Some(ref mut proj) = proj_opt {
             sync_camera_projection(proj, rig.compute_projection());
@@ -715,7 +825,8 @@ mod tests {
         let free_span = 2.0 * rig.distance * (std::f32::consts::FRAC_PI_4 * 0.5).tan();
         assert!((tele_span - free_span).abs() < 1e-3);
 
-        let mod_dir = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../../rust-ra2");
+        let mod_dir =
+            std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../../rust-ra2");
         let loaded = rts_sdk::loader::LoadedMod::load_from_dir(mod_dir).expect("load rust-ra2");
         let world = rts_simulation::world::SimWorld::from_mod_map(&loaded, &loaded.entry_map);
         let mut app = App::new();
@@ -725,23 +836,74 @@ mod tests {
             .init_resource::<Events<MouseWheel>>()
             .init_resource::<ClientInteractionState>()
             .insert_resource(SimWorldResource(world));
-        app.world_mut().resource_mut::<ClientInteractionState>().menu_open = false;
-        let cam_ent = app.world_mut().spawn((rig.clone(), rig.compute_transform(), rig.compute_projection())).id();
+        app.world_mut()
+            .resource_mut::<ClientInteractionState>()
+            .menu_open = false;
+        let cam_ent = app
+            .world_mut()
+            .spawn((
+                rig.clone(),
+                rig.compute_transform(),
+                rig.compute_projection(),
+            ))
+            .id();
 
-        app.world_mut().resource_mut::<ButtonInput<KeyCode>>().press(KeyCode::F7);
-        app.world_mut().run_system_once(update_rts_camera).expect("step 1");
-        assert_eq!(app.world().entity(cam_ent).get::<RtsCameraRig>().unwrap().projection_mode, CameraProjectionMode::ClassicIso2to1);
-        assert!(matches!(app.world().entity(cam_ent).get::<Projection>().unwrap(), Projection::Orthographic(_)));
+        app.world_mut()
+            .resource_mut::<ButtonInput<KeyCode>>()
+            .press(KeyCode::F7);
+        app.world_mut()
+            .run_system_once(update_rts_camera)
+            .expect("step 1");
+        assert_eq!(
+            app.world()
+                .entity(cam_ent)
+                .get::<RtsCameraRig>()
+                .unwrap()
+                .projection_mode,
+            CameraProjectionMode::ClassicIso2to1
+        );
+        assert!(matches!(
+            app.world().entity(cam_ent).get::<Projection>().unwrap(),
+            Projection::Orthographic(_)
+        ));
 
-        app.world_mut().resource_mut::<ButtonInput<KeyCode>>().reset(KeyCode::F7);
-        app.world_mut().resource_mut::<ButtonInput<KeyCode>>().press(KeyCode::F7);
-        app.world_mut().run_system_once(update_rts_camera).expect("step 2");
-        assert_eq!(app.world().entity(cam_ent).get::<RtsCameraRig>().unwrap().projection_mode, CameraProjectionMode::FreePerspective);
-        assert!(matches!(app.world().entity(cam_ent).get::<Projection>().unwrap(), Projection::Perspective(p) if (p.fov - std::f32::consts::FRAC_PI_4).abs() < 1e-4));
+        app.world_mut()
+            .resource_mut::<ButtonInput<KeyCode>>()
+            .reset(KeyCode::F7);
+        app.world_mut()
+            .resource_mut::<ButtonInput<KeyCode>>()
+            .press(KeyCode::F7);
+        app.world_mut()
+            .run_system_once(update_rts_camera)
+            .expect("step 2");
+        assert_eq!(
+            app.world()
+                .entity(cam_ent)
+                .get::<RtsCameraRig>()
+                .unwrap()
+                .projection_mode,
+            CameraProjectionMode::FreePerspective
+        );
+        assert!(
+            matches!(app.world().entity(cam_ent).get::<Projection>().unwrap(), Projection::Perspective(p) if (p.fov - std::f32::consts::FRAC_PI_4).abs() < 1e-4)
+        );
 
-        app.world_mut().resource_mut::<ButtonInput<KeyCode>>().reset(KeyCode::F7);
-        app.world_mut().resource_mut::<ButtonInput<KeyCode>>().press(KeyCode::F7);
-        app.world_mut().run_system_once(update_rts_camera).expect("step 3");
-        assert_eq!(app.world().entity(cam_ent).get::<RtsCameraRig>().unwrap().projection_mode, CameraProjectionMode::TelephotoTactical);
+        app.world_mut()
+            .resource_mut::<ButtonInput<KeyCode>>()
+            .reset(KeyCode::F7);
+        app.world_mut()
+            .resource_mut::<ButtonInput<KeyCode>>()
+            .press(KeyCode::F7);
+        app.world_mut()
+            .run_system_once(update_rts_camera)
+            .expect("step 3");
+        assert_eq!(
+            app.world()
+                .entity(cam_ent)
+                .get::<RtsCameraRig>()
+                .unwrap()
+                .projection_mode,
+            CameraProjectionMode::TelephotoTactical
+        );
     }
 }

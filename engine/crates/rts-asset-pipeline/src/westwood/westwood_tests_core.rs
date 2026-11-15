@@ -513,9 +513,14 @@ fn parses_and_converts_westwood_csf_string_tables_to_locale_toml() {
 }
 
 pub(super) fn decode_glb_embedded_png(json: &serde_json::Value, bin: &[u8]) -> (u32, u32, Vec<u8>) {
-    let bv_idx = json["images"][0]["bufferView"].as_u64().expect("image bufferView") as usize;
+    let bv_idx = json["images"][0]["bufferView"]
+        .as_u64()
+        .expect("image bufferView") as usize;
     let bv = &json["bufferViews"][bv_idx];
-    assert!(bv.get("target").is_none(), "image bufferView must not set GPU buffer target");
+    assert!(
+        bv.get("target").is_none(),
+        "image bufferView must not set GPU buffer target"
+    );
     let off = bv["byteOffset"].as_u64().unwrap() as usize;
     let len = bv["byteLength"].as_u64().unwrap() as usize;
     let mut dec = png::Decoder::new(std::io::Cursor::new(&bin[off..off + len]));
@@ -593,12 +598,18 @@ fn glb_optimizer_preserves_vxl_uv_atlas_team_mask_and_hard_creases_across_qem_lo
     let (opt_json, opt_bin) = crate::glb_optimizer::parse_glb_chunks(&opt_glb).unwrap();
     let (opt_w, opt_h, opt_rgba) = decode_glb_embedded_png(&opt_json, opt_bin);
     assert_eq!((opt_w, opt_h), (pre_w, pre_h));
-    assert_eq!(opt_rgba, pre_rgba, "Embedded PNG atlas bytes must survive bufferView rebuild intact");
+    assert_eq!(
+        opt_rgba, pre_rgba,
+        "Embedded PNG atlas bytes must survive bufferView rebuild intact"
+    );
 
     assert_eq!(opt_json["samplers"][0]["magFilter"], 9728);
     assert_eq!(opt_json["textures"][0]["source"], 0);
     assert_eq!(opt_json["materials"][0]["alphaMode"], "OPAQUE");
-    assert_eq!(opt_json["materials"][0]["pbrMetallicRoughness"]["baseColorTexture"]["index"], 0);
+    assert_eq!(
+        opt_json["materials"][0]["pbrMetallicRoughness"]["baseColorTexture"]["index"],
+        0
+    );
 
     let meshes = opt_json["meshes"].as_array().unwrap();
     assert_eq!(meshes.len(), 6, "3 LOD0 meshes + 3 _LOD1 meshes");
@@ -606,8 +617,14 @@ fn glb_optimizer_preserves_vxl_uv_atlas_team_mask_and_hard_creases_across_qem_lo
         for prim in m["primitives"].as_array().unwrap() {
             let attrs = &prim["attributes"];
             assert!(attrs["POSITION"].is_number() && attrs["NORMAL"].is_number());
-            assert!(attrs["TEXCOORD_0"].is_number(), "Every LOD0/LOD1 primitive must retain TEXCOORD_0");
-            assert!(attrs["COLOR_0"].is_number(), "Every LOD0/LOD1 primitive must retain COLOR_0");
+            assert!(
+                attrs["TEXCOORD_0"].is_number(),
+                "Every LOD0/LOD1 primitive must retain TEXCOORD_0"
+            );
+            assert!(
+                attrs["COLOR_0"].is_number(),
+                "Every LOD0/LOD1 primitive must retain COLOR_0"
+            );
         }
     }
 
@@ -624,7 +641,10 @@ fn glb_optimizer_preserves_vxl_uv_atlas_team_mask_and_hard_creases_across_qem_lo
         );
         if a0 == 0.0 {
             saw_remap = true;
-            assert!(tri.is_primary_slot, "Alpha=0 remap triangles must set is_primary_slot for cameo baker");
+            assert!(
+                tri.is_primary_slot,
+                "Alpha=0 remap triangles must set is_primary_slot for cameo baker"
+            );
         } else {
             saw_non_remap = true;
         }

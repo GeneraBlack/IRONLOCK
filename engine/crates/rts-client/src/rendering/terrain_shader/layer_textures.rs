@@ -60,35 +60,92 @@ impl Ra2TerrainTheater {
     pub fn infer_from_map(map_id: &str, map_name: &str) -> Self {
         let id_low = map_id.trim().to_ascii_lowercase();
         let name_low = map_name.trim().to_ascii_lowercase();
-        let has_any = |kws: &[&str]| kws.iter().any(|&kw| id_low.contains(kw) || name_low.contains(kw));
+        let has_any = |kws: &[&str]| {
+            kws.iter()
+                .any(|&kw| id_low.contains(kw) || name_low.contains(kw))
+        };
 
         if has_any(&["lunar", "moon", "isolun"]) {
             return Self::Lunar;
         }
-        if has_any(&["desert", "tomb", "romanov", "egypt", "morocco", "sahara", "sun_temple", "isodes"]) {
+        if has_any(&[
+            "desert",
+            "tomb",
+            "romanov",
+            "egypt",
+            "morocco",
+            "sahara",
+            "sun_temple",
+            "isodes",
+        ]) {
             return Self::Desert;
         }
         if id_low.contains("cold_war")
             || has_any(&[
-                "snow", "arctic", "polar", "mirage", "alaska", "antarctica", "blitzen",
-                "lake_placid", "vladivostok", "ural", "moscow", "chrono_storm",
-                "chrono_defense", "red_revolution", "dark_night", "deja_vu", "brain_dead", "isosno",
+                "snow",
+                "arctic",
+                "polar",
+                "mirage",
+                "alaska",
+                "antarctica",
+                "blitzen",
+                "lake_placid",
+                "vladivostok",
+                "ural",
+                "moscow",
+                "chrono_storm",
+                "chrono_defense",
+                "red_revolution",
+                "dark_night",
+                "deja_vu",
+                "brain_dead",
+                "isosno",
             ])
         {
             return Self::Snow;
         }
         if has_any(&[
-            "newurban", "new_urban", "isonew", "isoubn", "hollywood", "los_angeles",
-            "san_francisco", "time_shift", "time_lapse", "seattle", "power_play", "sydney",
-            "cloning_around", "london", "trick_or_treaty", "brain_wash", "austin",
+            "newurban",
+            "new_urban",
+            "isonew",
+            "isoubn",
+            "hollywood",
+            "los_angeles",
+            "san_francisco",
+            "time_shift",
+            "time_lapse",
+            "seattle",
+            "power_play",
+            "sydney",
+            "cloning_around",
+            "london",
+            "trick_or_treaty",
+            "brain_wash",
+            "austin",
         ]) {
             return Self::NewUrban;
         }
         if has_any(&[
-            "urban", "liberty", "paris", "city_of_lights", "big_apple", "new_york",
-            "lone_guardian", "washington", "hail_to_the_chief", "red_dawn", "desecration",
-            "chicago", "last_chance", "st_louis", "free_gateway", "san_antonio",
-            "fox_and_the_hound", "alamo", "anytown", "isourb",
+            "urban",
+            "liberty",
+            "paris",
+            "city_of_lights",
+            "big_apple",
+            "new_york",
+            "lone_guardian",
+            "washington",
+            "hail_to_the_chief",
+            "red_dawn",
+            "desecration",
+            "chicago",
+            "last_chance",
+            "st_louis",
+            "free_gateway",
+            "san_antonio",
+            "fox_and_the_hound",
+            "alamo",
+            "anytown",
+            "isourb",
         ]) {
             return Self::Urban;
         }
@@ -249,18 +306,28 @@ fn synthesize_procedural_layer_rgba(theater: Ra2TerrainTheater, layer: u32) -> V
 
             let (r, g, b) = match layer {
                 0 => {
-                    let wave = ((u * std::f32::consts::TAU * 12.0 + nc * 3.2).sin() * 0.5 + 0.5) * 0.06;
+                    let wave =
+                        ((u * std::f32::consts::TAU * 12.0 + nc * 3.2).sin() * 0.5 + 0.5) * 0.06;
                     let d = (nc - 0.5) * 0.16 + (nf - 0.5) * 0.10 + wave * 0.5;
-                    (c_clear[0] + d * 0.85, c_clear[1] + d + wave * 0.4, c_clear[2] + d * 0.75)
+                    (
+                        c_clear[0] + d * 0.85,
+                        c_clear[1] + d + wave * 0.4,
+                        c_clear[2] + d * 0.75,
+                    )
                 }
                 1 => {
                     let pebble = if nf > 0.74 { 0.08 } else { 0.0 };
-                    let crack = if (nc - 0.50).abs() < 0.022 { -0.09 } else { 0.0 };
+                    let crack = if (nc - 0.50).abs() < 0.022 {
+                        -0.09
+                    } else {
+                        0.0
+                    };
                     let d = (nc - 0.5) * 0.22 + (nf - 0.5) * 0.10 + pebble + crack;
                     (c_rough[0] + d, c_rough[1] + d * 0.86, c_rough[2] + d * 0.70)
                 }
                 2 => {
-                    let rib = ((v * std::f32::consts::TAU * 8.0 + nc * 2.2).sin() * 0.5 + 0.5) * 0.07;
+                    let rib =
+                        ((v * std::f32::consts::TAU * 8.0 + nc * 2.2).sin() * 0.5 + 0.5) * 0.07;
                     let d = (nc - 0.5) * 0.14 + (nf - 0.5) * 0.08 + rib;
                     (c_shore[0] + d, c_shore[1] + d * 0.92, c_shore[2] + d * 0.82)
                 }
@@ -272,8 +339,12 @@ fn synthesize_procedural_layer_rgba(theater: Ra2TerrainTheater, layer: u32) -> V
                     let ly64 = y & 63;
                     let major_seam = lx128 <= 1 || lx128 == 127 || ly128 <= 1 || ly128 == 127;
                     let minor_seam = lx64 == 0 || ly64 == 0;
-                    let bevel_hi = !major_seam && !minor_seam && (lx128 == 2 || ly128 == 2 || lx64 == 1 || ly64 == 1);
-                    let bevel_lo = !major_seam && !minor_seam && (lx128 == 126 || ly128 == 126 || lx64 == 63 || ly64 == 63);
+                    let bevel_hi = !major_seam
+                        && !minor_seam
+                        && (lx128 == 2 || ly128 == 2 || lx64 == 1 || ly64 == 1);
+                    let bevel_lo = !major_seam
+                        && !minor_seam
+                        && (lx128 == 126 || ly128 == 126 || lx64 == 63 || ly64 == 63);
                     let mut mult = 1.0 + (nc - 0.5) * 0.10 + (nf - 0.5) * 0.09;
                     if major_seam {
                         mult *= 0.58;
@@ -287,7 +358,10 @@ fn synthesize_procedural_layer_rgba(theater: Ra2TerrainTheater, layer: u32) -> V
                     (c_pave[0] * mult, c_pave[1] * mult, c_pave[2] * mult)
                 }
                 _ => {
-                    let is_masonry = matches!(theater, Ra2TerrainTheater::Urban | Ra2TerrainTheater::NewUrban);
+                    let is_masonry = matches!(
+                        theater,
+                        Ra2TerrainTheater::Urban | Ra2TerrainTheater::NewUrban
+                    );
                     let mult = if is_masonry {
                         let cy = v * 16.0;
                         let row_i = cy.floor() as i32;
@@ -304,7 +378,13 @@ fn synthesize_procedural_layer_rgba(theater: Ra2TerrainTheater, layer: u32) -> V
                     } else {
                         let sp = v * 9.0 + (nc - 0.5) * 1.1;
                         let sf = sp - sp.floor();
-                        let crevice = if sf < 0.08 { -0.26 } else if sf < 0.18 { 0.13 } else { 0.0 };
+                        let crevice = if sf < 0.08 {
+                            -0.26
+                        } else if sf < 0.18 {
+                            0.13
+                        } else {
+                            0.0
+                        };
                         let fissure = if (nf - 0.5).abs() < 0.025 { -0.20 } else { 0.0 };
                         1.0 + (nc - 0.5) * 0.22 + crevice + fissure
                     };
@@ -446,12 +526,8 @@ pub fn build_terrain_normal_rough_height_array_image_for_theater(
                 let hc = h_grid[yc + x];
                 let rough = r_grid[yc + x];
 
-                let n = Vec3::new(
-                    (hl - hr) * bump_strength,
-                    1.0,
-                    (hu - hd) * bump_strength,
-                )
-                .normalize_or_zero();
+                let n = Vec3::new((hl - hr) * bump_strength, 1.0, (hu - hd) * bump_strength)
+                    .normalize_or_zero();
                 let nx_u8 = ((n.x * 0.5 + 0.5).clamp(0.0, 1.0) * 255.0).round() as u8;
                 let nz_u8 = ((n.z * 0.5 + 0.5).clamp(0.0, 1.0) * 255.0).round() as u8;
                 let rough_u8 = (rough * 255.0).round() as u8;
@@ -511,15 +587,17 @@ fn evaluate_tile_splat_weights(
 
     // Crisp cliff-rim rock accent only at non-ramp plateau boundaries, leaving plateau interiors pure
     if world.grid.elevation_tiles.contains(&tile) {
-        let on_cliff_rim = [(-1, 0), (1, 0), (0, -1), (0, 1)].into_iter().any(|(dx, dz)| {
-            let nb = [cx + dx, cz + dz];
-            nb[0] >= 0
-                && nb[0] < w
-                && nb[1] >= 0
-                && nb[1] < h
-                && !world.grid.elevation_tiles.contains(&nb)
-                && !world.grid.ramp_tiles.contains(&nb)
-        });
+        let on_cliff_rim = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+            .into_iter()
+            .any(|(dx, dz)| {
+                let nb = [cx + dx, cz + dz];
+                nb[0] >= 0
+                    && nb[0] < w
+                    && nb[1] >= 0
+                    && nb[1] < h
+                    && !world.grid.elevation_tiles.contains(&nb)
+                    && !world.grid.ramp_tiles.contains(&nb)
+            });
         if on_cliff_rim {
             wr += 0.55;
         } else {
@@ -632,7 +710,8 @@ fn write_splat_subrect_texels(
             }
 
             // Organic edge breakup only on natural grass/dirt/sand borders; keep concrete slab borders crisp!
-            let natural_edge = (c00[0] - c11[0]).abs() + (c00[1] - c11[1]).abs() + (c00[2] - c11[2]).abs();
+            let natural_edge =
+                (c00[0] - c11[0]).abs() + (c00[1] - c11[1]).abs() + (c00[2] - c11[2]).abs();
             if natural_edge > 0.06 && blended[3] < 0.25 {
                 let jitter = (hash_tile_periodic(px, pz, 256, 0x51a7_9913) - 0.5) * 0.14;
                 blended[0] = (blended[0] + jitter).max(0.0);

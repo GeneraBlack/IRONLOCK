@@ -372,15 +372,23 @@ mod tests {
         // Midtone neutral team gray `sRGB = 0.64` -> `Linear = 0.369`
         let mid_linear_gray = Vec3::splat(srgb_channel_to_linear(0.64));
 
-        let allied_lin = evaluate_team_paint_linear_from_linear_albedo(allied_srgb, mid_linear_gray);
-        let soviet_lin = evaluate_team_paint_linear_from_linear_albedo(soviet_srgb, mid_linear_gray);
+        let allied_lin =
+            evaluate_team_paint_linear_from_linear_albedo(allied_srgb, mid_linear_gray);
+        let soviet_lin =
+            evaluate_team_paint_linear_from_linear_albedo(soviet_srgb, mid_linear_gray);
 
         // In Linear PBR reflectance, Cobalt Blue green channel must be ~0.107 (not raw sRGB 0.36!),
         // and Soviet Crimson green/blue channels must stay < 0.01 (not raw sRGB 0.05 -> salmon pink!).
-        assert!(allied_lin.y > 0.08 && allied_lin.y < 0.14, "allied_lin={allied_lin:?}");
+        assert!(
+            allied_lin.y > 0.08 && allied_lin.y < 0.14,
+            "allied_lin={allied_lin:?}"
+        );
         assert!(allied_lin.z > 0.92, "allied_lin={allied_lin:?}");
         assert!(soviet_lin.x > 0.82, "soviet_lin={soviet_lin:?}");
-        assert!(soviet_lin.y < 0.01 && soviet_lin.z < 0.01, "soviet_lin={soviet_lin:?}");
+        assert!(
+            soviet_lin.y < 0.01 && soviet_lin.z < 0.01,
+            "soviet_lin={soviet_lin:?}"
+        );
 
         let wgsl = include_str!("../../../assets/shaders/unit_pbr_team.wgsl");
         assert!(wgsl.contains("fn srgb_to_linear_vec3("));

@@ -79,12 +79,7 @@ fn sample_stepped_grid_corner_height(
     let cx = vx.clamp(0, w);
     let cz = vz.clamp(0, h);
 
-    let neighbors = [
-        [cx - 1, cz - 1],
-        [cx, cz - 1],
-        [cx - 1, cz],
-        [cx, cz],
-    ];
+    let neighbors = [[cx - 1, cz - 1], [cx, cz - 1], [cx - 1, cz], [cx, cz]];
 
     let touches_pure_plateau = neighbors
         .iter()
@@ -235,11 +230,21 @@ pub(super) fn sample_continuous_terrain_height(
 
         let h_top = interp_cliff_or_ramp(v00, v10, fx, ramp_top);
         let h_bot = interp_cliff_or_ramp(v01, v11, fx, ramp_bot);
-        let z_of_x = interp_cliff_or_ramp(h_top, h_bot, fz, ramp_left && ramp_right || is_ramp_tile(world, tx, tz));
+        let z_of_x = interp_cliff_or_ramp(
+            h_top,
+            h_bot,
+            fz,
+            ramp_left && ramp_right || is_ramp_tile(world, tx, tz),
+        );
 
         let h_left = interp_cliff_or_ramp(v00, v01, fz, ramp_left);
         let h_right = interp_cliff_or_ramp(v10, v11, fz, ramp_right);
-        let x_of_z = interp_cliff_or_ramp(h_left, h_right, fx, ramp_top && ramp_bot || is_ramp_tile(world, tx, tz));
+        let x_of_z = interp_cliff_or_ramp(
+            h_left,
+            h_right,
+            fx,
+            ramp_top && ramp_bot || is_ramp_tile(world, tx, tz),
+        );
 
         // Ensure boundary edges match neighbor tiles identically at fx=0/1 and fz=0/1
         if fx <= 1e-5 {

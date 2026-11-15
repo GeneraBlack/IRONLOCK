@@ -15,10 +15,7 @@ use rts_simulation::world::{EntityKind, EnvironmentPreset, SimWorld};
 use std::collections::BTreeSet;
 use std::path::Path;
 
-pub(super) fn preload_standard_smoke_assets(
-    srv: &AssetServer,
-    smoke: &mut VisualSmokeTestState,
-) {
+pub(super) fn preload_standard_smoke_assets(srv: &AssetServer, smoke: &mut VisualSmokeTestState) {
     for p in [
         "rust-ra2/assets/ui/loading_screens/observer.png",
         "rust-ra2/assets/ui/loading_screens/country_usa.png",
@@ -63,7 +60,11 @@ pub(super) fn preload_standard_smoke_assets(
     }
 }
 
-fn pick_showcase_building(loaded: &LoadedMod, candidates: &[&str], faction: &str) -> Option<String> {
+fn pick_showcase_building(
+    loaded: &LoadedMod,
+    candidates: &[&str],
+    faction: &str,
+) -> Option<String> {
     for &cid in candidates {
         if let Some(b) = loaded.buildings.get(cid) {
             if !b.water_bound {
@@ -422,15 +423,17 @@ pub fn drive_16_colors_showcase(
                     "layer_3_pavement.png",
                     "layer_4_cliff.png",
                 ] {
-                    smoke.preloaded_handles.push(
-                        srv.load(format!("{mod_folder}/assets/terrain/temperate/{layer}")),
-                    );
+                    smoke
+                        .preloaded_handles
+                        .push(srv.load(format!("{mod_folder}/assets/terrain/temperate/{layer}")));
                 }
                 for ent in sim_res.0.entities.values() {
                     let model_rel = match &ent.kind {
-                        EntityKind::Unit { unit_id } => {
-                            mod_res.0.units.get(unit_id).map(|u| u.visual.model.as_str())
-                        }
+                        EntityKind::Unit { unit_id } => mod_res
+                            .0
+                            .units
+                            .get(unit_id)
+                            .map(|u| u.visual.model.as_str()),
                         EntityKind::Building { building_id } => mod_res
                             .0
                             .buildings
@@ -462,10 +465,7 @@ pub fn drive_16_colors_showcase(
             interaction.menu_open = false;
         }
         60 => {
-            super::save_smoke_screenshot(
-                commands,
-                &out_dir.join("ra2_16_colors_8v8_showcase.png"),
-            );
+            super::save_smoke_screenshot(commands, &out_dir.join("ra2_16_colors_8v8_showcase.png"));
         }
         76 => {
             exit_events.send(AppExit::Success);

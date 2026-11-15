@@ -512,8 +512,13 @@ pub fn composite_radar_frame(
             let slot = resolve_player_team_color_slot(world, loaded, ent.player_id);
             let is_local = ent.player_id == pov_pid;
             let is_ally = ent.player_id != 0 && !world.are_hostile(pov_pid, ent.player_id);
-            let c =
-                resolve_accessible_team_color_in_mod(slot, is_local, is_ally, cb_mode, Some(loaded));
+            let c = resolve_accessible_team_color_in_mod(
+                slot,
+                is_local,
+                is_ally,
+                cb_mode,
+                Some(loaded),
+            );
             [
                 (c[0].clamp(0.0, 1.0) * 255.0) as u8,
                 (c[1].clamp(0.0, 1.0) * 255.0) as u8,

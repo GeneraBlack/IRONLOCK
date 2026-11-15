@@ -44,7 +44,9 @@ fn visual_mode_defaults_by_catalog_presence_and_f8_toggles_live() {
         .iter(app.world())
         .any(|(q, v)| *v == Visibility::Visible && q.min_world_y.abs() < 1e-4));
     let mut child_q = app.world_mut().query::<(&SimGltfSceneChild, &Visibility)>();
-    assert!(child_q.iter(app.world()).any(|(_, v)| *v == Visibility::Hidden));
+    assert!(child_q
+        .iter(app.world())
+        .any(|(_, v)| *v == Visibility::Hidden));
 
     app.world_mut()
         .resource_mut::<ButtonInput<KeyCode>>()
@@ -54,8 +56,12 @@ fn visual_mode_defaults_by_catalog_presence_and_f8_toggles_live() {
         *app.world().resource::<Ra2EntityVisualMode>(),
         Ra2EntityVisualMode::Full3dMeshes
     );
-    assert!(quad_q.iter(app.world()).all(|(_, v)| *v == Visibility::Hidden));
-    assert!(child_q.iter(app.world()).all(|(_, v)| *v == Visibility::Inherited));
+    assert!(quad_q
+        .iter(app.world())
+        .all(|(_, v)| *v == Visibility::Hidden));
+    assert!(child_q
+        .iter(app.world())
+        .all(|(_, v)| *v == Visibility::Inherited));
 }
 
 #[test]
@@ -96,9 +102,9 @@ fn infantry_8dir_facing_ground_anchor_and_turret_barrel_hierarchy() {
     assert!(cat.load_from_mod_root(&ra2_dir));
     assert!(cat.buildings.len() >= 75 && cat.infantry.len() >= 25);
     let conyard = cat.buildings.get("allied_conyard").expect("allied_conyard");
-    assert!(conyard
-        .make
-        .contains(&select_building_sprite_frame(conyard, 0.45, None, 1.0, true, 0.0)));
+    assert!(conyard.make.contains(&select_building_sprite_frame(
+        conyard, 0.45, None, 1.0, true, 0.0
+    )));
     assert_eq!(
         select_building_sprite_frame(conyard, 1.0, None, 0.35, false, 0.0),
         conyard.damaged

@@ -244,7 +244,14 @@ pub(super) fn pack_colored_mesh_to_glb(
     mesh_name: &str,
 ) -> Result<Vec<u8>> {
     pack_single_mesh_to_glb(
-        positions, normals, colors, None, indices, mesh_name, &[], None,
+        positions,
+        normals,
+        colors,
+        None,
+        indices,
+        mesh_name,
+        &[],
+        None,
     )
 }
 
@@ -366,7 +373,12 @@ fn pack_single_mesh_to_glb(
             "primitives": [prim]
         }]
     });
-    attach_material_and_optional_atlas(&mut gltf_json, atlas_png, &mut bin_chunk, &mut buffer_views);
+    attach_material_and_optional_atlas(
+        &mut gltf_json,
+        atlas_png,
+        &mut bin_chunk,
+        &mut buffer_views,
+    );
     gltf_json["accessors"] = Value::Array(accessors);
     gltf_json["bufferViews"] = Value::Array(buffer_views);
     gltf_json["buffers"] = json!([{ "byteLength": bin_chunk.len() }]);
@@ -598,7 +610,12 @@ fn pack_multipart_meshes_to_glb(
         "nodes": nodes,
         "meshes": meshes
     });
-    attach_material_and_optional_atlas(&mut gltf_json, atlas_png, &mut bin_chunk, &mut buffer_views);
+    attach_material_and_optional_atlas(
+        &mut gltf_json,
+        atlas_png,
+        &mut bin_chunk,
+        &mut buffer_views,
+    );
     gltf_json["accessors"] = Value::Array(accessors);
     gltf_json["bufferViews"] = Value::Array(buffer_views);
     gltf_json["buffers"] = json!([{ "byteLength": bin_chunk.len() }]);

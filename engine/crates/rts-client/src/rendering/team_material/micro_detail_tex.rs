@@ -230,7 +230,10 @@ mod tests {
         assert_eq!(img.width(), 256);
         assert_eq!(img.height(), 256);
         assert_eq!(img.texture_descriptor.format, TextureFormat::Rgba8Unorm);
-        assert_eq!(img.texture_descriptor.mip_level_count, MICRO_DETAIL_MIP_COUNT);
+        assert_eq!(
+            img.texture_descriptor.mip_level_count,
+            MICRO_DETAIL_MIP_COUNT
+        );
 
         match &img.sampler {
             ImageSampler::Descriptor(d) => {

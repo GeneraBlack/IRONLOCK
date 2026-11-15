@@ -105,7 +105,20 @@ impl MapTerrainDirtyRects {
 }
 
 /// Screen-Space Ambient Occlusion quality setting (`Off`, `Medium`, `High`; defaults to `High`).
-#[derive(Resource, Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Default)]
+#[derive(
+    Resource,
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    Hash,
+    Serialize,
+    Deserialize,
+    Default,
+)]
 #[serde(rename_all = "snake_case")]
 pub enum SsaoQualitySetting {
     Off,
@@ -143,7 +156,20 @@ impl SsaoQualitySetting {
 }
 
 /// Directional cascade shadow map quality setting (`Off`, `Low`, `Medium`, `High`; defaults to `Medium`).
-#[derive(Resource, Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Default)]
+#[derive(
+    Resource,
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    Hash,
+    Serialize,
+    Deserialize,
+    Default,
+)]
 #[serde(rename_all = "snake_case")]
 pub enum ShadowQualitySetting {
     Off,
@@ -392,8 +418,16 @@ impl Plugin for ClientRenderingAvPlugin {
                 micro_h,
             ));
         }
-        if let Some((video_h, layer_arr_h, nrh_arr_h, preview_h, ibl_diff_h, ibl_spec_h, fow_h, micro_h)) =
-            created_handles
+        if let Some((
+            video_h,
+            layer_arr_h,
+            nrh_arr_h,
+            preview_h,
+            ibl_diff_h,
+            ibl_spec_h,
+            fow_h,
+            micro_h,
+        )) = created_handles
         {
             if let Some(mut video) = app.world_mut().get_resource_mut::<VideoPlaybackResource>() {
                 video.frame_image = video_h;

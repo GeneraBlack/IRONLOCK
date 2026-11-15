@@ -76,8 +76,9 @@ pub fn build_building_ground_apron_image() -> Image {
             // Smooth cubic falloff across outer `0.24` skirt
             let t = (1.0 - (dist_out / 0.245).clamp(0.0, 1.0)).powi(2);
             let contact_ring = (1.0 - (sdf.abs() / 0.095).clamp(0.0, 1.0)) * 0.22;
-            let alpha_f = ((t * (0.48 + 0.18 * grime) + contact_ring) * (1.0 - (dist_out / 0.255).clamp(0.0, 1.0)))
-                .clamp(0.0, 0.70);
+            let alpha_f = ((t * (0.48 + 0.18 * grime) + contact_ring)
+                * (1.0 - (dist_out / 0.255).clamp(0.0, 1.0)))
+            .clamp(0.0, 0.70);
 
             // Warm charcoal asphalt/soot tone (`sRGB ~ 18..34`) so it darkens concrete/grass naturally
             let shade = (16.0 + grime * 16.0).round().clamp(12.0, 36.0) as u8;
@@ -145,7 +146,10 @@ pub fn build_unit_horizontal_apron_quad_mesh() -> Mesh {
     let uvs = vec![[0.0, 0.0], [1.0, 0.0], [1.0, 1.0], [0.0, 1.0]];
     // Counter-clockwise upward-facing (+Y) quad winding in right-handed Bevy world space
     let indices = vec![0u32, 3, 2, 0, 2, 1];
-    let mut mesh = Mesh::new(PrimitiveTopology::TriangleList, RenderAssetUsages::default());
+    let mut mesh = Mesh::new(
+        PrimitiveTopology::TriangleList,
+        RenderAssetUsages::default(),
+    );
     mesh.insert_attribute(Mesh::ATTRIBUTE_POSITION, positions);
     mesh.insert_attribute(Mesh::ATTRIBUTE_NORMAL, normals);
     mesh.insert_attribute(Mesh::ATTRIBUTE_UV_0, uvs);
@@ -174,7 +178,12 @@ pub fn sync_building_ground_aprons(
         ),
     >,
     mut apron_q: Query<
-        (Entity, &BuildingGroundApron, &mut Transform, &mut Visibility),
+        (
+            Entity,
+            &BuildingGroundApron,
+            &mut Transform,
+            &mut Visibility,
+        ),
         (
             Without<SimVisualEntity>,
             Without<FogOfWarPlaneEntity>,
@@ -219,8 +228,8 @@ pub fn sync_building_ground_aprons(
         .as_deref()
         .map(|s| s.0.grid.tile_size.max(0.5))
         .unwrap_or(2.0);
-    let is_hybrid_sprites = visual_mode.as_deref().copied().unwrap_or_default()
-        == Ra2EntityVisualMode::HybridHdSprites;
+    let is_hybrid_sprites =
+        visual_mode.as_deref().copied().unwrap_or_default() == Ra2EntityVisualMode::HybridHdSprites;
 
     // `(sx, sz, world_pos, yaw, root_vis, hide_apron, is_vehicle)`
     let mut active_contacts: HashMap<u64, (f32, f32, Vec3, f32, Visibility, bool, bool)> =
@@ -332,6 +341,9 @@ mod tests {
             center_alpha > 100 && center_alpha < 200,
             "center_alpha={center_alpha}"
         );
-        assert_eq!(border_alpha, 0, "outer corner must feather cleanly to 0 alpha");
+        assert_eq!(
+            border_alpha, 0,
+            "outer corner must feather cleanly to 0 alpha"
+        );
     }
 }

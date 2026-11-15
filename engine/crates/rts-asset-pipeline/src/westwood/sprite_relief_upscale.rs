@@ -246,7 +246,14 @@ pub fn upscale_shp_indexed_2x_classified(
     external_pal: Option<&[u8]>,
     team_color: Option<[f32; 3]>,
 ) -> ClassifiedHdShpImage {
-    upscale_shp_indexed_2x_classified_with_remap(width, height, indices, external_pal, team_color, true)
+    upscale_shp_indexed_2x_classified_with_remap(
+        width,
+        height,
+        indices,
+        external_pal,
+        team_color,
+        true,
+    )
 }
 
 /// Class-separated `2x` xBRZ `.shp` upscaler with explicit `allow_team_remap` control (`false` for
@@ -380,14 +387,12 @@ pub fn upscale_shp_indexed_2x_classified_with_remap(
 
                         if sub_team {
                             out_cls[out_idx] = ShpPixelClass::TeamRemap;
-                            out_rgb[out_idx] = xbrz_blend_quadrant(
-                                w, h, ix, iy, dx, dy, &is_team, &team_dil,
-                            );
+                            out_rgb[out_idx] =
+                                xbrz_blend_quadrant(w, h, ix, iy, dx, dy, &is_team, &team_dil);
                         } else {
                             out_cls[out_idx] = ShpPixelClass::NormalRgb;
-                            out_rgb[out_idx] = xbrz_blend_quadrant(
-                                w, h, ix, iy, dx, dy, &is_normal, &normal_dil,
-                            );
+                            out_rgb[out_idx] =
+                                xbrz_blend_quadrant(w, h, ix, iy, dx, dy, &is_normal, &normal_dil);
                         }
                     } else {
                         let sh_h = mask_at(&is_shadow_or_op, ix + dx, iy);
@@ -480,7 +485,11 @@ fn xbrz_blend_quadrant(
 
     let mut acc = c_c;
     let mut w_sum = 1.0f32;
-    for (nb_m, nb_c, base_w) in [(m_h, c_h, 0.28f32), (m_v, c_v, 0.28f32), (m_d, c_d, 0.14f32)] {
+    for (nb_m, nb_c, base_w) in [
+        (m_h, c_h, 0.28f32),
+        (m_v, c_v, 0.28f32),
+        (m_d, c_d, 0.14f32),
+    ] {
         if nb_m {
             let cd = chroma_dist_sq_rgb(c_c, nb_c);
             let w_nb = base_w * (-cd * 34.0).exp();

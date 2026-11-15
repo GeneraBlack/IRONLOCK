@@ -547,7 +547,11 @@ pub(super) fn build_authored_test_vxl(
             48 => (58, 12, 8),
             140 => (10, 52, 22),
             220 => (14, 38, 60),
-            _ => (((i * 17 + 5) % 64) as u8, ((i * 31 + 11) % 64) as u8, ((i * 43 + 19) % 64) as u8),
+            _ => (
+                ((i * 17 + 5) % 64) as u8,
+                ((i * 31 + 11) % 64) as u8,
+                ((i * 43 + 19) % 64) as u8,
+            ),
         };
         vxl.extend_from_slice(&[r, g, b]);
     }
@@ -587,7 +591,11 @@ pub(super) fn build_authored_test_vxl(
     vxl.extend_from_slice(&((span_start_size + span_end_size) as u32).to_le_bytes());
     vxl.extend_from_slice(&0.25f32.to_le_bytes());
     for i in 0..12 {
-        let v = if i == 0 || i == 5 || i == 10 { 1.0f32 } else { 0.0f32 };
+        let v = if i == 0 || i == 5 || i == 10 {
+            1.0f32
+        } else {
+            0.0f32
+        };
         vxl.extend_from_slice(&v.to_le_bytes());
     }
     for _ in 0..6 {
@@ -606,9 +614,15 @@ fn decodes_ra2_244_and_ts_36_voxel_normals_with_35_deg_crease_splitting() {
 
     // RA2 index 232 is Westwood `[0.040639, 0.024465, 0.998874]` -> glTF `[y, z, x]` (~+Y up)
     let up_ra2 = decode_westwood_voxel_normal_gltf(4, 232).unwrap();
-    assert!(up_ra2[1] > 0.99, "RA2 +Z normal must map to glTF +Y, got {up_ra2:?}");
+    assert!(
+        up_ra2[1] > 0.99,
+        "RA2 +Z normal must map to glTF +Y, got {up_ra2:?}"
+    );
     let up_ts = decode_westwood_voxel_normal_gltf(2, 32).unwrap();
-    assert!(up_ts[1] > 0.99, "TS +Z normal must map to glTF +Y, got {up_ts:?}");
+    assert!(
+        up_ts[1] > 0.99,
+        "TS +Z normal must map to glTF +Y, got {up_ts:?}"
+    );
 
     // 1. Hard-surface armor box (`> 35°` across edges): normals must stay planar with zero ballooning
     let box_vxl = build_authored_test_vxl(6, 6, 4, 4, |_x, _y, z| {
@@ -620,7 +634,10 @@ fn decodes_ra2_244_and_ts_36_voxel_normals_with_35_deg_crease_splitting() {
     for tri in &box_tris {
         for n in &tri.n {
             let max_axis = n[0].abs().max(n[1].abs()).max(n[2].abs());
-            assert!(max_axis > 0.99, "Hard-surface 90-deg box edge must split cleanly (>35 deg), got {n:?}");
+            assert!(
+                max_axis > 0.99,
+                "Hard-surface 90-deg box edge must split cleanly (>35 deg), got {n:?}"
+            );
         }
     }
 
@@ -634,14 +651,21 @@ fn decodes_ra2_244_and_ts_36_voxel_normals_with_35_deg_crease_splitting() {
         .iter()
         .flat_map(|t| t.n.iter())
         .any(|n| n[1] > 0.95 && n[0] > 0.10 && n[0] < 0.20);
-    assert!(has_interpolated, "Adjacent Westwood normals <= 35 deg must smoothly interpolate");
+    assert!(
+        has_interpolated,
+        "Adjacent Westwood normals <= 35 deg must smoothly interpolate"
+    );
 }
 
 #[test]
 fn encodes_lossless_png_uv_atlas_texcoord0_and_exact_16_to_31_alpha_team_mask() {
     let vxl = build_authored_test_vxl(8, 6, 4, 4, |x, y, z| {
         let c_idx = if z == 3 {
-            if x < 4 { 16 } else { 31 }
+            if x < 4 {
+                16
+            } else {
+                31
+            }
         } else if y == 0 {
             4
         } else if y == 5 {
@@ -658,8 +682,22 @@ fn encodes_lossless_png_uv_atlas_texcoord0_and_exact_16_to_31_alpha_team_mask() 
     let mat = &json["materials"][0];
     assert_eq!(mat["alphaMode"], "OPAQUE");
     assert_eq!(mat["pbrMetallicRoughness"]["baseColorTexture"]["index"], 0);
-    assert!((mat["pbrMetallicRoughness"]["metallicFactor"].as_f64().unwrap() - 0.32).abs() < 1e-5);
-    assert!((mat["pbrMetallicRoughness"]["roughnessFactor"].as_f64().unwrap() - 0.58).abs() < 1e-5);
+    assert!(
+        (mat["pbrMetallicRoughness"]["metallicFactor"]
+            .as_f64()
+            .unwrap()
+            - 0.32)
+            .abs()
+            < 1e-5
+    );
+    assert!(
+        (mat["pbrMetallicRoughness"]["roughnessFactor"]
+            .as_f64()
+            .unwrap()
+            - 0.58)
+            .abs()
+            < 1e-5
+    );
     assert_eq!(json["samplers"][0]["magFilter"], 9728);
     assert_eq!(json["images"][0]["mimeType"], "image/png");
 
@@ -685,7 +723,11 @@ fn encodes_lossless_png_uv_atlas_texcoord0_and_exact_16_to_31_alpha_team_mask() 
         if a0 == 0.0 {
             for c in &tri.rgba {
                 assert!((c[0] - c[1]).abs() < 1e-5 && (c[1] - c[2]).abs() < 1e-5);
-                assert!(c[0] >= 0.179 && c[0] <= 1.0, "Remap lum out of [0.18, 1.0]: {}", c[0]);
+                assert!(
+                    c[0] >= 0.179 && c[0] <= 1.0,
+                    "Remap lum out of [0.18, 1.0]: {}",
+                    c[0]
+                );
                 saw_bright_remap |= c[0] > 0.85;
                 saw_dark_remap |= c[0] < 0.25;
             }
@@ -696,9 +738,17 @@ fn encodes_lossless_png_uv_atlas_texcoord0_and_exact_16_to_31_alpha_team_mask() 
             }
         }
     }
-    assert!(saw_bright_remap && saw_dark_remap, "Must encode 16..=31 grayscale ramp with Alpha=0");
-    assert!(saw_non_remap_tread && saw_non_remap_trim, "Must preserve 0..15 & 32..255 with Alpha=255");
-    assert!(rgba.chunks_exact(4).any(|px| px[3] == 0 && px[0] == px[1] && px[1] == px[2]));
+    assert!(
+        saw_bright_remap && saw_dark_remap,
+        "Must encode 16..=31 grayscale ramp with Alpha=0"
+    );
+    assert!(
+        saw_non_remap_tread && saw_non_remap_trim,
+        "Must preserve 0..15 & 32..255 with Alpha=255"
+    );
+    assert!(rgba
+        .chunks_exact(4)
+        .any(|px| px[3] == 0 && px[0] == px[1] && px[1] == px[2]));
     assert!(rgba.chunks_exact(4).any(|px| px[3] == 255));
 
     let tinted = convert_multipart_vxl_to_glb_with_team_color(
@@ -709,5 +759,7 @@ fn encodes_lossless_png_uv_atlas_texcoord0_and_exact_16_to_31_alpha_team_mask() 
     )
     .unwrap();
     let tinted_tris = crate::glb_optimizer::extract_world_triangles_from_glb(&tinted).unwrap();
-    assert!(tinted_tris.iter().any(|t| t.rgba[0][3] == 0.0 && t.rgba[0][0] > t.rgba[0][2]));
+    assert!(tinted_tris
+        .iter()
+        .any(|t| t.rgba[0][3] == 0.0 && t.rgba[0][0] > t.rgba[0][2]));
 }

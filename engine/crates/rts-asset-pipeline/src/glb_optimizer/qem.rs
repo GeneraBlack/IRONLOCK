@@ -236,45 +236,46 @@ fn run_qem_grid_pass(
     let has_colors = prim.colors.is_some();
     let has_uvs = prim.texcoords.is_some();
 
-    let corner_attrs =
-        |ti: usize, slot: usize| -> ([f32; 3], [f32; 4], [f32; 2], u32, [f32; 3], f32) {
-            let st = &surviving[ti];
-            let orig_vi = st.orig[slot] as usize;
-            let on = prim.normals[orig_vi];
-            let dot_fn = on[0] * st.face_norm[0] + on[1] * st.face_norm[1] + on[2] * st.face_norm[2];
-            let nrm = if dot_fn >= 0.25 {
-                let bx = 0.85 * on[0] + 0.15 * st.face_norm[0];
-                let by = 0.85 * on[1] + 0.15 * st.face_norm[1];
-                let bz = 0.85 * on[2] + 0.15 * st.face_norm[2];
-                let bl = (bx * bx + by * by + bz * bz).sqrt();
-                if bl > 1e-6 {
-                    [bx / bl, by / bl, bz / bl]
-                } else {
-                    st.face_norm
-                }
+    let corner_attrs = |ti: usize,
+                        slot: usize|
+     -> ([f32; 3], [f32; 4], [f32; 2], u32, [f32; 3], f32) {
+        let st = &surviving[ti];
+        let orig_vi = st.orig[slot] as usize;
+        let on = prim.normals[orig_vi];
+        let dot_fn = on[0] * st.face_norm[0] + on[1] * st.face_norm[1] + on[2] * st.face_norm[2];
+        let nrm = if dot_fn >= 0.25 {
+            let bx = 0.85 * on[0] + 0.15 * st.face_norm[0];
+            let by = 0.85 * on[1] + 0.15 * st.face_norm[1];
+            let bz = 0.85 * on[2] + 0.15 * st.face_norm[2];
+            let bl = (bx * bx + by * by + bz * bz).sqrt();
+            if bl > 1e-6 {
+                [bx / bl, by / bl, bz / bl]
             } else {
                 st.face_norm
-            };
-            let col = prim
-                .colors
-                .as_ref()
-                .map(|c| c[orig_vi])
-                .unwrap_or([1.0, 1.0, 1.0, 1.0]);
-            let uv = prim
-                .texcoords
-                .as_ref()
-                .map(|u| u[orig_vi])
-                .unwrap_or([0.0, 0.0]);
-            let chart = analysis.uv_chart[orig_vi];
-            (
-                nrm,
-                col,
-                uv,
-                chart,
-                prim.positions[orig_vi],
-                st.area_w.max(1e-9),
-            )
+            }
+        } else {
+            st.face_norm
         };
+        let col = prim
+            .colors
+            .as_ref()
+            .map(|c| c[orig_vi])
+            .unwrap_or([1.0, 1.0, 1.0, 1.0]);
+        let uv = prim
+            .texcoords
+            .as_ref()
+            .map(|u| u[orig_vi])
+            .unwrap_or([0.0, 0.0]);
+        let chart = analysis.uv_chart[orig_vi];
+        (
+            nrm,
+            col,
+            uv,
+            chart,
+            prim.positions[orig_vi],
+            st.area_w.max(1e-9),
+        )
+    };
 
     let mut out_positions = Vec::with_capacity(target_verts);
     let mut out_normals = Vec::with_capacity(target_verts);
@@ -303,7 +304,7 @@ fn run_qem_grid_pass(
             let uv_w = 1.0 / ((dist2 as f64) + 1e-7);
 
             let mut best_match: Option<(usize, f32)> = None;
-            for ( cli, cl ) in clusters.iter().enumerate() {
+            for (cli, cl) in clusters.iter().enumerate() {
                 if has_uvs && cl.uv_chart != chart {
                     continue;
                 }

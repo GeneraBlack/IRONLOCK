@@ -86,21 +86,51 @@ pub fn drive_visual_smoke_test(
     };
     if std::env::var_os("RTS_SMOKE_16_COLORS").is_some() {
         colors_16_showcase::drive_16_colors_showcase(
-            &mut commands, &out_dir, asset_server.as_deref(), &mut meshes, &mut materials,
-            &mut mod_res, &mut sim_res, &mut smoke, &mut interaction, &mut cached_fow,
-            &mut vfx_state, &mut subwindows, &mut last_sig, &mut terrain_dirty,
-            &mut terrain_dirty_rects, &env_q, &visual_q, &mut camera_q,
-            visual_mode.as_deref_mut(), &mut exit_events,
+            &mut commands,
+            &out_dir,
+            asset_server.as_deref(),
+            &mut meshes,
+            &mut materials,
+            &mut mod_res,
+            &mut sim_res,
+            &mut smoke,
+            &mut interaction,
+            &mut cached_fow,
+            &mut vfx_state,
+            &mut subwindows,
+            &mut last_sig,
+            &mut terrain_dirty,
+            &mut terrain_dirty_rects,
+            &env_q,
+            &visual_q,
+            &mut camera_q,
+            visual_mode.as_deref_mut(),
+            &mut exit_events,
         );
         return;
     }
     if std::env::var_os("RTS_SMOKE_RA2_OVERHAUL").is_some() {
         stages_ext::drive_ra2_overhaul_showcase(
-            &mut commands, &out_dir, asset_server.as_deref(), &mut meshes, &mut materials,
-            &mut mod_res, &mut sim_res, &mut smoke, &mut interaction, &mut cached_fow,
-            &mut vfx_state, &mut subwindows, &mut last_sig, &mut terrain_dirty,
-            &mut terrain_dirty_rects, &env_q, &visual_q, &mut camera_q,
-            visual_mode.as_deref_mut(), &mut exit_events,
+            &mut commands,
+            &out_dir,
+            asset_server.as_deref(),
+            &mut meshes,
+            &mut materials,
+            &mut mod_res,
+            &mut sim_res,
+            &mut smoke,
+            &mut interaction,
+            &mut cached_fow,
+            &mut vfx_state,
+            &mut subwindows,
+            &mut last_sig,
+            &mut terrain_dirty,
+            &mut terrain_dirty_rects,
+            &env_q,
+            &visual_q,
+            &mut camera_q,
+            visual_mode.as_deref_mut(),
+            &mut exit_events,
         );
         return;
     }

@@ -313,7 +313,10 @@ pub fn resolve_ui_color_swatch<'a>(
             team_color_name_for_slot_in_mod(slot, m),
             team_color_rgb_for_slot_in_mod(slot, m),
         ),
-        None => (team_color_name_for_slot(slot), team_color_rgb_for_slot(slot)),
+        None => (
+            team_color_name_for_slot(slot),
+            team_color_rgb_for_slot(slot),
+        ),
     }
 }
 
@@ -547,7 +550,10 @@ mod tests {
                 (rgb[1] * 255.0).round() as u8,
                 (rgb[2] * 255.0).round() as u8,
             ];
-            assert!(seen_default.insert(q), "duplicate default slot {slot}: {q:?}");
+            assert!(
+                seen_default.insert(q),
+                "duplicate default slot {slot}: {q:?}"
+            );
         }
         for mode in [
             ColorblindPaletteMode::Deuteranopia,

@@ -73,7 +73,11 @@ pub(super) fn validate_manifest_resources_factions_and_vfx(
                 ),
             );
         }
-        if pc.rgb.iter().any(|c| !c.is_finite() || !(0.0..=1.0).contains(c)) {
+        if pc
+            .rgb
+            .iter()
+            .any(|c| !c.is_finite() || !(0.0..=1.0).contains(c))
+        {
             report.push_error(
                 "INVALID_PLAYER_COLOR_RGB",
                 format!(
