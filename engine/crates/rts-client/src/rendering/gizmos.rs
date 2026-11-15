@@ -13,6 +13,7 @@ pub fn draw_rts_gizmos(
     sim_res: Res<SimWorldResource>,
     interaction: Res<ClientInteractionState>,
     cached_fow: Res<CachedFogVisibility>,
+    theater_res: Option<Res<ActiveTheaterLightingResource>>,
     studio_debug_cfg: Option<Res<StudioDebugOverlayConfig>>,
     socket_reg: Option<Res<SocketRegistry>>,
     visual_q: Query<&SimVisualEntity>,
@@ -44,40 +45,58 @@ pub fn draw_rts_gizmos(
         world.grid.height.max(1) as f32 * world.grid.tile_size * 0.5,
     );
 
-    // 1. Always sync dynamic Weather / Time-of-Day PBR Lighting Preset (`EnvironmentPreset`)
-    //    including dynamic sun azimuth, elevation, color, illuminance, and balanced sky fill!
-    let (amb_col, amb_bright, sun_col, sun_illum, sun_azim, sun_elev, fill_col, fill_illum) =
+    // 1. Always sync dynamic Weather / Time-of-Day PBR Lighting Preset (`EnvironmentPreset`).
+    //    In `EnvironmentPreset::Day`, preserve the authentic RA2 NW-to-SE upper-left 3/4 theater sun
+    //    from `ActiveTheaterLightingResource` instead of clobbering the sun behind the camera!
+    let day_spec = theater_res
+        .as_deref()
+        .map(|t| t.profile)
+        .unwrap_or_else(|| TheaterLightingProfile::from_loaded_mod(loaded))
+        .spec();
+    let (amb_col, amb_bright, sun_col, sun_illum, sun_dir, fill_col, fill_illum, fill_dir) =
         match interaction.environment_preset {
             EnvironmentPreset::Day => (
-                Color::srgb(0.74, 0.82, 0.96),
-                175.0,
-                Color::srgb(1.0, 0.96, 0.88),
-                8_200.0,
-                0.68_f32,
-                1.02_f32,
-                Color::srgb(0.58, 0.74, 1.0),
-                480.0,
+                day_spec.ambient_color,
+                day_spec.ambient_brightness,
+                day_spec.sun_color,
+                day_spec.sun_illuminance,
+                day_spec.sun_direction_to_sky,
+                day_spec.fill_color,
+                day_spec.fill_illuminance,
+                day_spec.fill_direction_to_sky,
             ),
-            EnvironmentPreset::Dusk => (
-                Color::srgb(0.88, 0.56, 0.42),
-                135.0,
-                Color::srgb(1.0, 0.58, 0.28),
-                5_200.0,
-                2.35_f32,
-                0.36_f32,
-                Color::srgb(0.52, 0.44, 0.78),
-                360.0,
-            ),
-            EnvironmentPreset::Night => (
-                Color::srgb(0.24, 0.36, 0.68),
-                95.0,
-                Color::srgb(0.42, 0.60, 0.98),
-                2_100.0,
-                -1.15_f32,
-                0.84_f32,
-                Color::srgb(0.20, 0.30, 0.56),
-                220.0,
-            ),
+            EnvironmentPreset::Dusk => {
+                let (az, el) = (2.35_f32, 0.36_f32);
+                let sd = Vec3::new(az.cos() * el.cos(), el.sin(), az.sin() * el.cos()).normalize();
+                let faz = az + std::f32::consts::PI * 0.82;
+                let fd = Vec3::new(faz.cos() * 0.78, 0.62, faz.sin() * 0.78).normalize();
+                (
+                    Color::srgb(0.88, 0.56, 0.42),
+                    68.0,
+                    Color::srgb(1.0, 0.58, 0.28),
+                    6_400.0,
+                    sd,
+                    Color::srgb(0.52, 0.44, 0.78),
+                    360.0,
+                    fd,
+                )
+            }
+            EnvironmentPreset::Night => {
+                let (az, el) = (-1.15_f32, 0.84_f32);
+                let sd = Vec3::new(az.cos() * el.cos(), el.sin(), az.sin() * el.cos()).normalize();
+                let faz = az + std::f32::consts::PI * 0.82;
+                let fd = Vec3::new(faz.cos() * 0.78, 0.62, faz.sin() * 0.78).normalize();
+                (
+                    Color::srgb(0.24, 0.36, 0.68),
+                    42.0,
+                    Color::srgb(0.42, 0.60, 0.98),
+                    2_400.0,
+                    sd,
+                    Color::srgb(0.20, 0.30, 0.56),
+                    220.0,
+                    fd,
+                )
+            }
             EnvironmentPreset::IonStorm => {
                 let lightning_flash: f32 =
                     if ((elapsed * 6.5).sin() > 0.92) && ((elapsed * 19.0).cos() > 0.4) {
@@ -85,31 +104,28 @@ pub fn draw_rts_gizmos(
                     } else {
                         1.0
                     };
+                let az = 1.45_f32 + (elapsed * 0.14).sin() * 0.18;
+                let el = 0.68_f32;
+                let sd = Vec3::new(az.cos() * el.cos(), el.sin(), az.sin() * el.cos()).normalize();
+                let faz = az + std::f32::consts::PI * 0.82;
+                let fd = Vec3::new(faz.cos() * 0.78, 0.62, faz.sin() * 0.78).normalize();
                 (
                     Color::srgb(0.55, 0.42, 0.85),
-                    130.0 * lightning_flash,
+                    65.0 * lightning_flash,
                     Color::srgb(0.74, 0.52, 1.0),
-                    4_100.0 * lightning_flash,
-                    1.45_f32 + (elapsed * 0.14).sin() * 0.18,
-                    0.68_f32,
+                    4_800.0 * lightning_flash,
+                    sd,
                     Color::srgb(0.46, 0.32, 0.76),
                     340.0 * lightning_flash.min(1.4),
+                    fd,
                 )
             }
         };
     ambient_light.color = amb_col;
     ambient_light.brightness = amb_bright;
 
-    let sun_dist = 90.0_f32;
-    let sun_horiz = sun_dist * sun_elev.cos();
-    let sun_pos = map_center
-        + Vec3::new(
-            sun_azim.cos() * sun_horiz,
-            sun_dist * sun_elev.sin(),
-            sun_azim.sin() * sun_horiz,
-        );
-    let fill_azim = sun_azim + std::f32::consts::PI * 0.82;
-    let fill_pos = map_center + Vec3::new(fill_azim.cos() * 64.0, 52.0, fill_azim.sin() * 64.0);
+    let sun_pos = map_center + sun_dir * 120.0;
+    let fill_pos = map_center + fill_dir * 100.0;
 
     for (role, mut dl, mut tf) in &mut dir_lights {
         if role.is_primary_sun {

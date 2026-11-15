@@ -51,7 +51,12 @@ pub struct TeamDamageMaterialExt {
     #[texture(101)]
     #[sampler(102)]
     pub fow_tex: Handle<Image>,
+    #[texture(103)]
+    #[sampler(104)]
+    pub micro_detail_tex: Handle<Image>,
 }
+
+pub type TeamColorExtension = TeamDamageMaterialExt;
 
 impl MaterialExtension for TeamDamageMaterialExt {
     fn fragment_shader() -> ShaderRef {
@@ -123,7 +128,27 @@ pub fn hash_visual_pbr_spec(visual: Option<&VisualDef>) -> u64 {
     hasher.finish()
 }
 
-/// Exact CPU mirror of the contrast-preserving S-curve team-paint transfer in `unit_pbr_team.wgsl`.
+#[inline]
+pub fn srgb_channel_to_linear(c: f32) -> f32 {
+    let x = c.max(0.0);
+    if x <= 0.04045 {
+        x / 12.92
+    } else {
+        ((x + 0.055) / 1.055).powf(2.4)
+    }
+}
+
+#[inline]
+pub fn linear_channel_to_srgb(c: f32) -> f32 {
+    let x = c.max(0.0);
+    if x <= 0.0031308 {
+        x * 12.92
+    } else {
+        1.055 * x.powf(1.0 / 2.4) - 0.055
+    }
+}
+
+/// Exact CPU mirror of the contrast-preserving S-curve team-paint transfer in perceptual sRGB space.
 #[inline]
 pub fn evaluate_team_paint_s_curve(team_rgb: Vec3, luma: f32) -> Vec3 {
     let smoothstep = |e0: f32, e1: f32, x: f32| -> f32 {
@@ -135,6 +160,25 @@ pub fn evaluate_team_paint_s_curve(team_rgb: Vec3, luma: f32) -> Vec3 {
     let shade_gain = (luma * 0.95) * (1.0 - mid_s) + (0.96 + 0.26 * hi_s) * mid_s;
     let spec_edge = smoothstep(0.80, 0.98, luma) * 0.28;
     (team_rgb * shade_gain).lerp(Vec3::ONE, spec_edge)
+}
+
+/// Evaluates the Westwood S-curve in perceptual sRGB space from a GPU-sampled Linear `albedo`
+/// and returns Linear-RGB `base_color` so Bevy's tonemapper/sRGB output never double-gamma-washes
+/// Cobalt Blue or Soviet Crimson into pastel tones.
+#[inline]
+pub fn evaluate_team_paint_linear_from_linear_albedo(team_srgb: Vec3, linear_albedo: Vec3) -> Vec3 {
+    let albedo_srgb = Vec3::new(
+        linear_channel_to_srgb(linear_albedo.x),
+        linear_channel_to_srgb(linear_albedo.y),
+        linear_channel_to_srgb(linear_albedo.z),
+    );
+    let perceptual_luma = albedo_srgb.dot(Vec3::new(0.299, 0.587, 0.114));
+    let shaded_srgb = evaluate_team_paint_s_curve(team_srgb, perceptual_luma);
+    Vec3::new(
+        srgb_channel_to_linear(shaded_srgb.x),
+        srgb_channel_to_linear(shaded_srgb.y),
+        srgb_channel_to_linear(shaded_srgb.z),
+    )
 }
 
 /// Builds a `UnitPbrTeamMaterial` that clones `orig_base` so 100% of glTF textures
@@ -219,6 +263,7 @@ pub fn build_unit_pbr_team_material(
                 ),
             },
             fow_tex,
+            micro_detail_tex: Handle::default(),
         },
     }
 }
@@ -321,6 +366,28 @@ mod tests {
     }
 
     #[test]
+    fn linear_pbr_team_paint_converts_srgb_palette_without_double_gamma_washout() {
+        let allied_srgb = Vec3::new(0.06, 0.36, 1.00);
+        let soviet_srgb = Vec3::new(0.94, 0.05, 0.06);
+        // Midtone neutral team gray `sRGB = 0.64` -> `Linear = 0.369`
+        let mid_linear_gray = Vec3::splat(srgb_channel_to_linear(0.64));
+
+        let allied_lin = evaluate_team_paint_linear_from_linear_albedo(allied_srgb, mid_linear_gray);
+        let soviet_lin = evaluate_team_paint_linear_from_linear_albedo(soviet_srgb, mid_linear_gray);
+
+        // In Linear PBR reflectance, Cobalt Blue green channel must be ~0.107 (not raw sRGB 0.36!),
+        // and Soviet Crimson green/blue channels must stay < 0.01 (not raw sRGB 0.05 -> salmon pink!).
+        assert!(allied_lin.y > 0.08 && allied_lin.y < 0.14, "allied_lin={allied_lin:?}");
+        assert!(allied_lin.z > 0.92, "allied_lin={allied_lin:?}");
+        assert!(soviet_lin.x > 0.82, "soviet_lin={soviet_lin:?}");
+        assert!(soviet_lin.y < 0.01 && soviet_lin.z < 0.01, "soviet_lin={soviet_lin:?}");
+
+        let wgsl = include_str!("../../../assets/shaders/unit_pbr_team.wgsl");
+        assert!(wgsl.contains("fn srgb_to_linear_vec3("));
+        assert!(wgsl.contains("fn linear_to_srgb_vec3("));
+    }
+
+    #[test]
     fn build_material_preserves_all_five_gltf_textures_and_ra2_toml_has_zero_flat_pbr_clobbers() {
         let mut images = Assets::<Image>::default();
         let albedo_h = images.add(build_default_fow_overlay_image(4, 4));
@@ -391,5 +458,17 @@ mod tests {
             );
             assert_eq!(b.visual.team_mask_mode, TeamMaskMode::AlphaMask);
         }
+    }
+
+    #[test]
+    fn wgsl_enforces_triplanar_micro_detail_glass_attenuation_and_hdr_emissive_punch() {
+        let wgsl = include_str!("../../../assets/shaders/unit_pbr_team.wgsl");
+        assert!(wgsl.contains("@group(2) @binding(103) var micro_detail_tex: texture_2d<f32>;"));
+        assert!(wgsl.contains("@group(2) @binding(104) var micro_detail_sampler: sampler;"));
+        assert!(wgsl.contains("world_pos.xz * 2.85"));
+        assert!(wgsl.contains("in.uv * 18.0"));
+        assert!(wgsl.contains("smoothstep(0.16, 0.28, pbr_input.material.perceptual_roughness)"));
+        assert!(wgsl.contains("1.0 - smoothstep(0.06, 0.35, base_emissive_luma)"));
+        assert!(wgsl.contains("mix(1.0, 2.4, smoothstep(0.35, 0.58, raw_emissive_luma))"));
     }
 }

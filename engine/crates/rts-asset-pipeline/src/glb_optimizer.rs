@@ -36,8 +36,8 @@ pub struct GlbOptimizeOptions {
 impl Default for GlbOptimizeOptions {
     fn default() -> Self {
         Self {
-            max_unit_verts: 6_000,
-            max_building_verts: 12_000,
+            max_unit_verts: 24_000,
+            max_building_verts: 36_000,
             lod1_ratio: 0.22,
             force: false,
         }
@@ -214,12 +214,71 @@ mod tests {
     }
 
     #[test]
+    fn v3_ultra_vertex_budgets_preserve_12k_to_36k_lod0_idempotently() {
+        let opts = GlbOptimizeOptions::default();
+        assert_eq!(opts.max_unit_verts, 24_000);
+        assert_eq!(opts.max_building_verts, 36_000);
+
+        // 1. Legacy <= 12k model with _LOD1 skips idempotently
+        let raw_legacy = make_dense_articulated_tank_glb(42, 28);
+        let (legacy_opt, _) =
+            optimize_glb_bytes(&raw_legacy, 6_000, opts.lod1_ratio, false).expect("legacy opt");
+        let (legacy_again, rep_leg) =
+            optimize_glb_bytes(&legacy_opt, opts.max_unit_verts, opts.lod1_ratio, false)
+                .expect("legacy idempotent");
+        assert!(rep_leg.skipped_already_optimized);
+        assert_eq!(legacy_opt, legacy_again);
+
+        // 2. v3 Ultra unit (~18.9k LOD0 verts, within 24k unit ceiling) preserves LOD0 & skips on 2nd pass
+        let raw_v3_unit = make_dense_articulated_tank_glb(96, 64);
+        let (v3_unit_opt, rep_u1) =
+            optimize_glb_bytes(&raw_v3_unit, opts.max_unit_verts, opts.lod1_ratio, false)
+                .expect("v3 unit opt");
+        assert!(!rep_u1.skipped_already_optimized);
+        assert!(
+            rep_u1.lod0_vertices > 15_000 && rep_u1.lod0_vertices <= opts.max_unit_verts,
+            "expected 15k..=24k LOD0 verts, got {}",
+            rep_u1.lod0_vertices
+        );
+        let (v3_unit_again, rep_u2) =
+            optimize_glb_bytes(&v3_unit_opt, opts.max_unit_verts, opts.lod1_ratio, false)
+                .expect("v3 unit idempotent");
+        assert!(rep_u2.skipped_already_optimized);
+        assert_eq!(v3_unit_opt, v3_unit_again);
+
+        // 3. v3 Ultra building (~30.3k LOD0 verts, within 36k building ceiling) preserves LOD0 & skips on 2nd pass
+        let raw_v3_bld = make_dense_articulated_tank_glb(124, 80);
+        let (v3_bld_opt, rep_b1) =
+            optimize_glb_bytes(&raw_v3_bld, opts.max_building_verts, opts.lod1_ratio, false)
+                .expect("v3 building opt");
+        assert!(!rep_b1.skipped_already_optimized);
+        assert!(
+            rep_b1.lod0_vertices > 24_000 && rep_b1.lod0_vertices <= opts.max_building_verts,
+            "expected 24k..=36k LOD0 verts, got {}",
+            rep_b1.lod0_vertices
+        );
+        let (v3_bld_again, rep_b2) =
+            optimize_glb_bytes(&v3_bld_opt, opts.max_building_verts, opts.lod1_ratio, false)
+                .expect("v3 building idempotent");
+        assert!(rep_b2.skipped_already_optimized);
+        assert_eq!(v3_bld_opt, v3_bld_again);
+    }
+
+    #[test]
     fn verifies_all_187_optimized_rust_ra2_glbs_under_vertex_budget_with_lod1_and_color0() {
-        let workspace_models =
-            PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../../rust-ra2/assets/models");
+        let ra2_root = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../../rust-ra2");
+        let workspace_models = ra2_root.join("assets/models");
         if !workspace_models.is_dir() {
             return;
         }
+        let opts = GlbOptimizeOptions::default();
+        let mut unit_models = std::collections::BTreeSet::new();
+        if let Ok(loaded) = rts_sdk::loader::LoadedMod::load_from_dir(&ra2_root) {
+            for u in loaded.units.values() {
+                unit_models.insert(u.visual.model.replace('\\', "/").to_ascii_lowercase());
+            }
+        }
+
         let mut glb_files = Vec::new();
         collect_glb_files_recursive(&workspace_models, &mut glb_files).unwrap();
         assert_eq!(
@@ -229,7 +288,23 @@ mod tests {
         );
 
         for p in &glb_files {
-            let bytes = fs::read(p).unwrap_or_else(|e| panic!("read {}: {e}", p.display()));
+            let mut bytes = Vec::new();
+            for attempt in 0..8 {
+                if let Ok(raw) = fs::read(p) {
+                    if raw.len() >= 12
+                        && raw.len().is_multiple_of(4)
+                        && u32::from_le_bytes(raw[8..12].try_into().unwrap()) as usize == raw.len()
+                    {
+                        bytes = raw;
+                        break;
+                    }
+                }
+                if attempt == 7 {
+                    bytes = fs::read(p).unwrap_or_else(|e| panic!("read {}: {e}", p.display()));
+                } else {
+                    std::thread::sleep(std::time::Duration::from_millis(50));
+                }
+            }
             assert!(
                 bytes.len().is_multiple_of(4),
                 "{} not 4-byte aligned",
@@ -243,13 +318,26 @@ mod tests {
                 p.display()
             );
 
+            let rel = p
+                .strip_prefix(&ra2_root)
+                .unwrap_or(p)
+                .to_string_lossy()
+                .replace('\\', "/")
+                .to_ascii_lowercase();
+            let max_budget = if unit_models.contains(&rel) {
+                opts.max_unit_verts
+            } else {
+                opts.max_building_verts
+            };
+
             let info = inspect_glb_bytes(&bytes)
                 .unwrap_or_else(|e| panic!("inspect {}: {e}", p.display()));
             assert!(
-                info.lod0_vertices > 0 && info.lod0_vertices < 15_000,
-                "{} LOD0 vertices {} exceeded 15,000 budget",
+                info.lod0_vertices > 0 && info.lod0_vertices <= max_budget,
+                "{} LOD0 vertices {} exceeded {} budget",
                 p.display(),
-                info.lod0_vertices
+                info.lod0_vertices,
+                max_budget
             );
             assert!(
                 info.has_lod1_for_all_meshes && info.lod1_vertices > 0,
@@ -260,6 +348,15 @@ mod tests {
                 info.has_color_0,
                 "{} missing COLOR_0 vertex colors",
                 p.display()
+            );
+
+            let (_, rep) = optimize_glb_bytes(&bytes, max_budget, opts.lod1_ratio, false)
+                .unwrap_or_else(|e| panic!("idempotent check {}: {e}", p.display()));
+            assert!(
+                rep.skipped_already_optimized,
+                "{} was not skipped idempotently under {} budget",
+                p.display(),
+                max_budget
             );
         }
 

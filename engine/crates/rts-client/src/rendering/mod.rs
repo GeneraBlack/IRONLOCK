@@ -1,9 +1,11 @@
 pub mod animation;
+pub mod building_ground_apron;
 mod entity_sync;
 mod environment_setup;
 pub mod fow_projection;
 mod gizmos;
 mod gizmos_world;
+pub mod ibl_ggx_prefilter;
 pub mod interpolation;
 pub mod preview_stage;
 pub mod shp_sprites;
@@ -16,6 +18,7 @@ pub mod water_shader;
 pub mod world_overlays;
 
 pub use animation::*;
+pub use building_ground_apron::*;
 pub use entity_sync::*;
 pub use environment_setup::*;
 pub use fow_projection::*;
@@ -101,26 +104,13 @@ impl MapTerrainDirtyRects {
     }
 }
 
-/// Screen-Space Ambient Occlusion quality setting (`Off`, `Medium`, `High`; defaults to `Medium`).
-#[derive(
-    Resource,
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
-    PartialOrd,
-    Ord,
-    Hash,
-    Serialize,
-    Deserialize,
-    Default,
-)]
+/// Screen-Space Ambient Occlusion quality setting (`Off`, `Medium`, `High`; defaults to `High`).
+#[derive(Resource, Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Default)]
 #[serde(rename_all = "snake_case")]
 pub enum SsaoQualitySetting {
     Off,
-    #[default]
     Medium,
+    #[default]
     High,
 }
 
@@ -146,27 +136,14 @@ impl SsaoQualitySetting {
     pub fn from_str_lossy(raw: &str) -> Self {
         match raw.trim().to_ascii_lowercase().as_str() {
             "off" | "none" | "false" | "0" => Self::Off,
-            "high" | "ultra" | "2" => Self::High,
-            _ => Self::Medium,
+            "medium" | "med" | "1" => Self::Medium,
+            _ => Self::High,
         }
     }
 }
 
 /// Directional cascade shadow map quality setting (`Off`, `Low`, `Medium`, `High`; defaults to `Medium`).
-#[derive(
-    Resource,
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
-    PartialOrd,
-    Ord,
-    Hash,
-    Serialize,
-    Deserialize,
-    Default,
-)]
+#[derive(Resource, Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Default)]
 #[serde(rename_all = "snake_case")]
 pub enum ShadowQualitySetting {
     Off,
@@ -353,6 +330,8 @@ impl Plugin for ClientRenderingAvPlugin {
             .init_resource::<SmoothFogTemporalState>()
             .init_resource::<TeamDamageMaterialPalette>()
             .init_resource::<UnitPbrTeamMaterialCache>()
+            .init_resource::<MicroDetailTextureResource>()
+            .init_resource::<BuildingGroundApronAssets>()
             .init_resource::<StrategicIconGpuResources>()
             .init_resource::<WorldOverlayGpuAssets>()
             .init_resource::<GpuParticlePoolResources>()
@@ -363,6 +342,7 @@ impl Plugin for ClientRenderingAvPlugin {
             .init_resource::<crate::vfx::WeatherVfxState>();
 
         type InitialPluginImageHandles = (
+            Handle<Image>,
             Handle<Image>,
             Handle<Image>,
             Handle<Image>,
@@ -400,6 +380,7 @@ impl Plugin for ClientRenderingAvPlugin {
             let ibl_diff_h = images.add(ibl_diff_img);
             let ibl_spec_h = images.add(ibl_spec_img);
             let fow_default_h = images.add(build_default_fow_overlay_image(64, 64));
+            let micro_h = images.add(build_procedural_micro_detail_image());
             created_handles = Some((
                 video_h,
                 layer_arr_h,
@@ -408,9 +389,10 @@ impl Plugin for ClientRenderingAvPlugin {
                 ibl_diff_h,
                 ibl_spec_h,
                 fow_default_h,
+                micro_h,
             ));
         }
-        if let Some((video_h, layer_arr_h, nrh_arr_h, preview_h, ibl_diff_h, ibl_spec_h, fow_h)) =
+        if let Some((video_h, layer_arr_h, nrh_arr_h, preview_h, ibl_diff_h, ibl_spec_h, fow_h, micro_h)) =
             created_handles
         {
             if let Some(mut video) = app.world_mut().get_resource_mut::<VideoPlaybackResource>() {
@@ -427,6 +409,7 @@ impl Plugin for ClientRenderingAvPlugin {
                 diffuse_cubemap: ibl_diff_h,
                 specular_cubemap: ibl_spec_h,
             });
+            app.insert_resource(MicroDetailTextureResource(micro_h));
             if !app.world().contains_resource::<FogOfWarOverlayImage>() {
                 app.insert_resource(FogOfWarOverlayImage(fow_h));
             }
@@ -445,6 +428,7 @@ impl Plugin for ClientRenderingAvPlugin {
                         .after(refresh_cached_fog_visibility),
                     step_entity_animations,
                     step_preview_stage.after(step_entity_animations),
+                    sync_building_ground_aprons,
                     sync_gltf_lod_and_team_damage_materials.after(step_smooth_fow_projection),
                     sync_strategic_zoom_icons.after(refresh_cached_fog_visibility),
                     sync_socket_registry,

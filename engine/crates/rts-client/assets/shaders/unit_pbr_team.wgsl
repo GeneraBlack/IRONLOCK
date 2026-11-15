@@ -35,6 +35,8 @@ struct TeamDamageUniform {
 @group(2) @binding(100) var<uniform> team_ext: TeamDamageUniform;
 @group(2) @binding(101) var fow_tex: texture_2d<f32>;
 @group(2) @binding(102) var fow_sampler: sampler;
+@group(2) @binding(103) var micro_detail_tex: texture_2d<f32>;
+@group(2) @binding(104) var micro_detail_sampler: sampler;
 
 fn soot_hash31(p: vec3<f32>) -> f32 {
     var p3 = fract(p * 0.1031);
@@ -57,10 +59,42 @@ fn soot_noise3(p: vec3<f32>) -> f32 {
     let nx00 = mix(n000, n100, u.x);
     let nx10 = mix(n010, n110, u.x);
     let nx01 = mix(n001, n101, u.x);
-    let nx11 = mix(n011, n111, u.x);
+    let nx11 = mix(n101, n111, u.x);
     let nxy0 = mix(nx00, nx10, u.y);
     let nxy1 = mix(nx01, nx11, u.y);
     return mix(nxy0, nxy1, u.z);
+}
+
+fn srgb_to_linear_chan(c: f32) -> f32 {
+    let x = max(c, 0.0);
+    if x <= 0.04045 {
+        return x / 12.92;
+    }
+    return pow((x + 0.055) / 1.055, 2.4);
+}
+
+fn linear_to_srgb_chan(c: f32) -> f32 {
+    let x = max(c, 0.0);
+    if x <= 0.0031308 {
+        return x * 12.92;
+    }
+    return 1.055 * pow(x, 1.0 / 2.4) - 0.055;
+}
+
+fn srgb_to_linear_vec3(v: vec3<f32>) -> vec3<f32> {
+    return vec3<f32>(
+        srgb_to_linear_chan(v.x),
+        srgb_to_linear_chan(v.y),
+        srgb_to_linear_chan(v.z),
+    );
+}
+
+fn linear_to_srgb_vec3(v: vec3<f32>) -> vec3<f32> {
+    return vec3<f32>(
+        linear_to_srgb_chan(v.x),
+        linear_to_srgb_chan(v.y),
+        linear_to_srgb_chan(v.z),
+    );
 }
 
 @fragment
@@ -77,13 +111,40 @@ fn fragment(
     let map_uv = clamp(world_pos.xz / safe_size, vec2<f32>(0.001, 0.001), vec2<f32>(0.999, 0.999));
     let fow_rgba = textureSample(fow_tex, fow_sampler, map_uv);
 
+    // Sample seamless 256x256 Rgba8Unorm hard-surface micro-detail in uniform control flow
+    // (world-space triplanar + high-frequency UV `uv * 18.0` surface-locked grain/pores).
+    let base_n = normalize(pbr_input.N);
+    let tri_raw = pow(max(abs(base_n), vec3<f32>(0.0001)), vec3<f32>(4.0));
+    let tri_w = tri_raw / (tri_raw.x + tri_raw.y + tri_raw.z);
+    let md_x = textureSample(micro_detail_tex, micro_detail_sampler, world_pos.zy * 2.85);
+    let md_y = textureSample(micro_detail_tex, micro_detail_sampler, world_pos.xz * 2.85);
+    let md_z = textureSample(micro_detail_tex, micro_detail_sampler, world_pos.xy * 2.85);
+    let nx_pert = vec3<f32>(0.0, md_x.g * 2.0 - 1.0, md_x.r * 2.0 - 1.0);
+    let ny_pert = vec3<f32>(md_y.r * 2.0 - 1.0, 0.0, md_y.g * 2.0 - 1.0);
+    let nz_pert = vec3<f32>(md_z.r * 2.0 - 1.0, md_z.g * 2.0 - 1.0, 0.0);
+    var micro_n_delta = nx_pert * tri_w.x + ny_pert * tri_w.y + nz_pert * tri_w.z;
+    var micro_rough_delta = (md_x.b * tri_w.x + md_y.b * tri_w.y + md_z.b * tri_w.z) - 0.5;
+    var micro_cavity = md_x.a * tri_w.x + md_y.a * tri_w.y + md_z.a * tri_w.z;
+#ifdef VERTEX_UVS_A
+    let md_uv = textureSample(micro_detail_tex, micro_detail_sampler, in.uv * 18.0);
+    let up_ref = select(vec3<f32>(0.0, 1.0, 0.0), vec3<f32>(1.0, 0.0, 0.0), abs(base_n.y) > 0.92);
+    let t_dir = normalize(cross(up_ref, base_n));
+    let b_dir = cross(base_n, t_dir);
+    let uv_n_delta = t_dir * (md_uv.r * 2.0 - 1.0) + b_dir * (md_uv.g * 2.0 - 1.0);
+    micro_n_delta = mix(micro_n_delta, uv_n_delta, 0.58);
+    micro_rough_delta = mix(micro_rough_delta, md_uv.b - 0.5, 0.58);
+    micro_cavity = mix(micro_cavity, md_uv.a, 0.58);
+#endif
+    let world_fw = length(fwidth(world_pos)) * 2.85;
+
     var base_rgba = pbr_input.material.base_color;
     var albedo = base_rgba.rgb;
-    let max_c = max(max(albedo.r, albedo.g), albedo.b);
-    let min_c = min(min(albedo.r, albedo.g), albedo.b);
+    let albedo_srgb = linear_to_srgb_vec3(albedo);
+    let max_c = max(max(albedo_srgb.r, albedo_srgb.g), albedo_srgb.b);
+    let min_c = min(min(albedo_srgb.r, albedo_srgb.g), albedo_srgb.b);
     let chroma = max_c - min_c;
     let sat = chroma / max(max_c, 0.001);
-    let luma = dot(albedo, vec3<f32>(0.299, 0.587, 0.114));
+    let luma = dot(albedo_srgb, vec3<f32>(0.299, 0.587, 0.114));
 
     var vert_col = vec4<f32>(1.0, 1.0, 1.0, 1.0);
 #ifdef VERTEX_COLORS
@@ -128,15 +189,14 @@ fn fragment(
         mask_w = 0.0;
     }
 
-    // Contrast-preserving S-curve transfer on neutral grayscale `base_rgba.rgb` (`luma`):
-    // - Dark Cycles AO crevices (`luma ~ 0.15..0.30`) stay genuinely dark (`team_rgb * 0.14..0.32`) with zero floor lift.
-    // - Mid-tone armor (`luma ~ 0.60..0.72`) hits vibrant faction color (`team_rgb * 0.96..1.08`).
-    // - Bright beveled edges (`luma > 0.80`) mix subtly toward sunlit desaturated specular highlight.
+    // Contrast-preserving S-curve transfer in perceptual sRGB (`luma`), then converted via
+    // exact IEC 61966-2-1 `srgb_to_linear_vec3` into Linear PBR `albedo` (zero double-gamma washout!):
     let mid_s = smoothstep(0.25, 0.62, luma);
     let hi_s = smoothstep(0.58, 0.88, luma);
     let shade_gain = mix(luma * 0.95, 0.96 + 0.26 * hi_s, mid_s);
     let spec_edge = smoothstep(0.80, 0.98, luma) * 0.28;
-    let shaded_team = mix(team_rgb * shade_gain, vec3<f32>(1.0), spec_edge);
+    let shaded_team_srgb = mix(team_rgb * shade_gain, vec3<f32>(1.0), spec_edge);
+    let shaded_team = srgb_to_linear_vec3(shaded_team_srgb);
     albedo = mix(albedo, shaded_team, mask_w);
 
     // Optional VisualDef PBR overrides (`metallic`, `roughness`, `emissive_boost`).
@@ -148,6 +208,31 @@ fn fragment(
     if team_ext.pbr_overrides.y >= 0.0 {
         pbr_input.material.perceptual_roughness = clamp(team_ext.pbr_overrides.y, 0.04, 1.0);
     }
+
+    // Apply hard-surface steel grain & concrete pore micro-detail, smoothly attenuated to 0.0
+    // on smooth glass/chrome (`perceptual_roughness < 0.16`) and glowing emissive surfaces.
+    let md_dims = textureDimensions(micro_detail_tex);
+    let md_valid = select(0.0, 1.0, md_dims.x >= 64u);
+    let base_emissive_luma = max(
+        dot(pbr_input.material.emissive.rgb, vec3<f32>(0.2126, 0.7152, 0.0722)),
+        max(
+            pbr_input.material.emissive.r,
+            max(pbr_input.material.emissive.g, pbr_input.material.emissive.b),
+        ) * 0.75,
+    );
+    let micro_rough_gate = smoothstep(0.16, 0.28, pbr_input.material.perceptual_roughness);
+    let micro_emissive_gate = 1.0 - smoothstep(0.06, 0.35, base_emissive_luma);
+    let micro_mip_gate = 1.0 - smoothstep(0.42, 1.25, world_fw);
+    let eff_micro = md_valid * micro_rough_gate * micro_emissive_gate * micro_mip_gate;
+    pbr_input.N = normalize(base_n + micro_n_delta * (0.24 * eff_micro));
+    pbr_input.material.perceptual_roughness = clamp(
+        pbr_input.material.perceptual_roughness + micro_rough_delta * (0.14 * eff_micro),
+        0.04,
+        1.0,
+    );
+    let cavity_occl = clamp(micro_cavity, 0.35, 1.0);
+    albedo = albedo * mix(1.0, cavity_occl, 0.22 * eff_micro);
+    pbr_input.diffuse_occlusion = pbr_input.diffuse_occlusion * mix(1.0, cavity_occl, 0.32 * eff_micro);
     var extra_emissive = vec3<f32>(0.0);
     if mode == 3 && tint_strength > 0.05 {
         let stripe = smoothstep(0.72, 0.92, abs(sin(world_pos.x * 2.4 + world_pos.z * 2.4)));
@@ -201,8 +286,14 @@ fn fragment(
         }
     }
     pbr_input.material.base_color = vec4<f32>(albedo, base_rgba.a * strategic_fade);
+    let raw_emissive = pbr_input.material.emissive.rgb * (1.0 + max(team_ext.pbr_overrides.z, 0.0));
+    let raw_emissive_luma = max(
+        dot(raw_emissive, vec3<f32>(0.2126, 0.7152, 0.0722)),
+        max(raw_emissive.r, max(raw_emissive.g, raw_emissive.b)) * 0.75,
+    );
+    let hdr_emissive_punch = mix(1.0, 2.4, smoothstep(0.35, 0.58, raw_emissive_luma));
     pbr_input.material.emissive = vec4<f32>(
-        pbr_input.material.emissive.rgb * (1.0 + max(team_ext.pbr_overrides.z, 0.0)) + extra_emissive,
+        raw_emissive * hdr_emissive_punch + extra_emissive,
         pbr_input.material.emissive.a,
     );
     pbr_input.material.base_color = alpha_discard(pbr_input.material, pbr_input.material.base_color);

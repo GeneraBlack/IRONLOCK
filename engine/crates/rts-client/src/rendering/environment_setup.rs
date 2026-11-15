@@ -4,19 +4,17 @@ use super::{
     ShadowQualitySetting, SsaoQualitySetting, TerrainChunkEntity,
 };
 use crate::{ModResource, SimWorldResource};
-use bevy::core_pipeline::bloom::Bloom;
+use bevy::core_pipeline::bloom::{Bloom, BloomCompositeMode, BloomPrefilter};
 use bevy::core_pipeline::prepass::{DepthPrepass, NormalPrepass};
+use bevy::core_pipeline::smaa::{Smaa, SmaaPreset};
 use bevy::core_pipeline::tonemapping::Tonemapping;
 use bevy::pbr::{
-    CascadeShadowConfig, CascadeShadowConfigBuilder, ScreenSpaceAmbientOcclusion,
-    ScreenSpaceAmbientOcclusionQualityLevel,
+    CascadeShadowConfig, CascadeShadowConfigBuilder, DirectionalLightShadowMap,
+    ScreenSpaceAmbientOcclusion, ScreenSpaceAmbientOcclusionQualityLevel,
 };
 use bevy::prelude::*;
 use bevy::render::mesh::{Indices, PrimitiveTopology};
 use bevy::render::render_asset::RenderAssetUsages;
-use bevy::render::render_resource::{
-    Extent3d, TextureDimension, TextureFormat, TextureViewDescriptor, TextureViewDimension,
-};
 use bevy::render::renderer::RenderDevice;
 use rts_sdk::loader::LoadedMod;
 use rts_simulation::pathfinding::CollisionGrid;
@@ -85,39 +83,39 @@ impl TheaterLightingProfile {
         }
     }
 
-    /// Authentic RA2 NW-to-SE crisp directional sun angle + per-theater color grading & IBL palette.
+    /// Authentic RA2 NW-to-SE crisp directional sun angle + per-theater color grading & GGX IBL palette.
     pub fn spec(self) -> TheaterLightingSpec {
         let (sun_d, sun_c, sun_lux, fill_c, fill_lux, amb_c, amb_b, fog_c, zen, hor, gnd, tint, ibl) =
             match self {
                 Self::Temperate => (
-                    [-0.58, 0.72, 0.38], [1.00, 0.96, 0.88], 11_500.0, [0.56, 0.74, 1.00], 950.0,
-                    [0.76, 0.84, 0.96], 210.0, [0.58, 0.72, 0.88], [0.18, 0.44, 0.90],
-                    [0.66, 0.78, 0.95], [0.16, 0.22, 0.14], [1.38, 1.24, 0.98], 460.0,
+                    [-0.64, 0.66, 0.39], [1.00, 0.96, 0.88], 12_800.0, [0.56, 0.74, 1.00], 540.0,
+                    [0.72, 0.80, 0.94], 42.0, [0.58, 0.72, 0.88], [0.16, 0.42, 0.92],
+                    [0.64, 0.76, 0.94], [0.14, 0.19, 0.12], [1.45, 1.30, 1.02], 620.0,
                 ),
                 Self::Snow => (
-                    [-0.62, 0.64, 0.45], [0.95, 0.98, 1.00], 12_200.0, [0.68, 0.84, 1.00], 1_250.0,
-                    [0.82, 0.90, 1.00], 265.0, [0.76, 0.86, 0.96], [0.24, 0.50, 0.94],
-                    [0.78, 0.88, 0.98], [0.42, 0.48, 0.56], [1.30, 1.34, 1.42], 500.0,
+                    [-0.64, 0.62, 0.45], [0.95, 0.98, 1.00], 13_400.0, [0.68, 0.84, 1.00], 720.0,
+                    [0.80, 0.88, 1.00], 58.0, [0.76, 0.86, 0.96], [0.22, 0.48, 0.94],
+                    [0.76, 0.86, 0.98], [0.36, 0.42, 0.50], [1.36, 1.40, 1.48], 660.0,
                 ),
                 Self::Urban => (
-                    [-0.56, 0.74, 0.37], [1.00, 0.95, 0.86], 11_200.0, [0.60, 0.74, 0.96], 980.0,
-                    [0.76, 0.80, 0.90], 205.0, [0.56, 0.66, 0.78], [0.20, 0.40, 0.82],
-                    [0.68, 0.75, 0.88], [0.22, 0.23, 0.25], [1.34, 1.22, 1.00], 440.0,
+                    [-0.62, 0.68, 0.39], [1.00, 0.95, 0.86], 12_400.0, [0.60, 0.74, 0.96], 560.0,
+                    [0.74, 0.78, 0.90], 42.0, [0.56, 0.66, 0.78], [0.18, 0.38, 0.84],
+                    [0.66, 0.73, 0.86], [0.18, 0.19, 0.22], [1.40, 1.26, 1.02], 600.0,
                 ),
                 Self::NewUrban => (
-                    [-0.60, 0.69, 0.40], [1.00, 0.92, 0.78], 12_400.0, [0.48, 0.76, 1.00], 1_050.0,
-                    [0.84, 0.82, 0.90], 220.0, [0.72, 0.74, 0.82], [0.16, 0.46, 0.92],
-                    [0.82, 0.78, 0.74], [0.28, 0.25, 0.22], [1.46, 1.24, 0.90], 470.0,
+                    [-0.63, 0.66, 0.41], [1.00, 0.92, 0.78], 13_200.0, [0.48, 0.76, 1.00], 600.0,
+                    [0.82, 0.80, 0.88], 46.0, [0.72, 0.74, 0.82], [0.16, 0.44, 0.92],
+                    [0.80, 0.76, 0.72], [0.24, 0.21, 0.19], [1.50, 1.28, 0.92], 630.0,
                 ),
                 Self::Desert => (
-                    [-0.55, 0.75, 0.36], [1.00, 0.91, 0.74], 13_600.0, [0.88, 0.78, 0.62], 1_100.0,
-                    [0.92, 0.84, 0.72], 230.0, [0.82, 0.74, 0.58], [0.22, 0.48, 0.88],
-                    [0.88, 0.80, 0.66], [0.42, 0.33, 0.20], [1.52, 1.28, 0.86], 480.0,
+                    [-0.60, 0.70, 0.38], [1.00, 0.91, 0.74], 14_400.0, [0.88, 0.78, 0.62], 640.0,
+                    [0.90, 0.82, 0.70], 50.0, [0.82, 0.74, 0.58], [0.20, 0.46, 0.88],
+                    [0.86, 0.78, 0.64], [0.36, 0.28, 0.17], [1.56, 1.32, 0.88], 650.0,
                 ),
                 Self::Lunar => (
-                    [-0.66, 0.60, 0.45], [1.00, 0.99, 0.98], 14_200.0, [0.42, 0.62, 0.98], 620.0,
-                    [0.62, 0.68, 0.82], 145.0, [0.05, 0.07, 0.12], [0.02, 0.03, 0.08],
-                    [0.14, 0.18, 0.26], [0.24, 0.25, 0.27], [1.60, 1.58, 1.56], 360.0,
+                    [-0.66, 0.60, 0.45], [1.00, 0.99, 0.98], 14_800.0, [0.42, 0.62, 0.98], 340.0,
+                    [0.60, 0.66, 0.80], 28.0, [0.05, 0.07, 0.12], [0.02, 0.03, 0.08],
+                    [0.14, 0.18, 0.26], [0.20, 0.21, 0.23], [1.62, 1.60, 1.58], 480.0,
                 ),
             };
         TheaterLightingSpec {
@@ -160,13 +158,13 @@ pub fn build_camera_aware_cascade_config(
     if eye_dist <= zoom_dist * 1.5 {
         return setting.build_cascade_config_for_altitude(zoom_dist);
     }
-    let min_d = (eye_dist * 0.45).max(1.0);
-    let span = (zoom_dist * 1.15).max(24.0);
+    let min_d = (eye_dist * 0.70).max(1.0);
+    let span = (zoom_dist * 1.02).max(24.0);
     let (num_cascades, first_far, max_d, overlap) = match setting {
         ShadowQualitySetting::Off => (1, eye_dist + span * 0.90, (eye_dist * 1.80).max(145.0), 0.15),
-        ShadowQualitySetting::Low => (2, eye_dist + span * 0.95, (eye_dist * 1.82).max(150.0), 0.15),
-        ShadowQualitySetting::Medium => (3, eye_dist + span * 1.15, (eye_dist * 1.92).max(170.0), 0.20),
-        ShadowQualitySetting::High => (4, eye_dist + span * 1.30, (eye_dist * 2.08).max(215.0), 0.22),
+        ShadowQualitySetting::Low => (2, eye_dist + span * 0.92, (eye_dist * 1.82).max(150.0), 0.15),
+        ShadowQualitySetting::Medium => (3, eye_dist + span * 0.96, (eye_dist * 1.90).max(170.0), 0.20),
+        ShadowQualitySetting::High => (4, eye_dist + span * 1.02, (eye_dist * 2.05).max(215.0), 0.22),
     };
     CascadeShadowConfigBuilder {
         num_cascades,
@@ -182,6 +180,7 @@ pub fn build_camera_aware_cascade_config(
 #[allow(clippy::type_complexity)]
 pub fn sync_directional_shadow_quality(
     shadow_setting: Res<ShadowQualitySetting>,
+    mut shadow_map_res: Option<ResMut<DirectionalLightShadowMap>>,
     cam_rig_q: Query<
         &crate::camera::RtsCameraRig,
         (Without<PreviewStageCamera>, Without<MainDirectionalLight>),
@@ -199,6 +198,17 @@ pub fn sync_directional_shadow_quality(
         (Without<crate::camera::RtsCameraRig>, Without<PreviewStageCamera>),
     >,
 ) {
+    let desired_map_size = match *shadow_setting {
+        ShadowQualitySetting::Off | ShadowQualitySetting::Low => 1536,
+        ShadowQualitySetting::Medium => 3072,
+        ShadowQualitySetting::High => 4096,
+    };
+    if let Some(ref mut sm) = shadow_map_res {
+        if sm.size != desired_map_size {
+            sm.size = desired_map_size;
+        }
+    }
+
     let default_eye = 23.5 * crate::camera::RtsCameraRig::telephoto_eye_scale();
     let (zoom_dist, eye_dist, proj_mode) = cam_rig_q
         .iter()
@@ -229,86 +239,39 @@ pub fn sync_directional_shadow_quality(
 #[derive(Component)]
 pub struct CameraHdrIblConfigured;
 
-fn f32_to_f16_bits(val: f32) -> u16 {
-    let bits = val.to_bits();
-    let sign = ((bits >> 16) & 0x8000) as u16;
-    let exp = ((bits >> 23) & 0xff) as i32 - 112;
-    let mant = bits & 0x007f_ffff;
-    if exp <= 0 { sign } else if exp >= 31 { sign | 0x7c00 } else { sign | ((exp as u16) << 10) | ((mant >> 13) as u16) }
+/// Builds the high-threshold additive HDR `Bloom` (`intensity: 0.14`, `threshold: 1.05`)
+/// so ONLY true HDR emissives (`emissive * 2.4`: Prism crystals, Tesla arcs, furnace cores,
+/// interior bay lights) bloom — zero whitewash or dimming on sunlit concrete, armor, or UI.
+pub fn build_tactical_hdr_bloom() -> Bloom {
+    Bloom {
+        intensity: 0.14,
+        low_frequency_boost: 0.58,
+        low_frequency_boost_curvature: 0.88,
+        high_pass_frequency: 1.0,
+        prefilter: BloomPrefilter {
+            threshold: 1.05,
+            threshold_softness: 0.22,
+        },
+        composite_mode: BloomCompositeMode::Additive,
+        ..Bloom::NATURAL
+    }
 }
 
-fn cubemap_face_dir(face: u32, u: f32, v: f32) -> Vec3 {
-    let (sc, tc) = (2.0 * u - 1.0, 2.0 * v - 1.0);
-    let dir = match face {
-        0 => Vec3::new(1.0, -tc, -sc),
-        1 => Vec3::new(-1.0, -tc, sc),
-        2 => Vec3::new(sc, 1.0, tc),
-        3 => Vec3::new(sc, -1.0, -tc),
-        4 => Vec3::new(sc, -tc, 1.0),
-        _ => Vec3::new(-sc, -tc, -1.0),
-    };
-    dir.normalize_or_zero()
-}
-
-/// Generates procedural 6-face HDR `Rgba16Float` diffuse & specular cubemaps for `Temperate` default.
+/// Generates procedural 6-face HDR `Rgba16Float` diffuse & 8-mip GGX specular cubemaps for `Temperate`.
 pub fn build_procedural_ibl_cubemap_images() -> (Image, Image) {
     build_procedural_ibl_cubemap_images_for_theater(TheaterLightingProfile::Temperate)
 }
 
-/// Generates theater-specific procedural 6-face HDR `Rgba16Float` diffuse & specular IBL cubemaps.
+/// Generates theater-specific 6-face HDR `Rgba16Float` cosine-irradiance diffuse (`32x32`, 1 mip)
+/// and GGX-prefiltered specular (`128x128`, 8 mips) IBL cubemaps.
 pub fn build_procedural_ibl_cubemap_images_for_theater(
     theater: TheaterLightingProfile,
 ) -> (Image, Image) {
-    let spec = theater.spec();
-    let sun_dir = spec.sun_direction_to_sky;
-    let make_cube = |size: u32, is_specular: bool| -> Image {
-        let mut bytes = Vec::with_capacity((size * size * 6 * 8) as usize);
-        for face in 0..6u32 {
-            for y in 0..size {
-                let v = (y as f32 + 0.5) / size as f32;
-                for x in 0..size {
-                    let u = (x as f32 + 0.5) / size as f32;
-                    let dir = cubemap_face_dir(face, u, v);
-                    let up = dir.y;
-                    let rgb = if up >= 0.0 {
-                        let t = if is_specular { up.powf(0.55) } else { up.powf(0.85) };
-                        let mut sky = spec.ibl_horizon.lerp(spec.ibl_zenith, t);
-                        let sun_dot = dir.dot(sun_dir).max(0.0);
-                        if is_specular {
-                            sky += spec.ibl_sun_tint * sun_dot.powf(24.0) * 1.8;
-                            sky += spec.ibl_sun_tint * 0.32 * sun_dot.powf(4.0) * 0.35;
-                        } else {
-                            sky += spec.ibl_sun_tint * 0.30 * sun_dot.powf(2.0) * 0.45;
-                        }
-                        sky
-                    } else {
-                        let bounce = (spec.ibl_ground * 1.45 + spec.ibl_horizon * 0.25).min(Vec3::splat(1.2));
-                        bounce.lerp(spec.ibl_ground, (-up).powf(0.65))
-                    };
-                    for c in [rgb.x, rgb.y, rgb.z, 1.0] {
-                        bytes.extend_from_slice(&f32_to_f16_bits(c).to_le_bytes());
-                    }
-                }
-            }
-        }
-        let mut img = Image::new(
-            Extent3d { width: size, height: size, depth_or_array_layers: 6 },
-            TextureDimension::D2,
-            bytes,
-            TextureFormat::Rgba16Float,
-            RenderAssetUsages::default(),
-        );
-        img.texture_view_descriptor = Some(TextureViewDescriptor {
-            dimension: Some(TextureViewDimension::Cube),
-            ..default()
-        });
-        img
-    };
-    (make_cube(32, false), make_cube(64, true))
+    super::ibl_ggx_prefilter::build_ggx_prefiltered_ibl_cubemaps(&theater.spec())
 }
 
 /// Upgrades the main battlefield `Camera3d` with HDR, `TonyMcMapface` tonemapping, crisp bloom,
-/// theater-matched `EnvironmentMapLight` IBL, haze-free `DistanceFog`, and perspective-gated SSAO.
+/// `SmaaPreset::Ultra` subpixel anti-aliasing, 8-mip GGX `EnvironmentMapLight` IBL, and SSAO.
 #[allow(clippy::type_complexity)]
 pub fn sync_hdr_camera_ssao_and_ibl(
     mut commands: Commands,
@@ -353,8 +316,9 @@ pub fn sync_hdr_camera_ssao_and_ibl(
             ec.insert((
                 CameraHdrIblConfigured,
                 Tonemapping::TonyMcMapface,
-                Bloom { intensity: 0.09, ..Bloom::NATURAL },
+                build_tactical_hdr_bloom(),
                 Msaa::Off,
+                Smaa { preset: SmaaPreset::Ultra },
                 DepthPrepass,
                 NormalPrepass,
             ));
@@ -384,7 +348,7 @@ pub fn sync_hdr_camera_ssao_and_ibl(
             if curr_ssao.map(|s| s.quality_level != want).unwrap_or(true) {
                 commands.entity(ent).insert((
                     Msaa::Off,
-                    ScreenSpaceAmbientOcclusion { quality_level: want, constant_object_thickness: 0.25 },
+                    ScreenSpaceAmbientOcclusion { quality_level: want, constant_object_thickness: 0.22 },
                 ));
             }
         }
@@ -645,7 +609,21 @@ pub fn setup_3d_map_environment(
     mut images: ResMut<Assets<Image>>,
     mod_res: Res<ModResource>,
     sim_res: Res<SimWorldResource>,
+    (mut ssao_setting, mut interaction): (
+        Option<ResMut<SsaoQualitySetting>>,
+        Option<ResMut<crate::input::ClientInteractionState>>,
+    ),
 ) {
+    if let Some(ref mut inter) = interaction {
+        if inter.ssao_quality.trim().is_empty() || inter.ssao_quality.eq_ignore_ascii_case("medium") {
+            inter.ssao_quality = SsaoQualitySetting::High.as_str().to_string();
+        }
+    }
+    if let Some(ref mut ssao) = ssao_setting {
+        if **ssao == SsaoQualitySetting::Medium {
+            **ssao = SsaoQualitySetting::High;
+        }
+    }
     spawn_map_environment_entities(&mut commands, &mut meshes, &mut materials, &mod_res.0, &sim_res.0);
 
     let (fow_w, fow_h) = (sim_res.0.grid.width.max(1) as u32, sim_res.0.grid.height.max(1) as u32);
@@ -659,6 +637,7 @@ pub fn setup_3d_map_environment(
         diffuse_cubemap: images.add(ibl_diff),
         specular_cubemap: images.add(ibl_spec),
     });
+    commands.insert_resource(DirectionalLightShadowMap { size: 3072 });
     commands.insert_resource(AmbientLight { color: spec.ambient_color, brightness: spec.ambient_brightness });
 
     let center = Vec3::new(
@@ -730,5 +709,20 @@ mod theater_tests {
         app.world_mut().run_system_once(sync_hdr_camera_ssao_and_ibl).expect("run ssao sync");
         app.world_mut().flush();
         assert!(app.world().entity(cam_e).get::<ScreenSpaceAmbientOcclusion>().is_none());
+    }
+
+    #[test]
+    fn hdr_energy_only_bloom_and_default_high_ssao_invariants() {
+        assert_eq!(SsaoQualitySetting::default(), SsaoQualitySetting::High);
+        assert_eq!(SsaoQualitySetting::from_str_lossy(""), SsaoQualitySetting::High);
+        assert_eq!(SsaoQualitySetting::from_str_lossy("high"), SsaoQualitySetting::High);
+        assert_eq!(SsaoQualitySetting::from_str_lossy("medium"), SsaoQualitySetting::Medium);
+        assert_eq!(SsaoQualitySetting::from_str_lossy("off"), SsaoQualitySetting::Off);
+
+        let bloom = build_tactical_hdr_bloom();
+        assert!((bloom.intensity - 0.14).abs() < 1e-6);
+        assert!((bloom.prefilter.threshold - 1.05).abs() < 1e-6);
+        assert!(bloom.prefilter.threshold_softness > 0.0 && bloom.prefilter.threshold_softness <= 0.35);
+        assert_eq!(bloom.composite_mode, BloomCompositeMode::Additive);
     }
 }

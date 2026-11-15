@@ -1,6 +1,8 @@
+mod micro_detail_tex;
 mod palette;
 mod pbr_shader_ext;
 
+pub use micro_detail_tex::*;
 pub use palette::*;
 pub use pbr_shader_ext::*;
 
@@ -142,21 +144,18 @@ pub fn sync_gltf_lod_and_team_damage_materials(
         Option<Res<ModResource>>,
         Option<Res<SimWorldResource>>,
     ),
-    (interaction, cb_settings, preview_ovr, cached_fow, smooth_fow, fow_img_res): (
+    (interaction, cb_settings, preview_ovr, cached_fow, smooth_fow, fow_img_res, micro_detail_res): (
         Option<Res<crate::input::ClientInteractionState>>,
         Option<Res<ColorblindSettingsResource>>,
         Option<Res<MaterialPreviewOverrideResource>>,
         Option<Res<CachedFogVisibility>>,
         Option<Res<SmoothFogTemporalState>>,
         Option<Res<FogOfWarOverlayImage>>,
+        Option<Res<MicroDetailTextureResource>>,
     ),
     cam_rig_q: Query<
         &crate::camera::RtsCameraRig,
-        (
-            Without<PreviewStageCamera>,
-            Without<SimVisualEntity>,
-            Without<PreviewStageEntity>,
-        ),
+        (Without<PreviewStageCamera>, Without<SimVisualEntity>, Without<PreviewStageEntity>),
     >,
     mut palette: ResMut<TeamDamageMaterialPalette>,
     mut pbr_cache: Option<ResMut<UnitPbrTeamMaterialCache>>,
@@ -166,20 +165,12 @@ pub fn sync_gltf_lod_and_team_damage_materials(
         Option<ResMut<Assets<Image>>>,
     ),
     mut root_q: Query<
-        (
-            Entity,
-            &SimVisualEntity,
-            Option<&mut SyncedGltfSceneVisuals>,
-        ),
+        (Entity, &SimVisualEntity, Option<&mut SyncedGltfSceneVisuals>),
         Without<PreviewStageEntity>,
     >,
     children_q: Query<&Children>,
     mesh_node_q: Query<
-        (
-            Option<&Name>,
-            Option<&Mesh3d>,
-            Option<&MeshMaterial3d<StandardMaterial>>,
-        ),
+        (Option<&Name>, Option<&Mesh3d>, Option<&MeshMaterial3d<StandardMaterial>>),
         (
             Without<SimVisualEntity>,
             Without<super::FogOfWarPlaneEntity>,
@@ -195,11 +186,7 @@ pub fn sync_gltf_lod_and_team_damage_materials(
             Option<&mut PreviewMeshOriginalMaterial>,
             Option<&Name>,
         ),
-        (
-            With<PreviewStageEntity>,
-            Without<SimVisualEntity>,
-            Without<PreviewStageCamera>,
-        ),
+        (With<PreviewStageEntity>, Without<SimVisualEntity>, Without<PreviewStageCamera>),
     >,
 ) {
     let (Some(mod_res), Some(sim_res), Some(mut mats)) = (mod_res, sim_res, materials) else {
@@ -208,34 +195,16 @@ pub fn sync_gltf_lod_and_team_damage_materials(
     let world = &sim_res.0;
     let loaded = &mod_res.0;
     let elapsed_secs = time.as_deref().map(|t| t.elapsed_secs()).unwrap_or(0.0);
-    let cb_mode = cb_settings
-        .as_deref()
-        .map(|s| s.mode)
-        .unwrap_or(ColorblindPaletteMode::Off);
-    let local_pid = interaction
-        .as_deref()
-        .map(|i| i.local_player_id)
-        .unwrap_or(1);
-    let strategic_fade = 1.0
-        - cam_rig_q
-            .iter()
-            .next()
-            .map(|r| r.strategic_zoom_blend())
-            .unwrap_or(0.0);
+    let cb_mode = cb_settings.as_deref().map(|s| s.mode).unwrap_or(ColorblindPaletteMode::Off);
+    let local_pid = interaction.as_deref().map(|i| i.local_player_id).unwrap_or(1);
+    let strategic_fade = 1.0 - cam_rig_q.iter().next().map(|r| r.strategic_zoom_blend()).unwrap_or(0.0);
     let world_size = Vec2::new(
         (world.grid.width.max(1) as f32 * world.grid.tile_size).max(1.0),
         (world.grid.height.max(1) as f32 * world.grid.tile_size).max(1.0),
     );
-    let fow_strength = smooth_fow
-        .as_deref()
-        .map(|s| s.fow_shader_strength)
-        .unwrap_or_else(|| {
-            if cached_fow.as_deref().is_some_and(|c| c.fog_enabled) {
-                1.0
-            } else {
-                0.0
-            }
-        });
+    let fow_strength = smooth_fow.as_deref().map(|s| s.fow_shader_strength).unwrap_or_else(|| {
+        if cached_fow.as_deref().is_some_and(|c| c.fog_enabled) { 1.0 } else { 0.0 }
+    });
 
     let fow_tex_handle = if let Some(res) = fow_img_res {
         res.0.clone()
@@ -246,6 +215,16 @@ pub fn sync_gltf_lod_and_team_damage_materials(
         ));
         commands.insert_resource(FogOfWarOverlayImage(h_img.clone()));
         h_img
+    } else {
+        Handle::default()
+    };
+
+    let micro_tex_handle = if let Some(res) = micro_detail_res {
+        res.0.clone()
+    } else if let Some(ref mut imgs) = images {
+        let h_micro = imgs.add(build_procedural_micro_detail_image());
+        commands.insert_resource(MicroDetailTextureResource(h_micro.clone()));
+        h_micro
     } else {
         Handle::default()
     };
@@ -371,7 +350,7 @@ pub fn sync_gltf_lod_and_team_damage_materials(
                         existing.clone()
                     } else {
                         let base_ref = orig_h.and_then(|h| mats.get(h)).unwrap_or(&default_std);
-                        let created = ext_mats.add(build_unit_pbr_team_material(
+                        let mut mat_val = build_unit_pbr_team_material(
                             base_ref,
                             visual_def,
                             team_rgba,
@@ -385,7 +364,9 @@ pub fn sync_gltf_lod_and_team_damage_materials(
                             fow_strength,
                             strategic_fade,
                             elapsed_secs,
-                        ));
+                        );
+                        mat_val.extension.micro_detail_tex = micro_tex_handle.clone();
+                        let created = ext_mats.add(mat_val);
                         cache.entries.insert(key, created.clone());
                         created
                     };
@@ -399,7 +380,7 @@ pub fn sync_gltf_lod_and_team_damage_materials(
             }
         }
 
-        // Update live World-XZ FoW, orbital crossfade, and ember/shield animation uniforms across shared cache
+        // Update live World-XZ FoW, micro-detail texture, orbital crossfade, and ember/shield animation uniforms across shared cache
         for mat_h in cache.entries.values() {
             if let Some(mat) = ext_mats.get_mut(mat_h) {
                 mat.extension.params.damage_and_fx.w = strategic_fade;
@@ -407,6 +388,11 @@ pub fn sync_gltf_lod_and_team_damage_materials(
                     Vec4::new(world_size.x, world_size.y, fow_strength, elapsed_secs);
                 if fow_tex_handle != Handle::default() && mat.extension.fow_tex != fow_tex_handle {
                     mat.extension.fow_tex = fow_tex_handle.clone();
+                }
+                if micro_tex_handle != Handle::default()
+                    && mat.extension.micro_detail_tex != micro_tex_handle
+                {
+                    mat.extension.micro_detail_tex = micro_tex_handle.clone();
                 }
             }
         }
@@ -445,7 +431,7 @@ pub fn sync_gltf_lod_and_team_damage_materials(
                             .as_ref()
                             .and_then(|h| mats.get(h))
                             .unwrap_or(&default_std);
-                        let pbr_mat = build_unit_pbr_team_material(
+                        let mut pbr_mat = build_unit_pbr_team_material(
                             base_ref,
                             ovr.visual_override.as_ref(),
                             preview_rgba,
@@ -460,6 +446,7 @@ pub fn sync_gltf_lod_and_team_damage_materials(
                             1.0,
                             elapsed_secs,
                         );
+                        pbr_mat.extension.micro_detail_tex = micro_tex_handle.clone();
                         let handle = if let Some(existing) =
                             cache.preview_entries.get(&orig_h.as_ref().map(|h| h.id()))
                         {

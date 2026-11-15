@@ -50,10 +50,12 @@ bevy = { version = "0.15", default-features = false, features = [
     "ktx2",
     "multi_threaded",
     "png",
+    "smaa_luts",
     "tonemapping_luts",
     "vorbis",
     "wav",
     "wayland",
     "x11",
+    "zstd",
 ] }
 
