@@ -123,9 +123,24 @@ pub fn hash_visual_pbr_spec(visual: Option<&VisualDef>) -> u64 {
     hasher.finish()
 }
 
+/// Exact CPU mirror of the contrast-preserving S-curve team-paint transfer in `unit_pbr_team.wgsl`.
+#[inline]
+pub fn evaluate_team_paint_s_curve(team_rgb: Vec3, luma: f32) -> Vec3 {
+    let smoothstep = |e0: f32, e1: f32, x: f32| -> f32 {
+        let t = ((x - e0) / (e1 - e0)).clamp(0.0, 1.0);
+        t * t * (3.0 - 2.0 * t)
+    };
+    let mid_s = smoothstep(0.25, 0.62, luma);
+    let hi_s = smoothstep(0.58, 0.88, luma);
+    let shade_gain = (luma * 0.95) * (1.0 - mid_s) + (0.96 + 0.26 * hi_s) * mid_s;
+    let spec_edge = smoothstep(0.80, 0.98, luma) * 0.28;
+    (team_rgb * shade_gain).lerp(Vec3::ONE, spec_edge)
+}
+
 /// Builds a `UnitPbrTeamMaterial` that clones `orig_base` so 100% of glTF textures
-/// (`base_color_texture`, `normal_map_texture`, `metallic_roughness_texture`, `emissive_texture`)
-/// and `COLOR_0` vertex colors are preserved (`Task 236`).
+/// (`base_color_texture`, `normal_map_texture`, `metallic_roughness_texture`,
+/// `occlusion_texture`, `emissive_texture`) and `COLOR_0` vertex colors are preserved untouched
+/// whenever `custom_normal_tex` / `custom_orm_tex` are `None` (`Task 236`).
 #[allow(clippy::too_many_arguments)]
 pub fn build_unit_pbr_team_material(
     orig_base: &StandardMaterial,
@@ -237,6 +252,9 @@ impl UnitPbrTeamMaterialCache {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::rendering::build_default_fow_overlay_image;
+    use rts_sdk::loader::LoadedMod;
+    use std::path::PathBuf;
 
     #[test]
     fn alpha_mask_mode_forces_opaque_alpha_mode_and_shader_enforces_westwood_contract() {
@@ -265,10 +283,113 @@ mod tests {
         );
         assert_eq!(built_alpha.base.alpha_mode, AlphaMode::Opaque);
         assert!((built_alpha.extension.params.damage_and_fx.z - 1.0).abs() < 1e-5);
+        assert_eq!(built_alpha.extension.params.pbr_overrides.x, -1.0);
+        assert_eq!(built_alpha.extension.params.pbr_overrides.y, -1.0);
 
         let wgsl = include_str!("../../../assets/shaders/unit_pbr_team.wgsl");
         assert!(wgsl.contains("if base_rgba.a < 0.98"));
         assert!(wgsl.contains("clamp(1.0 - base_rgba.a, 0.0, 1.0) * tint_strength"));
+        assert!(wgsl.contains("var extra_emissive = vec3<f32>(0.0);"));
+        assert!(!wgsl.contains("mask_w * 0.12"));
+        assert!(!wgsl.contains("mask_w * 0.55"));
         assert!(wgsl.contains("0.52"));
+    }
+
+    #[test]
+    fn team_paint_s_curve_preserves_dark_ao_crevices_vibrant_midtones_and_bevel_highlights() {
+        let team = Vec3::new(0.06, 0.36, 1.00);
+
+        // Zero floor lift at black cavity (`luma = 0.0`)
+        assert!(evaluate_team_paint_s_curve(team, 0.0).length() < 1e-6);
+
+        // Dark Cycles AO crevices (`luma = 0.15..0.30`) stay genuinely dark (`team * 0.14..0.32`)
+        let ao_low = evaluate_team_paint_s_curve(team, 0.15);
+        let ao_high = evaluate_team_paint_s_curve(team, 0.30);
+        assert!(ao_low.z >= 0.14 && ao_low.z <= 0.16);
+        assert!(ao_high.z >= 0.30 && ao_high.z <= 0.32);
+
+        // Mid-tone armor (`luma = 0.60..0.72`) hits true vibrant faction color (`team * 0.95..1.08`)
+        let mid_low = evaluate_team_paint_s_curve(team, 0.60);
+        let mid_high = evaluate_team_paint_s_curve(team, 0.72);
+        assert!(mid_low.z >= 0.95 && mid_low.z <= 0.98);
+        assert!(mid_high.z >= 1.06 && mid_high.z <= 1.09);
+
+        // Bright beveled edges (`luma > 0.82`) mix smoothly toward sunlit desaturated highlight
+        let bevel = evaluate_team_paint_s_curve(team, 0.95);
+        assert!(bevel.x > mid_high.x * 3.0);
+        assert!(bevel.y > mid_high.y * 1.25);
+    }
+
+    #[test]
+    fn build_material_preserves_all_five_gltf_textures_and_ra2_toml_has_zero_flat_pbr_clobbers() {
+        let mut images = Assets::<Image>::default();
+        let albedo_h = images.add(build_default_fow_overlay_image(4, 4));
+        let normal_h = images.add(build_default_fow_overlay_image(4, 4));
+        let mr_h = images.add(build_default_fow_overlay_image(4, 4));
+        let occ_h = images.add(build_default_fow_overlay_image(4, 4));
+        let emissive_h = images.add(build_default_fow_overlay_image(4, 4));
+        let fow_h = images.add(build_default_fow_overlay_image(8, 8));
+
+        let orig = StandardMaterial {
+            base_color_texture: Some(albedo_h.clone()),
+            normal_map_texture: Some(normal_h.clone()),
+            metallic_roughness_texture: Some(mr_h.clone()),
+            occlusion_texture: Some(occ_h.clone()),
+            emissive_texture: Some(emissive_h.clone()),
+            metallic: 1.0,
+            perceptual_roughness: 1.0,
+            ..default()
+        };
+        let vis = VisualDef {
+            team_mask_mode: TeamMaskMode::AlphaMask,
+            emissive_boost: Some(1.5),
+            ..Default::default()
+        };
+        let built = build_unit_pbr_team_material(
+            &orig,
+            Some(&vis),
+            [0.06, 0.36, 1.0, 1.0],
+            false,
+            DamageVisualTier::Intact,
+            ShieldFresnelKind::None,
+            None,
+            None,
+            fow_h,
+            Vec2::splat(128.0),
+            1.0,
+            1.0,
+            0.0,
+        );
+        assert_eq!(built.base.base_color_texture, Some(albedo_h));
+        assert_eq!(built.base.normal_map_texture, Some(normal_h));
+        assert_eq!(built.base.metallic_roughness_texture, Some(mr_h));
+        assert_eq!(built.base.occlusion_texture, Some(occ_h));
+        assert_eq!(built.base.emissive_texture, Some(emissive_h));
+        assert_eq!(built.base.metallic, 1.0);
+        assert_eq!(built.base.perceptual_roughness, 1.0);
+        assert_eq!(built.extension.params.pbr_overrides.x, -1.0);
+        assert_eq!(built.extension.params.pbr_overrides.y, -1.0);
+        assert!((built.extension.params.pbr_overrides.z - 1.5).abs() < 1e-5);
+
+        let mod_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .join("../../../rust-ra2")
+            .canonicalize()
+            .expect("canonicalize rust-ra2");
+        let loaded = LoadedMod::load_from_dir(mod_dir).expect("load rust-ra2");
+        assert!(!loaded.units.is_empty() && !loaded.buildings.is_empty());
+        for (uid, u) in &loaded.units {
+            assert!(
+                u.visual.metallic.is_none() && u.visual.roughness.is_none(),
+                "unit {uid} still clobbers glTF PBR maps with scalar metallic/roughness"
+            );
+            assert_eq!(u.visual.team_mask_mode, TeamMaskMode::AlphaMask);
+        }
+        for (bid, b) in &loaded.buildings {
+            assert!(
+                b.visual.metallic.is_none() && b.visual.roughness.is_none(),
+                "building {bid} still clobbers glTF PBR maps with scalar metallic/roughness"
+            );
+            assert_eq!(b.visual.team_mask_mode, TeamMaskMode::AlphaMask);
+        }
     }
 }

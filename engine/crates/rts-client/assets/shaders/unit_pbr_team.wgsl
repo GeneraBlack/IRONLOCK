@@ -128,18 +128,27 @@ fn fragment(
         mask_w = 0.0;
     }
 
-    // Luminance-preserving PBR team paint so panel rivets, AO, and baked shading stay razor-sharp!
-    let shaded_team = team_rgb * clamp(luma * 1.54 + 0.08, 0.10, 1.38);
+    // Contrast-preserving S-curve transfer on neutral grayscale `base_rgba.rgb` (`luma`):
+    // - Dark Cycles AO crevices (`luma ~ 0.15..0.30`) stay genuinely dark (`team_rgb * 0.14..0.32`) with zero floor lift.
+    // - Mid-tone armor (`luma ~ 0.60..0.72`) hits vibrant faction color (`team_rgb * 0.96..1.08`).
+    // - Bright beveled edges (`luma > 0.80`) mix subtly toward sunlit desaturated specular highlight.
+    let mid_s = smoothstep(0.25, 0.62, luma);
+    let hi_s = smoothstep(0.58, 0.88, luma);
+    let shade_gain = mix(luma * 0.95, 0.96 + 0.26 * hi_s, mid_s);
+    let spec_edge = smoothstep(0.80, 0.98, luma) * 0.28;
+    let shaded_team = mix(team_rgb * shade_gain, vec3<f32>(1.0), spec_edge);
     albedo = mix(albedo, shaded_team, mask_w);
 
-    // Optional VisualDef PBR overrides (`metallic`, `roughness`, `emissive_boost`)
+    // Optional VisualDef PBR overrides (`metallic`, `roughness`, `emissive_boost`).
+    // When `< 0.0` (the default for glTF PBR assets), per-pixel `metallicRoughnessTexture`
+    // values from `pbr_input_from_standard_material` remain 100% intact.
     if team_ext.pbr_overrides.x >= 0.0 {
         pbr_input.material.metallic = clamp(team_ext.pbr_overrides.x, 0.0, 1.0);
     }
     if team_ext.pbr_overrides.y >= 0.0 {
         pbr_input.material.perceptual_roughness = clamp(team_ext.pbr_overrides.y, 0.04, 1.0);
     }
-    var extra_emissive = team_rgb * (mask_w * 0.12 + max(team_ext.pbr_overrides.z, 0.0) * mask_w * 0.55);
+    var extra_emissive = vec3<f32>(0.0);
     if mode == 3 && tint_strength > 0.05 {
         let stripe = smoothstep(0.72, 0.92, abs(sin(world_pos.x * 2.4 + world_pos.z * 2.4)));
         extra_emissive = extra_emissive + team_rgb * (stripe * 0.35 * max(team_ext.pbr_overrides.z, 0.35));

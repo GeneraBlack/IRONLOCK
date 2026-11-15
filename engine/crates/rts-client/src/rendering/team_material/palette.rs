@@ -291,21 +291,21 @@ pub fn build_team_damage_standard_material(slot: u8, tier: DamageVisualTier) -> 
     match tier {
         DamageVisualTier::Intact => StandardMaterial {
             base_color: Color::srgb(base_r, base_g, base_b),
-            emissive: LinearRgba::new(tr * 0.16, tg * 0.16, tb * 0.16, 1.0),
+            emissive: LinearRgba::BLACK,
             perceptual_roughness: 0.56,
             metallic: 0.30,
             ..default()
         },
         DamageVisualTier::Yellow50 => StandardMaterial {
             base_color: Color::srgb(base_r * 0.64, base_g * 0.60, base_b * 0.56),
-            emissive: LinearRgba::new(tr * 0.08 + 0.12, tg * 0.08 + 0.05, tb * 0.08 + 0.01, 1.0),
+            emissive: LinearRgba::new(0.12, 0.05, 0.01, 1.0),
             perceptual_roughness: 0.78,
             metallic: 0.18,
             ..default()
         },
         DamageVisualTier::Red25 => StandardMaterial {
             base_color: Color::srgb(base_r * 0.38, base_g * 0.34, base_b * 0.32),
-            emissive: LinearRgba::new(0.46 + tr * 0.06, 0.11 + tg * 0.04, 0.03 + tb * 0.04, 1.0),
+            emissive: LinearRgba::new(0.46, 0.11, 0.03, 1.0),
             perceptual_roughness: 0.92,
             metallic: 0.10,
             ..default()
