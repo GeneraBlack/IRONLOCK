@@ -228,12 +228,15 @@ fn ensure_overlay_gpu_assets(
             let Some(gltf) = gltf_assets.get(gh) else {
                 continue;
             };
-            if let Some(combined_mesh) =
+            if let Some((combined_mesh, pbr_mat_opt)) =
                 merge_gltf_prop_into_single_mesh(gltf, node_assets, gmesh_assets, meshes, materials)
             {
                 let merged_h = meshes.add(combined_mesh);
                 if let Some(slot) = overlay_assets.prop_instanced_meshes.get_mut(fname) {
                     slot.0 = merged_h;
+                    if let Some(mat_h) = pbr_mat_opt {
+                        slot.1 = mat_h;
+                    }
                 }
                 overlay_assets.prop_gltf_merged.insert(fname);
             }

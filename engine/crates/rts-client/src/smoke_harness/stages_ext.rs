@@ -575,6 +575,11 @@ pub fn drive_ra2_overhaul_showcase(
             return;
         }
     }
+    if smoke.frame_count > 1 {
+        for e in sim_res.0.entities.values_mut() {
+            e.health = e.health.max(e.max_health * 0.68);
+        }
+    }
     smoke.wait_polls = 0;
     smoke.frame_count += 1;
 
@@ -615,8 +620,10 @@ pub fn drive_ra2_overhaul_showcase(
                 (1, "guardian_gi", [13, 16], 1.40, 1.40),
                 (1, "grizzly_tank", [15, 22], 0.90, 0.35),
                 (1, "allied_gi", [16, 23], 0.85, 0.85),
+                (1, "aegis_cruiser", [22, 18], 0.78, -0.55),
                 (2, "apocalypse_tank", [16, 16], -1.35, -2.05),
                 (2, "rhino_tank", [17, 18], -1.55, -0.95),
+                (2, "kirov_airship", [19, 13], -2.15, -2.15),
                 (2, "soviet_conscript", [16, 18], -1.50, -1.50),
                 (2, "tesla_trooper", [18, 17], -1.60, -1.60),
             ] {
@@ -626,6 +633,10 @@ pub fn drive_ra2_overhaul_showcase(
                         e.turret_facing_radians = tur_yaw;
                     }
                 }
+            }
+            for e in sim_res.0.entities.values_mut() {
+                e.max_health = e.max_health.max(25_000.0);
+                e.health = e.max_health;
             }
             subwindows.close_all();
             interaction.app_phase = AppPhase::InGame;

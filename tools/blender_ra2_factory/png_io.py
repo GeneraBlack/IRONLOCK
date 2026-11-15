@@ -98,38 +98,42 @@ def decode_png_rgba(png_bytes: bytes) -> np.ndarray:
     rows = np.frombuffer(raw, dtype=np.uint8).reshape(h, 1 + stride)
 
     recon = np.zeros((h, stride), dtype=np.uint8)
-    for y in range(h):
-        ftype = int(rows[y, 0])
-        line = rows[y, 1:].astype(np.int32)
-        up = recon[y - 1].astype(np.int32) if y > 0 else np.zeros(stride, dtype=np.int32)
-        if ftype == 0:
-            recon[y] = line.astype(np.uint8)
-        elif ftype == 1:
-            out = line.copy()
-            for x in range(bpp, stride):
-                out[x] = (out[x] + out[x - bpp]) & 0xFF
-            recon[y] = out.astype(np.uint8)
-        elif ftype == 2:
-            recon[y] = ((line + up) & 0xFF).astype(np.uint8)
-        elif ftype == 3:
-            out = line.copy()
-            for x in range(stride):
-                left = out[x - bpp] if x >= bpp else 0
-                out[x] = (out[x] + ((left + up[x]) >> 1)) & 0xFF
-            recon[y] = out.astype(np.uint8)
-        elif ftype == 4:
-            out = line.copy()
-            for x in range(stride):
-                a = out[x - bpp] if x >= bpp else 0
-                b = up[x]
-                c = up[x - bpp] if x >= bpp else 0
-                p = a + b - c
-                pa, pb, pc = abs(p - a), abs(p - b), abs(p - c)
-                pr = a if (pa <= pb and pa <= pc) else (b if pb <= pc else c)
-                out[x] = (out[x] + pr) & 0xFF
-            recon[y] = out.astype(np.uint8)
-        else:
-            raise ValueError(f"Unsupported PNG filter {ftype}")
+    if np.all(rows[:, 0] == 1):
+        # Fast vectorized path for PNG Sub filter (filter 1), used by `encode_png_bytes`:
+        sub_pix = rows[:, 1:].reshape(h, w, bpp).astype(np.int32)
+        recon = (np.cumsum(sub_pix, axis=1) & 0xFF).astype(np.uint8).reshape(h, stride)
+    elif np.all(rows[:, 0] == 0):
+        recon[:] = rows[:, 1:]
+    else:
+        for y in range(h):
+            ftype = int(rows[y, 0])
+            line = rows[y, 1:].astype(np.int32)
+            up = recon[y - 1].astype(np.int32) if y > 0 else np.zeros(stride, dtype=np.int32)
+            if ftype == 0:
+                recon[y] = line.astype(np.uint8)
+            elif ftype == 1:
+                recon[y] = (np.cumsum(line.reshape(w, bpp), axis=0) & 0xFF).astype(np.uint8).reshape(stride)
+            elif ftype == 2:
+                recon[y] = ((line + up) & 0xFF).astype(np.uint8)
+            elif ftype == 3:
+                out = line.copy()
+                for x in range(stride):
+                    left = out[x - bpp] if x >= bpp else 0
+                    out[x] = (out[x] + ((left + up[x]) >> 1)) & 0xFF
+                recon[y] = out.astype(np.uint8)
+            elif ftype == 4:
+                out = line.copy()
+                for x in range(stride):
+                    a = out[x - bpp] if x >= bpp else 0
+                    b = up[x]
+                    c = up[x - bpp] if x >= bpp else 0
+                    p = a + b - c
+                    pa, pb, pc = abs(p - a), abs(p - b), abs(p - c)
+                    pr = a if (pa <= pb and pa <= pc) else (b if pb <= pc else c)
+                    out[x] = (out[x] + pr) & 0xFF
+                recon[y] = out.astype(np.uint8)
+            else:
+                raise ValueError(f"Unsupported PNG filter {ftype}")
 
     rgba = np.empty((h, w, 4), dtype=np.uint8)
     if color_type == 6:

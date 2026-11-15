@@ -271,19 +271,32 @@ pub fn build_procedural_instanced_prop_mesh(fname: &'static str) -> Mesh {
     mesh
 }
 
-/// Flattens all primitives across all nodes in a loaded `Gltf` prop asset into ONE single vertex-colored
-/// `Mesh` so Bevy's GPU mesh instancer renders all copies in 1 instanced draw call with 0 `SceneRoot` entities!
+/// Flattens all `LOD0` primitives across all nodes in a loaded `Gltf` prop asset into ONE single
+/// `Mesh` (preserving `UV_0`, `TANGENT`, `COLOR_0`, and its PBR `StandardMaterial` when textured) so
+/// Bevy's GPU mesh instancer renders all copies in 1 instanced draw call with 0 `SceneRoot` entities!
 pub(super) fn merge_gltf_prop_into_single_mesh(
     gltf: &Gltf,
     gltf_nodes: &Assets<GltfNode>,
     gltf_meshes: &Assets<GltfMesh>,
     meshes: &Assets<Mesh>,
     materials: &Assets<StandardMaterial>,
-) -> Option<Mesh> {
+) -> Option<(Mesh, Option<Handle<StandardMaterial>>)> {
     let mut positions: Vec<[f32; 3]> = Vec::new();
     let mut normals: Vec<[f32; 3]> = Vec::new();
+    let mut uvs: Vec<[f32; 2]> = Vec::new();
+    let mut tangents: Vec<[f32; 4]> = Vec::new();
     let mut colors: Vec<[f32; 4]> = Vec::new();
     let mut indices: Vec<u32> = Vec::new();
+    let mut has_all_uvs = true;
+    let mut has_all_tangents = true;
+    let mut pbr_mat_handle: Option<Handle<StandardMaterial>> = None;
+
+    let lod1_nodes: HashSet<Handle<GltfNode>> = gltf
+        .named_nodes
+        .iter()
+        .filter(|(name, _)| name.ends_with("_LOD1"))
+        .map(|(_, h)| h.clone())
+        .collect();
 
     let mut append_gmesh = |gmesh: &GltfMesh, xf: Affine3A| {
         for prim in &gmesh.primitives {
@@ -301,18 +314,47 @@ pub(super) fn merge_gltf_prop_into_single_mesh(
                 }
                 _ => None,
             };
+            let src_uv = match src_mesh.attribute(Mesh::ATTRIBUTE_UV_0) {
+                Some(VertexAttributeValues::Float32x2(u)) if u.len() == src_pos.len() => {
+                    Some(u.as_slice())
+                }
+                _ => {
+                    has_all_uvs = false;
+                    None
+                }
+            };
+            let src_tan = match src_mesh.attribute(Mesh::ATTRIBUTE_TANGENT) {
+                Some(VertexAttributeValues::Float32x4(t)) if t.len() == src_pos.len() => {
+                    Some(t.as_slice())
+                }
+                _ => {
+                    has_all_tangents = false;
+                    None
+                }
+            };
             let src_col = match src_mesh.attribute(Mesh::ATTRIBUTE_COLOR) {
                 Some(VertexAttributeValues::Float32x4(c)) if c.len() == src_pos.len() => {
                     Some(c.as_slice())
                 }
                 _ => None,
             };
-            let mat_tint = prim
-                .material
-                .as_ref()
-                .and_then(|mh| materials.get(mh))
-                .map(|m| m.base_color.to_linear().to_f32_array())
-                .unwrap_or([1.0, 1.0, 1.0, 1.0]);
+            let is_textured_mat = prim.material.as_ref().is_some_and(|mh| {
+                materials
+                    .get(mh)
+                    .is_some_and(|m| m.base_color_texture.is_some())
+            });
+            if is_textured_mat && pbr_mat_handle.is_none() {
+                pbr_mat_handle = prim.material.clone();
+            }
+            let mat_tint = if is_textured_mat {
+                [1.0, 1.0, 1.0, 1.0]
+            } else {
+                prim.material
+                    .as_ref()
+                    .and_then(|mh| materials.get(mh))
+                    .map(|m| m.base_color.to_linear().to_f32_array())
+                    .unwrap_or([1.0, 1.0, 1.0, 1.0])
+            };
 
             let base_v = positions.len() as u32;
             for (i, &p) in src_pos.iter().enumerate() {
@@ -325,6 +367,15 @@ pub(super) fn merge_gltf_prop_into_single_mesh(
                     })
                     .unwrap_or(Vec3::Y);
                 normals.push(n.to_array());
+                if let Some(us) = src_uv {
+                    uvs.push(us[i]);
+                }
+                if let Some(ts) = src_tan {
+                    let tv = xf
+                        .transform_vector3(Vec3::new(ts[i][0], ts[i][1], ts[i][2]))
+                        .normalize_or_zero();
+                    tangents.push([tv.x, tv.y, tv.z, ts[i][3]]);
+                }
                 let vc = src_col.map(|cs| cs[i]).unwrap_or([1.0, 1.0, 1.0, 1.0]);
                 colors.push([
                     vc[0] * mat_tint[0],
@@ -349,6 +400,9 @@ pub(super) fn merge_gltf_prop_into_single_mesh(
 
     let mut visited_any_node = false;
     for node_h in &gltf.nodes {
+        if lod1_nodes.contains(node_h) {
+            continue;
+        }
         if let Some(node) = gltf_nodes.get(node_h) {
             if let Some(ref gm_h) = node.mesh {
                 if let Some(gmesh) = gltf_meshes.get(gm_h) {
@@ -376,9 +430,15 @@ pub(super) fn merge_gltf_prop_into_single_mesh(
     );
     combined.insert_attribute(Mesh::ATTRIBUTE_POSITION, positions);
     combined.insert_attribute(Mesh::ATTRIBUTE_NORMAL, normals);
+    if has_all_uvs && uvs.len() == colors.len() {
+        combined.insert_attribute(Mesh::ATTRIBUTE_UV_0, uvs);
+        if has_all_tangents && tangents.len() == colors.len() {
+            combined.insert_attribute(Mesh::ATTRIBUTE_TANGENT, tangents);
+        }
+    }
     combined.insert_attribute(Mesh::ATTRIBUTE_COLOR, colors);
     combined.insert_indices(Indices::U32(indices));
-    Some(combined)
+    Some((combined, pbr_mat_handle))
 }
 
 /// Synchronizes all static & semi-static map objects (trees, rocks/streetlights, explosive barrels,
@@ -595,7 +655,7 @@ pub(super) fn sync_instanced_static_props(
         if let Some(&(fname, target_tf, target_vis)) = desired_props.get(&p_vis.prop_key) {
             matched_keys.insert(p_vis.prop_key);
             if let Some((want_mesh, want_mat)) = prop_instanced_meshes.get(fname) {
-                if p_vis.model_file != fname || mesh_3d.0 != *want_mesh {
+                if p_vis.model_file != fname || mesh_3d.0 != *want_mesh || mat_3d.0 != *want_mat {
                     p_vis.model_file = fname;
                     mesh_3d.0 = want_mesh.clone();
                     mat_3d.0 = want_mat.clone();
