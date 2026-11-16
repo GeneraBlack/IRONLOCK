@@ -25,30 +25,53 @@ id = "usa"
 name = "America (Allies)"
 specialty = "Airborne Paratroopers & Grizzly Tank"
 loading_screen = "assets/ui/loading_screens/country_usa.png"
+infantry_hp_mult = 1.15
+free_support_power = "airborne_paradrop"
+signature_unit = "allied_gi"
+passive_bonus_text = "+15% Infantry HP & Free Airborne Paradrop"
+flag_colors = [[0.78, 0.14, 0.22], [0.96, 0.97, 0.98], [0.14, 0.28, 0.72]]
 
 [[factions.sub_factions]]
 id = "great_britain"
 name = "Great Britain (Allies)"
 specialty = "Sniper & Mirage Tank"
 loading_screen = "assets/ui/loading_screens/country_great_britain.png"
+infantry_damage_mult = 1.15
+infantry_range_mult = 1.15
+signature_unit = "sniper"
+passive_bonus_text = "+15% Infantry Attack Range & Damage (Sniper)"
+flag_colors = [[0.08, 0.22, 0.58], [0.96, 0.97, 0.98], [0.80, 0.12, 0.18]]
 
 [[factions.sub_factions]]
 id = "france"
 name = "France (Allies)"
 specialty = "Grand Cannon Coastal Battery & Prism Tank"
 loading_screen = "assets/ui/loading_screens/country_france.png"
+defense_rof_mult = 1.18
+signature_unit = "allied_grand_cannon"
+passive_bonus_text = "+18% Defensive Structure Rate-of-Fire (Grand Cannon)"
+flag_colors = [[0.10, 0.26, 0.68], [0.96, 0.97, 0.98], [0.86, 0.16, 0.20]]
 
 [[factions.sub_factions]]
 id = "germany"
 name = "Germany (Allies)"
 specialty = "Tank Destroyer & Chronosphere"
 loading_screen = "assets/ui/loading_screens/country_germany.png"
+anti_armor_damage_mult = 1.18
+signature_unit = "tank_destroyer"
+passive_bonus_text = "+18% Anti-Armor Vehicle Firepower (Tank Destroyer)"
+flag_colors = [[0.14, 0.14, 0.16], [0.84, 0.14, 0.14], [0.96, 0.78, 0.12]]
 
 [[factions.sub_factions]]
 id = "korea"
 name = "Korea (Allies)"
 specialty = "Black Eagle Jet & Aegis Cruiser"
 loading_screen = "assets/ui/loading_screens/country_korea.png"
+aircraft_damage_mult = 1.18
+aircraft_hp_mult = 1.10
+signature_unit = "black_eagle"
+passive_bonus_text = "+18% Aircraft Damage & +10% Aircraft HP (Black Eagle)"
+flag_colors = [[0.96, 0.97, 0.98], [0.80, 0.14, 0.22], [0.12, 0.30, 0.68]]
 
 [factions.hud_skin]
 dialog_background = "assets/ui/hud/allied/bkgdlg.png"
@@ -98,24 +121,40 @@ id = "russia"
 name = "Russia (Soviets)"
 specialty = "Tesla Tank, Apocalypse Tank & Kirov Airship"
 loading_screen = "assets/ui/loading_screens/country_russia.png"
+vehicle_cost_mult = 0.88
+signature_unit = "tesla_tank"
+passive_bonus_text = "-12% Vehicle Build Cost (Tesla Tank)"
+flag_colors = [[0.96, 0.97, 0.98], [0.14, 0.32, 0.76], [0.84, 0.14, 0.16]]
 
 [[factions.sub_factions]]
 id = "iraq"
 name = "Iraq (Soviets)"
 specialty = "Desolator & Rhino Heavy Tank"
 loading_screen = "assets/ui/loading_screens/country_iraq.png"
+radiation_resist = 0.65
+signature_unit = "desolator"
+passive_bonus_text = "65% Radiation Hazard Resistance (Desolator)"
+flag_colors = [[0.82, 0.14, 0.16], [0.96, 0.97, 0.96], [0.14, 0.48, 0.22]]
 
 [[factions.sub_factions]]
 id = "libya"
 name = "Libya (Soviets)"
 specialty = "Demolition Truck & V3 Rocket Launcher"
 loading_screen = "assets/ui/loading_screens/country_libya.png"
+vehicle_speed_mult = 1.14
+signature_unit = "demolition_truck"
+passive_bonus_text = "+14% Vehicle Movement Speed (Demolition Truck)"
+flag_colors = [[0.86, 0.16, 0.16], [0.14, 0.15, 0.16], [0.14, 0.62, 0.28]]
 
 [[factions.sub_factions]]
 id = "cuba"
 name = "Cuba (Soviets)"
 specialty = "Terrorist & Terror Drone"
 loading_screen = "assets/ui/loading_screens/country_cuba.png"
+infantry_cost_mult = 0.85
+signature_unit = "terrorist"
+passive_bonus_text = "-15% Infantry Build Cost (Terrorist)"
+flag_colors = [[0.10, 0.28, 0.68], [0.96, 0.97, 0.98], [0.82, 0.14, 0.18]]
 
 [factions.hud_skin]
 dialog_background = "assets/ui/hud/soviet/bkgdlg.png"
@@ -160,6 +199,11 @@ id = "yuri"
 name = "Psi-Corps (Yuri)"
 specialty = "Yuri Prime, Mastermind, Magnetron & Floating Disc"
 loading_screen = "assets/ui/loading_screens/country_yuri.png"
+psychic_cost_mult = 0.88
+mind_control_cooldown_mult = 0.82
+signature_unit = "yuri_prime"
+passive_bonus_text = "-12% Psychic/Cloning Cost & -18% Mind-Control Cooldown"
+flag_colors = [[0.58, 0.16, 0.78], [0.92, 0.74, 0.24], [0.34, 0.08, 0.52]]
 
 [factions.hud_skin]
 dialog_background = "assets/ui/hud/yuri/bkgdlgy.png"

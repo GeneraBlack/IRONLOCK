@@ -1615,7 +1615,7 @@ vision_range = 10.0
 prerequisites = []
 
 [buildings.visual]
-model = "assets/models/props/civilian_building_intact.glb"
+model = "assets/models/bridge_repair_hut.glb"
 icon = "assets/ui/cameos/bridge_repair_hut_icon.png"
 archetype = "generic_box"
 scale = [1.0, 1.0, 1.0]

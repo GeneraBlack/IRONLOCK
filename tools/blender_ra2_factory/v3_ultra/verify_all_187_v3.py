@@ -1,9 +1,10 @@
 """
-Exhaustive 190-Asset `v3_ultra` + Multi-Part `"Constructing"` + 16-Color Forensics Verifier
+Exhaustive 198-Asset `v3_ultra` + Multi-Part `"Constructing"` + 16-Color Forensics Verifier
 (`tools/blender_ra2_factory/v3_ultra/verify_all_187_v3.py`).
 
 Audits all `187` `wave2_manifest.json` `.glb` models PLUS the `3` `fx/*_construction_rig.glb`
-3D scaffolding/crane rigs (`190 / 190` total).
+3D scaffolding/crane rigs PLUS the `8` `v3-special-assets` bridge/hut & VIP/special character
+`.glb`s (`198 / 198` total).
 
 Usage inside headless Blender 5.3 (or standalone Python 3 + NumPy):
   blender.exe -b --factory-startup --python-exit-code 1 -P tools/blender_ra2_factory/v3_ultra/verify_all_187_v3.py
@@ -72,6 +73,75 @@ FX_CONSTRUCTION_RIG_ENTRIES: List[dict] = [
     _make_fx_rig_entry("yuri_construction_rig", "yuri"),
 ]
 
+
+def _make_special_char_entry(stem: str, faction: str) -> dict:
+    return {
+        "rel_path": f"{stem}.glb",
+        "stem": stem,
+        "bucket": "infantry_3d",
+        "is_unit": True,
+        "tex_size": 2048,
+        "footprint": [1, 1],
+        "faction": faction,
+        "team_color_tint": True,
+        "existing_mesh_nodes": ["Hull", "BodyMesh"],
+        "existing_socket_nodes": ["Muzzle_01", "DamageSmoke_01"],
+        "existing_animations": list(REQUIRED_RA2_CLIPS),
+    }
+
+
+SPECIAL_V3_ENTRIES: List[dict] = [
+    {
+        "rel_path": "props/bridge_span_intact.glb",
+        "stem": "bridge_span_intact",
+        "bucket": "bridges_and_urban",
+        "is_unit": True,
+        "tex_size": 2048,
+        "footprint": [1, 1],
+        "faction": "neutral",
+        "team_color_tint": False,
+        "existing_mesh_nodes": ["Hull"],
+        "existing_socket_nodes": ["DamageSmoke_01"],
+        "existing_animations": [],
+    },
+    {
+        "rel_path": "props/bridge_span_destroyed.glb",
+        "stem": "bridge_span_destroyed",
+        "bucket": "bridges_and_urban",
+        "is_unit": True,
+        "tex_size": 2048,
+        "footprint": [1, 1],
+        "faction": "neutral",
+        "team_color_tint": False,
+        "existing_mesh_nodes": ["Hull"],
+        "existing_socket_nodes": ["DamageSmoke_01"],
+        "existing_animations": [],
+    },
+    {
+        "rel_path": "bridge_repair_hut.glb",
+        "stem": "bridge_repair_hut",
+        "bucket": "bridges_and_urban",
+        "is_unit": False,
+        "tex_size": 2048,
+        "footprint": [1, 1],
+        "faction": "shared",
+        "team_color_tint": True,
+        "existing_mesh_nodes": ["Hull", "Rotor"],
+        "existing_socket_nodes": ["DamageSmoke_01"],
+        "existing_animations": ["Idle", "Producing", "Constructing"],
+    },
+    _make_special_char_entry("yuri_slave", "yuri"),
+    _make_special_char_entry("soviet_cosmonaut", "soviets"),
+    _make_special_char_entry("president_dugan", "allies"),
+    _make_special_char_entry("premier_romanov", "soviets"),
+    _make_special_char_entry("prof_einstein", "allies"),
+]
+
+SPECIAL_CHAR_5_STEMS: Set[str] = {
+    "yuri_slave", "soviet_cosmonaut", "president_dugan", "premier_romanov", "prof_einstein",
+}
+SPECIAL_V3_8_STEMS: Set[str] = {e["stem"] for e in SPECIAL_V3_ENTRIES}
+
 ORDNANCE_PROJECTILES: Set[str] = {
     "boomer_cruise_missile", "dreadnought_missile", "kirov_bomb", "nuclear_icbm", "v3_rocket",
 }
@@ -113,6 +183,8 @@ def is_rigged_building_entry(entry: dict) -> bool:
 
 def resolve_asset_owner(entry: dict) -> str:
     stem, rel, bucket = entry["stem"], entry["rel_path"], entry["bucket"]
+    if stem in SPECIAL_V3_8_STEMS or bucket == "bridges_and_urban":
+        return "v3-special-assets"
     if bucket == "fx_construction_rig" or rel.startswith("fx/"):
         return "scaffold-3d-rigs"
     if stem in WAVE1_HERO_13:
@@ -292,6 +364,14 @@ def _audit_building_constructing_contract(gltf: dict, bin_mv: memoryview) -> Tup
 
 def _expected_vertex_bounds(entry: dict) -> Tuple[int, int]:
     rel, stem, bucket = entry["rel_path"], entry["stem"], entry["bucket"]
+    if stem == "bridge_span_intact":
+        return 3_000, 16_000
+    if stem == "bridge_span_destroyed":
+        return 2_500, 14_000
+    if stem == "bridge_repair_hut":
+        return 4_500, MAX_V3_BUILDING_VERTS
+    if stem in SPECIAL_CHAR_5_STEMS:
+        return 8_000, 15_000
     is_unit_budget = bool(entry["is_unit"]) and stem != "yuri_gattling_cannon"
     max_v = MAX_V3_UNIT_VERTS if is_unit_budget else MAX_V3_BUILDING_VERTS
     if bucket == "fx_construction_rig" or rel.startswith("fx/"):
@@ -380,8 +460,9 @@ def audit_single_glb(entry: dict, models_dir: str) -> Tuple[AssetAuditMetrics | 
     if lod1_v <= 0 or lod1_v >= lod0_v:
         errs.append(f"Invalid LOD1 vertices: lod1_verts={lod1_v} vs lod0_verts={lod0_v}")
     min_y = float(wmin[1])
-    if abs(min_y) >= 0.004:
-        errs.append(f"Model not grounded: min_y={min_y:.5f} (expected abs(min_y) < 0.004)")
+    min_y_tol = 0.45 if stem == "bridge_span_destroyed" else 0.004
+    if abs(min_y) >= min_y_tol:
+        errs.append(f"Model not grounded: min_y={min_y:.5f} (expected abs(min_y) < {min_y_tol})")
 
     mats = gltf.get("materials", [])
     if not mats:
@@ -401,7 +482,7 @@ def audit_single_glb(entry: dict, models_dir: str) -> Tuple[AssetAuditMetrics | 
         return None, owner, [*errs, f"Missing or corrupt 4-map PBR PNG textures: {exc}"]
 
     th, tw = base_rgba.shape[:2]
-    allowed_sizes = (1024, 2048) if (rel.startswith("props/") or stem in ORDNANCE_PROJECTILES) else (2048,)
+    allowed_sizes = (2048,) if stem in SPECIAL_V3_8_STEMS else ((1024, 2048) if (rel.startswith("props/") or stem in ORDNANCE_PROJECTILES) else (2048,))
     if tw != th or tw not in allowed_sizes:
         errs.append(f"baseColorTexture is {tw}x{th}, expected square in {allowed_sizes}")
     for tname, arr in (("normal", norm_rgba), ("orm", orm_rgba), ("emissive", emis_rgba)):
@@ -431,9 +512,18 @@ def audit_single_glb(entry: dict, models_dir: str) -> Tuple[AssetAuditMetrics | 
     team_pct = 100.0 * float(np.count_nonzero(alpha < 128)) / float(tw * th)
     team_req = bool(entry["team_color_tint"])
     if team_req:
-        min_team_pct = 0.70 if stem == "allied_prism_tower" else 0.80
+        if stem in SPECIAL_CHAR_5_STEMS:
+            min_team_pct = 2.50
+        elif stem == "bridge_repair_hut":
+            min_team_pct = 2.00
+        elif stem == "allied_prism_tower":
+            min_team_pct = 0.70
+        else:
+            min_team_pct = 0.80
         if a0_px == 0 or team_pct < min_team_pct:
             errs.append(f"16-Color TeamMask violation (faction={faction}): team_tint_pct={team_pct:.2f}% < {min_team_pct:.2f}%")
+    if stem in SPECIAL_CHAR_5_STEMS and skins and len(skins[0].get("joints", [])) != 15:
+        errs.append(f"Special character '{stem}' expected 15 joints, got {len(skins[0].get('joints', []))}")
 
     all_node_names = {n.get("name", "") for n in nodes}
     mesh_node_names = {n.get("name", "") for n in nodes if "mesh" in n and not n.get("name", "").endswith("_LOD1")}
@@ -510,7 +600,7 @@ def _extract_cli_argv() -> List[str]:
 
 
 def main() -> None:
-    ap = argparse.ArgumentParser(description="Verify all 190 rust-ra2 v3_ultra .glb models, FX rigs & Constructing clips")
+    ap = argparse.ArgumentParser(description="Verify all 198 rust-ra2 v3_ultra .glb models, FX rigs, bridges & VIPs")
     ap.add_argument("--manifest", type=str, default=os.path.join(_REPO_ROOT, "tools", "blender_ra2_factory", "wave2_manifest.json"))
     ap.add_argument("--models-dir", type=str, default=os.path.join(_REPO_ROOT, "rust-ra2", "assets", "models"))
     ap.add_argument("--only", type=str, default="", help="Optional comma-separated stems/rel_paths to audit")
@@ -524,7 +614,7 @@ def main() -> None:
     assert len(base_assets) == 187, f"Expected 187 assets in wave2_manifest.json, got {len(base_assets)}"
 
     fx_entries = [fx for fx in FX_CONSTRUCTION_RIG_ENTRIES if not args.skip_missing_fx or os.path.isfile(os.path.join(args.models_dir, fx["rel_path"]))]
-    assets: List[dict] = list(base_assets) + fx_entries
+    assets: List[dict] = list(base_assets) + fx_entries + list(SPECIAL_V3_ENTRIES)
 
     only_set = {s.strip() for s in args.only.split(",") if s.strip()} if args.only else set()
     selected = [

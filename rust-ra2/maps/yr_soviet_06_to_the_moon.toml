@@ -497,6 +497,22 @@ tile_pos = [20, 69]
 unit_id = "siege_chopper"
 tile_pos = [14, 68]
 
+[[spawns.initial_units]]
+unit_id = "soviet_cosmonaut"
+tile_pos = [16, 68]
+
+[[spawns.initial_units]]
+unit_id = "soviet_cosmonaut"
+tile_pos = [17, 68]
+
+[[spawns.initial_units]]
+unit_id = "soviet_cosmonaut"
+tile_pos = [18, 68]
+
+[[spawns.initial_units]]
+unit_id = "soviet_cosmonaut"
+tile_pos = [19, 68]
+
 [[spawns]]
 player_id = 2
 faction = "yuri"

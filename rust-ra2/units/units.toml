@@ -2002,4 +2002,134 @@ scale = [1.0, 1.0, 1.0]
 team_mask_mode = "alpha_mask"
 primary_color = [0.68, 0.22, 0.88]
 
+# === RA2 / Yuri's Revenge Special Crew, Lunar Infantry & Campaign VIPs ===
+
+[[units]]
+id = "yuri_slave"
+name = "Yuri Ore Slave"
+faction = "yuri"
+sub_factions = ["unbuildable_minion"]
+role = "infantry"
+cost = 0
+build_time_secs = 2.0
+health = 105.0
+armor = "none"
+speed = 4.6
+vision_range = 12.0
+primary_weapon = "slave_shovel"
+prerequisites = []
+
+[units.visual]
+model = "assets/models/yuri_slave.glb"
+icon = "assets/ui/cameos/yuri_slave_icon.png"
+archetype = "infantry"
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+team_color_tint = true
+primary_color = [0.68, 0.22, 0.88]
+
+[[units]]
+id = "soviet_cosmonaut"
+name = "Soviet Lunar Cosmonaut"
+faction = "soviets"
+role = "infantry"
+cost = 650
+build_time_secs = 6.5
+health = 210.0
+armor = "light"
+speed = 6.4
+vision_range = 18.0
+movement_domain = "jumpjet"
+cruise_altitude = 4.2
+primary_weapon = "cosmonaut_laser"
+prerequisites = ["soviet_barracks", "soviet_battle_lab"]
+
+[units.visual]
+model = "assets/models/soviet_cosmonaut.glb"
+icon = "assets/ui/cameos/soviet_cosmonaut_icon.png"
+archetype = "infantry"
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+team_color_tint = true
+primary_color = [0.85, 0.16, 0.16]
+
+[[units]]
+id = "president_dugan"
+name = "President Michael Dugan"
+faction = "allies"
+sub_factions = ["campaign_vip"]
+role = "infantry"
+cost = 500
+build_limit = 1
+build_time_secs = 8.0
+health = 350.0
+armor = "light"
+speed = 4.4
+vision_range = 16.0
+immune_to_mind_control = true
+primary_weapon = "vip_sidearm"
+prerequisites = []
+
+[units.visual]
+model = "assets/models/president_dugan.glb"
+icon = "assets/ui/cameos/president_dugan_icon.png"
+archetype = "infantry"
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+team_color_tint = true
+primary_color = [0.18, 0.45, 0.88]
+
+[[units]]
+id = "premier_romanov"
+name = "Premier Alexander Romanov"
+faction = "soviets"
+sub_factions = ["campaign_vip"]
+role = "infantry"
+cost = 500
+build_limit = 1
+build_time_secs = 8.0
+health = 380.0
+armor = "light"
+speed = 4.2
+vision_range = 16.0
+immune_to_mind_control = true
+primary_weapon = "vip_sidearm"
+prerequisites = []
+
+[units.visual]
+model = "assets/models/premier_romanov.glb"
+icon = "assets/ui/cameos/premier_romanov_icon.png"
+archetype = "infantry"
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+team_color_tint = true
+primary_color = [0.85, 0.16, 0.16]
+
+[[units]]
+id = "prof_einstein"
+name = "Professor Albert Einstein"
+faction = "allies"
+sub_factions = ["campaign_vip"]
+role = "infantry"
+cost = 500
+build_limit = 1
+build_time_secs = 8.0
+health = 320.0
+armor = "light"
+speed = 4.5
+vision_range = 18.0
+immune_to_mind_control = true
+primary_weapon = "vip_sidearm"
+prerequisites = []
+
+[units.visual]
+model = "assets/models/prof_einstein.glb"
+icon = "assets/ui/cameos/prof_einstein_icon.png"
+archetype = "infantry"
+scale = [1.0, 1.0, 1.0]
+team_mask_mode = "alpha_mask"
+team_color_tint = true
+primary_color = [0.18, 0.45, 0.88]
+
+
 

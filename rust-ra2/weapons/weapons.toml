@@ -362,9 +362,9 @@ damage = 150.0
 range = 7.5
 cooldown_secs = 2.2
 projectile_speed = 28.0
-splash_radius = 3.0
+splash_radius = 4.2
 c4_demolition = true
-on_hit_status = { id = "c4_bomb", duration_secs = 4.0, delayed_burst_damage = 380.0, delayed_burst_splash = 3.0 }
+on_hit_status = { id = "c4_bomb", duration_secs = 4.5, delayed_burst_damage = 380.0, delayed_burst_splash = 4.2 }
 armor_multipliers = { none = 1.6, light = 1.4, medium = 1.25, heavy = 1.2, structure = 1.6 }
 
 [[weapons]]
@@ -715,6 +715,37 @@ cooldown_secs = 2.0
 projectile_speed = 60.0
 splash_radius = 3.6
 armor_multipliers = { none = 1.6, light = 1.45, medium = 1.25, heavy = 1.2, structure = 1.65 }
+
+[[weapons]]
+id = "slave_shovel"
+name = "Slave Miner Heavy Shovel"
+damage = 22.0
+range = 2.4
+cooldown_secs = 1.1
+projectile_speed = 45.0
+armor_multipliers = { none = 1.35, light = 1.2, medium = 0.75, heavy = 0.55, structure = 0.6 }
+
+[[weapons]]
+id = "cosmonaut_laser"
+name = "Soviet Lunar Cosmonaut Pulse Laser"
+damage = 58.0
+range = 15.5
+cooldown_secs = 1.25
+projectile_speed = 82.0
+targets_ground = true
+targets_air = true
+projectile_style = "laser"
+armor_multipliers = { none = 1.5, light = 1.35, medium = 1.2, heavy = 1.15, structure = 1.1 }
+
+[[weapons]]
+id = "vip_sidearm"
+name = "VIP Diplomatic Sidearm"
+damage = 18.0
+range = 10.5
+cooldown_secs = 1.4
+projectile_speed = 48.0
+armor_multipliers = { none = 1.35, light = 1.1, medium = 0.5, heavy = 0.35, structure = 0.25 }
+
 
 
 

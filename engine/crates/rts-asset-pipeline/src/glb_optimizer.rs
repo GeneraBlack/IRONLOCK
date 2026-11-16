@@ -278,13 +278,22 @@ mod tests {
                 unit_models.insert(u.visual.model.replace('\\', "/").to_ascii_lowercase());
             }
         }
+        for special_u in [
+            "assets/models/yuri_slave.glb",
+            "assets/models/soviet_cosmonaut.glb",
+            "assets/models/president_dugan.glb",
+            "assets/models/premier_romanov.glb",
+            "assets/models/prof_einstein.glb",
+        ] {
+            unit_models.insert(special_u.to_string());
+        }
 
         let mut glb_files = Vec::new();
         collect_glb_files_recursive(&workspace_models, &mut glb_files).unwrap();
         assert_eq!(
             glb_files.len(),
-            190,
-            "expected all 190 rust-ra2 .glb models on disk (187 entities/props + 3 fx construction rigs)"
+            198,
+            "expected all 198 rust-ra2 .glb models on disk (187 base + 3 fx rigs + 8 special/bridge assets)"
         );
 
         for p in &glb_files {

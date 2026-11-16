@@ -185,8 +185,78 @@
     },
     "SubFactionDef": {
       "properties": {
+        "aircraft_cost_mult": {
+          "default": 1.0,
+          "format": "float",
+          "type": "number"
+        },
+        "aircraft_damage_mult": {
+          "default": 1.0,
+          "format": "float",
+          "type": "number"
+        },
+        "aircraft_hp_mult": {
+          "default": 1.0,
+          "format": "float",
+          "type": "number"
+        },
+        "anti_armor_damage_mult": {
+          "default": 1.0,
+          "format": "float",
+          "type": "number"
+        },
+        "defense_rof_mult": {
+          "default": 1.0,
+          "format": "float",
+          "type": "number"
+        },
+        "flag_colors": {
+          "default": null,
+          "items": {
+            "items": {
+              "format": "float",
+              "type": "number"
+            },
+            "maxItems": 3,
+            "minItems": 3,
+            "type": "array"
+          },
+          "maxItems": 3,
+          "minItems": 3,
+          "type": [
+            "array",
+            "null"
+          ]
+        },
+        "free_support_power": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "id": {
           "type": "string"
+        },
+        "infantry_cost_mult": {
+          "default": 1.0,
+          "format": "float",
+          "type": "number"
+        },
+        "infantry_damage_mult": {
+          "default": 1.0,
+          "format": "float",
+          "type": "number"
+        },
+        "infantry_hp_mult": {
+          "default": 1.0,
+          "format": "float",
+          "type": "number"
+        },
+        "infantry_range_mult": {
+          "default": 1.0,
+          "format": "float",
+          "type": "number"
         },
         "loading_screen": {
           "default": null,
@@ -195,12 +265,51 @@
             "null"
           ]
         },
+        "mind_control_cooldown_mult": {
+          "default": 1.0,
+          "format": "float",
+          "type": "number"
+        },
         "name": {
           "type": "string"
+        },
+        "passive_bonus_text": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "psychic_cost_mult": {
+          "default": 1.0,
+          "format": "float",
+          "type": "number"
+        },
+        "radiation_resist": {
+          "default": 0.0,
+          "format": "float",
+          "type": "number"
+        },
+        "signature_unit": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "specialty": {
           "default": "",
           "type": "string"
+        },
+        "vehicle_cost_mult": {
+          "default": 1.0,
+          "format": "float",
+          "type": "number"
+        },
+        "vehicle_speed_mult": {
+          "default": 1.0,
+          "format": "float",
+          "type": "number"
         }
       },
       "required": [
