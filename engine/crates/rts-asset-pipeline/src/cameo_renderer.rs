@@ -1,7 +1,17 @@
+#[path = "cameo_texture_sampler.rs"]
+pub mod cameo_texture_sampler;
+
+pub use cameo_texture_sampler::{
+    render_glb_to_hd_cameo_png, render_glb_to_hd_cameo_png_with_badge, HD_CAMEO_HEIGHT,
+    HD_CAMEO_WIDTH,
+};
+
 use crate::glb_optimizer::{extract_world_triangles_from_glb, WorldRenderTri};
 use crate::westwood::encode_rgba_to_png;
 use anyhow::{bail, Context, Result};
+use cameo_texture_sampler::{upgrade_auxiliary_cameos_to_hd, VetCameoSpec};
 use rts_sdk::loader::LoadedMod;
+use std::collections::{BTreeMap, BTreeSet};
 use std::fs;
 use std::path::{Path, PathBuf};
 
@@ -55,9 +65,11 @@ pub fn render_glb_to_cameo_png(
         bail!("GLB model contains 0 renderable LOD0 triangles");
     }
 
-    let sx = scale[0].abs().max(0.05);
-    let sy = scale[1].abs().max(0.05);
-    let sz = scale[2].abs().max(0.05);
+    let (sx, sy, sz) = (
+        scale[0].abs().max(0.05),
+        scale[1].abs().max(0.05),
+        scale[2].abs().max(0.05),
+    );
     let max_s = sx.max(sy).max(sz);
     let norm_scale = [sx / max_s, sy / max_s, sz / max_s];
     let inv_norm_scale = [
@@ -66,34 +78,22 @@ pub fn render_glb_to_cameo_png(
         1.0 / norm_scale[2],
     ];
 
-    // Isometric camera basis (three-quarter front-right view)
     let yaw_rad = if is_building { 38.0_f32 } else { 34.0_f32 }.to_radians();
     let pitch_rad = if is_building { 28.5_f32 } else { 25.0_f32 }.to_radians();
     let (syaw, cyaw) = yaw_rad.sin_cos();
     let (spitch, cpitch) = pitch_rad.sin_cos();
-
-    // Camera basis vectors in world space:
-    // right = (cyaw, 0, -syaw)
-    // forward_into_screen = (-syaw * cpitch, -spitch, -cyaw * cpitch)
-    // up_on_screen = (-syaw * spitch, cpitch, -cyaw * spitch)
     let cam_right = [cyaw, 0.0, -syaw];
     let cam_up = [-syaw * spitch, cpitch, -cyaw * spitch];
     let cam_fwd = [-syaw * cpitch, -spitch, -cyaw * cpitch];
     let view_dir = [-cam_fwd[0], -cam_fwd[1], -cam_fwd[2]];
 
-    // Compute world-scaled AABB and projected 2D bounds
-    let mut wmin = [f32::MAX; 3];
-    let mut wmax = [f32::MIN; 3];
+    let (mut wmin, mut wmax) = ([f32::MAX; 3], [f32::MIN; 3]);
     for tri in &raw_tris {
         for p in &tri.p {
-            let sp = [
-                p[0] * norm_scale[0],
-                p[1] * norm_scale[1],
-                p[2] * norm_scale[2],
-            ];
             for a in 0..3 {
-                wmin[a] = wmin[a].min(sp[a]);
-                wmax[a] = wmax[a].max(sp[a]);
+                let v = p[a] * norm_scale[a];
+                wmin[a] = wmin[a].min(v);
+                wmax[a] = wmax[a].max(v);
             }
         }
     }
@@ -103,10 +103,7 @@ pub fn render_glb_to_cameo_png(
         0.5 * (wmin[2] + wmax[2]),
     ];
 
-    let mut u_min = f32::MAX;
-    let mut u_max = f32::MIN;
-    let mut v_min = f32::MAX;
-    let mut v_max = f32::MIN;
+    let (mut u_min, mut u_max, mut v_min, mut v_max) = (f32::MAX, f32::MIN, f32::MAX, f32::MIN);
     for tri in &raw_tris {
         for p in &tri.p {
             let rel = [
@@ -114,8 +111,7 @@ pub fn render_glb_to_cameo_png(
                 p[1] * norm_scale[1] - world_center[1],
                 p[2] * norm_scale[2] - world_center[2],
             ];
-            let u = dot3(rel, cam_right);
-            let v = dot3(rel, cam_up);
+            let (u, v) = (dot3(rel, cam_right), dot3(rel, cam_up));
             u_min = u_min.min(u);
             u_max = u_max.max(u);
             v_min = v_min.min(v);
@@ -123,57 +119,39 @@ pub fn render_glb_to_cameo_png(
         }
     }
 
-    let span_u = (u_max - u_min).max(1e-4);
-    let span_v = (v_max - v_min).max(1e-4);
-    let margin_x = SS_WIDTH as f32 * 0.085;
-    let margin_y = SS_HEIGHT as f32 * 0.095;
-    let avail_w = (SS_WIDTH as f32 - 2.0 * margin_x).max(16.0);
-    let avail_h = (SS_HEIGHT as f32 - 2.0 * margin_y).max(16.0);
-    let px_scale = (avail_w / span_u).min(avail_h / span_v);
-    let center_u = 0.5 * (u_min + u_max);
-    let center_v = 0.5 * (v_min + v_max);
-    let screen_cx = SS_WIDTH as f32 * 0.5;
-    let screen_cy = SS_HEIGHT as f32 * 0.51;
+    let (span_u, span_v) = ((u_max - u_min).max(1e-4), (v_max - v_min).max(1e-4));
+    let px_scale = ((SS_WIDTH as f32 * 0.83) / span_u).min((SS_HEIGHT as f32 * 0.81) / span_v);
+    let (center_u, center_v) = (0.5 * (u_min + u_max), 0.5 * (v_min + v_max));
+    let (screen_cx, screen_cy) = (SS_WIDTH as f32 * 0.5, SS_HEIGHT as f32 * 0.51);
 
-    // Initialize 192x144 studio backdrop with subtle faction-accented spotlight & ground shadow
     let mut ss_rgb = vec![[0.0f32; 3]; SS_WIDTH * SS_HEIGHT];
     let mut zbuf = vec![f32::INFINITY; SS_WIDTH * SS_HEIGHT];
 
-    let ground_rel_y = wmin[1] - world_center[1];
-    let shadow_cy = screen_cy - (ground_rel_y * cam_up[1] - center_v) * px_scale;
+    let shadow_cy = screen_cy - ((wmin[1] - world_center[1]) * cam_up[1] - center_v) * px_scale;
     let shadow_rx = (span_u * px_scale * 0.46).max(12.0);
     let shadow_ry = (span_v * px_scale * 0.18).max(6.0);
 
     for py in 0..SS_HEIGHT {
         let ny = (py as f32 / SS_HEIGHT as f32) * 2.0 - 1.0;
+        let sky_grad = (1.0 - (py as f32 / SS_HEIGHT as f32)).powf(1.3) * 0.035;
         for px in 0..SS_WIDTH {
             let nx = (px as f32 / SS_WIDTH as f32) * 2.0 - 1.0;
-            let rad2 = nx * nx * 0.75 + (ny + 0.08) * (ny + 0.08) * 0.95;
-            let spot = (1.0 - rad2 * 0.72).clamp(0.0, 1.0);
-            let sky_grad = (1.0 - (py as f32 / SS_HEIGHT as f32)).powf(1.3) * 0.035;
-
+            let spot = (1.0 - (nx * nx * 0.75 + (ny + 0.08).powi(2) * 0.95) * 0.72).clamp(0.0, 1.0);
             let mut bg = [
                 0.014 + spot * (0.034 + primary_color[0] * 0.032) + sky_grad * 0.6,
                 0.019 + spot * (0.044 + primary_color[1] * 0.032) + sky_grad * 0.8,
                 0.030 + spot * (0.064 + primary_color[2] * 0.036) + sky_grad * 1.1,
             ];
-
-            // Soft contact shadow ellipse under the model base
-            let sdx = (px as f32 - screen_cx) / shadow_rx;
-            let sdy = (py as f32 - shadow_cy) / shadow_ry;
-            let sd2 = sdx * sdx + sdy * sdy;
+            let sd2 = ((px as f32 - screen_cx) / shadow_rx).powi(2)
+                + ((py as f32 - shadow_cy) / shadow_ry).powi(2);
             if sd2 < 1.0 {
-                let occ = (1.0 - sd2).powi(2) * 0.58;
-                for c in &mut bg {
-                    *c *= 1.0 - occ;
-                }
+                let occ = 1.0 - (1.0 - sd2).powi(2) * 0.58;
+                bg = [bg[0] * occ, bg[1] * occ, bg[2] * occ];
             }
-
             ss_rgb[py * SS_WIDTH + px] = bg;
         }
     }
 
-    // 3-point isometric studio lights in world space
     let key_dir = normalize3([-0.48, 0.78, 0.40]);
     let fill_dir = normalize3([0.68, 0.42, 0.60]);
     let rim_dir = normalize3([0.16, 0.52, -0.84]);
@@ -209,7 +187,6 @@ pub fn render_glb_to_cameo_png(
         );
     }
 
-    // Downsample 2x2 SSAA (192x144 -> 96x72) and apply subtle 1px metallic vignette border
     let mut out_rgba = vec![0u8; (CAMEO_WIDTH * CAMEO_HEIGHT * 4) as usize];
     for oy in 0..CAMEO_HEIGHT as usize {
         for ox in 0..CAMEO_WIDTH as usize {
@@ -217,26 +194,23 @@ pub fn render_glb_to_cameo_png(
             for sy_i in 0..2 {
                 for sx_i in 0..2 {
                     let s = ss_rgb[(oy * 2 + sy_i) * SS_WIDTH + (ox * 2 + sx_i)];
-                    sum[0] += s[0];
-                    sum[1] += s[1];
-                    sum[2] += s[2];
+                    sum = [sum[0] + s[0], sum[1] + s[1], sum[2] + s[2]];
                 }
             }
-            let mut avg = [sum[0] * 0.25, sum[1] * 0.25, sum[2] * 0.25];
-
-            // Subtle corner vignette + crisp 1px metallic bezel
             let fx = (ox as f32 + 0.5) / CAMEO_WIDTH as f32 * 2.0 - 1.0;
             let fy = (oy as f32 + 0.5) / CAMEO_HEIGHT as f32 * 2.0 - 1.0;
-            let vig = (1.0 - 0.16 * (fx * fx * fx * fx + fy * fy * fy * fy)).clamp(0.72, 1.0);
-            for c in &mut avg {
-                *c *= vig;
-            }
+            let vig = (1.0 - 0.16 * (fx.powi(4) + fy.powi(4))).clamp(0.72, 1.0);
+            let mut avg = [
+                sum[0] * 0.25 * vig,
+                sum[1] * 0.25 * vig,
+                sum[2] * 0.25 * vig,
+            ];
 
-            let on_outer_edge = ox == 0
+            if ox == 0
                 || oy == 0
                 || ox + 1 == CAMEO_WIDTH as usize
-                || oy + 1 == CAMEO_HEIGHT as usize;
-            if on_outer_edge {
+                || oy + 1 == CAMEO_HEIGHT as usize
+            {
                 let bevel = if ox == 0 || oy == 0 { 0.055 } else { 0.012 };
                 avg = [
                     avg[0] * 0.35 + bevel,
@@ -280,11 +254,8 @@ fn rasterize_cameo_tri(
     ss_rgb: &mut [[f32; 3]],
     zbuf: &mut [f32],
 ) {
-    let mut sx = [0.0f32; 3];
-    let mut sy = [0.0f32; 3];
-    let mut sz = [0.0f32; 3];
-    let mut wn = [[0.0f32; 3]; 3];
-    let mut wp = [[0.0f32; 3]; 3];
+    let (mut sx, mut sy, mut sz) = ([0.0f32; 3], [0.0f32; 3], [0.0f32; 3]);
+    let (mut wn, mut wp) = ([[0.0f32; 3]; 3], [[0.0f32; 3]; 3]);
 
     for k in 0..3 {
         let p = [
@@ -293,12 +264,9 @@ fn rasterize_cameo_tri(
             tri.p[k][2] * norm_scale[2] - world_center[2],
         ];
         wp[k] = p;
-        let u = dot3(p, cam_right);
-        let v = dot3(p, cam_up);
-        let d = dot3(p, cam_fwd);
-        sx[k] = screen_cx + (u - center_u) * px_scale;
-        sy[k] = screen_cy - (v - center_v) * px_scale;
-        sz[k] = d;
+        sx[k] = screen_cx + (dot3(p, cam_right) - center_u) * px_scale;
+        sy[k] = screen_cy - (dot3(p, cam_up) - center_v) * px_scale;
+        sz[k] = dot3(p, cam_fwd);
         wn[k] = normalize3([
             tri.n[k][0] * inv_norm_scale[0],
             tri.n[k][1] * inv_norm_scale[1],
@@ -306,13 +274,10 @@ fn rasterize_cameo_tri(
         ]);
     }
 
-    // Screen-space signed area (note Y is down in pixel space)
     let area = (sx[1] - sx[0]) * (sy[2] - sy[0]) - (sy[1] - sy[0]) * (sx[2] - sx[0]);
     if area.abs() < 1e-4 {
         return;
     }
-
-    // Geometric normal for backface handling when double_sided or flipped winding
     let e1 = [
         wp[1][0] - wp[0][0],
         wp[1][1] - wp[0][1],
@@ -338,7 +303,6 @@ fn rasterize_cameo_tri(
     let min_y = sy[0].min(sy[1]).min(sy[2]).floor().max(0.0) as usize;
     let max_y =
         (sy[0].max(sy[1]).max(sy[2]).ceil() as isize).clamp(0, SS_HEIGHT as isize - 1) as usize;
-
     let inv_area = 1.0 / area;
     let spec_pow = ((1.0 - tri.roughness.clamp(0.08, 0.96)) * 42.0 + 6.0).clamp(6.0, 48.0);
     let spec_strength = 0.14 + 0.34 * tri.metallic.clamp(0.0, 1.0);
@@ -347,14 +311,12 @@ fn rasterize_cameo_tri(
         let pfy = py as f32 + 0.5;
         for px in min_x..=max_x {
             let pfx = px as f32 + 0.5;
-
             let w0 = ((sx[1] - pfx) * (sy[2] - pfy) - (sy[1] - pfy) * (sx[2] - pfx)) * inv_area;
             let w1 = ((sx[2] - pfx) * (sy[0] - pfy) - (sy[2] - pfy) * (sx[0] - pfx)) * inv_area;
             let w2 = 1.0 - w0 - w1;
             if w0 < -1e-4 || w1 < -1e-4 || w2 < -1e-4 {
                 continue;
             }
-
             let depth = w0 * sz[0] + w1 * sz[1] + w2 * sz[2];
             let pix_idx = py * SS_WIDTH + px;
             if depth >= zbuf[pix_idx] {
@@ -383,7 +345,6 @@ fn rasterize_cameo_tri(
                     0.55 * base_srgb[2] + 0.45 * primary_color[2],
                 ];
             }
-            // Convert sRGB vertex color to linear space for physically-plausible shading
             let albedo = [
                 base_srgb[0].clamp(0.0, 1.0).powf(2.2),
                 base_srgb[1].clamp(0.0, 1.0).powf(2.2),
@@ -394,20 +355,24 @@ fn rasterize_cameo_tri(
             let ndotfill = dot3(n, fill_dir).max(0.0);
             let ndotrim = dot3(n, rim_dir).max(0.0);
             let ndotv = dot3(n, view_dir).clamp(0.0, 1.0);
-            let ndoth = dot3(n, half_vec).max(0.0);
-
             let hemi = 0.16 + 0.14 * (n[1] * 0.5 + 0.5);
             let fresnel = (1.0 - ndotv).powi(3) * 0.24;
-            let spec = ndoth.powf(spec_pow) * spec_strength * (0.25 + 0.75 * ndotl);
-
-            let diff_r = hemi + ndotl * 1.18 + ndotfill * 0.34 + ndotrim * 0.22;
-            let diff_g = hemi * 1.02 + ndotl * 1.14 + ndotfill * 0.40 + ndotrim * 0.25;
-            let diff_b = hemi * 1.08 + ndotl * 1.06 + ndotfill * 0.48 + ndotrim * 0.30;
+            let spec =
+                dot3(n, half_vec).max(0.0).powf(spec_pow) * spec_strength * (0.25 + 0.75 * ndotl);
 
             ss_rgb[pix_idx] = [
-                albedo[0] * diff_r + spec * 1.0 + fresnel * 0.55 + tri.emissive[0] * 0.85,
-                albedo[1] * diff_g + spec * 0.98 + fresnel * 0.65 + tri.emissive[1] * 0.85,
-                albedo[2] * diff_b + spec * 0.95 + fresnel * 0.82 + tri.emissive[2] * 0.85,
+                albedo[0] * (hemi + ndotl * 1.18 + ndotfill * 0.34 + ndotrim * 0.22)
+                    + spec
+                    + fresnel * 0.55
+                    + tri.emissive[0] * 0.85,
+                albedo[1] * (hemi * 1.02 + ndotl * 1.14 + ndotfill * 0.40 + ndotrim * 0.25)
+                    + spec * 0.98
+                    + fresnel * 0.65
+                    + tri.emissive[1] * 0.85,
+                albedo[2] * (hemi * 1.08 + ndotl * 1.06 + ndotfill * 0.48 + ndotrim * 0.30)
+                    + spec * 0.95
+                    + fresnel * 0.82
+                    + tri.emissive[2] * 0.85,
             ];
         }
     }
@@ -433,61 +398,88 @@ fn is_authentic_protected_cameo(icon_path: &Path) -> bool {
         .unwrap_or(false)
 }
 
-/// Renders `96x72` `.png` cameos from `.glb` models across a mod workspace, honoring `--def-id`
-/// and `--only-missing`, while never overwriting authentic high-size RA2 cameo icons.
+/// Renders cameos across a mod workspace. When `RTS_FORCE_ALL_HD_CAMEOS=1` is set (or via
+/// [`render_mod_cameos_with_options`] with `overwrite_all = true`), renders full `192x144`
+/// `v3_ultra` PBR textured cameos overwriting legacy pixelated icons!
 pub fn render_mod_cameos(
     mod_path: &Path,
     def_id_filter: Option<&str>,
     only_missing: bool,
 ) -> Result<Vec<RenderedCameoEntry>> {
+    let env_force_hd = std::env::var("RTS_FORCE_ALL_HD_CAMEOS")
+        .ok()
+        .is_some_and(|v| v.trim() == "1" || v.eq_ignore_ascii_case("true"));
+    render_mod_cameos_with_options(mod_path, def_id_filter, only_missing, env_force_hd)
+}
+
+pub fn render_mod_cameos_with_options(
+    mod_path: &Path,
+    def_id_filter: Option<&str>,
+    only_missing: bool,
+    overwrite_all: bool,
+) -> Result<Vec<RenderedCameoEntry>> {
     let loaded = LoadedMod::load_from_dir(mod_path)?;
     let cameos_dir = mod_path.join("assets/ui/cameos");
     fs::create_dir_all(&cameos_dir)?;
 
-    struct CameoTarget {
-        def_id: String,
-        is_bldg: bool,
-        model_rel: String,
-        icon_opt: Option<String>,
-        scale: [f32; 3],
-        prim_col: [f32; 3],
-        tint: bool,
-    }
-
-    let mut targets: Vec<CameoTarget> = Vec::new();
-
+    type TargetTuple = (
+        String,
+        bool,
+        String,
+        Option<String>,
+        [f32; 3],
+        [f32; 3],
+        bool,
+    );
+    let mut targets: Vec<TargetTuple> = Vec::new();
     for (id, b) in &loaded.buildings {
-        if let Some(f) = def_id_filter {
-            if id != f {
-                continue;
-            }
+        if def_id_filter.is_none_or(|f| id == f) {
+            targets.push((
+                id.clone(),
+                true,
+                b.visual.model.clone(),
+                b.visual.icon.clone(),
+                b.visual.scale,
+                b.visual.primary_color,
+                b.visual.team_color_tint,
+            ));
         }
-        targets.push(CameoTarget {
-            def_id: id.clone(),
-            is_bldg: true,
-            model_rel: b.visual.model.clone(),
-            icon_opt: b.visual.icon.clone(),
-            scale: b.visual.scale,
-            prim_col: b.visual.primary_color,
-            tint: b.visual.team_color_tint,
-        });
+    }
+    for (id, u) in &loaded.units {
+        if def_id_filter.is_none_or(|f| id == f) {
+            targets.push((
+                id.clone(),
+                false,
+                u.visual.model.clone(),
+                u.visual.icon.clone(),
+                u.visual.scale,
+                u.visual.primary_color,
+                u.visual.team_color_tint,
+            ));
+        }
     }
 
-    for (id, u) in &loaded.units {
-        if let Some(f) = def_id_filter {
-            if id != f {
-                continue;
+    if overwrite_all && def_id_filter.is_none() {
+        for (sid, is_b, pcol) in [
+            ("bridge_repair_hut", true, [0.76, 0.62, 0.24]),
+            ("yuri_slave", false, [0.68, 0.22, 0.88]),
+            ("soviet_cosmonaut", false, [0.85, 0.16, 0.16]),
+            ("president_dugan", false, [0.18, 0.45, 0.88]),
+            ("premier_romanov", false, [0.85, 0.16, 0.16]),
+            ("prof_einstein", false, [0.22, 0.58, 0.94]),
+        ] {
+            if !targets.iter().any(|t| t.0 == sid) {
+                targets.push((
+                    sid.to_string(),
+                    is_b,
+                    format!("assets/models/{sid}.glb"),
+                    Some(format!("assets/ui/cameos/{sid}_icon.png")),
+                    [1.0, 1.0, 1.0],
+                    pcol,
+                    true,
+                ));
             }
         }
-        targets.push(CameoTarget {
-            def_id: id.clone(),
-            is_bldg: false,
-            model_rel: u.visual.model.clone(),
-            icon_opt: u.visual.icon.clone(),
-            scale: u.visual.scale,
-            prim_col: u.visual.primary_color,
-            tint: u.visual.team_color_tint,
-        });
     }
 
     if def_id_filter.is_some() && targets.is_empty() {
@@ -499,31 +491,26 @@ pub fn render_mod_cameos(
     }
 
     let mut rendered = Vec::new();
+    let mut cache: BTreeMap<(PathBuf, [u8; 3], bool, bool), Vec<u8>> = BTreeMap::new();
+    let mut vet_lookup: BTreeMap<String, VetCameoSpec> = BTreeMap::new();
+    let mut written_paths: BTreeSet<PathBuf> = BTreeSet::new();
 
-    for CameoTarget {
-        def_id,
-        is_bldg,
-        model_rel,
-        icon_opt,
-        scale,
-        prim_col,
-        tint,
-    } in targets
-    {
-        if let Some(ref existing_rel) = icon_opt {
-            if !existing_rel.trim().is_empty() {
-                let resolved = loaded.resolve_asset_path(existing_rel);
-                let existing_disk = if resolved.is_file() {
-                    resolved
-                } else {
-                    mod_path.join(existing_rel)
-                };
-                if only_missing && existing_disk.is_file() {
-                    continue;
-                }
-                if def_id_filter.is_none() && is_authentic_protected_cameo(&existing_disk) {
-                    continue;
-                }
+    for (def_id, is_bldg, model_rel, icon_opt, scale, prim_col, tint) in targets {
+        if let Some(existing_rel) = icon_opt.as_deref().filter(|s| !s.trim().is_empty()) {
+            let resolved = loaded.resolve_asset_path(existing_rel);
+            let existing_disk = if resolved.is_file() {
+                resolved
+            } else {
+                mod_path.join(existing_rel)
+            };
+            if only_missing && !overwrite_all && existing_disk.is_file() {
+                continue;
+            }
+            if !overwrite_all
+                && def_id_filter.is_none()
+                && is_authentic_protected_cameo(&existing_disk)
+            {
+                continue;
             }
         }
 
@@ -538,10 +525,10 @@ pub fn render_mod_cameos(
             p
         };
 
-        // Determine safe destination path (never clobbering authentic *icon.png files!)
         let rel_out = match icon_opt {
             Some(ref r)
-                if !r.trim().is_empty() && !is_authentic_protected_cameo(&mod_path.join(r)) =>
+                if !r.trim().is_empty()
+                    && (overwrite_all || !is_authentic_protected_cameo(&mod_path.join(r))) =>
             {
                 r.replace('\\', "/")
             }
@@ -551,19 +538,54 @@ pub fn render_mod_cameos(
         if let Some(parent) = out_path.parent() {
             fs::create_dir_all(parent)?;
         }
+        if let Some(stem) = out_path.file_stem().and_then(|s| s.to_str()) {
+            let prefix = stem
+                .strip_suffix("icon")
+                .unwrap_or(stem)
+                .to_ascii_lowercase();
+            vet_lookup.insert(prefix, (model_rel.clone(), scale, prim_col, tint, is_bldg));
+        }
 
-        let glb_bytes = fs::read(&glb_path)
-            .with_context(|| format!("Failed to read model {}", glb_path.display()))?;
-        let png_bytes = render_glb_to_cameo_png(&glb_bytes, scale, prim_col, tint, is_bldg)?;
+        let col_key = [
+            (prim_col[0].clamp(0.0, 1.0) * 255.0) as u8,
+            (prim_col[1].clamp(0.0, 1.0) * 255.0) as u8,
+            (prim_col[2].clamp(0.0, 1.0) * 255.0) as u8,
+        ];
+        let key = (glb_path.clone(), col_key, tint, is_bldg);
+        let png_bytes = if let Some(c) = cache.get(&key) {
+            c.clone()
+        } else {
+            let glb_bytes = fs::read(&glb_path)
+                .with_context(|| format!("Failed to read {}", glb_path.display()))?;
+            let bytes = if overwrite_all {
+                render_glb_to_hd_cameo_png(&glb_bytes, scale, prim_col, tint, is_bldg)?
+            } else {
+                render_glb_to_cameo_png(&glb_bytes, scale, prim_col, tint, is_bldg)?
+            };
+            cache.insert(key, bytes.clone());
+            bytes
+        };
+
         fs::write(&out_path, &png_bytes)
-            .with_context(|| format!("Failed to write cameo {}", out_path.display()))?;
-
+            .with_context(|| format!("Failed to write {}", out_path.display()))?;
+        written_paths.insert(out_path.clone());
+        if overwrite_all {
+            let alt = mod_path.join(format!("assets/ui/cameos/{def_id}_icon.png"));
+            if alt != out_path && alt.is_file() {
+                fs::write(&alt, &png_bytes)?;
+                written_paths.insert(alt);
+            }
+        }
         rendered.push(RenderedCameoEntry {
             def_id,
             is_building: is_bldg,
             output_path: out_path,
             relative_icon_path: rel_out,
         });
+    }
+
+    if overwrite_all && def_id_filter.is_none() && cameos_dir.is_dir() {
+        upgrade_auxiliary_cameos_to_hd(mod_path, &cameos_dir, &mut written_paths, &vet_lookup)?;
     }
 
     Ok(rendered)
@@ -575,16 +597,20 @@ mod tests {
     use crate::mesh_builder::{build_prop_glb_bytes, PropKind};
 
     #[test]
-    fn software_cameo_baker_renders_96x72_rgba_png_from_glb() {
+    fn software_cameo_baker_renders_96x72_and_192x144_hd_rgba_png_from_glb() {
         let glb = build_prop_glb_bytes(PropKind::CivilianBuildingIntact).unwrap();
         let png = render_glb_to_cameo_png(&glb, [2.0, 1.8, 2.0], [0.2, 0.5, 0.9], true, true)
-            .expect("cameo render should succeed");
-
+            .expect("96x72 cameo render should succeed");
         assert_eq!(&png[0..8], b"\x89PNG\r\n\x1a\n");
-        assert_eq!(&png[12..16], b"IHDR");
         let w = u32::from_be_bytes(png[16..20].try_into().unwrap());
         let h = u32::from_be_bytes(png[20..24].try_into().unwrap());
         assert_eq!((w, h), (96, 72));
-        assert!(png.len() > 400);
+
+        let hd = render_glb_to_hd_cameo_png(&glb, [2.0, 1.8, 2.0], [0.2, 0.5, 0.9], true, true)
+            .expect("192x144 HD cameo render should succeed");
+        let hw = u32::from_be_bytes(hd[16..20].try_into().unwrap());
+        let hh = u32::from_be_bytes(hd[20..24].try_into().unwrap());
+        assert_eq!((hw, hh), (192, 144));
+        assert!(hd.len() > 800);
     }
 }

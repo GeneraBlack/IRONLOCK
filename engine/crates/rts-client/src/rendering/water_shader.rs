@@ -48,9 +48,9 @@ impl Default for WaterWaveUniform {
         Self {
             map_world_size: Vec2::splat(128.0),
             time_secs: 0.0,
-            foam_intensity: 1.08,
-            shallow_color: Vec4::new(0.06, 0.54, 0.80, 1.0),
-            deep_color: Vec4::new(0.015, 0.16, 0.48, 1.0),
+            foam_intensity: 1.12,
+            shallow_color: Vec4::new(0.06, 0.56, 0.82, 1.0),
+            deep_color: Vec4::new(0.014, 0.16, 0.49, 1.0),
             fow_params: Vec4::ZERO,
         }
     }
@@ -60,29 +60,29 @@ impl Default for WaterWaveUniform {
 pub fn theater_water_palette(theater: Ra2TerrainTheater) -> (Vec4, Vec4, f32) {
     match theater {
         Ra2TerrainTheater::Temperate | Ra2TerrainTheater::NewUrban => (
-            Vec4::new(0.06, 0.55, 0.82, 1.0),
-            Vec4::new(0.015, 0.17, 0.50, 1.0),
-            1.10,
+            Vec4::new(0.06, 0.57, 0.84, 1.0),
+            Vec4::new(0.014, 0.16, 0.50, 1.0),
+            1.14,
         ),
         Ra2TerrainTheater::Snow => (
-            Vec4::new(0.14, 0.62, 0.86, 1.0),
-            Vec4::new(0.02, 0.15, 0.42, 1.0),
-            1.22,
+            Vec4::new(0.14, 0.63, 0.88, 1.0),
+            Vec4::new(0.018, 0.15, 0.43, 1.0),
+            1.26,
         ),
         Ra2TerrainTheater::Urban => (
-            Vec4::new(0.05, 0.46, 0.72, 1.0),
+            Vec4::new(0.05, 0.47, 0.73, 1.0),
             Vec4::new(0.015, 0.14, 0.42, 1.0),
-            1.05,
+            1.08,
         ),
         Ra2TerrainTheater::Desert => (
-            Vec4::new(0.07, 0.64, 0.80, 1.0),
-            Vec4::new(0.02, 0.21, 0.52, 1.0),
-            1.08,
+            Vec4::new(0.07, 0.66, 0.82, 1.0),
+            Vec4::new(0.018, 0.21, 0.53, 1.0),
+            1.12,
         ),
         Ra2TerrainTheater::Lunar => (
             Vec4::new(0.08, 0.36, 0.58, 1.0),
-            Vec4::new(0.01, 0.10, 0.30, 1.0),
-            0.88,
+            Vec4::new(0.010, 0.10, 0.30, 1.0),
+            0.90,
         ),
     }
 }
@@ -114,19 +114,53 @@ pub struct WaterSurfaceEntity {
     pub built_dims: [i32; 2],
     pub built_water_count: usize,
     pub built_bridge_count: usize,
+    pub built_naval_signature: u64,
+    pub last_naval_sync_secs: f32,
     pub shore_image: Handle<Image>,
     pub material_handle: Handle<WaterWaveMaterial>,
 }
 
-/// Computes a crisp `4x4`-texels/tile shoreline depth & bridge-pier foam mask:
+/// Collects `(world_x, world_z, foam_radius_m)` for waterborne naval hulls and aquatic structures.
+fn collect_waterborne_hull_contacts(world: &SimWorld) -> (Vec<(f32, f32, f32)>, u64) {
+    if world.grid.water_tiles.is_empty() {
+        return (Vec::new(), 0);
+    }
+    let ts = world.grid.tile_size.max(0.01);
+    let mut contacts = Vec::new();
+    let mut sig = 0x9e37_79b9_7f4a_7c15_u64;
+    for (&id, ent) in &world.entities {
+        if ent.position[1] > WATER_SURFACE_Y + 0.85 {
+            continue;
+        }
+        let tile = world.grid.world_to_tile(ent.position);
+        if !world.grid.water_tiles.contains(&tile) || world.grid.bridge_tiles.contains(&tile) {
+            continue;
+        }
+        let radius_m = match ent.kind {
+            rts_simulation::world::EntityKind::Building { .. } => ts * 1.45,
+            rts_simulation::world::EntityKind::Unit { .. } => ts * 0.92,
+        };
+        contacts.push((ent.position[0], ent.position[2], radius_m));
+        let qx = (ent.position[0] * 1.5).round() as i64 as u64;
+        let qz = (ent.position[2] * 1.5).round() as i64 as u64;
+        sig = sig
+            .wrapping_mul(0x517c_c1b7_2722_0a95)
+            .wrapping_add(id ^ qx.rotate_left(17) ^ qz.rotate_left(37));
+    }
+    (contacts, sig)
+}
+
+/// Computes a crisp `4x4`-texels/tile shoreline depth, cliff/pier surge, and naval-hull foam mask:
 /// - `R`: Soft shoreline water column depth (`0 = dry bank above -0.35m`, `255 = deep open water`).
-/// - `G`: Bridge-pier foam ring (`255 = adjacent to bridge support pier`, `0 = open water`).
+/// - `G`: Bridge-pier & steep coastal-cliff surge ring (`255 = adjacent to pier or cliff wall`).
+/// - `B`: Naval hull & shipyard contact foam ring (`255 = lapping against naval hull`).
 pub fn build_shoreline_depth_image(world: &SimWorld) -> Image {
     let w = world.grid.width.max(1);
     let h = world.grid.height.max(1);
     let ts = world.grid.tile_size.max(0.01);
     let tex_w = w * SHORE_TEXELS_PER_TILE;
     let tex_h = h * SHORE_TEXELS_PER_TILE;
+    let (hull_contacts, _) = collect_waterborne_hull_contacts(world);
     let mut data = Vec::with_capacity((tex_w * tex_h * 4) as usize);
 
     for pz in 0..tex_h {
@@ -142,6 +176,7 @@ pub fn build_shoreline_depth_image(world: &SimWorld) -> Image {
             let in_or_near_water = (-1..=1)
                 .any(|dz| (-1..=1).any(|dx| world.grid.water_tiles.contains(&[tx + dx, tz + dz])));
 
+            let mut min_cliff_dist = 99.0_f32;
             let depth_01 = if !in_or_near_water {
                 0.0_f32
             } else if !world.grid.water_tiles.contains(&[tx, tz]) {
@@ -164,10 +199,21 @@ pub fn build_shoreline_depth_image(world: &SimWorld) -> Image {
                             if d2 < min_land_dist_sq {
                                 min_land_dist_sq = d2;
                             }
+                            if nx >= 0
+                                && nx < w
+                                && nz >= 0
+                                && nz < h
+                                && world.grid.elevation_tiles.contains(&[nx, nz])
+                            {
+                                let cd = d2.sqrt();
+                                if cd < min_cliff_dist {
+                                    min_cliff_dist = cd;
+                                }
+                            }
                         }
                     }
                 }
-                let dist_depth = ((min_land_dist_sq.sqrt() - 0.42) / 3.15).clamp(0.04, 1.0);
+                let dist_depth = ((min_land_dist_sq.sqrt() - 0.40) / 3.10).clamp(0.04, 1.0);
                 if world.grid.has_valid_vertex_heights() {
                     dist_depth.min((height_depth * 1.35).clamp(0.06, 1.0))
                 } else {
@@ -175,32 +221,62 @@ pub fn build_shoreline_depth_image(world: &SimWorld) -> Image {
                 }
             };
 
-            let mut pier_foam_01 = 0.0_f32;
-            if in_or_near_water && !world.grid.bridge_tiles.is_empty() {
-                let mut min_bridge_dist = 99.0_f32;
-                for dz in -1i32..=1i32 {
-                    for dx in -1i32..=1i32 {
-                        let bt = [tx + dx, tz + dz];
-                        if world.grid.bridge_tiles.contains(&bt)
-                            && world.grid.water_tiles.contains(&bt)
-                        {
-                            let bx = (bt[0] as f32 + 0.5) * ts;
-                            let bz = (bt[1] as f32 + 0.5) * ts;
-                            let d = (((wx - bx).powi(2) + (wz - bz).powi(2)).sqrt()) / ts;
-                            if d < min_bridge_dist {
-                                min_bridge_dist = d;
+            // G: Bridge pier + steep cliff-bank surf surge mask
+            let mut pier_or_cliff_01 = 0.0_f32;
+            if in_or_near_water {
+                if min_cliff_dist < 1.55 {
+                    pier_or_cliff_01 =
+                        pier_or_cliff_01.max((1.0 - min_cliff_dist / 1.55).clamp(0.0, 1.0) * 0.88);
+                }
+                if !world.grid.bridge_tiles.is_empty() {
+                    let mut min_bridge_dist = 99.0_f32;
+                    for dz in -1i32..=1i32 {
+                        for dx in -1i32..=1i32 {
+                            let bt = [tx + dx, tz + dz];
+                            if world.grid.bridge_tiles.contains(&bt)
+                                && world.grid.water_tiles.contains(&bt)
+                            {
+                                let bx = (bt[0] as f32 + 0.5) * ts;
+                                let bz = (bt[1] as f32 + 0.5) * ts;
+                                let d = (((wx - bx).powi(2) + (wz - bz).powi(2)).sqrt()) / ts;
+                                if d < min_bridge_dist {
+                                    min_bridge_dist = d;
+                                }
                             }
                         }
                     }
+                    if min_bridge_dist < 1.18 {
+                        pier_or_cliff_01 =
+                            pier_or_cliff_01.max((1.0 - min_bridge_dist / 1.18).clamp(0.0, 1.0));
+                    }
                 }
-                if min_bridge_dist < 1.15 {
-                    pier_foam_01 = (1.0 - min_bridge_dist / 1.15).clamp(0.0, 1.0);
+            }
+
+            // B: Naval hull contact foam ring
+            let mut hull_foam_01 = 0.0_f32;
+            if depth_01 > 0.02 && !hull_contacts.is_empty() {
+                for &(hx, hz, rad_m) in &hull_contacts {
+                    let dx = wx - hx;
+                    let dz = wz - hz;
+                    let d2 = dx * dx + dz * dz;
+                    let outer = rad_m * 1.38;
+                    if d2 < outer * outer {
+                        let d = d2.sqrt();
+                        let ring = if d < rad_m * 0.45 {
+                            0.35
+                        } else {
+                            (1.0 - ((d - rad_m * 0.78).abs() / (rad_m * 0.60)).clamp(0.0, 1.0))
+                                .powf(1.25)
+                        };
+                        hull_foam_01 = hull_foam_01.max(ring);
+                    }
                 }
             }
 
             let r_u8 = (depth_01.clamp(0.0, 1.0) * 255.0).round() as u8;
-            let g_u8 = (pier_foam_01.clamp(0.0, 1.0) * 255.0).round() as u8;
-            data.extend_from_slice(&[r_u8, g_u8, r_u8, 255]);
+            let g_u8 = (pier_or_cliff_01.clamp(0.0, 1.0) * 255.0).round() as u8;
+            let b_u8 = (hull_foam_01.clamp(0.0, 1.0) * 255.0).round() as u8;
+            data.extend_from_slice(&[r_u8, g_u8, b_u8, 255]);
         }
     }
 
@@ -355,6 +431,7 @@ pub fn animate_and_sync_water_shader(
     let curr_dims = [world.grid.width.max(1), world.grid.height.max(1)];
     let curr_count = world.grid.water_tiles.len();
     let curr_bridges = world.grid.bridge_tiles.len();
+    let (_, naval_sig) = collect_waterborne_hull_contacts(world);
 
     let fow_tex_handle = if let Some(res) = fow_img_res {
         res.0.clone()
@@ -378,8 +455,8 @@ pub fn animate_and_sync_water_shader(
                 base: StandardMaterial {
                     base_color: Color::srgba(0.04, 0.38, 0.72, 0.90),
                     alpha_mode: AlphaMode::Blend,
-                    perceptual_roughness: 0.06,
-                    reflectance: 0.95,
+                    perceptual_roughness: 0.05,
+                    reflectance: 0.96,
                     ..default()
                 },
                 extension: WaterWaveExtension {
@@ -401,6 +478,8 @@ pub fn animate_and_sync_water_shader(
                     built_dims: curr_dims,
                     built_water_count: curr_count,
                     built_bridge_count: curr_bridges,
+                    built_naval_signature: naval_sig,
+                    last_naval_sync_secs: elapsed,
                     shore_image: shore_img,
                     material_handle: mat_handle.clone(),
                 },
@@ -419,12 +498,16 @@ pub fn animate_and_sync_water_shader(
         let topology_changed = surf.built_dims != curr_dims
             || surf.built_water_count != curr_count
             || surf.built_bridge_count != curr_bridges;
-        if !terrain_touched && !topology_changed {
+        let naval_moved = surf.built_naval_signature != naval_sig
+            && (elapsed - surf.last_naval_sync_secs) >= 0.20;
+        if !terrain_touched && !topology_changed && !naval_moved {
             continue;
         }
         surf.built_dims = curr_dims;
         surf.built_water_count = curr_count;
         surf.built_bridge_count = curr_bridges;
+        surf.built_naval_signature = naval_sig;
+        surf.last_naval_sync_secs = elapsed;
 
         if curr_count == 0 {
             *vis = Visibility::Hidden;
@@ -461,7 +544,7 @@ mod tests {
     use rts_sdk::loader::LoadedMod;
 
     #[test]
-    fn builds_high_res_shoreline_depth_mask_and_vivid_ra2_theater_palettes() {
+    fn builds_high_res_shoreline_depth_mask_naval_foam_and_vivid_ra2_theater_palettes() {
         let mod_dir = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
             .join("../../../rust-ra2")
             .canonicalize()
@@ -472,7 +555,10 @@ mod tests {
             .values()
             .find(|m| !m.water_rects.is_empty())
             .unwrap_or(&loaded.entry_map);
-        let world = SimWorld::from_mod_map(&loaded, river_map);
+        let mut world = SimWorld::from_mod_map(&loaded, river_map);
+        if let Some(&wt) = world.grid.water_tiles.iter().next() {
+            let _ = world.spawn_unit(1, "allied_destroyer", wt, &loaded);
+        }
 
         let shore = build_shoreline_depth_image(&world);
         assert_eq!(
@@ -484,6 +570,12 @@ mod tests {
             (world.grid.height * SHORE_TEXELS_PER_TILE) as u32
         );
         assert!(build_water_surface_mesh(&world).is_some());
+        if !world.grid.water_tiles.is_empty() {
+            assert!(
+                shore.data.chunks_exact(4).any(|px| px[2] > 60),
+                "Naval hull in water must stamp blue-channel contact foam ring"
+            );
+        }
 
         let (temp_sh, temp_dp, temp_foam) = theater_water_palette(Ra2TerrainTheater::Temperate);
         let (snow_sh, _, snow_foam) = theater_water_palette(Ra2TerrainTheater::Snow);

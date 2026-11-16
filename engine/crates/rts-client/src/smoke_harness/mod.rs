@@ -1,6 +1,8 @@
 pub mod buildup_showcase;
 pub mod colors_16_showcase;
+pub mod mechanics_collapse_showcase;
 pub mod stages_ext;
+pub mod terrain_bridges_showcase;
 
 use crate::audio::JukeboxState;
 use crate::camera::RtsCameraRig;
@@ -87,11 +89,46 @@ pub fn drive_visual_smoke_test(
         Option<ResMut<ButtonInput<KeyCode>>>,
         Option<ResMut<crate::rendering::Ra2EntityVisualMode>>,
     ),
+    mut fx_queries: mechanics_collapse_showcase::ShowcaseFxQueries,
     mut exit_events: EventWriter<AppExit>,
 ) {
-    let Some(out_dir) = buildup_showcase::resolve_env_smoke_output_dir(&mut smoke, &mod_res) else {
+    let Some(out_dir) =
+        terrain_bridges_showcase::resolve_custom_smoke_output_dir(&mut smoke, &mod_res)
+            .or_else(|| buildup_showcase::resolve_env_smoke_output_dir(&mut smoke, &mod_res))
+    else {
         return;
     };
+    if std::env::var_os("RTS_SMOKE_TERRAIN_BRIDGES").is_some()
+        || std::env::var_os("RTS_SMOKE_RA2_MECHANICS").is_some()
+    {
+        let vis_ref = visual_queries.p0();
+        let _ = terrain_bridges_showcase::try_drive_new_v3_showcases(
+            &mut commands,
+            &out_dir,
+            time.delta_secs(),
+            asset_server.as_deref(),
+            &mut meshes,
+            &mut materials,
+            &mut mod_res,
+            &mut sim_res,
+            &mut smoke,
+            &mut interaction,
+            &mut cached_fow,
+            &mut vfx_state,
+            &mut subwindows,
+            &mut last_sig,
+            &mut terrain_dirty,
+            &mut terrain_dirty_rects,
+            &env_q,
+            &vis_ref,
+            &mut fx_queries,
+            &mut camera_q,
+            &mut windows_q,
+            visual_mode.as_deref_mut(),
+            &mut exit_events,
+        );
+        return;
+    }
     if std::env::var_os("RTS_SMOKE_RA2_BUILDUP").is_some() {
         buildup_showcase::drive_buildup_showcase(
             &mut commands,

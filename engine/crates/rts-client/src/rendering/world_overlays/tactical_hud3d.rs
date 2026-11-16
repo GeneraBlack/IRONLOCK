@@ -33,116 +33,127 @@ pub fn push_bridges_and_repair_huts(
     let curb_col = [0.84, 0.68, 0.18, 1.0];
     let pier_col = [0.30, 0.33, 0.37, 1.0];
 
-    for &btile in &world.grid.bridge_tiles {
-        if cached_fow.tile_visibility(btile) == TileVisibility::Unexplored {
-            continue;
-        }
-        let tp = world.grid.tile_to_world(btile);
-        let center = Vec3::new(tp[0], deck_y - 0.08, tp[2]);
-        solid_batch.push_oriented_box(
-            center,
-            Vec3::new(ts * 0.50, 0.09, ts * 0.50),
-            Quat::IDENTITY,
-            deck_col,
-        );
+    let skip_legacy_3d_spans = crate::rendering::is_3d_bridge_mode_active_for_overlays(loaded);
 
-        if ((btile[0] + btile[1]).rem_euclid(2)) == 0 && world.grid.water_tiles.contains(&btile) {
-            let pier_h = ((deck_y - 0.14) - (water_y - 0.45)).max(0.4) * 0.5;
-            let pier_y = (water_y - 0.45) + pier_h;
-            for sx in [-1.0_f32, 1.0_f32] {
-                solid_batch.push_oriented_box(
-                    Vec3::new(tp[0] + sx * (ts * 0.36), pier_y, tp[2]),
-                    Vec3::new(0.14, pier_h, 0.14),
-                    Quat::IDENTITY,
-                    pier_col,
-                );
-            }
-        }
-
-        let edges: [([i32; 2], Vec3, Vec3); 4] = [
-            (
-                [btile[0], btile[1] - 1],
-                Vec3::new(0.0, 0.0, -ts * 0.46),
-                Vec3::X,
-            ),
-            (
-                [btile[0] + 1, btile[1]],
-                Vec3::new(ts * 0.46, 0.0, 0.0),
-                Vec3::Z,
-            ),
-            (
-                [btile[0], btile[1] + 1],
-                Vec3::new(0.0, 0.0, ts * 0.46),
-                Vec3::X,
-            ),
-            (
-                [btile[0] - 1, btile[1]],
-                Vec3::new(-ts * 0.46, 0.0, 0.0),
-                Vec3::Z,
-            ),
-        ];
-        for (ntile, flank_off, span_axis) in edges {
-            let is_lateral_water_edge = !world.grid.bridge_tiles.contains(&ntile)
-                && (world.grid.water_tiles.contains(&ntile)
-                    || world.grid.water_tiles.contains(&btile));
-            if !is_lateral_water_edge {
+    if !skip_legacy_3d_spans {
+        for &btile in &world.grid.bridge_tiles {
+            if cached_fow.tile_visibility(btile) == TileVisibility::Unexplored {
                 continue;
             }
-            let rail_base = Vec3::new(tp[0], deck_y, tp[2]) + flank_off;
-            let half_span = span_axis * (ts * 0.48);
-            let truss_top_h = 0.88_f32;
-            let b0 = rail_base - half_span;
-            let b1 = rail_base + half_span;
-            let t0 = b0 + Vec3::Y * truss_top_h;
-            let t1 = b1 + Vec3::Y * truss_top_h;
-            let t_mid = rail_base + Vec3::Y * truss_top_h;
-
-            solid_batch.push_strut_3d(b0 + Vec3::Y * 0.06, b1 + Vec3::Y * 0.06, 0.055, curb_col);
-            solid_batch.push_strut_3d(t0, t1, 0.052, truss_col);
-            solid_batch.push_strut_3d(b0, t0, 0.048, truss_col);
-            solid_batch.push_strut_3d(b1, t1, 0.048, truss_col);
-            solid_batch.push_strut_3d(b0, t_mid, 0.036, truss_col);
-            solid_batch.push_strut_3d(b1, t_mid, 0.036, truss_col);
-        }
-    }
-
-    for span in &world.destroyed_bridges {
-        let active_fp = if span.rotated {
-            [span.footprint[1], span.footprint[0]]
-        } else {
-            span.footprint
-        };
-        let center_w = world
-            .grid
-            .footprint_center_world(span.tile_origin, active_fp);
-        if cached_fow.world_pos_visibility(world, center_w) == TileVisibility::Unexplored {
-            continue;
-        }
-        let span_axis = if active_fp[0] >= active_fp[1] {
-            Vec3::X
-        } else {
-            Vec3::Z
-        };
-        let lat_axis = Vec3::new(-span_axis.z, 0.0, span_axis.x);
-        let half_len = (active_fp[0].max(active_fp[1]).max(2) as f32) * ts * 0.46;
-        let base_c = Vec3::new(center_w[0], deck_y - 0.12, center_w[2]);
-        for end_sign in [-1.0_f32, 1.0_f32] {
-            let stub_c = base_c + span_axis * (end_sign * half_len);
+            let tp = world.grid.tile_to_world(btile);
+            let center = Vec3::new(tp[0], deck_y - 0.08, tp[2]);
             solid_batch.push_oriented_box(
-                stub_c,
-                Vec3::new(0.48, 0.16, 0.48),
+                center,
+                Vec3::new(ts * 0.50, 0.09, ts * 0.50),
                 Quat::IDENTITY,
-                [0.24, 0.24, 0.26, 1.0],
+                deck_col,
             );
-            for lat_sign in [-1.0_f32, 1.0_f32] {
-                let gir_a = stub_c + lat_axis * (lat_sign * 0.55) + Vec3::Y * 0.18;
-                let gir_b = gir_a - span_axis * (end_sign * 0.95) - Vec3::Y * 0.42;
-                solid_batch.push_strut_3d(gir_a, gir_b, 0.05, [0.34, 0.30, 0.28, 1.0]);
+
+            if ((btile[0] + btile[1]).rem_euclid(2)) == 0 && world.grid.water_tiles.contains(&btile)
+            {
+                let pier_h = ((deck_y - 0.14) - (water_y - 0.45)).max(0.4) * 0.5;
+                let pier_y = (water_y - 0.45) + pier_h;
+                for sx in [-1.0_f32, 1.0_f32] {
+                    solid_batch.push_oriented_box(
+                        Vec3::new(tp[0] + sx * (ts * 0.36), pier_y, tp[2]),
+                        Vec3::new(0.14, pier_h, 0.14),
+                        Quat::IDENTITY,
+                        pier_col,
+                    );
+                }
+            }
+
+            let edges: [([i32; 2], Vec3, Vec3); 4] = [
+                (
+                    [btile[0], btile[1] - 1],
+                    Vec3::new(0.0, 0.0, -ts * 0.46),
+                    Vec3::X,
+                ),
+                (
+                    [btile[0] + 1, btile[1]],
+                    Vec3::new(ts * 0.46, 0.0, 0.0),
+                    Vec3::Z,
+                ),
+                (
+                    [btile[0], btile[1] + 1],
+                    Vec3::new(0.0, 0.0, ts * 0.46),
+                    Vec3::X,
+                ),
+                (
+                    [btile[0] - 1, btile[1]],
+                    Vec3::new(-ts * 0.46, 0.0, 0.0),
+                    Vec3::Z,
+                ),
+            ];
+            for (ntile, flank_off, span_axis) in edges {
+                let is_lateral_water_edge = !world.grid.bridge_tiles.contains(&ntile)
+                    && (world.grid.water_tiles.contains(&ntile)
+                        || world.grid.water_tiles.contains(&btile));
+                if !is_lateral_water_edge {
+                    continue;
+                }
+                let rail_base = Vec3::new(tp[0], deck_y, tp[2]) + flank_off;
+                let half_span = span_axis * (ts * 0.48);
+                let truss_top_h = 0.88_f32;
+                let b0 = rail_base - half_span;
+                let b1 = rail_base + half_span;
+                let t0 = b0 + Vec3::Y * truss_top_h;
+                let t1 = b1 + Vec3::Y * truss_top_h;
+                let t_mid = rail_base + Vec3::Y * truss_top_h;
+
+                solid_batch.push_strut_3d(
+                    b0 + Vec3::Y * 0.06,
+                    b1 + Vec3::Y * 0.06,
+                    0.055,
+                    curb_col,
+                );
+                solid_batch.push_strut_3d(t0, t1, 0.052, truss_col);
+                solid_batch.push_strut_3d(b0, t0, 0.048, truss_col);
+                solid_batch.push_strut_3d(b1, t1, 0.048, truss_col);
+                solid_batch.push_strut_3d(b0, t_mid, 0.036, truss_col);
+                solid_batch.push_strut_3d(b1, t_mid, 0.036, truss_col);
+            }
+        }
+
+        for span in &world.destroyed_bridges {
+            let active_fp = if span.rotated {
+                [span.footprint[1], span.footprint[0]]
+            } else {
+                span.footprint
+            };
+            let center_w = world
+                .grid
+                .footprint_center_world(span.tile_origin, active_fp);
+            if cached_fow.world_pos_visibility(world, center_w) == TileVisibility::Unexplored {
+                continue;
+            }
+            let span_axis = if active_fp[0] >= active_fp[1] {
+                Vec3::X
+            } else {
+                Vec3::Z
+            };
+            let lat_axis = Vec3::new(-span_axis.z, 0.0, span_axis.x);
+            let half_len = (active_fp[0].max(active_fp[1]).max(2) as f32) * ts * 0.46;
+            let base_c = Vec3::new(center_w[0], deck_y - 0.12, center_w[2]);
+            for end_sign in [-1.0_f32, 1.0_f32] {
+                let stub_c = base_c + span_axis * (end_sign * half_len);
+                solid_batch.push_oriented_box(
+                    stub_c,
+                    Vec3::new(0.48, 0.16, 0.48),
+                    Quat::IDENTITY,
+                    [0.24, 0.24, 0.26, 1.0],
+                );
+                for lat_sign in [-1.0_f32, 1.0_f32] {
+                    let gir_a = stub_c + lat_axis * (lat_sign * 0.55) + Vec3::Y * 0.18;
+                    let gir_b = gir_a - span_axis * (end_sign * 0.95) - Vec3::Y * 0.42;
+                    solid_batch.push_strut_3d(gir_a, gir_b, 0.05, [0.34, 0.30, 0.28, 1.0]);
+                }
             }
         }
     }
 
     let mut hut_tiles: BTreeSet<[i32; 2]> = world.bridge_repair_hut_tiles.clone();
+    let mut entity_hut_tiles: BTreeSet<[i32; 2]> = BTreeSet::new();
     for ent in world.entities.values() {
         if let EntityKind::Building { building_id } = &ent.kind {
             if loaded
@@ -152,6 +163,7 @@ pub fn push_bridges_and_repair_huts(
             {
                 let t = world.grid.world_to_tile(ent.position);
                 hut_tiles.insert(t);
+                entity_hut_tiles.insert(t);
             }
         }
     }
@@ -170,24 +182,26 @@ pub fn push_bridges_and_repair_huts(
             dx <= 16 && dz <= 16
         });
 
-        solid_batch.push_oriented_box(
-            hut_pos + Vec3::Y * 0.42,
-            Vec3::new(0.46, 0.42, 0.46),
-            Quat::IDENTITY,
-            [0.44, 0.48, 0.54, 1.0],
-        );
-        solid_batch.push_oriented_box(
-            hut_pos + Vec3::Y * 0.90,
-            Vec3::new(0.54, 0.08, 0.54),
-            Quat::IDENTITY,
-            [0.26, 0.34, 0.46, 1.0],
-        );
-        solid_batch.push_strut_3d(
-            hut_pos + Vec3::Y * 0.96,
-            hut_pos + Vec3::Y * 1.85,
-            0.045,
-            truss_col,
-        );
+        if !(skip_legacy_3d_spans && entity_hut_tiles.contains(&htile)) {
+            solid_batch.push_oriented_box(
+                hut_pos + Vec3::Y * 0.42,
+                Vec3::new(0.46, 0.42, 0.46),
+                Quat::IDENTITY,
+                [0.44, 0.48, 0.54, 1.0],
+            );
+            solid_batch.push_oriented_box(
+                hut_pos + Vec3::Y * 0.90,
+                Vec3::new(0.54, 0.08, 0.54),
+                Quat::IDENTITY,
+                [0.26, 0.34, 0.46, 1.0],
+            );
+            solid_batch.push_strut_3d(
+                hut_pos + Vec3::Y * 0.96,
+                hut_pos + Vec3::Y * 1.85,
+                0.045,
+                truss_col,
+            );
+        }
 
         let pulse = 0.72 + (elapsed_secs * 5.0).sin().abs() * 0.28;
         let status_rgba = if nearby_demolished {

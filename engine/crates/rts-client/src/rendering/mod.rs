@@ -1,6 +1,9 @@
 pub mod animation;
+pub mod bridge_and_crate_sync;
+pub mod building_collapse;
 pub mod building_ground_apron;
 pub mod construction_rig_sync;
+pub mod entity_articulation;
 mod entity_sync;
 mod environment_setup;
 pub mod fow_projection;
@@ -8,6 +11,7 @@ mod gizmos;
 mod gizmos_world;
 pub mod ibl_ggx_prefilter;
 pub mod interpolation;
+pub mod mirage_disguise;
 pub mod preview_stage;
 pub mod scene_types;
 pub mod shp_sprites;
@@ -15,18 +19,23 @@ pub mod sockets;
 pub mod strategic_zoom_icons;
 pub mod team_material;
 pub mod terrain_shader;
+pub mod vehicle_locomotion;
 pub mod video_player;
 pub mod water_shader;
 pub mod world_overlays;
 
 pub use animation::*;
+pub use bridge_and_crate_sync::*;
+pub use building_collapse::*;
 pub use building_ground_apron::*;
 pub use construction_rig_sync::*;
+pub use entity_articulation::*;
 pub use entity_sync::*;
 pub use environment_setup::*;
 pub use fow_projection::*;
 pub use gizmos::*;
 pub use interpolation::*;
+pub use mirage_disguise::*;
 pub use preview_stage::*;
 pub use scene_types::*;
 pub use shp_sprites::*;
@@ -34,6 +43,7 @@ pub use sockets::*;
 pub use strategic_zoom_icons::*;
 pub use team_material::*;
 pub use terrain_shader::*;
+pub use vehicle_locomotion::*;
 pub use video_player::*;
 pub use water_shader::*;
 pub use world_overlays::*;
@@ -117,6 +127,9 @@ impl Plugin for ClientRenderingAvPlugin {
             .init_resource::<MicroDetailTextureResource>()
             .init_resource::<BuildingGroundApronAssets>()
             .init_resource::<ConstructionRigCache>()
+            .init_resource::<BridgeAndCrateCache>()
+            .init_resource::<MirageDisguiseCache>()
+            .init_resource::<BuildingCollapseAssets>()
             .init_resource::<StrategicIconGpuResources>()
             .init_resource::<WorldOverlayGpuAssets>()
             .init_resource::<GpuParticlePoolResources>()
@@ -227,10 +240,38 @@ impl Plugin for ClientRenderingAvPlugin {
                         .after(step_smooth_fow_projection)
                         .before(crate::vfx::update_and_draw_vfx),
                     sync_strategic_zoom_icons.after(refresh_cached_fog_visibility),
-                    sync_socket_registry,
+                    sync_bridge_visual_mode_flag
+                        .after(sync_ra2_hd_shp_sprites)
+                        .before(sync_gpu_world_overlays_and_props),
                     sync_gpu_world_overlays_and_props.after(refresh_cached_fog_visibility),
                     crate::vfx::sync_battlefield_decals_and_tracks
                         .after(refresh_cached_fog_visibility),
+                    (
+                        step_vehicle_locomotion_and_wheels,
+                        sync_mirage_tree_disguises,
+                        step_building_collapses_and_wrecks,
+                        sync_3d_bridges_and_crates,
+                    )
+                        .chain()
+                        .in_set(crate::RtsSystemSet::SimVisualSync)
+                        .after(sync_sim_entities_to_3d)
+                        .after(sync_dirty_terrain_splat_and_mesh)
+                        .after(step_entity_animations)
+                        .after(step_preview_stage)
+                        .after(sync_building_ground_aprons)
+                        .after(sync_gltf_lod_and_team_damage_materials)
+                        .after(sync_construction_rigs)
+                        .after(sync_strategic_zoom_icons)
+                        .after(sync_gpu_world_overlays_and_props)
+                        .after(sync_ra2_hd_shp_sprites)
+                        .after(crate::vfx::sync_battlefield_decals_and_tracks)
+                        .after(crate::vfx::spawn_combat_and_destruction_vfx)
+                        .before(sync_socket_registry)
+                        .before(crate::vfx::sync_data_driven_vfx_and_preview)
+                        .before(crate::vfx::update_and_draw_vfx)
+                        .before(crate::vfx::sync_weather_vfx)
+                        .before(draw_rts_gizmos),
+                    sync_socket_registry,
                     crate::vfx::sync_data_driven_vfx_and_preview
                         .after(refresh_cached_fog_visibility)
                         .after(crate::vfx::spawn_combat_and_destruction_vfx)

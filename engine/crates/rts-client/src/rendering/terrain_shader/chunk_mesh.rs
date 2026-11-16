@@ -37,6 +37,32 @@ fn is_ramp_tile(world: &SimWorld, tx: i32, tz: i32) -> bool {
         && world.grid.ramp_tiles.contains(&[tx, tz])
 }
 
+#[inline]
+fn sample_ramp_proximity(world: &SimWorld, wx: f32, wz: f32) -> f32 {
+    if world.grid.ramp_tiles.is_empty() {
+        return 0.0;
+    }
+    let ts = world.grid.tile_size.max(0.01);
+    let tx = (wx / ts).floor() as i32;
+    let tz = (wz / ts).floor() as i32;
+    if is_ramp_tile(world, tx, tz) {
+        return 1.0;
+    }
+    for dz in -1..=1 {
+        for dx in -1..=1 {
+            if is_ramp_tile(world, tx + dx, tz + dz) {
+                let cx = (tx + dx) as f32 * ts + ts * 0.5;
+                let cz = (tz + dz) as f32 * ts + ts * 0.5;
+                let d = (((wx - cx).abs() / ts).max((wz - cz).abs() / ts) - 0.5).max(0.0);
+                if d < 0.45 {
+                    return (1.0 - d / 0.45).clamp(0.0, 1.0);
+                }
+            }
+        }
+    }
+    0.0
+}
+
 fn local_plateau_target_height(
     hmap: &HeightmapDef,
     has_authored_height: bool,
@@ -93,7 +119,6 @@ fn sample_stepped_grid_corner_height(
         .any(|&[tx, tz]| is_ramp_tile(world, tx, tz));
     if touches_ramp {
         let plat_h = local_plateau_target_height(hmap, has_authored_height, cx, cz);
-        // Find nearest pure-plateau corner (falling back to any elevation_tiles corner if all elevated tiles are ramps)
         let mut min_up_d2 = f32::INFINITY;
         let mut nearest_up = [cx, cz];
         for use_any_elev in [false, true] {
@@ -107,7 +132,6 @@ fn sample_stepped_grid_corner_height(
                         is_pure_plateau_tile(world, tx, tz)
                     };
                     if hit {
-                        // Closest corner of tile [tx, tz] to (cx, cz)
                         let px = cx.clamp(tx, tx + 1);
                         let pz = cz.clamp(tz, tz + 1);
                         let d2 = ((px - cx) * (px - cx) + (pz - cz) * (pz - cz)) as f32;
@@ -131,7 +155,6 @@ fn sample_stepped_grid_corner_height(
             return plat_h;
         }
 
-        // March in the opposite direction (-u_up) to measure distance along the ramp to its lower foot
         let ux = (nearest_up[0] - cx) as f32 / d_up;
         let uz = (nearest_up[1] - cz) as f32 / d_up;
         let mut d_down = 0.0_f32;
@@ -149,8 +172,6 @@ fn sample_stepped_grid_corner_height(
         return plat_h * t;
     }
 
-    // Lower ground corner: suppress synthesize_height_and_splat plateau-smoothing halo near cliffs/ramps,
-    // while preserving genuine sculpted heights away from discrete plateaus.
     let near_elev_or_ramp = (-2..=1).any(|dz| {
         (-2..=1).any(|dx| {
             let tx = cx + dx;
@@ -246,7 +267,6 @@ pub(super) fn sample_continuous_terrain_height(
             ramp_top && ramp_bot || is_ramp_tile(world, tx, tz),
         );
 
-        // Ensure boundary edges match neighbor tiles identically at fx=0/1 and fz=0/1
         if fx <= 1e-5 {
             h_left
         } else if fx >= 1.0 - 1e-5 {
@@ -294,6 +314,23 @@ pub(super) fn sample_continuous_terrain_height(
     }
 
     base_h
+}
+
+/// Encodes `[plateau_rim_highlight, cliff_toe_ao, ramp_weight, 1.0]` in `ATTRIBUTE_COLOR`
+/// so `terrain_splat.wgsl` shades sculpted plateau rims and deep canyon toes without UV stretching.
+#[inline]
+fn encode_terrain_curvature_color(
+    y: f32,
+    hl: f32,
+    hr: f32,
+    hu: f32,
+    hd: f32,
+    ramp_w: f32,
+) -> [f32; 4] {
+    let laplacian = y - 0.25 * (hl + hr + hu + hd);
+    let rim_hi = ((laplacian - 0.04) * 1.65 * (1.0 - ramp_w * 0.75)).clamp(0.0, 1.0);
+    let toe_ao = ((-laplacian - 0.04) * 1.65 * (1.0 - ramp_w * 0.75)).clamp(0.0, 1.0);
+    [rim_hi, toe_ao, ramp_w, 1.0]
 }
 
 /// Builds a single `16x16`-tile `TerrainChunkEntity` mesh at `2x2` sub-quads per tile (`32x32` sub-quads
@@ -348,9 +385,8 @@ pub(super) fn build_terrain_chunk_mesh_with_hmap(
     let mut uvs = Vec::with_capacity(vw * vh);
     let mut colors = Vec::with_capacity(vw * vh);
 
-    // Tight normal-probe offset (0.45 * step_world) keeps plateau interiors dead-flat ([0, 1, 0])
-    // while giving cliff-wall vertices crisp steep normals (abs(n.y) < 0.55) for triplanar rock!
     let n_eps = (step_world * 0.45).max(0.02);
+    let curv_eps = (step_world * 0.85).max(0.05);
 
     for lz in 0..vh {
         let wz = ((sz0 as usize + lz) as f32) * step_world;
@@ -370,10 +406,40 @@ pub(super) fn build_terrain_chunk_mesh_with_hmap(
             let dz = (wz_d - wz_u).max(0.001);
             let n = Vec3::new((hl - hr) / dx, 1.0, (hu - hd) / dz).normalize_or_zero();
 
+            let cl = sample_continuous_terrain_height(
+                hmap,
+                has_authored_height,
+                world,
+                (wx - curv_eps).max(0.0),
+                wz,
+            );
+            let cr = sample_continuous_terrain_height(
+                hmap,
+                has_authored_height,
+                world,
+                (wx + curv_eps).min(map_world_w),
+                wz,
+            );
+            let cu = sample_continuous_terrain_height(
+                hmap,
+                has_authored_height,
+                world,
+                wx,
+                (wz - curv_eps).max(0.0),
+            );
+            let cd = sample_continuous_terrain_height(
+                hmap,
+                has_authored_height,
+                world,
+                wx,
+                (wz + curv_eps).min(map_world_h),
+            );
+            let ramp_w = sample_ramp_proximity(world, wx, wz);
+
             positions.push([wx, y, wz]);
             normals.push(n.to_array());
             uvs.push([wx / map_world_w, wz / map_world_h]);
-            colors.push([1.0, 1.0, 1.0, 1.0]);
+            colors.push(encode_terrain_curvature_color(y, cl, cr, cu, cd, ramp_w));
         }
     }
 
@@ -433,7 +499,6 @@ pub fn build_splatted_terrain_mesh(map: &MapDef, world: &SimWorld) -> Mesh {
             heights[vz * vw + vx] = y;
             positions.push([wx, y, wz]);
             uvs.push([vx as f32 / w as f32, vz as f32 / h as f32]);
-            colors.push([1.0, 1.0, 1.0, 1.0]);
         }
     }
 
@@ -444,12 +509,15 @@ pub fn build_splatted_terrain_mesh(map: &MapDef, world: &SimWorld) -> Mesh {
             let xr = (vx + 1).min(vw - 1);
             let zu = vz.saturating_sub(1);
             let zd = (vz + 1).min(vh - 1);
+            let y = heights[vz * vw + vx];
             let hl = heights[vz * vw + xl];
             let hr = heights[vz * vw + xr];
             let hu = heights[zu * vw + vx];
             let hd = heights[zd * vw + vx];
             let n = Vec3::new(hl - hr, 2.0 * ts, hu - hd).normalize_or_zero();
             normals.push(n.to_array());
+            let ramp_w = sample_ramp_proximity(world, vx as f32 * ts, vz as f32 * ts);
+            colors.push(encode_terrain_curvature_color(y, hl, hr, hu, hd, ramp_w));
         }
     }
 

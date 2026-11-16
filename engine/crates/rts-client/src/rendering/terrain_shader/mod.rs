@@ -1,5 +1,6 @@
 mod chunk_mesh;
 mod layer_textures;
+mod theater_pbr_gen;
 
 pub use chunk_mesh::{
     build_splatted_terrain_mesh, build_terrain_chunk_mesh, RA2_STEPPED_PLATEAU_HEIGHT,
@@ -432,13 +433,22 @@ mod tests {
         let expected_bytes =
             (TERRAIN_LAYER_TEX_SIZE * TERRAIN_LAYER_TEX_SIZE * TERRAIN_LAYER_COUNT * 4) as usize;
         let array_img = build_terrain_layer_array_image();
-        assert_eq!(array_img.texture_descriptor.size.width, 512);
-        assert_eq!(array_img.texture_descriptor.size.height, 512);
+        assert_eq!(
+            array_img.texture_descriptor.size.width,
+            TERRAIN_LAYER_TEX_SIZE
+        );
+        assert_eq!(
+            array_img.texture_descriptor.size.height,
+            TERRAIN_LAYER_TEX_SIZE
+        );
         assert_eq!(array_img.texture_descriptor.size.depth_or_array_layers, 5);
         assert_eq!(array_img.data.len(), expected_bytes);
 
         let nrh_img = build_terrain_normal_rough_height_array_image();
-        assert_eq!(nrh_img.texture_descriptor.size.width, 512);
+        assert_eq!(
+            nrh_img.texture_descriptor.size.width,
+            TERRAIN_LAYER_TEX_SIZE
+        );
         assert_eq!(nrh_img.texture_descriptor.size.depth_or_array_layers, 5);
         assert_eq!(nrh_img.data.len(), expected_bytes);
 

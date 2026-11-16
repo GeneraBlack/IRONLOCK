@@ -57,11 +57,12 @@ fn should_suppress_building_y_squash(
         && ctrl_opt.is_none_or(|c| c.articulated_buildup || !c.anim_cache_resolved)
 }
 
-#[path = "entity_articulation.rs"]
-mod entity_articulation;
-use entity_articulation::{
+use super::building_collapse::{
+    try_attach_combat_collapse_or_wreck, BuildingCollapseVisual, VehicleWreckVisual,
+};
+use super::entity_articulation::{
     apply_cached_articulation, discover_articulated_descendants,
-    resolve_entity_base_mult_and_iso_yaw,
+    resolve_entity_base_mult_and_iso_yaw, ArticulatedNodeFilter,
 };
 
 #[allow(clippy::too_many_arguments, clippy::type_complexity)]
@@ -113,21 +114,15 @@ pub fn sync_sim_entities_to_3d(
             Option<&EntityAnimController>,
         ),
         (
+            Without<BuildingCollapseVisual>,
+            Without<VehicleWreckVisual>,
             Without<FogOfWarPlaneEntity>,
             Without<PlacementGhostModel>,
             Without<preview_stage::PreviewStageEntity>,
         ),
     >,
     children_q: Query<&Children>,
-    mut turret_node_q: Query<
-        (&Name, &mut Transform),
-        (
-            Without<SimVisualEntity>,
-            Without<FogOfWarPlaneEntity>,
-            Without<PlacementGhostModel>,
-            Without<preview_stage::PreviewStageEntity>,
-        ),
-    >,
+    mut turret_node_q: Query<(&Name, &mut Transform), ArticulatedNodeFilter>,
     ore_query: Query<(Entity, &OreVisualTile)>,
     bridge_query: Query<(Entity, &BridgeVisualTile)>,
     mut ghost_query: Query<
@@ -307,20 +302,10 @@ pub fn sync_sim_entities_to_3d(
                 pose.position.z,
             ) + recoil_offset;
 
-            // Combine slerped chassis yaw quaternion with aircraft bank/pitch or vehicle suspension pitch
-            let target_rot = if pose.position.y > 2.2 && !sim_ent.landed_at_airfield {
-                let bank = if !sim_ent.path_waypoints.is_empty() {
-                    Quat::from_euler(EulerRot::YXZ, 0.0, 0.14, 0.08)
-                } else {
-                    Quat::from_euler(EulerRot::YXZ, 0.0, 0.05, 0.24)
-                };
-                pose.chassis_yaw_rot * bank
-            } else if is_moving_unit && is_infantry {
+            // Vehicle/aircraft banking, suspension pitch & firing rock are driven by `step_vehicle_locomotion_and_wheels`
+            let target_rot = if is_moving_unit && is_infantry {
                 let sway = (elapsed * 11.0 + sim_ent.id as f32).sin() * 0.05;
                 pose.chassis_yaw_rot * Quat::from_euler(EulerRot::YXZ, 0.0, 0.04, sway)
-            } else if is_moving_unit {
-                let pitch = (elapsed * 6.5 + sim_ent.id as f32).sin() * 0.025 + 0.03;
-                pose.chassis_yaw_rot * Quat::from_euler(EulerRot::YXZ, 0.0, pitch, 0.0)
             } else if shp_iso_align_yaw.abs() > 1e-4 {
                 pose.chassis_yaw_rot * Quat::from_rotation_y(shp_iso_align_yaw)
             } else {
@@ -469,68 +454,43 @@ pub fn sync_sim_entities_to_3d(
 
             // Apply Fog-of-War + Stealth/Cloak/Burrow visibility culling to hostile units/structures
             set_visibility_if_dirty(&mut visibility, desired_vis);
-        } else {
-            // Trigger 3D fold-down deconstruction on building sell OR live ConYard -> MCV undeploy
-            if vis.deconstruct_progress.is_none() && vis.building_footprint.is_some() {
-                let was_sold = world
-                    .destruction_events
-                    .iter()
-                    .any(|ev| ev.entity_id == vis.sim_id && ev.is_sold);
-                let killed_in_combat = world
-                    .destruction_events
-                    .iter()
-                    .any(|ev| ev.entity_id == vis.sim_id && !ev.is_sold);
-                let undeployed_conyard = !killed_in_combat
-                    && loaded
-                        .buildings
-                        .get(&vis.entity_type_id)
-                        .is_some_and(|b| b.transforms_into_unit.is_some());
-                if was_sold || undeployed_conyard {
-                    vis.deconstruct_progress = Some(vis.spawn_progress.clamp(0.25, 1.0));
-                }
-            }
-
-            // Trigger 0.55s articulated `Die` animation on fallen infantry before despawning
-            if vis.is_infantry && vis.death_anim_progress.is_none() {
-                let killed_in_combat = world
-                    .destruction_events
-                    .iter()
-                    .any(|ev| ev.entity_id == vis.sim_id && !ev.is_sold);
-                if killed_in_combat {
-                    vis.death_anim_progress = Some(0.0);
-                }
-            }
-
-            if let Some(ref mut dec_p) = vis.deconstruct_progress {
-                *dec_p -= dt * 1.15;
-                if *dec_p <= 0.03 {
+        } else if !try_attach_combat_collapse_or_wreck(
+            &mut commands,
+            bevy_ent,
+            &mut vis,
+            transform.translation.y,
+            transform.rotation,
+            world,
+            loaded,
+            &children_q,
+            &turret_node_q,
+        ) {
+            if let Some(ref mut dp) = vis.deconstruct_progress {
+                *dp -= dt * 1.15;
+                if *dp <= 0.03 {
                     commands.entity(bevy_ent).despawn_recursive();
                 } else {
-                    let p = dec_p.clamp(0.03, 1.0);
-                    let (base_mult, _) = resolve_entity_base_mult_and_iso_yaw(
-                        loaded,
-                        &vis.entity_type_id,
-                        vis.building_footprint,
-                        vis.is_infantry,
-                    );
-                    let suppress_y_squash = should_suppress_building_y_squash(
-                        vis.building_footprint.is_some(),
-                        &vis.entity_type_id,
-                        is_hd_sprite_mode,
-                        sprite_catalog.as_deref(),
-                        ctrl_opt,
-                    );
-                    let desired_scale = if suppress_y_squash {
-                        Vec3::splat(base_mult)
+                    let (p, fp, inf) =
+                        (dp.clamp(0.03, 1.0), vis.building_footprint, vis.is_infantry);
+                    let id = &vis.entity_type_id;
+                    let (bm, _) = resolve_entity_base_mult_and_iso_yaw(loaded, id, fp, inf);
+                    let shp = is_hd_sprite_mode
+                        && sprite_catalog
+                            .as_deref()
+                            .is_some_and(|c| c.covers_entity(id, true));
+                    let art =
+                        ctrl_opt.is_none_or(|c| c.articulated_buildup || !c.anim_cache_resolved);
+                    let xz = (0.85 + 0.15 * p) * bm;
+                    let des = if fp.is_some() && !shp && art {
+                        Vec3::splat(bm)
                     } else {
-                        let xz_scale = (0.85 + 0.15 * p) * base_mult;
-                        Vec3::new(xz_scale, p * base_mult, xz_scale)
+                        Vec3::new(xz, p * bm, xz)
                     };
-                    set_scale_if_dirty(&mut transform, desired_scale);
+                    set_scale_if_dirty(&mut transform, des);
                 }
-            } else if let Some(ref mut death_p) = vis.death_anim_progress {
-                *death_p += dt / 0.55;
-                if *death_p >= 1.0 {
+            } else if let Some(ref mut dp) = vis.death_anim_progress {
+                *dp += dt / 0.55;
+                if *dp >= 1.0 {
                     commands.entity(bevy_ent).despawn_recursive();
                 }
             } else {
