@@ -1,13 +1,15 @@
+pub mod buildup_showcase;
 pub mod colors_16_showcase;
 pub mod stages_ext;
 
 use crate::audio::JukeboxState;
 use crate::camera::RtsCameraRig;
-use crate::input::{AppPhase, ClientInteractionState, MenuScreen, UiAssetCache};
+use crate::input::{AppPhase, ClientInteractionState, UiAssetCache};
 use crate::plugins::{ModResource, NetRuntimeResource, SimWorldResource, VisualSmokeTestState};
 use crate::rendering::{
-    spawn_map_environment_entities, CachedFogVisibility, MapEnvironmentEntity, MapTerrainDirty,
-    MapTerrainDirtyRects, PreviewStageCamera, SimVisualEntity,
+    spawn_map_environment_entities, BuildingConstructionRig, CachedFogVisibility,
+    MapEnvironmentEntity, MapTerrainDirty, MapTerrainDirtyRects, PreviewStageCamera,
+    SimVisualEntity,
 };
 use crate::studio;
 use crate::ui::{
@@ -17,7 +19,7 @@ use crate::ui::{
 use crate::vfx::VfxTrackerState;
 use bevy::app::AppExit;
 use bevy::prelude::*;
-use rts_network::lobby_room::{LobbyMatchRules, LobbyRoomState, LobbySlotOccupant};
+use bevy::window::PrimaryWindow;
 use rts_simulation::world::{EntityKind, SimWorld};
 use stages_ext::{
     setup_stage_09_to_12, setup_stage_13_orbital_strategic_zoom_and_bottom_hud,
@@ -27,6 +29,7 @@ use stages_ext::{
 #[allow(clippy::too_many_arguments, clippy::type_complexity)]
 pub fn drive_visual_smoke_test(
     mut commands: Commands,
+    time: Res<Time>,
     (
         asset_server,
         mut meshes,
@@ -46,11 +49,16 @@ pub fn drive_visual_smoke_test(
         Option<ResMut<MapTerrainDirty>>,
         Option<ResMut<MapTerrainDirtyRects>>,
     ),
-    (env_q, visual_q, mut camera_q): (
+    (env_q, rigs_q, mut camera_q, mut windows_q): (
         Query<Entity, With<MapEnvironmentEntity>>,
-        Query<(Entity, &SimVisualEntity, Option<&Children>)>,
+        Query<(Entity, &BuildingConstructionRig, Option<&Children>)>,
         Query<(&mut RtsCameraRig, &mut Transform), Without<PreviewStageCamera>>,
+        Query<&mut Window, With<PrimaryWindow>>,
     ),
+    mut visual_queries: ParamSet<(
+        Query<(Entity, &SimVisualEntity, Option<&Children>)>,
+        Query<(Entity, &mut SimVisualEntity, Option<&Children>)>,
+    )>,
     (
         mut smoke,
         mut interaction,
@@ -81,10 +89,39 @@ pub fn drive_visual_smoke_test(
     ),
     mut exit_events: EventWriter<AppExit>,
 ) {
-    let Some(out_dir) = smoke.output_dir.clone() else {
+    let Some(out_dir) = buildup_showcase::resolve_env_smoke_output_dir(&mut smoke, &mod_res) else {
         return;
     };
+    if std::env::var_os("RTS_SMOKE_RA2_BUILDUP").is_some() {
+        buildup_showcase::drive_buildup_showcase(
+            &mut commands,
+            &out_dir,
+            time.delta_secs(),
+            asset_server.as_deref(),
+            &mut meshes,
+            &mut materials,
+            &mut mod_res,
+            &mut sim_res,
+            &mut smoke,
+            &mut interaction,
+            &mut cached_fow,
+            &mut vfx_state,
+            &mut subwindows,
+            &mut last_sig,
+            &mut terrain_dirty,
+            &mut terrain_dirty_rects,
+            &env_q,
+            &mut visual_queries.p1(),
+            &rigs_q,
+            &mut camera_q,
+            &mut windows_q,
+            visual_mode.as_deref_mut(),
+            &mut exit_events,
+        );
+        return;
+    }
     if std::env::var_os("RTS_SMOKE_16_COLORS").is_some() {
+        let vis_ref = visual_queries.p0();
         colors_16_showcase::drive_16_colors_showcase(
             &mut commands,
             &out_dir,
@@ -102,7 +139,7 @@ pub fn drive_visual_smoke_test(
             &mut terrain_dirty,
             &mut terrain_dirty_rects,
             &env_q,
-            &visual_q,
+            &vis_ref,
             &mut camera_q,
             visual_mode.as_deref_mut(),
             &mut exit_events,
@@ -110,6 +147,7 @@ pub fn drive_visual_smoke_test(
         return;
     }
     if std::env::var_os("RTS_SMOKE_RA2_OVERHAUL").is_some() {
+        let vis_ref = visual_queries.p0();
         stages_ext::drive_ra2_overhaul_showcase(
             &mut commands,
             &out_dir,
@@ -127,7 +165,7 @@ pub fn drive_visual_smoke_test(
             &mut terrain_dirty,
             &mut terrain_dirty_rects,
             &env_q,
-            &visual_q,
+            &vis_ref,
             &mut camera_q,
             visual_mode.as_deref_mut(),
             &mut exit_events,
@@ -135,13 +173,14 @@ pub fn drive_visual_smoke_test(
         return;
     }
 
+    let vis_ro = visual_queries.p0();
     if (smoke.frame_count == 30 || smoke.frame_count == 215 || smoke.frame_count == 445)
         && smoke.wait_polls < 180
     {
         smoke.wait_polls += 1;
         let mut p1_total = 0usize;
         let mut p1_ready = 0usize;
-        for (_, vis, children_opt) in &visual_q {
+        for (_, vis, children_opt) in &vis_ro {
             if let Some(sim_ent) = sim_res.0.entities.get(&vis.sim_id) {
                 if sim_ent.player_id == 1 {
                     p1_total += 1;
@@ -306,53 +345,12 @@ pub fn drive_visual_smoke_test(
             cutscene_director.queued_transmissions.clear();
             sim_res.0.mission_objectives.clear();
             sim_res.0.countdown_timers.clear();
-
-            interaction.app_phase = AppPhase::MainMenu;
-            interaction.menu_open = true;
-            interaction.active_menu_screen = MenuScreen::ModWorkshop;
-            interaction.workshop_status_text =
-                "Connected to Master Workshop Registry — 3 verified packages indexed".to_string();
-            interaction.pending_missing_mod_prompt = Some((
-                "shattered_front_tc".to_string(),
-                "198.51.100.42:7878".to_string(),
-            ));
-            interaction.workshop_items = vec![
-                rts_network::lobby_registry::WorkshopItemMetadata {
-                    id: "shattered_front_tc".to_string(),
-                    title: "Shattered Front: Total Conversion".to_string(),
-                    description: "3 asymmetric factions, 42 custom PBR units, naval warfare & branching 5-star Commander Trees.".to_string(),
-                    author_name: "IronForgeStudio".to_string(),
-                    author_player_id: "ed25519:8f12c9a4".to_string(),
-                    kind: rts_network::lobby_registry::WorkshopItemKind::Mod,
-                    version: "2.4.0".to_string(),
-                    tags: vec!["total-conversion".to_string(), "naval".to_string()],
-                    sha256: "a948904f2f0f479b8f8197694b30184b0d2ed1c1cd2a1ec0fb85d299a192a447".to_string(),
-                    mod_content_hash: "0x7c91e4a0112b3d04".to_string(),
-                    size_bytes: 18_450_000,
-                    file_name: "shattered_front_tc.rtsmod".to_string(),
-                    downloads: 4_820,
-                    created_at_unix_ms: 1_760_000_000_000,
-                    updated_at_unix_ms: 1_762_000_000_000,
-                },
-                rts_network::lobby_registry::WorkshopItemMetadata {
-                    id: "arctic_chokepoint_8p".to_string(),
-                    title: "Arctic Chokepoint (8-Player Ranked)".to_string(),
-                    description: "Symmetrical snow archipelago with high-yield gem plateau, destructible ice bridges & blizzards.".to_string(),
-                    author_name: "MapSmith_DE".to_string(),
-                    author_player_id: "ed25519:31ab77e0".to_string(),
-                    kind: rts_network::lobby_registry::WorkshopItemKind::Map,
-                    version: "1.1.2".to_string(),
-                    tags: vec!["8p".to_string(), "ranked".to_string()],
-                    sha256: "4b227777d4dd1fc61c6f884f48641d02b4d121d3fd328cb08b5531fcacdabf8a".to_string(),
-                    mod_content_hash: "0x19f02a88c4e70012".to_string(),
-                    size_bytes: 342_016,
-                    file_name: "arctic_chokepoint_8p.toml".to_string(),
-                    downloads: 1_945,
-                    created_at_unix_ms: 1_760_500_000_000,
-                    updated_at_unix_ms: 1_761_800_000_000,
-                },
-            ];
-            last_sig.studio_sig.clear();
+            buildup_showcase::setup_stage_04_or_05_menus(
+                140,
+                &mod_res,
+                &mut interaction,
+                &mut last_sig,
+            );
         }
         160 => {
             save_smoke_screenshot(
@@ -361,74 +359,12 @@ pub fn drive_visual_smoke_test(
             );
         }
         170 => {
-            interaction.pending_missing_mod_prompt = None;
-            let mut room = LobbyRoomState::new(
-                4,
-                LobbyMatchRules {
-                    map_id: mod_res.0.entry_map.id.clone(),
-                    map_name: mod_res.0.entry_map.name.clone(),
-                    custom_map_hash: None,
-                    starting_credits: 12_500,
-                    game_speed_hz: 20,
-                    superweapons_enabled: true,
-                    crates_enabled: true,
-                    fog_of_war: true,
-                    game_mode: "Standard".to_string(),
-                    allow_spectators: true,
-                    spectator_delay_secs: 30,
-                    resume_save_name: Some("tournament_finals_g3.rtssav".to_string()),
-                    resume_save_hash: Some("e3b0c44298fc1c14".to_string()),
-                    resume_tick: Some(480),
-                    ..Default::default()
-                },
+            buildup_showcase::setup_stage_04_or_05_menus(
+                170,
+                &mod_res,
+                &mut interaction,
+                &mut last_sig,
             );
-            room.assign_human(1, "CommanderAlpha".to_string());
-            room.assign_human(2, "GeneralRomanov".to_string());
-            let _ = room.update_own_slot(
-                1,
-                "allies".to_string(),
-                Some("usa".to_string()),
-                0,
-                1,
-                Some(0),
-                true,
-                true,
-            );
-            let _ = room.update_own_slot(
-                2,
-                "soviet".to_string(),
-                Some("russia".to_string()),
-                1,
-                2,
-                Some(1),
-                true,
-                true,
-            );
-            for slot in &mut room.slots {
-                if matches!(slot.occupant, LobbySlotOccupant::Human { .. }) {
-                    slot.save_ready = true;
-                }
-            }
-            let _ = room.host_configure_slot(
-                2,
-                LobbySlotOccupant::AiBot {
-                    difficulty: "Hard".to_string(),
-                    personality: "Aggressive".to_string(),
-                },
-                "yuri".to_string(),
-                3,
-                4,
-                110,
-            );
-            interaction.active_lobby_room = Some(room);
-            interaction.staging_chat_history = vec![
-                "CommanderAlpha: Resuming tournament_finals_g3.rtssav @ Tick 480 (30s Spectator Delay)."
-                    .to_string(),
-                "GeneralRomanov: SaveTransfer FNV-1a verified [SAVE OK] — ready to launch!"
-                    .to_string(),
-            ];
-            interaction.active_menu_screen = MenuScreen::MultiplayerStaging;
-            last_sig.studio_sig.clear();
         }
         190 => {
             save_smoke_screenshot(
@@ -449,7 +385,7 @@ pub fn drive_visual_smoke_test(
                 for ent in &env_q {
                     commands.entity(ent).despawn_recursive();
                 }
-                for (ent, _, _) in &visual_q {
+                for (ent, _, _) in &vis_ro {
                     commands.entity(ent).despawn_recursive();
                 }
                 mod_res.0.entry_map = rc_map;
@@ -700,7 +636,7 @@ pub fn drive_visual_smoke_test(
                 &mut terrain_dirty,
                 &mut terrain_dirty_rects,
                 &env_q,
-                &visual_q,
+                &vis_ro,
                 &mut camera_q,
             );
         }

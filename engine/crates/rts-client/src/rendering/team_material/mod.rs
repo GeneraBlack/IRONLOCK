@@ -28,6 +28,9 @@ pub struct SyncedGltfSceneVisuals {
     pub lod_configured: bool,
     pub applied_material_key: Option<(u8, DamageVisualTier)>,
     pub applied_pbr_key: Option<u64>,
+    pub active_construct_handles: Vec<Handle<UnitPbrTeamMaterial>>,
+    pub cached_owner_state: Option<(u8, u8, bool, f32)>,
+    pub cached_damage_tier: DamageVisualTier,
 }
 
 /// Tracks original `StandardMaterial` on Studio 3D Preview Stage (`RenderLayers::layer(3)`) meshes
@@ -298,6 +301,7 @@ pub fn sync_gltf_lod_and_team_damage_materials(
             synced.lod_configured = true;
             synced.applied_material_key = None;
             synced.applied_pbr_key = None;
+            synced.active_construct_handles.clear();
         }
     }
 
@@ -320,14 +324,56 @@ pub fn sync_gltf_lod_and_team_damage_materials(
             if !synced.lod_configured || synced.mesh_entities.is_empty() {
                 continue;
             }
-            let Some(sim_ent) = world.entities.get(&vis.sim_id) else {
-                continue;
-            };
+            let is_building = vis.building_footprint.is_some();
+            let is_deconstructing = is_building && vis.deconstruct_progress.is_some();
+            let is_constructing = is_building && !is_deconstructing && vis.spawn_progress < 0.999;
+            let needs_dynamic_construct_mat = is_constructing || is_deconstructing;
+            let b_def = loaded.buildings.get(&vis.entity_type_id);
 
-            let slot = resolve_player_team_color_slot(world, loaded, sim_ent.player_id);
-            let is_local = sim_ent.player_id == local_pid;
-            let is_ally =
-                sim_ent.player_id != 0 && !world.are_hostile(local_pid, sim_ent.player_id);
+            let (slot, is_local, is_ally, tier, shield, visual_def, base_weld_code) =
+                if let Some(sim_ent) = world.entities.get(&vis.sim_id) {
+                    let s = resolve_player_team_color_slot(world, loaded, sim_ent.player_id);
+                    let loc = sim_ent.player_id == local_pid;
+                    let ally =
+                        sim_ent.player_id != 0 && !world.are_hostile(local_pid, sim_ent.player_id);
+                    let hp_ratio = sim_ent.health / sim_ent.max_health.max(1.0);
+                    let d_tier = DamageVisualTier::from_hp_ratio(hp_ratio);
+                    let sh = resolve_entity_shield_fresnel(world, sim_ent);
+                    let v_def: Option<&VisualDef> = match &sim_ent.kind {
+                        EntityKind::Unit { unit_id } => {
+                            loaded.units.get(unit_id).map(|u| &u.visual)
+                        }
+                        EntityKind::Building { building_id } => {
+                            loaded.buildings.get(building_id).map(|b| &b.visual)
+                        }
+                    };
+                    let w_code = resolve_building_weld_code(world, sim_ent.player_id, b_def);
+                    synced.cached_owner_state = Some((sim_ent.player_id, s, ally, w_code));
+                    synced.cached_damage_tier = d_tier;
+                    (s, loc, ally, d_tier, sh, v_def, w_code)
+                } else if is_deconstructing {
+                    let fallback_fac = b_def.map(|b| b.faction.as_str()).unwrap_or("allies");
+                    let (pid, s, ally, w_code) = synced.cached_owner_state.unwrap_or_else(|| {
+                        (
+                            0,
+                            default_faction_slot(fallback_fac),
+                            false,
+                            resolve_faction_weld_code(fallback_fac),
+                        )
+                    });
+                    (
+                        s,
+                        pid != 0 && pid == local_pid,
+                        ally,
+                        synced.cached_damage_tier,
+                        ShieldFresnelKind::None,
+                        b_def.map(|b| &b.visual),
+                        w_code,
+                    )
+                } else {
+                    continue;
+                };
+
             let team_rgba = resolve_accessible_team_color_in_mod(
                 slot,
                 is_local,
@@ -340,15 +386,6 @@ pub fn sync_gltf_lod_and_team_damage_materials(
                 (team_rgba[1].clamp(0.0, 1.0) * 255.0).round() as u8,
                 (team_rgba[2].clamp(0.0, 1.0) * 255.0).round() as u8,
             ];
-            let hp_ratio = sim_ent.health / sim_ent.max_health.max(1.0);
-            let tier = DamageVisualTier::from_hp_ratio(hp_ratio);
-            let shield = resolve_entity_shield_fresnel(world, sim_ent);
-            let visual_def: Option<&VisualDef> = match &sim_ent.kind {
-                EntityKind::Unit { unit_id } => loaded.units.get(unit_id).map(|u| &u.visual),
-                EntityKind::Building { building_id } => {
-                    loaded.buildings.get(building_id).map(|b| &b.visual)
-                }
-            };
             let v_hash = hash_visual_pbr_spec(visual_def);
 
             let state_sig = {
@@ -361,6 +398,93 @@ pub fn sync_gltf_lod_and_team_damage_materials(
                 v_hash.hash(&mut h);
                 h.finish()
             };
+
+            if needs_dynamic_construct_mat {
+                let c_params = compute_building_construction_params(
+                    vis.world_pos.y,
+                    vis.spawn_progress,
+                    vis.deconstruct_progress,
+                    vis.building_footprint,
+                    b_def,
+                    base_weld_code,
+                );
+                let rebuild_dyn = synced.active_construct_handles.len()
+                    != synced.mesh_entities.len()
+                    || synced.applied_pbr_key != Some(state_sig);
+                if rebuild_dyn {
+                    let custom_norm = load_optional_mod_image(
+                        asset_server.as_deref(),
+                        asset_root.as_deref(),
+                        loaded,
+                        visual_def.and_then(|v| v.normal_map_path.as_deref()),
+                    );
+                    let custom_orm = load_optional_mod_image(
+                        asset_server.as_deref(),
+                        asset_root.as_deref(),
+                        loaded,
+                        visual_def.and_then(|v| v.orm_map_path.as_deref()),
+                    );
+                    let mesh_list = synced.mesh_entities.clone();
+                    let orig_list = synced.orig_std_materials.clone();
+                    synced.active_construct_handles.clear();
+                    for (idx, (mesh_ent, _)) in mesh_list.into_iter().enumerate() {
+                        let orig_h = orig_list.get(idx).and_then(|o| o.as_ref());
+                        let base_ref = orig_h.and_then(|h| mats.get(h)).unwrap_or(&default_std);
+                        let mut mat_val = build_unit_pbr_team_material(
+                            base_ref,
+                            visual_def,
+                            team_rgba,
+                            slot == 0,
+                            tier,
+                            shield,
+                            custom_norm.clone(),
+                            custom_orm.clone(),
+                            fow_tex_handle.clone(),
+                            world_size,
+                            fow_strength,
+                            strategic_fade,
+                            elapsed_secs,
+                        );
+                        mat_val.extension.micro_detail_tex = micro_tex_handle.clone();
+                        mat_val.extension.params.construction_params = c_params;
+                        let h_dyn = ext_mats.add(mat_val);
+                        synced.active_construct_handles.push(h_dyn.clone());
+                        commands
+                            .entity(mesh_ent)
+                            .remove::<MeshMaterial3d<StandardMaterial>>()
+                            .insert(MeshMaterial3d(h_dyn));
+                    }
+                    synced.applied_pbr_key = Some(state_sig);
+                    synced.applied_material_key = Some((slot, tier));
+                } else {
+                    for h_dyn in &synced.active_construct_handles {
+                        if let Some(mat) = ext_mats.get_mut(h_dyn) {
+                            mat.extension.params.construction_params = c_params;
+                            mat.extension.params.damage_and_fx.w = strategic_fade;
+                            mat.extension.params.map_fow_params =
+                                Vec4::new(world_size.x, world_size.y, fow_strength, elapsed_secs);
+                            if fow_tex_handle != Handle::default()
+                                && mat.extension.fow_tex != fow_tex_handle
+                            {
+                                mat.extension.fow_tex = fow_tex_handle.clone();
+                            }
+                            if micro_tex_handle != Handle::default()
+                                && mat.extension.micro_detail_tex != micro_tex_handle
+                            {
+                                mat.extension.micro_detail_tex = micro_tex_handle.clone();
+                            }
+                        }
+                    }
+                }
+                continue;
+            }
+
+            // Finished buildings (`spawn_progress >= 0.999 && deconstruct_progress.is_none()`) and all units
+            // revert cleanly to 100% shared `UnitPbrTeamMaterialCache` handles (`0` per-entity overhead).
+            if !synced.active_construct_handles.is_empty() {
+                synced.active_construct_handles.clear();
+                synced.applied_pbr_key = None;
+            }
 
             if synced.applied_pbr_key != Some(state_sig) {
                 let custom_norm = load_optional_mod_image(

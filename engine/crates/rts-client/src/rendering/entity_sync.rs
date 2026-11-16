@@ -44,6 +44,19 @@ fn set_visibility_if_dirty(vis: &mut Mut<Visibility>, target: Visibility) {
     }
 }
 
+#[inline]
+fn should_suppress_building_y_squash(
+    is_building: bool,
+    type_id: &str,
+    is_hd_sprite_mode: bool,
+    sprite_catalog: Option<&Ra2ShpSpriteCatalog>,
+    ctrl_opt: Option<&EntityAnimController>,
+) -> bool {
+    is_building
+        && !(is_hd_sprite_mode && sprite_catalog.is_some_and(|c| c.covers_entity(type_id, true)))
+        && ctrl_opt.is_none_or(|c| c.articulated_buildup || !c.anim_cache_resolved)
+}
+
 #[path = "entity_articulation.rs"]
 mod entity_articulation;
 use entity_articulation::{
@@ -97,6 +110,7 @@ pub fn sync_sim_entities_to_3d(
             &mut SimVisualEntity,
             &mut Transform,
             &mut Visibility,
+            Option<&EntityAnimController>,
         ),
         (
             Without<FogOfWarPlaneEntity>,
@@ -182,8 +196,11 @@ pub fn sync_sim_entities_to_3d(
         }
     }
 
+    let world_elapsed_secs = (world.tick as f32) * world.dt.max(0.0);
+    let is_hd_sprite_mode =
+        visual_mode.as_deref().copied().unwrap_or_default() == Ra2EntityVisualMode::HybridHdSprites;
     let mut existing_ids = BTreeSet::new();
-    for (bevy_ent, mut vis, mut transform, mut visibility) in &mut visual_query {
+    for (bevy_ent, mut vis, mut transform, mut visibility, ctrl_opt) in &mut visual_query {
         if let Some(sim_ent) = world.entities.get(&vis.sim_id) {
             let curr_type_id = match &sim_ent.kind {
                 EntityKind::Unit { unit_id } => unit_id.as_str(),
@@ -373,44 +390,75 @@ pub fn sync_sim_entities_to_3d(
                     elapsed * default_rotor_speed + (sim_ent.id as f32 * 0.5)
                 };
 
-                if vis.cached_articulated_parts.is_none() {
-                    if let Some(discovered) =
-                        discover_articulated_descendants(bevy_ent, &children_q, &turret_node_q)
-                    {
-                        vis.has_3d_turret_node = discovered.iter().any(|p| {
-                            matches!(
-                                p.kind,
-                                ArticulatedPartKind::Turret | ArticulatedPartKind::Barrel
-                            )
-                        });
-                        vis.cached_articulated_parts = Some(discovered);
+                let suppress_b_squash = should_suppress_building_y_squash(
+                    vis.building_footprint.is_some(),
+                    curr_type_id,
+                    is_hd_sprite_mode,
+                    sprite_catalog.as_deref(),
+                    ctrl_opt,
+                );
+                let lock_turret_for_buildup = suppress_b_squash
+                    && (vis.spawn_progress < 0.996 || vis.deconstruct_progress.is_some());
+
+                if !lock_turret_for_buildup {
+                    if vis.cached_articulated_parts.is_none() {
+                        if let Some(discovered) =
+                            discover_articulated_descendants(bevy_ent, &children_q, &turret_node_q)
+                        {
+                            vis.has_3d_turret_node = discovered.iter().any(|p| {
+                                matches!(
+                                    p.kind,
+                                    ArticulatedPartKind::Turret | ArticulatedPartKind::Barrel
+                                )
+                            });
+                            vis.cached_articulated_parts = Some(discovered);
+                        }
                     }
-                }
-                if let Some(parts) = vis.cached_articulated_parts.as_deref() {
-                    if !parts.is_empty() {
-                        apply_cached_articulation(
-                            parts,
-                            rel_turret_yaw,
-                            turret_elevation_rad,
-                            barrel_recoil_z,
-                            rotor_spin_angle,
-                            &mut turret_node_q,
-                        );
+                    if let Some(parts) = vis.cached_articulated_parts.as_deref() {
+                        if !parts.is_empty() {
+                            apply_cached_articulation(
+                                parts,
+                                rel_turret_yaw,
+                                turret_elevation_rad,
+                                barrel_recoil_z,
+                                rotor_spin_angle,
+                                &mut turret_node_q,
+                            );
+                        }
                     }
                 }
             }
 
-            // Multi-stage 3D construction rise & unfolding animation synchronized with SimEntity.construction_progress
-            let target_prog = sim_ent.construction_progress.clamp(0.05, 1.0);
+            // Multi-stage 3D construction rise & MCV <-> ConYard unfolding synchronized with SimEntity.construction_progress
+            let is_transform_bld = vis.building_footprint.is_some()
+                && loaded
+                    .buildings
+                    .get(curr_type_id)
+                    .is_some_and(|b| b.transforms_into_unit.is_some());
+            let buildup_rate = if is_transform_bld { 0.45 } else { 0.85 };
+            let target_prog = sim_ent.construction_progress.clamp(0.04, 1.0);
             if vis.spawn_progress < target_prog {
-                vis.spawn_progress = (vis.spawn_progress + dt * 0.85).min(target_prog);
+                vis.spawn_progress = (vis.spawn_progress + dt * buildup_rate).min(target_prog);
             } else {
                 vis.spawn_progress = target_prog;
             }
 
+            let suppress_y_squash = should_suppress_building_y_squash(
+                vis.building_footprint.is_some(),
+                curr_type_id,
+                is_hd_sprite_mode,
+                sprite_catalog.as_deref(),
+                ctrl_opt,
+            );
             let gate_y_scale = (1.0 - gate_openness_01 * 0.72).clamp(0.22, 1.0);
-            let desired_scale = if vis.spawn_progress < 0.999 {
-                let p = vis.spawn_progress.clamp(0.04, 1.0);
+            let desired_scale = if (vis.spawn_progress < 0.999
+                || vis.deconstruct_progress.is_some())
+                && !suppress_y_squash
+            {
+                let p = vis
+                    .deconstruct_progress
+                    .unwrap_or(vis.spawn_progress)
+                    .clamp(0.04, 1.0);
                 let xz_scale = (0.84 + 0.16 * (p / 0.45).min(1.0)).clamp(0.84, 1.0) * base_mult;
                 let y_eased = (1.0 - (1.0 - p).powi(3)).max(0.05) * base_mult * gate_y_scale;
                 Vec3::new(xz_scale, y_eased, xz_scale)
@@ -422,13 +470,22 @@ pub fn sync_sim_entities_to_3d(
             // Apply Fog-of-War + Stealth/Cloak/Burrow visibility culling to hostile units/structures
             set_visibility_if_dirty(&mut visibility, desired_vis);
         } else {
-            // Check if this building was sold (triggering a 3D fold-down deconstruction animation)
+            // Trigger 3D fold-down deconstruction on building sell OR live ConYard -> MCV undeploy
             if vis.deconstruct_progress.is_none() && vis.building_footprint.is_some() {
                 let was_sold = world
                     .destruction_events
                     .iter()
                     .any(|ev| ev.entity_id == vis.sim_id && ev.is_sold);
-                if was_sold {
+                let killed_in_combat = world
+                    .destruction_events
+                    .iter()
+                    .any(|ev| ev.entity_id == vis.sim_id && !ev.is_sold);
+                let undeployed_conyard = !killed_in_combat
+                    && loaded
+                        .buildings
+                        .get(&vis.entity_type_id)
+                        .is_some_and(|b| b.transforms_into_unit.is_some());
+                if was_sold || undeployed_conyard {
                     vis.deconstruct_progress = Some(vis.spawn_progress.clamp(0.25, 1.0));
                 }
             }
@@ -456,8 +513,20 @@ pub fn sync_sim_entities_to_3d(
                         vis.building_footprint,
                         vis.is_infantry,
                     );
-                    let xz_scale = (0.85 + 0.15 * p) * base_mult;
-                    transform.scale = Vec3::new(xz_scale, p * base_mult, xz_scale);
+                    let suppress_y_squash = should_suppress_building_y_squash(
+                        vis.building_footprint.is_some(),
+                        &vis.entity_type_id,
+                        is_hd_sprite_mode,
+                        sprite_catalog.as_deref(),
+                        ctrl_opt,
+                    );
+                    let desired_scale = if suppress_y_squash {
+                        Vec3::splat(base_mult)
+                    } else {
+                        let xz_scale = (0.85 + 0.15 * p) * base_mult;
+                        Vec3::new(xz_scale, p * base_mult, xz_scale)
+                    };
+                    set_scale_if_dirty(&mut transform, desired_scale);
                 }
             } else if let Some(ref mut death_p) = vis.death_anim_progress {
                 *death_p += dt / 0.55;
@@ -507,20 +576,24 @@ pub fn sync_sim_entities_to_3d(
             let asset_load_str =
                 resolve_mod_asset_path(&asset_root.0, &loaded.root_dir, &model_path);
             let scene_handle: Handle<Scene> = asset_server.load(asset_load_str);
-            let initial_progress = if b_footprint.is_some() {
-                sim_ent.construction_progress.clamp(0.05, 1.0)
-            } else {
+            let is_transform_bld = b_footprint.is_some()
+                && loaded
+                    .buildings
+                    .get(&type_id_str)
+                    .is_some_and(|b| b.transforms_into_unit.is_some());
+            let initial_progress = if b_footprint.is_none() {
                 1.0
+            } else if world_elapsed_secs > 0.25
+                && sim_ent.construction_progress >= 0.99
+                && is_transform_bld
+            {
+                0.04
+            } else {
+                sim_ent.construction_progress.clamp(0.04, 1.0)
             };
-            let is_infantry_spawn = match &sim_ent.kind {
-                EntityKind::Unit { unit_id } => loaded.units.get(unit_id).is_some_and(|u| {
-                    matches!(
-                        u.role,
-                        rts_sdk::schema::UnitRole::Infantry | rts_sdk::schema::UnitRole::Engineer
-                    )
-                }),
-                _ => false,
-            };
+            let is_infantry_spawn = matches!(&sim_ent.kind, EntityKind::Unit { unit_id } if loaded.units.get(unit_id).is_some_and(|u| {
+                matches!(u.role, rts_sdk::schema::UnitRole::Infantry | rts_sdk::schema::UnitRole::Engineer)
+            }));
             let (base_mult, shp_iso_align_yaw) = resolve_entity_base_mult_and_iso_yaw(
                 loaded,
                 &type_id_str,
@@ -533,8 +606,7 @@ pub fn sync_sim_entities_to_3d(
             } else {
                 Visibility::Hidden
             };
-            let hide_gltf_for_hd_sprite = visual_mode.as_deref().copied().unwrap_or_default()
-                == Ra2EntityVisualMode::HybridHdSprites
+            let hide_gltf_for_hd_sprite = is_hd_sprite_mode
                 && (b_footprint.is_some() || is_infantry_spawn)
                 && sprite_catalog
                     .as_deref()
@@ -543,6 +615,11 @@ pub fn sync_sim_entities_to_3d(
                 Visibility::Hidden
             } else {
                 Visibility::Inherited
+            };
+            let initial_y_scale = if b_footprint.is_some() && !hide_gltf_for_hd_sprite {
+                base_mult
+            } else {
+                initial_progress * base_mult
             };
             commands
                 .spawn((
@@ -563,11 +640,7 @@ pub fn sync_sim_entities_to_3d(
                         .with_rotation(Quat::from_rotation_y(
                             sim_ent.facing_radians + shp_iso_align_yaw,
                         ))
-                        .with_scale(Vec3::new(
-                            base_mult,
-                            initial_progress * base_mult,
-                            base_mult,
-                        )),
+                        .with_scale(Vec3::new(base_mult, initial_y_scale, base_mult)),
                 ))
                 .with_children(|parent| {
                     parent.spawn((

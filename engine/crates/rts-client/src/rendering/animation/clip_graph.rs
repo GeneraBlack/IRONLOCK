@@ -3,6 +3,7 @@ use bevy::prelude::*;
 use rts_sdk::schema::common::{AnimClipMap, EntityAnimState};
 use rts_simulation::world::SimEntity;
 use std::collections::{BTreeMap, HashMap};
+use std::time::Duration;
 
 /// Returns `true` when an entity's procedural/glTF rig animation should be skipped because it is
 /// shrouded in Fog-of-War (`Visibility::Hidden`), beyond `MAX_PROCEDURAL_ANIM_DISTANCE`, or outside
@@ -215,6 +216,134 @@ pub fn anim_state_is_looping(state: EntityAnimState) -> bool {
     )
 }
 
+/// Resolution result when inspecting embedded glTF clips for an articulated `"Constructing"` clip.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum ConstructClipResolution {
+    /// Matched `"Constructing"` clip handle exists, but `Assets<AnimationClip>` has not committed it yet.
+    PendingAsset,
+    /// Clip duration inspection succeeded (`articulated_buildup == true` iff `duration > 0.05`).
+    Ready {
+        constructing_duration: Option<f32>,
+        articulated_buildup: bool,
+    },
+}
+
+/// Inspects `named_clips` for a `"Constructing"` clip and resolves its exact duration (`> 0.05s`).
+pub fn resolve_constructing_clip_duration(
+    named_clips: &[(String, Handle<AnimationClip>)],
+    custom_map: &AnimClipMap,
+    clip_assets: Option<&Assets<AnimationClip>>,
+) -> ConstructClipResolution {
+    if named_clips.is_empty() {
+        return ConstructClipResolution::Ready {
+            constructing_duration: None,
+            articulated_buildup: false,
+        };
+    }
+    let mut sorted_names: Vec<&str> = named_clips.iter().map(|(n, _)| n.as_str()).collect();
+    sorted_names.sort_unstable();
+    let Some(matched_name) =
+        resolve_clip_name_for_state(EntityAnimState::Constructing, custom_map, &sorted_names)
+    else {
+        return ConstructClipResolution::Ready {
+            constructing_duration: None,
+            articulated_buildup: false,
+        };
+    };
+    let Some((_, clip_handle)) = named_clips.iter().find(|(n, _)| n == matched_name) else {
+        return ConstructClipResolution::Ready {
+            constructing_duration: None,
+            articulated_buildup: false,
+        };
+    };
+    let Some(clips) = clip_assets else {
+        return ConstructClipResolution::Ready {
+            constructing_duration: None,
+            articulated_buildup: false,
+        };
+    };
+    let Some(clip) = clips.get(clip_handle) else {
+        return ConstructClipResolution::PendingAsset;
+    };
+    let dur = clip.duration();
+    if dur > 0.05 {
+        ConstructClipResolution::Ready {
+            constructing_duration: Some(dur),
+            articulated_buildup: true,
+        }
+    } else {
+        ConstructClipResolution::Ready {
+            constructing_duration: None,
+            articulated_buildup: false,
+        }
+    }
+}
+
+/// Computes normalized `0.0..=1.0` bidirectional `"Constructing"` scrub progress for buildings:
+/// - `deconstruct_progress` (`1.0 -> 0.0` reverse scrub on sell or ConYard undeploy)
+/// - `spawn_progress < 0.996` (`0.0 -> 1.0` forward scrub on build or MCV deploy)
+/// - `None` once online (`spawn_progress >= 0.996 && deconstruct_progress.is_none()`).
+#[inline]
+pub fn compute_building_scrub_progress(
+    is_building: bool,
+    spawn_progress: f32,
+    deconstruct_progress: Option<f32>,
+) -> Option<f32> {
+    if let Some(dec_p) = deconstruct_progress {
+        Some(dec_p.clamp(0.0, 1.0))
+    } else if is_building && spawn_progress < 0.996 {
+        Some(spawn_progress.clamp(0.0, 1.0))
+    } else {
+        None
+    }
+}
+
+/// Maps normalized `0.0..=1.0` buildup/builddown progress onto `[0.0, (dur - 1e-4).max(0.0)]`.
+#[inline]
+pub fn compute_construct_scrub_time(progress_01: f32, duration: f32) -> f32 {
+    let p = progress_01.clamp(0.0, 1.0);
+    let max_t = (duration - 1e-4).max(0.0);
+    (p * duration).clamp(0.0, max_t)
+}
+
+/// Drives `construct_node` in paused exact-frame scrub mode (`Duration::ZERO` instant switch).
+pub fn apply_construct_scrub_to_player(
+    player: &mut AnimationPlayer,
+    transitions: &mut AnimationTransitions,
+    construct_node: AnimationNodeIndex,
+    seek_t: f32,
+    force_switch: bool,
+) {
+    if force_switch || !player.is_playing_animation(construct_node) {
+        player.stop_all();
+        *transitions = AnimationTransitions::new();
+        let active = transitions.play(player, construct_node, Duration::ZERO);
+        active.pause();
+        active.seek_to(seek_t);
+    } else if let Some(active) = player.animation_mut(construct_node) {
+        active.pause();
+        active.seek_to(seek_t);
+    }
+}
+
+/// Snaps `construct_node` to its exact `100%` rest pose `(dur - 1e-4).max(0.0)` and resumes it
+/// right before crossfading (`120ms`) into `Idle` / `Producing` so Bevy's `AnimationTransitions`
+/// cleanly fades out and expires `construct_node` without leaving any sub-assembly offset.
+pub fn snap_construct_to_rest_before_transition(
+    player: &mut AnimationPlayer,
+    construct_node: AnimationNodeIndex,
+    duration: f32,
+    resume_for_crossfade: bool,
+) {
+    let snap_t = compute_construct_scrub_time(1.0, duration);
+    if let Some(active) = player.animation_mut(construct_node) {
+        active.seek_to(snap_t);
+        if resume_for_crossfade {
+            active.resume();
+        }
+    }
+}
+
 #[allow(clippy::type_complexity)]
 pub(super) fn evaluate_procedural_limb_pose(
     state: EntityAnimState,
@@ -307,5 +436,265 @@ pub(super) fn evaluate_procedural_limb_pose(
             Quat::IDENTITY,
             Quat::IDENTITY,
         ),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn articulated_buildup_detects_constructing_clip_duration_and_pending_assets() {
+        let mut clips = Assets::<AnimationClip>::default();
+        let mut valid_construct = AnimationClip::default();
+        valid_construct.set_duration(1.20);
+        let h_valid = clips.add(valid_construct);
+
+        let mut tiny_construct = AnimationClip::default();
+        tiny_construct.set_duration(0.02);
+        let h_tiny = clips.add(tiny_construct);
+        let h_idle = clips.add(AnimationClip::default());
+
+        let named_valid = vec![
+            ("Idle".to_string(), h_idle.clone()),
+            ("Constructing".to_string(), h_valid),
+        ];
+        let res_valid =
+            resolve_constructing_clip_duration(&named_valid, &AnimClipMap::default(), Some(&clips));
+        assert_eq!(
+            res_valid,
+            ConstructClipResolution::Ready {
+                constructing_duration: Some(1.20),
+                articulated_buildup: true,
+            }
+        );
+
+        let named_tiny = vec![
+            ("Idle".to_string(), h_idle.clone()),
+            ("Constructing".to_string(), h_tiny),
+        ];
+        assert_eq!(
+            resolve_constructing_clip_duration(&named_tiny, &AnimClipMap::default(), Some(&clips)),
+            ConstructClipResolution::Ready {
+                constructing_duration: None,
+                articulated_buildup: false,
+            }
+        );
+
+        let named_no_construct = vec![("Idle".to_string(), h_idle)];
+        assert_eq!(
+            resolve_constructing_clip_duration(
+                &named_no_construct,
+                &AnimClipMap::default(),
+                Some(&clips)
+            ),
+            ConstructClipResolution::Ready {
+                constructing_duration: None,
+                articulated_buildup: false,
+            }
+        );
+
+        let pending_handle = Handle::<AnimationClip>::weak_from_u128(0xdead_beef_cafe_1234);
+        let named_pending = vec![("Constructing".to_string(), pending_handle)];
+        assert_eq!(
+            resolve_constructing_clip_duration(
+                &named_pending,
+                &AnimClipMap::default(),
+                Some(&clips)
+            ),
+            ConstructClipResolution::PendingAsset
+        );
+    }
+
+    #[test]
+    fn bidirectional_construct_scrub_maps_forward_buildup_reverse_builddown_and_rest_snap() {
+        let dur = 1.20_f32;
+        assert_eq!(
+            compute_building_scrub_progress(true, 0.04, None),
+            Some(0.04)
+        );
+        assert_eq!(
+            compute_building_scrub_progress(true, 0.78, None),
+            Some(0.78)
+        );
+        assert_eq!(compute_building_scrub_progress(true, 0.996, None), None);
+        assert_eq!(compute_building_scrub_progress(true, 1.0, None), None);
+        assert_eq!(compute_building_scrub_progress(false, 0.25, None), None);
+        assert_eq!(
+            compute_building_scrub_progress(true, 1.0, Some(0.42)),
+            Some(0.42)
+        );
+
+        assert!((compute_construct_scrub_time(0.0, dur) - 0.0).abs() < 1e-6);
+        assert!((compute_construct_scrub_time(0.5, dur) - 0.60).abs() < 1e-6);
+        assert!((compute_construct_scrub_time(1.0, dur) - (dur - 1e-4)).abs() < 1e-6);
+
+        let mut clips = Assets::<AnimationClip>::default();
+        let mut c_clip = AnimationClip::default();
+        c_clip.set_duration(dur);
+        let h_con = clips.add(c_clip);
+        let h_idle = clips.add(AnimationClip::default());
+        let named = vec![
+            ("Constructing".to_string(), h_con),
+            ("Idle".to_string(), h_idle),
+        ];
+        let (_graph, nodes) =
+            build_animation_graph_from_clips(&named, &[], &AnimClipMap::default()).unwrap();
+        let con_node = nodes[&EntityAnimState::Constructing];
+        let idle_node = nodes[&EntityAnimState::Idle];
+
+        let mut player = AnimationPlayer::default();
+        let mut transitions = AnimationTransitions::new();
+
+        // Forward scrub 0.18 -> 0.76
+        apply_construct_scrub_to_player(
+            &mut player,
+            &mut transitions,
+            con_node,
+            compute_construct_scrub_time(0.18, dur),
+            true,
+        );
+        let a18 = player.animation(con_node).expect("construct active");
+        assert!(a18.is_paused());
+        assert!((a18.seek_time() - 0.18 * dur).abs() < 1e-5);
+
+        apply_construct_scrub_to_player(
+            &mut player,
+            &mut transitions,
+            con_node,
+            compute_construct_scrub_time(0.76, dur),
+            false,
+        );
+        assert!((player.animation(con_node).unwrap().seek_time() - 0.76 * dur).abs() < 1e-5);
+
+        // Completion snap (`was_scrubbing_construct: true -> false`) + crossfade to Idle
+        snap_construct_to_rest_before_transition(&mut player, con_node, dur, true);
+        let snapped = player.animation(con_node).unwrap();
+        assert!(!snapped.is_paused());
+        assert!((snapped.seek_time() - (dur - 1e-4)).abs() < 1e-5);
+        transitions
+            .play(&mut player, idle_node, Duration::from_millis(120))
+            .repeat();
+        assert_eq!(transitions.get_main_animation(), Some(idle_node));
+
+        // Reverse scrub on sell / ConYard undeploy (`1.0 -> 0.42 -> 0.05`)
+        for &rev_p in &[1.0_f32, 0.42, 0.05] {
+            apply_construct_scrub_to_player(
+                &mut player,
+                &mut transitions,
+                con_node,
+                compute_construct_scrub_time(rev_p, dur),
+                rev_p >= 0.99,
+            );
+            let a_rev = player.animation(con_node).unwrap();
+            assert!(a_rev.is_paused());
+            let expected = compute_construct_scrub_time(rev_p, dur);
+            assert!((a_rev.seek_time() - expected).abs() < 1e-5);
+        }
+    }
+
+    #[test]
+    fn anim_controller_transitions_across_idle_walk_prone_attack_and_die() {
+        let mod_dir = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .join("../../../rust-ra2")
+            .canonicalize()
+            .expect("canonicalize rust-ra2 path");
+        let loaded = rts_sdk::loader::LoadedMod::load_from_dir(mod_dir).expect("load rust-ra2");
+        let mut world = rts_simulation::world::SimWorld::from_mod_map(&loaded, &loaded.entry_map);
+        let id = world.entities.keys().copied().next().expect("entity");
+        let ent = world.entities.get_mut(&id).unwrap();
+        ent.health = ent.max_health;
+        ent.recoil_timer = 0.0;
+        ent.suppression = 0.0;
+        ent.current_speed = 0.0;
+        ent.path_waypoints.clear();
+
+        assert_eq!(
+            select_unit_anim_state(Some(ent), false, 0.0),
+            EntityAnimState::Idle
+        );
+        ent.script_ctx.deployed = true;
+        assert_eq!(
+            select_unit_anim_state(Some(ent), false, 0.0),
+            EntityAnimState::Deploy
+        );
+        ent.script_ctx.deployed = false;
+        ent.current_speed = 3.2;
+        assert_eq!(
+            select_unit_anim_state(Some(ent), false, 0.0),
+            EntityAnimState::Walk
+        );
+        ent.suppression = 0.65;
+        assert_eq!(
+            select_unit_anim_state(Some(ent), false, 0.0),
+            EntityAnimState::Prone
+        );
+        ent.recoil_timer = 0.15;
+        assert_eq!(
+            select_unit_anim_state(Some(ent), false, 0.0),
+            EntityAnimState::Attack
+        );
+        assert_eq!(
+            select_unit_anim_state(Some(ent), true, 0.0),
+            EntityAnimState::Die
+        );
+    }
+
+    #[test]
+    fn gltf_clip_resolution_and_animation_graph_builder_honor_custom_and_alias_names() {
+        let mut clips_assets = Assets::<AnimationClip>::default();
+        let idle_h = clips_assets.add(AnimationClip::default());
+        let move_h = clips_assets.add(AnimationClip::default());
+        let fire_h = clips_assets.add(AnimationClip::default());
+        let custom_die_h = clips_assets.add(AnimationClip::default());
+
+        let named = vec![
+            ("Armature|Stand_Ready".to_string(), idle_h),
+            ("Run_Forward".to_string(), move_h),
+            ("Rifle_Fire".to_string(), fire_h),
+            ("CustomRagdollA".to_string(), custom_die_h),
+        ];
+        let custom_map = AnimClipMap {
+            die: Some("CustomRagdollA".to_string()),
+            ..Default::default()
+        };
+
+        let (_graph, state_nodes) = build_animation_graph_from_clips(&named, &[], &custom_map)
+            .expect("non-empty clips must produce AnimationGraph");
+        assert!(state_nodes.contains_key(&EntityAnimState::Idle));
+        assert!(state_nodes.contains_key(&EntityAnimState::Walk));
+        assert!(state_nodes.contains_key(&EntityAnimState::Attack));
+        assert!(state_nodes.contains_key(&EntityAnimState::Die));
+        assert_ne!(
+            state_nodes[&EntityAnimState::Walk],
+            state_nodes[&EntityAnimState::Attack]
+        );
+        assert!(build_animation_graph_from_clips(&[], &[], &AnimClipMap::default()).is_none());
+    }
+
+    #[test]
+    fn entity_animation_culls_hidden_and_distant_units() {
+        let cam = Some(Vec3::new(50.0, 35.0, 50.0));
+        assert!(should_cull_entity_animation(
+            Visibility::Hidden,
+            Vec3::new(50.0, 0.0, 50.0),
+            cam,
+            None,
+            2.0
+        ));
+        assert!(!should_cull_entity_animation(
+            Visibility::Inherited,
+            Vec3::new(60.0, 0.0, 60.0),
+            cam,
+            None,
+            2.0
+        ));
+        assert!(should_cull_entity_animation(
+            Visibility::Inherited,
+            Vec3::new(220.0, 0.0, 220.0),
+            cam,
+            None,
+            2.0
+        ));
     }
 }

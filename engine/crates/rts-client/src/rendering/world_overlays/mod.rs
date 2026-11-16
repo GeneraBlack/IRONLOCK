@@ -3,6 +3,7 @@ mod order_paths;
 mod prop_instancing;
 mod structures_and_strikes;
 mod tactical_hud3d;
+mod tactical_hud3d_scaffolding;
 #[cfg(test)]
 mod tests;
 
@@ -16,9 +17,10 @@ pub use prop_instancing::{
     build_procedural_instanced_prop_mesh, ore_stage_glb_filename, resource_density_stage,
     PropInstanceKey, PropSceneVisualEntity, ALL_PROP_GLB_FILES,
 };
-pub use tactical_hud3d::{
-    push_bridges_and_repair_huts, push_building_construction_scaffolding_and_crane,
-    push_tactical_ping_pillar_and_rings,
+pub use tactical_hud3d::push_bridges_and_repair_huts;
+pub use tactical_hud3d_scaffolding::{
+    mod_has_3d_construction_rigs, push_building_construction_scaffolding_and_crane,
+    push_tactical_ping_pillar_and_rings, should_use_3d_gltf_construction_rig,
 };
 
 use super::interpolation::{
@@ -277,12 +279,13 @@ pub fn sync_gpu_world_overlays_and_props(
         Option<Res<CurveFormationPreviewResource>>,
         Option<Res<ColorblindSettingsResource>>,
     ),
-    (prev_snap, curr_snap, mut overlay_assets, meshes, materials): (
+    (prev_snap, curr_snap, mut overlay_assets, meshes, materials, visual_mode): (
         Res<PrevSimSnapshot>,
         Res<CurrSimSnapshot>,
         ResMut<WorldOverlayGpuAssets>,
         Option<ResMut<Assets<Mesh>>>,
         Option<ResMut<Assets<StandardMaterial>>>,
+        Option<Res<super::Ra2EntityVisualMode>>,
     ),
     (gltfs, gltf_nodes, gltf_meshes): (
         Option<Res<Assets<Gltf>>>,
@@ -384,6 +387,8 @@ pub fn sync_gpu_world_overlays_and_props(
     let mut billboard_batch = DynamicQuadBatchBuilder::default();
     let mut solid_batch = DynamicQuadBatchBuilder::default();
 
+    let active_visual_mode = visual_mode.as_deref().copied().unwrap_or_default();
+    let skip_hud_scaffolding = should_use_3d_gltf_construction_rig(loaded, active_visual_mode);
     let attack_move_aiming = interaction.attack_move_mode && interaction.selected_ids.len() <= 4;
 
     for sim_ent in world.entities.values() {
@@ -447,6 +452,7 @@ pub fn sync_gpu_world_overlays_and_props(
             elapsed,
             cam_right,
             cam_up,
+            skip_hud_scaffolding,
         );
     }
 

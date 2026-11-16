@@ -30,6 +30,9 @@ struct TeamDamageUniform {
     shield_color: vec4<f32>,
     // xy = map_world_size, z = fow_enabled (0.0 on Studio PreviewStage), w = elapsed_secs
     map_fow_params: vec4<f32>,
+    // x = build_progress (1.0 = online), y = foundation_base_y, z = active_weld_y,
+    // w = faction_weld_mode (0=online, ±1=Allies, ±2=Soviets, ±3=Yuri; <0 = builddown)
+    construction_params: vec4<f32>,
 }
 
 @group(2) @binding(100) var<uniform> team_ext: TeamDamageUniform;
@@ -136,6 +139,9 @@ fn fragment(
     micro_cavity = mix(micro_cavity, md_uv.a, 0.58);
 #endif
     let world_fw = length(fwidth(world_pos)) * 2.85;
+    if team_ext.construction_params.x < 0.999 && world_pos.y < team_ext.construction_params.y - 0.02 {
+        discard;
+    }
 
     var base_rgba = pbr_input.material.base_color;
     var albedo = base_rgba.rgb;
@@ -270,6 +276,34 @@ fn fragment(
         albedo = mix(albedo, team_ext.shield_color.rgb, rim * shield_strength * 0.35);
     }
 
+    // Localized 3D Buildup / Builddown Arc-Weld Seam & Matte Primer Steel Edge
+    if team_ext.construction_params.x < 0.995 {
+        let weld_dy = abs(world_pos.y - team_ext.construction_params.z);
+        if weld_dy < 0.22 {
+            let weld_n = soot_noise3(world_pos * 5.5);
+            let seam_band = 1.0 - smoothstep(0.02, 0.22, weld_dy);
+            let arc_flicker = 0.78 + 0.22 * sin(team_ext.map_fow_params.w * 18.0 + weld_n * 12.5);
+            let arc_mask = seam_band * smoothstep(0.24, 0.78, weld_n) * arc_flicker;
+            let f_code = round(abs(team_ext.construction_params.w));
+            var weld_hdr = vec3<f32>(0.45, 0.92, 1.00) * 3.4; // Allies cyan-white laser arc
+            if f_code > 2.5 {
+                weld_hdr = vec3<f32>(0.22, 1.00, 0.58) * 3.2; // Yuri emerald-psi arc
+            } else if f_code > 1.5 {
+                weld_hdr = vec3<f32>(1.00, 0.56, 0.12) * 3.4; // Soviets orange-gold carbon arc
+            }
+            let hot_core = pow(seam_band, 3.0) * smoothstep(0.52, 0.88, weld_n);
+            extra_emissive = extra_emissive + weld_hdr * arc_mask + vec3<f32>(2.6, 2.5, 2.3) * hot_core;
+            let primer_w = seam_band * (0.42 + 0.28 * weld_n);
+            albedo = mix(albedo, vec3<f32>(0.16, 0.17, 0.19), primer_w);
+            pbr_input.material.perceptual_roughness = mix(
+                pbr_input.material.perceptual_roughness,
+                0.82,
+                primer_w,
+            );
+            pbr_input.material.metallic = mix(pbr_input.material.metallic, 0.68, primer_w * 0.65);
+        }
+    }
+
     // Direct GPU World-XZ Fog-of-War attenuation on explored buildings & terrain-adjacent structures
     let fow_shroud = clamp(fow_rgba.a * team_ext.map_fow_params.z, 0.0, 0.96);
     let explored_w = smoothstep(0.08, 0.64, fow_shroud);
@@ -286,7 +320,20 @@ fn fragment(
         }
     }
     pbr_input.material.base_color = vec4<f32>(albedo, base_rgba.a * strategic_fade);
-    let raw_emissive = pbr_input.material.emissive.rgb * (1.0 + max(team_ext.pbr_overrides.z, 0.0));
+    var power_gate = 1.0;
+    let build_p = team_ext.construction_params.x;
+    if build_p < 0.999 {
+        if team_ext.construction_params.w < 0.0 {
+            power_gate = select(0.0, smoothstep(0.94, 0.999, build_p), build_p >= 0.94);
+        } else if build_p < 0.85 {
+            power_gate = 0.04;
+        } else if build_p < 0.94 {
+            power_gate = mix(0.04, 1.35, smoothstep(0.85, 0.94, build_p));
+        } else {
+            power_gate = mix(1.35, 1.0, smoothstep(0.94, 0.999, build_p));
+        }
+    }
+    let raw_emissive = pbr_input.material.emissive.rgb * (1.0 + max(team_ext.pbr_overrides.z, 0.0)) * power_gate;
     let raw_emissive_luma = max(
         dot(raw_emissive, vec3<f32>(0.2126, 0.7152, 0.0722)),
         max(raw_emissive.r, max(raw_emissive.g, raw_emissive.b)) * 0.75,

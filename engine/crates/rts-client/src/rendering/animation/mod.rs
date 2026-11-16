@@ -1,8 +1,10 @@
 mod clip_graph;
 
 pub use clip_graph::{
-    anim_state_is_looping, build_animation_graph_from_clips, resolve_clip_name_for_state,
-    select_unit_anim_state, should_cull_entity_animation,
+    anim_state_is_looping, apply_construct_scrub_to_player, build_animation_graph_from_clips,
+    compute_building_scrub_progress, compute_construct_scrub_time, resolve_clip_name_for_state,
+    resolve_constructing_clip_duration, select_unit_anim_state, should_cull_entity_animation,
+    snap_construct_to_rest_before_transition, ConstructClipResolution,
 };
 
 use super::preview_stage::PreviewStageEntity;
@@ -38,6 +40,8 @@ pub enum CachedModelAnimEntry {
     Ready {
         graph_handle: Handle<AnimationGraph>,
         state_nodes: BTreeMap<EntityAnimState, AnimationNodeIndex>,
+        constructing_duration: Option<f32>,
+        articulated_buildup: bool,
     },
 }
 
@@ -58,6 +62,9 @@ pub struct EntityAnimController {
     pub anim_players: Option<Vec<Entity>>,
     pub active_gltf_node: Option<AnimationNodeIndex>,
     pub using_gltf_clips: bool,
+    pub articulated_buildup: bool,
+    pub was_scrubbing_construct: bool,
+    pub anim_cache_resolved: bool,
 }
 
 impl Default for EntityAnimController {
@@ -73,6 +80,9 @@ impl Default for EntityAnimController {
             anim_players: None,
             active_gltf_node: None,
             using_gltf_clips: false,
+            articulated_buildup: false,
+            was_scrubbing_construct: false,
+            anim_cache_resolved: false,
         }
     }
 }
@@ -150,8 +160,9 @@ pub fn step_entity_animations(
         Option<Res<ModResource>>,
         Option<Res<SimWorldResource>>,
     ),
-    (gltfs, mut anim_graphs, mut graph_cache): (
+    (gltfs, anim_clips, mut anim_graphs, mut graph_cache): (
         Option<Res<Assets<Gltf>>>,
+        Option<Res<Assets<AnimationClip>>>,
         Option<ResMut<Assets<AnimationGraph>>>,
         Option<ResMut<GltfAnimationGraphCache>>,
     ),
@@ -219,6 +230,10 @@ pub fn step_entity_animations(
     }
     for (ent, rig, players) in discoveries {
         if let Ok((_, _, _, _, Some(mut ctrl))) = root_q.get_mut(ent) {
+            if players.is_empty() {
+                ctrl.anim_cache_resolved = true;
+                ctrl.articulated_buildup = false;
+            }
             ctrl.rig = Some(rig);
             ctrl.anim_players = Some(players);
         }
@@ -229,11 +244,16 @@ pub fn step_entity_animations(
             continue;
         };
         let is_dying = vis.death_anim_progress.is_some();
+        let active_building_scrub = vis.building_footprint.is_some()
+            && (vis.spawn_progress < 0.996
+                || vis.deconstruct_progress.is_some()
+                || ctrl.was_scrubbing_construct);
         let bound_r = vis
             .building_footprint
             .map(|[fw, fh]| (fw.max(fh) as f32) * 1.4)
             .unwrap_or(2.2);
         if !is_dying
+            && !active_building_scrub
             && should_cull_entity_animation(
                 *root_vis,
                 root_tf.translation,
@@ -284,7 +304,7 @@ pub fn step_entity_animations(
             ctrl.factory_door_open = (ctrl.factory_door_open - dt * 2.8).max(0.0);
         }
 
-        let under_construction = vis.spawn_progress < 0.992 || vis.deconstruct_progress.is_some();
+        let under_construction = vis.spawn_progress < 0.996 || vis.deconstruct_progress.is_some();
         let hp_ratio = sim_ent
             .map(|se| se.health / se.max_health.max(1.0))
             .unwrap_or(1.0);
@@ -339,91 +359,190 @@ pub fn step_entity_animations(
                                     .iter()
                                     .map(|(k, v)| (k.as_ref().to_string(), v.clone()))
                                     .collect();
-                                let next_entry = match build_animation_graph_from_clips(
+                                if let ConstructClipResolution::Ready {
+                                    constructing_duration,
+                                    articulated_buildup,
+                                } = resolve_constructing_clip_duration(
                                     &named_vec,
-                                    &gltf.animations,
                                     &vdef.animations,
+                                    anim_clips.as_deref(),
                                 ) {
-                                    Some((graph, state_nodes)) => CachedModelAnimEntry::Ready {
-                                        graph_handle: graphs.add(graph),
-                                        state_nodes,
-                                    },
-                                    None => CachedModelAnimEntry::NoEmbeddedClips,
-                                };
-                                cache.entries.insert(cache_key.clone(), next_entry);
+                                    let next_entry = match build_animation_graph_from_clips(
+                                        &named_vec,
+                                        &gltf.animations,
+                                        &vdef.animations,
+                                    ) {
+                                        Some((graph, state_nodes)) => CachedModelAnimEntry::Ready {
+                                            graph_handle: graphs.add(graph),
+                                            state_nodes,
+                                            constructing_duration,
+                                            articulated_buildup,
+                                        },
+                                        None => CachedModelAnimEntry::NoEmbeddedClips,
+                                    };
+                                    cache.entries.insert(cache_key.clone(), next_entry);
+                                }
                             }
                         }
 
-                        if let Some(CachedModelAnimEntry::Ready {
-                            graph_handle,
-                            state_nodes,
-                        }) = cache.entries.get(&cache_key)
-                        {
-                            let desired_state = if vis.building_footprint.is_some() {
-                                if under_construction
-                                    && state_nodes.contains_key(&EntityAnimState::Constructing)
-                                {
-                                    EntityAnimState::Constructing
-                                } else if ctrl.factory_rollout_timer > 0.0
-                                    && state_nodes.contains_key(&EntityAnimState::Producing)
-                                {
-                                    EntityAnimState::Producing
-                                } else if hp_ratio < 0.50
-                                    && state_nodes.contains_key(&EntityAnimState::Damaged)
-                                {
-                                    EntityAnimState::Damaged
-                                } else {
-                                    ctrl.state
-                                }
-                            } else if hp_ratio < 0.35
-                                && ctrl.state == EntityAnimState::Idle
-                                && state_nodes.contains_key(&EntityAnimState::Damaged)
-                            {
-                                EntityAnimState::Damaged
-                            } else {
-                                ctrl.state
-                            };
+                        match cache.entries.get(&cache_key) {
+                            Some(CachedModelAnimEntry::NoEmbeddedClips) => {
+                                ctrl.anim_cache_resolved = true;
+                                ctrl.articulated_buildup = false;
+                                ctrl.was_scrubbing_construct = false;
+                            }
+                            Some(CachedModelAnimEntry::Ready {
+                                graph_handle,
+                                state_nodes,
+                                constructing_duration,
+                                articulated_buildup,
+                            }) => {
+                                ctrl.anim_cache_resolved = true;
+                                ctrl.articulated_buildup = *articulated_buildup;
+                                let scrub_progress = compute_building_scrub_progress(
+                                    vis.building_footprint.is_some(),
+                                    vis.spawn_progress,
+                                    vis.deconstruct_progress,
+                                );
 
-                            let resolved_node = state_nodes
-                                .get(&desired_state)
-                                .or_else(|| state_nodes.get(&EntityAnimState::Idle))
-                                .copied();
-
-                            if let Some(target_node) = resolved_node {
-                                drove_gltf_clips = true;
-                                let should_transition = ctrl.active_gltf_node != Some(target_node);
-                                let loops = anim_state_is_looping(desired_state);
-                                let mut all_ready = true;
-                                for &p_ent in &players {
-                                    if let Ok((mut player, trans_opt, gh_opt)) =
-                                        anim_player_q.get_mut(p_ent)
-                                    {
-                                        if let (Some(mut transitions), Some(_)) =
-                                            (trans_opt, gh_opt)
+                                if let (Some(p), Some(&construct_node), Some(dur)) = (
+                                    scrub_progress,
+                                    state_nodes.get(&EntityAnimState::Constructing),
+                                    *constructing_duration,
+                                ) {
+                                    drove_gltf_clips = true;
+                                    let seek_t = compute_construct_scrub_time(p, dur);
+                                    let force_switch = ctrl.active_gltf_node
+                                        != Some(construct_node)
+                                        || !ctrl.was_scrubbing_construct;
+                                    for &p_ent in &players {
+                                        if let Ok((mut player, trans_opt, gh_opt)) =
+                                            anim_player_q.get_mut(p_ent)
                                         {
-                                            if should_transition {
-                                                let active = transitions.play(
+                                            if let (Some(mut transitions), Some(_)) =
+                                                (trans_opt, gh_opt)
+                                            {
+                                                apply_construct_scrub_to_player(
                                                     &mut player,
-                                                    target_node,
-                                                    Duration::from_millis(GLTF_ANIM_CROSSFADE_MS),
+                                                    &mut transitions,
+                                                    construct_node,
+                                                    seek_t,
+                                                    force_switch,
                                                 );
-                                                if loops {
-                                                    active.repeat();
-                                                }
+                                            } else {
+                                                let mut init_trans = AnimationTransitions::new();
+                                                apply_construct_scrub_to_player(
+                                                    &mut player,
+                                                    &mut init_trans,
+                                                    construct_node,
+                                                    seek_t,
+                                                    true,
+                                                );
+                                                commands.entity(p_ent).insert((
+                                                    AnimationGraphHandle(graph_handle.clone()),
+                                                    init_trans,
+                                                ));
                                             }
-                                        } else {
-                                            all_ready = false;
-                                            commands.entity(p_ent).insert((
-                                                AnimationGraphHandle(graph_handle.clone()),
-                                                AnimationTransitions::new(),
-                                            ));
                                         }
                                     }
-                                }
-                                if should_transition && all_ready {
-                                    ctrl.active_gltf_node = Some(target_node);
+                                    ctrl.active_gltf_node = Some(construct_node);
+                                    ctrl.was_scrubbing_construct = true;
+                                } else {
+                                    let desired_state = if vis.building_footprint.is_some() {
+                                        if under_construction
+                                            && state_nodes
+                                                .contains_key(&EntityAnimState::Constructing)
+                                            && constructing_duration.is_none()
+                                        {
+                                            EntityAnimState::Constructing
+                                        } else if ctrl.factory_rollout_timer > 0.0
+                                            && state_nodes.contains_key(&EntityAnimState::Producing)
+                                        {
+                                            EntityAnimState::Producing
+                                        } else if hp_ratio < 0.50
+                                            && state_nodes.contains_key(&EntityAnimState::Damaged)
+                                        {
+                                            EntityAnimState::Damaged
+                                        } else {
+                                            ctrl.state
+                                        }
+                                    } else if hp_ratio < 0.35
+                                        && ctrl.state == EntityAnimState::Idle
+                                        && state_nodes.contains_key(&EntityAnimState::Damaged)
+                                    {
+                                        EntityAnimState::Damaged
+                                    } else {
+                                        ctrl.state
+                                    };
+
+                                    let resolved_node = state_nodes
+                                        .get(&desired_state)
+                                        .or_else(|| state_nodes.get(&EntityAnimState::Idle))
+                                        .copied();
+
+                                    if let Some(target_node) = resolved_node {
+                                        drove_gltf_clips = true;
+                                        let just_finished_scrub = ctrl.was_scrubbing_construct;
+                                        let should_transition =
+                                            ctrl.active_gltf_node != Some(target_node);
+                                        let loops = anim_state_is_looping(desired_state);
+                                        for &p_ent in &players {
+                                            if let Ok((mut player, trans_opt, gh_opt)) =
+                                                anim_player_q.get_mut(p_ent)
+                                            {
+                                                if just_finished_scrub {
+                                                    if let (Some(&c_node), Some(dur)) = (
+                                                        state_nodes
+                                                            .get(&EntityAnimState::Constructing),
+                                                        *constructing_duration,
+                                                    ) {
+                                                        snap_construct_to_rest_before_transition(
+                                                            &mut player,
+                                                            c_node,
+                                                            dur,
+                                                            target_node != c_node,
+                                                        );
+                                                    }
+                                                }
+                                                if let (Some(mut transitions), Some(_)) =
+                                                    (trans_opt, gh_opt)
+                                                {
+                                                    if should_transition {
+                                                        let active = transitions.play(
+                                                            &mut player,
+                                                            target_node,
+                                                            Duration::from_millis(
+                                                                GLTF_ANIM_CROSSFADE_MS,
+                                                            ),
+                                                        );
+                                                        if loops {
+                                                            active.repeat();
+                                                        }
+                                                    }
+                                                } else {
+                                                    let mut init_trans =
+                                                        AnimationTransitions::new();
+                                                    let active = init_trans.play(
+                                                        &mut player,
+                                                        target_node,
+                                                        Duration::ZERO,
+                                                    );
+                                                    if loops {
+                                                        active.repeat();
+                                                    }
+                                                    commands.entity(p_ent).insert((
+                                                        AnimationGraphHandle(graph_handle.clone()),
+                                                        init_trans,
+                                                    ));
+                                                }
+                                            }
+                                        }
+                                        ctrl.active_gltf_node = Some(target_node);
+                                    }
+                                    ctrl.was_scrubbing_construct = false;
                                 }
                             }
+                            _ => {}
                         }
                     }
                 }
@@ -524,112 +643,87 @@ pub fn step_entity_animations(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::rendering::{sync_sim_entities_to_3d, CachedFogVisibility, Ra2EntityVisualMode};
+    use bevy::ecs::system::RunSystemOnce;
     use rts_sdk::loader::LoadedMod;
-    use rts_sdk::schema::common::AnimClipMap;
     use rts_simulation::world::SimWorld;
 
     #[test]
-    fn anim_controller_transitions_across_idle_walk_prone_attack_and_die() {
+    fn mcv_conyard_unfold_folddown_and_articulated_no_y_squash_kinematics() {
         let mod_dir = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
             .join("../../../rust-ra2")
             .canonicalize()
-            .expect("canonicalize rust-ra2 path");
-        let loaded = LoadedMod::load_from_dir(mod_dir).expect("rust-ra2 should load");
+            .unwrap();
+        let loaded = LoadedMod::load_from_dir(mod_dir).unwrap();
+        let asset_root = loaded.root_dir.parent().unwrap().to_path_buf();
         let mut world = SimWorld::from_mod_map(&loaded, &loaded.entry_map);
-        let id = world.entities.keys().copied().next().expect("entity");
-        let ent = world.entities.get_mut(&id).unwrap();
-        ent.health = ent.max_health;
-        ent.recoil_timer = 0.0;
-        ent.suppression = 0.0;
-        ent.current_speed = 0.0;
-        ent.path_waypoints.clear();
+        world.entities.clear();
+        world.tick = 0;
+        let map_cy = world
+            .spawn_building(1, "allied_conyard", [8, 8], &loaded, false)
+            .unwrap();
 
-        assert_eq!(
-            select_unit_anim_state(Some(ent), false, 0.0),
-            EntityAnimState::Idle
-        );
-        ent.script_ctx.deployed = true;
-        assert_eq!(
-            select_unit_anim_state(Some(ent), false, 0.0),
-            EntityAnimState::Deploy
-        );
-        ent.script_ctx.deployed = false;
-        ent.current_speed = 3.2;
-        assert_eq!(
-            select_unit_anim_state(Some(ent), false, 0.0),
-            EntityAnimState::Walk
-        );
-        ent.suppression = 0.65;
-        assert_eq!(
-            select_unit_anim_state(Some(ent), false, 0.0),
-            EntityAnimState::Prone
-        );
-        ent.recoil_timer = 0.15;
-        assert_eq!(
-            select_unit_anim_state(Some(ent), false, 0.0),
-            EntityAnimState::Attack
-        );
-        assert_eq!(
-            select_unit_anim_state(Some(ent), true, 0.0),
-            EntityAnimState::Die
-        );
-    }
-
-    #[test]
-    fn gltf_clip_resolution_and_animation_graph_builder_honor_custom_and_alias_names() {
-        let mut clips_assets = Assets::<AnimationClip>::default();
-        let idle_h = clips_assets.add(AnimationClip::default());
-        let move_h = clips_assets.add(AnimationClip::default());
-        let fire_h = clips_assets.add(AnimationClip::default());
-        let custom_die_h = clips_assets.add(AnimationClip::default());
-
-        let named = vec![
-            ("Armature|Stand_Ready".to_string(), idle_h),
-            ("Run_Forward".to_string(), move_h),
-            ("Rifle_Fire".to_string(), fire_h),
-            ("CustomRagdollA".to_string(), custom_die_h),
-        ];
-        let custom_map = AnimClipMap {
-            die: Some("CustomRagdollA".to_string()),
-            ..Default::default()
+        let mut app = App::new();
+        app.add_plugins((MinimalPlugins, AssetPlugin::default()))
+            .init_asset::<Scene>()
+            .init_asset::<Image>()
+            .init_resource::<CachedFogVisibility>()
+            .init_resource::<crate::input::ClientInteractionState>()
+            .insert_resource(Ra2EntityVisualMode::Full3dMeshes)
+            .insert_resource(AssetRootResource(asset_root))
+            .insert_resource(ModResource(loaded))
+            .insert_resource(SimWorldResource(world.clone()));
+        let sync = |app: &mut App| {
+            let _ = app.world_mut().run_system_once(sync_sim_entities_to_3d);
+            app.world_mut().flush();
         };
+        sync(&mut app);
 
-        let (_graph, state_nodes) = build_animation_graph_from_clips(&named, &[], &custom_map)
-            .expect("non-empty clips must produce AnimationGraph");
-        assert!(state_nodes.contains_key(&EntityAnimState::Idle));
-        assert!(state_nodes.contains_key(&EntityAnimState::Walk));
-        assert!(state_nodes.contains_key(&EntityAnimState::Attack));
-        assert!(state_nodes.contains_key(&EntityAnimState::Die));
-        assert_ne!(
-            state_nodes[&EntityAnimState::Walk],
-            state_nodes[&EntityAnimState::Attack]
-        );
-        assert!(build_animation_graph_from_clips(&[], &[], &AnimClipMap::default()).is_none());
-    }
+        world.tick = 20;
+        let live_cy = {
+            let mod_ref = &app.world().resource::<ModResource>().0;
+            world
+                .spawn_building(1, "soviet_conyard", [14, 14], mod_ref, false)
+                .unwrap()
+        };
+        app.insert_resource(SimWorldResource(world.clone()));
+        sync(&mut app);
 
-    #[test]
-    fn entity_animation_culls_hidden_and_distant_units() {
-        let cam = Some(Vec3::new(50.0, 35.0, 50.0));
-        assert!(should_cull_entity_animation(
-            Visibility::Hidden,
-            Vec3::new(50.0, 0.0, 50.0),
-            cam,
-            None,
-            2.0
-        ));
-        assert!(!should_cull_entity_animation(
-            Visibility::Inherited,
-            Vec3::new(60.0, 0.0, 60.0),
-            cam,
-            None,
-            2.0
-        ));
-        assert!(should_cull_entity_animation(
-            Visibility::Inherited,
-            Vec3::new(220.0, 0.0, 220.0),
-            cam,
-            None,
-            2.0
-        ));
+        let mut q = app
+            .world_mut()
+            .query::<(Entity, &SimVisualEntity, &Transform)>();
+        let mut cy_ent = Entity::PLACEHOLDER;
+        for (e, vis, tf) in q.iter(app.world()) {
+            if vis.sim_id == map_cy {
+                assert!((vis.spawn_progress - 1.0).abs() < 1e-4);
+            } else if vis.sim_id == live_cy {
+                cy_ent = e;
+                assert!((vis.spawn_progress - 0.04).abs() < 1e-4);
+                assert!((tf.scale.y - tf.scale.x).abs() < 1e-4);
+            }
+        }
+
+        app.world_mut()
+            .entity_mut(cy_ent)
+            .insert(EntityAnimController {
+                anim_cache_resolved: true,
+                ..Default::default()
+            });
+        sync(&mut app);
+        let legacy_tf = app.world().entity(cy_ent).get::<Transform>().unwrap();
+        assert!(legacy_tf.scale.y < legacy_tf.scale.x * 0.5);
+
+        app.world_mut()
+            .entity_mut(cy_ent)
+            .get_mut::<EntityAnimController>()
+            .unwrap()
+            .articulated_buildup = true;
+        world.entities.remove(&live_cy);
+        app.insert_resource(SimWorldResource(world));
+        sync(&mut app);
+        let vis_after = app.world().entity(cy_ent).get::<SimVisualEntity>().unwrap();
+        let tf_after = app.world().entity(cy_ent).get::<Transform>().unwrap();
+        assert!(vis_after.deconstruct_progress.is_some());
+        assert!((tf_after.scale.y - tf_after.scale.x).abs() < 1e-4);
     }
 }

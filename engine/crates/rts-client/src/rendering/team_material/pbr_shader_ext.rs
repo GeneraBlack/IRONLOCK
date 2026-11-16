@@ -28,6 +28,8 @@ mod shader_uniforms {
         pub shield_color: Vec4,
         /// `(map_world_w, map_world_h, fow_strength, elapsed_secs)`.
         pub map_fow_params: Vec4,
+        /// `(build_progress, foundation_base_y, active_weld_y, faction_weld_mode)`.
+        pub construction_params: Vec4,
     }
 }
 pub use shader_uniforms::TeamDamageUniform;
@@ -40,6 +42,7 @@ impl Default for TeamDamageUniform {
             damage_and_fx: Vec4::new(0.0, 0.0, 0.0, 1.0),
             shield_color: Vec4::new(0.30, 0.85, 1.0, 1.0),
             map_fow_params: Vec4::new(128.0, 128.0, 0.0, 0.0),
+            construction_params: Vec4::new(1.0, 0.0, 0.0, 0.0),
         }
     }
 }
@@ -261,11 +264,96 @@ pub fn build_unit_pbr_team_material(
                     fow_strength,
                     elapsed_secs,
                 ),
+                construction_params: Vec4::new(1.0, 0.0, 0.0, 0.0),
             },
             fow_tex,
             micro_detail_tex: Handle::default(),
         },
     }
+}
+
+/// Maps faction identifier to shader arc-weld mode (`+1.0` Allies cyan-white laser,
+/// `+2.0` Soviets orange-gold carbon arc, `+3.0` Yuri emerald-psi arc).
+#[inline]
+pub fn resolve_faction_weld_code(faction_hint: &str) -> f32 {
+    let low = faction_hint.to_ascii_lowercase();
+    if low.contains("yuri") || low.contains("psi") || low.contains("epsilon") {
+        3.0
+    } else if low.contains("soviet") || low.contains("nod") || low.contains("red") {
+        2.0
+    } else {
+        1.0
+    }
+}
+
+#[inline]
+pub fn resolve_building_weld_code(
+    world: &rts_simulation::world::SimWorld,
+    player_id: u8,
+    b_def: Option<&rts_sdk::schema::BuildingDef>,
+) -> f32 {
+    if let Some(b) = b_def {
+        let bf = b.faction.trim();
+        if !bf.is_empty() && !bf.eq_ignore_ascii_case("any") && !bf.eq_ignore_ascii_case("shared") {
+            return resolve_faction_weld_code(bf);
+        }
+    }
+    if let Some(econ) = world.players.get(&player_id) {
+        let pf = econ.faction.trim();
+        if !pf.is_empty() && !pf.eq_ignore_ascii_case("random") {
+            return resolve_faction_weld_code(pf);
+        }
+    }
+    1.0
+}
+
+#[inline]
+pub fn estimate_building_full_height(
+    footprint: Option<[u32; 2]>,
+    b_def: Option<&rts_sdk::schema::BuildingDef>,
+) -> f32 {
+    let scale_y = b_def.map(|b| b.visual.scale[1].max(0.25)).unwrap_or(1.0);
+    if let Some(b) = b_def {
+        if matches!(
+            b.role,
+            rts_sdk::schema::BuildingRole::Wall | rts_sdk::schema::BuildingRole::Gate
+        ) {
+            return 1.85 * scale_y;
+        }
+        if b.superweapon.is_some() {
+            return 5.8 * scale_y;
+        }
+        if matches!(b.role, rts_sdk::schema::BuildingRole::Defense) {
+            return 3.9 * scale_y;
+        }
+    }
+    let max_fp = footprint
+        .map(|[fw, fh]| fw.max(fh).max(1) as f32)
+        .unwrap_or(2.0);
+    (2.1 + max_fp * 0.95).clamp(2.6, 5.8) * scale_y
+}
+
+#[inline]
+pub fn compute_building_construction_params(
+    foundation_y: f32,
+    spawn_progress: f32,
+    deconstruct_progress: Option<f32>,
+    footprint: Option<[u32; 2]>,
+    b_def: Option<&rts_sdk::schema::BuildingDef>,
+    base_weld_code: f32,
+) -> Vec4 {
+    let is_deconstruct = deconstruct_progress.is_some();
+    let p = deconstruct_progress
+        .unwrap_or(spawn_progress)
+        .clamp(0.0, 0.9989);
+    let est_full_h = estimate_building_full_height(footprint, b_def);
+    let active_weld_y = foundation_y + est_full_h * p;
+    let weld_mode = if is_deconstruct {
+        -base_weld_code.abs()
+    } else {
+        base_weld_code.abs()
+    };
+    Vec4::new(p, foundation_y, active_weld_y, weld_mode)
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -478,5 +566,155 @@ mod tests {
         assert!(wgsl.contains("smoothstep(0.16, 0.28, pbr_input.material.perceptual_roughness)"));
         assert!(wgsl.contains("1.0 - smoothstep(0.06, 0.35, base_emissive_luma)"));
         assert!(wgsl.contains("mix(1.0, 2.4, smoothstep(0.35, 0.58, raw_emissive_luma))"));
+    }
+
+    #[test]
+    fn construct_shader_params_and_shared_cache_revert_plus_orphaned_deconstruct_work() {
+        use crate::rendering::{
+            sync_gltf_lod_and_team_damage_materials, SimVisualEntity, SyncedGltfSceneVisuals,
+        };
+        use crate::{ModResource, SimWorldResource};
+        use bevy::ecs::system::RunSystemOnce;
+        use rts_simulation::world::SimWorld;
+
+        assert_eq!(
+            TeamDamageUniform::default().construction_params,
+            Vec4::new(1.0, 0.0, 0.0, 0.0)
+        );
+        assert_eq!(resolve_faction_weld_code("allies"), 1.0);
+        assert_eq!(resolve_faction_weld_code("soviets"), 2.0);
+        assert_eq!(resolve_faction_weld_code("yuri"), 3.0);
+
+        let fwd = compute_building_construction_params(1.5, 0.50, None, Some([3, 3]), None, 2.0);
+        assert!((fwd.x - 0.50).abs() < 1e-5 && (fwd.y - 1.5).abs() < 1e-5 && fwd.z > 3.5);
+        assert!((fwd.w - 2.0).abs() < 1e-5);
+        let rev =
+            compute_building_construction_params(1.5, 1.0, Some(0.42), Some([3, 3]), None, 3.0);
+        assert!((rev.x - 0.42).abs() < 1e-5 && (rev.w - (-3.0)).abs() < 1e-5);
+
+        let wgsl = include_str!("../../../assets/shaders/unit_pbr_team.wgsl");
+        assert!(wgsl.contains("team_ext.construction_params.x < 0.999"));
+        assert!(wgsl.contains("world_pos.y < team_ext.construction_params.y - 0.02"));
+        assert!(wgsl.contains("soot_noise3(world_pos * 5.5)"));
+        assert!(wgsl.contains("power_gate"));
+
+        let mod_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .join("../../../rust-ra2")
+            .canonicalize()
+            .expect("canonicalize rust-ra2");
+        let loaded = LoadedMod::load_from_dir(mod_dir).expect("load rust-ra2");
+        let mut world = SimWorld::from_mod_map(&loaded, &loaded.entry_map);
+        let b_id = world
+            .spawn_building(1, "soviet_tesla_reactor", [10, 10], &loaded, true)
+            .expect("spawn building");
+
+        let mut app = App::new();
+        app.add_plugins(MinimalPlugins)
+            .init_resource::<super::super::TeamDamageMaterialPalette>()
+            .init_resource::<UnitPbrTeamMaterialCache>()
+            .insert_resource(Assets::<Mesh>::default())
+            .insert_resource(Assets::<Image>::default())
+            .insert_resource(Assets::<StandardMaterial>::default())
+            .insert_resource(Assets::<UnitPbrTeamMaterial>::default())
+            .insert_resource(ModResource(loaded));
+        let mesh_h = app
+            .world_mut()
+            .resource_mut::<Assets<Mesh>>()
+            .add(Cuboid::new(1.0, 1.0, 1.0));
+        let mut child_mesh = Entity::PLACEHOLDER;
+        let root_ent = app
+            .world_mut()
+            .spawn((
+                SimVisualEntity {
+                    sim_id: b_id,
+                    entity_type_id: "soviet_tesla_reactor".to_string(),
+                    building_footprint: Some([2, 2]),
+                    world_pos: Vec3::new(20.0, 0.5, 20.0),
+                    spawn_progress: 0.40,
+                    deconstruct_progress: None,
+                    death_anim_progress: None,
+                    is_infantry: false,
+                    cached_articulated_parts: None,
+                    has_3d_turret_node: false,
+                },
+                Transform::IDENTITY,
+                Visibility::Inherited,
+            ))
+            .with_children(|p| {
+                child_mesh = p
+                    .spawn((Name::new("Hull"), Mesh3d(mesh_h), Transform::IDENTITY))
+                    .id();
+            })
+            .id();
+        app.insert_resource(SimWorldResource(world.clone()));
+
+        let tick_mat = |app: &mut App| {
+            let _ = app
+                .world_mut()
+                .run_system_once(sync_gltf_lod_and_team_damage_materials);
+            app.world_mut().flush();
+        };
+        let read_cp = |app: &App| -> Vec4 {
+            let h = &app
+                .world()
+                .entity(child_mesh)
+                .get::<MeshMaterial3d<UnitPbrTeamMaterial>>()
+                .unwrap()
+                .0;
+            app.world()
+                .resource::<Assets<UnitPbrTeamMaterial>>()
+                .get(h)
+                .unwrap()
+                .extension
+                .params
+                .construction_params
+        };
+
+        tick_mat(&mut app);
+        tick_mat(&mut app);
+        assert_eq!(
+            app.world()
+                .resource::<UnitPbrTeamMaterialCache>()
+                .entries
+                .len(),
+            0
+        );
+        let dyn_cp = read_cp(&app);
+        assert!((dyn_cp.x - 0.40).abs() < 1e-5 && (dyn_cp.w - 2.0).abs() < 1e-5);
+
+        // Finish construction -> reverts to shared cache (`x = 1.0`, `active_construct_handles` empty)
+        app.world_mut()
+            .entity_mut(root_ent)
+            .get_mut::<SimVisualEntity>()
+            .unwrap()
+            .spawn_progress = 1.0;
+        tick_mat(&mut app);
+        assert!(app
+            .world()
+            .entity(root_ent)
+            .get::<SyncedGltfSceneVisuals>()
+            .unwrap()
+            .active_construct_handles
+            .is_empty());
+        assert_eq!(
+            app.world()
+                .resource::<UnitPbrTeamMaterialCache>()
+                .entries
+                .len(),
+            1
+        );
+        assert!((read_cp(&app).x - 1.0).abs() < 1e-5);
+
+        // Sell / undeploy (`SimEntity` removed, `deconstruct_progress = Some(0.55)`) -> `w = -2.0`
+        world.entities.remove(&b_id);
+        app.insert_resource(SimWorldResource(world));
+        app.world_mut()
+            .entity_mut(root_ent)
+            .get_mut::<SimVisualEntity>()
+            .unwrap()
+            .deconstruct_progress = Some(0.55);
+        tick_mat(&mut app);
+        let dec_cp = read_cp(&app);
+        assert!((dec_cp.x - 0.55).abs() < 1e-5 && (dec_cp.w - (-2.0)).abs() < 1e-5);
     }
 }
