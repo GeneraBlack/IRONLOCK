@@ -283,8 +283,8 @@ mod tests {
         collect_glb_files_recursive(&workspace_models, &mut glb_files).unwrap();
         assert_eq!(
             glb_files.len(),
-            187,
-            "expected all 187 rust-ra2 .glb models on disk"
+            190,
+            "expected all 190 rust-ra2 .glb models on disk (187 entities/props + 3 fx construction rigs)"
         );
 
         for p in &glb_files {
