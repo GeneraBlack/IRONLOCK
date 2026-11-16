@@ -1,7 +1,9 @@
+pub mod airpad_docking;
 mod commands_abilities;
 mod commands_construction;
 mod commands_tactical;
 mod commands_unit_orders;
+pub mod country_bonuses;
 pub mod economy;
 pub mod entity_traits;
 pub mod heroes_and_items;
@@ -10,14 +12,17 @@ mod lifecycle;
 pub mod locomotors;
 mod movement;
 mod queries;
+pub mod slave_miner_crew;
 mod spawning;
 pub mod squads;
 mod step_world;
+pub mod timed_bomb;
 mod trigger_graph;
 mod triggers_and_fow;
 
 pub use entity_traits::*;
 pub use squads::CoverLevel;
+pub use timed_bomb::TimedBomb;
 
 use crate::combat::{CombatEvent, SimProjectile};
 use crate::command::{FormationKind, GameCommand, QueuedOrder, UnitStance};
@@ -1946,6 +1951,16 @@ pub struct SimWorld {
     pub ground_items: Vec<SimGroundItem>,
     #[serde(default = "default_next_proj_id")]
     pub next_ground_item_id: u64,
+    #[serde(default)]
+    pub timed_bombs: BTreeMap<u64, TimedBomb>,
+    #[serde(default)]
+    pub slave_miner_crews: BTreeMap<u64, slave_miner_crew::SlaveMinerCrewState>,
+    #[serde(default)]
+    pub weather_storms: Vec<crate::combat::weather_storm::WeatherStormCell>,
+    #[serde(default)]
+    pub radar_jam_timers: BTreeMap<u8, f32>,
+    #[serde(skip, default)]
+    pub airpad_glide_altitudes: BTreeMap<u64, f32>,
     #[serde(default)]
     pub trait_stores: EntityTraitStores,
     #[serde(skip, default)]

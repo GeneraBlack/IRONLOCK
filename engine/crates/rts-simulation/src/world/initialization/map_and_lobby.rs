@@ -247,7 +247,15 @@ impl SimWorld {
             } else {
                 slot.faction.clone()
             };
-            let sub_faction = slot.sub_faction.clone().filter(|s| !s.is_empty());
+            let is_ai_slot = matches!(slot.kind, LobbySlotKind::AiBot { .. });
+            let sub_faction = crate::world::country_bonuses::resolve_deterministic_sub_faction(
+                loaded,
+                &faction,
+                slot.sub_faction.as_deref(),
+                is_ai_slot,
+                cfg.random_seed ^ world.rng_state,
+                slot.player_id,
+            );
             let start_credits = cfg.starting_credits;
             let mut init_resources = BTreeMap::new();
             for (res_id, res_def) in &loaded.resources {

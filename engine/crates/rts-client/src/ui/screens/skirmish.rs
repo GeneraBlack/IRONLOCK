@@ -1,7 +1,7 @@
 use super::{spawn_artwork_banner, spawn_body_text, spawn_screen_card};
 use crate::input::{
-    mod_skirmish_option_count, resolve_mod_skirmish_descriptor, ClientInteractionState,
-    UiAssetCache,
+    mod_skirmish_option_count, resolve_mod_skirmish_descriptor,
+    resolve_mod_skirmish_sub_faction_id, ClientInteractionState, UiAssetCache,
 };
 use crate::ui::studio_layout::{spawn_styled_button, UiFontResource};
 use crate::ui::widgets::{spawn_text_input, UiScrollContainer, UiScrollContent, UiTextFieldTarget};
@@ -9,7 +9,80 @@ use crate::ui::SidebarAction;
 use crate::AssetRootResource;
 use bevy::prelude::*;
 use rts_sdk::loader::LoadedMod;
+use rts_sdk::schema::{FactionDef, SubFactionDef};
 use rts_simulation::ai::AiDifficulty;
+
+pub const RANDOM_FLAG_STRIPES: [[f32; 3]; 3] =
+    [[0.18, 0.48, 0.92], [0.92, 0.22, 0.20], [0.72, 0.24, 0.90]];
+
+/// Resolves `(parent_faction, sub_faction)` for `sub_id` from `loaded.factions`.
+pub fn resolve_country_def_by_id<'a>(
+    loaded: &'a LoadedMod,
+    sub_id: &str,
+) -> Option<(&'a FactionDef, &'a SubFactionDef)> {
+    let norm = if sub_id.eq_ignore_ascii_case("america") {
+        "usa"
+    } else {
+        sub_id.trim()
+    };
+    for fac in loaded.factions.values() {
+        if let Some(sf) = fac
+            .sub_factions
+            .iter()
+            .find(|sf| sf.id.eq_ignore_ascii_case(norm))
+        {
+            return Some((fac, sf));
+        }
+    }
+    None
+}
+
+/// Resolves friendly signature unit/building display name for a `SubFactionDef`.
+pub fn resolve_signature_unit_label(loaded: &LoadedMod, sf: &SubFactionDef) -> String {
+    if let Some(ref sig_id) = sf.signature_unit {
+        if let Some(u) = loaded.units.get(sig_id) {
+            return format!("{} (${})", u.name, u.cost);
+        }
+        if let Some(b) = loaded.buildings.get(sig_id) {
+            return format!("{} (${})", b.name, b.cost);
+        }
+    }
+    sf.specialty.clone()
+}
+
+/// Spawns a crisp 3-stripe miniature country flag badge (`24x15 px`).
+pub fn spawn_country_flag_badge(parent: &mut ChildBuilder, stripes: [[f32; 3]; 3]) {
+    parent
+        .spawn((
+            Node {
+                width: Val::Px(24.0),
+                height: Val::Px(15.0),
+                min_width: Val::Px(24.0),
+                flex_direction: FlexDirection::Row,
+                border: UiRect::all(Val::Px(1.0)),
+                overflow: Overflow::clip(),
+                ..default()
+            },
+            BackgroundColor(Color::srgb(0.05, 0.06, 0.08)),
+            BorderColor(Color::srgba(0.86, 0.90, 0.96, 0.85)),
+        ))
+        .with_children(|flag| {
+            for [r, g, b] in stripes {
+                flag.spawn((
+                    Node {
+                        width: Val::Percent(33.34),
+                        height: Val::Percent(100.0),
+                        ..default()
+                    },
+                    BackgroundColor(Color::srgb(
+                        r.clamp(0.0, 1.0),
+                        g.clamp(0.0, 1.0),
+                        b.clamp(0.0, 1.0),
+                    )),
+                ));
+            }
+        });
+}
 
 #[allow(clippy::too_many_arguments)]
 pub fn spawn_skirmish_screen(
@@ -22,14 +95,55 @@ pub fn spawn_skirmish_screen(
     interaction: &ClientInteractionState,
     _pid: u8,
 ) {
-    let opt_count = mod_skirmish_option_count(loaded);
-    let (country_name, fac_id, specialty, art_path) =
-        resolve_mod_skirmish_descriptor(loaded, interaction.skirmish_country_index);
+    let opt_count = mod_skirmish_option_count(loaded).max(1);
+    let is_random = interaction.skirmish_country_index == usize::MAX;
+    let (country_name, fac_id, specialty, art_path, active_stripes, bonus_line, sig_label) =
+        if is_random {
+            (
+                "Random Country (All 10 Nations)".to_string(),
+                "random".to_string(),
+                "Deterministic Seed Roll across Allies, Soviets & Psi-Corps".to_string(),
+                loaded
+                    .factions
+                    .values()
+                    .next()
+                    .and_then(|f| f.loading_screen.as_deref())
+                    .map(|rel| crate::input::qualify_mod_asset_rel_path(loaded, rel)),
+                RANDOM_FLAG_STRIPES,
+                "Rolls authentic country + passive bonuses at battle start".to_string(),
+                "Country-Exclusive Arsenal".to_string(),
+            )
+        } else {
+            let (cname, fid, spec, art) =
+                resolve_mod_skirmish_descriptor(loaded, interaction.skirmish_country_index);
+            let sub_opt =
+                resolve_mod_skirmish_sub_faction_id(loaded, interaction.skirmish_country_index)
+                    .and_then(|sid| resolve_country_def_by_id(loaded, &sid));
+            let (stripes, bonus, sig) = if let Some((f_def, sf_def)) = sub_opt {
+                (
+                    sf_def.resolved_flag_colors(f_def.color),
+                    sf_def.bonus_summary(),
+                    resolve_signature_unit_label(loaded, sf_def),
+                )
+            } else {
+                let fallback = loaded
+                    .factions
+                    .get(&fid)
+                    .map(|f| f.color)
+                    .unwrap_or([0.4, 0.5, 0.7]);
+                (
+                    [fallback, [0.92, 0.94, 0.96], fallback],
+                    spec.clone(),
+                    spec.clone(),
+                )
+            };
+            (cname, fid, spec, art, stripes, bonus, sig)
+        };
 
     spawn_screen_card(
         parent,
         32.0,
-        "1. FACTION & DOCTRINE SELECTOR",
+        "1. COUNTRY & DOCTRINE SELECTOR",
         Color::srgb(0.98, 0.84, 0.42),
         |col| {
             spawn_artwork_banner(
@@ -38,16 +152,33 @@ pub fn spawn_skirmish_screen(
                 asset_server,
                 asset_root,
                 art_path.as_deref(),
-                135.0,
+                118.0,
             );
+            col.spawn(Node {
+                width: Val::Percent(100.0),
+                flex_direction: FlexDirection::Row,
+                align_items: AlignItems::Center,
+                column_gap: Val::Px(8.0),
+                ..default()
+            })
+            .with_children(|hdr| {
+                spawn_country_flag_badge(hdr, active_stripes);
+                spawn_body_text(
+                    hdr,
+                    format!("{country_name} [{fac_id}]"),
+                    Color::srgb(0.96, 0.92, 0.68),
+                );
+            });
             spawn_body_text(
                 col,
-                format!("Active: {country_name} ({fac_id})\nSpecialty: {specialty}"),
+                format!(
+                    "Signature: {sig_label}\nPassive Bonus: {bonus_line}\nDoctrine: {specialty}"
+                ),
                 Color::srgb(0.84, 0.92, 0.98),
             );
             let (swatch_name, [sr, sg, sb]) = crate::rendering::resolve_ui_color_swatch(
                 interaction.skirmish_color_index,
-                Some(&fac_id),
+                (!is_random).then_some(fac_id.as_str()),
                 Some(loaded),
             );
             spawn_styled_button(
@@ -62,7 +193,7 @@ pub fn spawn_skirmish_screen(
                 Val::Percent(100.0),
             );
 
-            let max_scroll = (opt_count as f32 * 34.0 - 220.0).max(0.0);
+            let max_scroll = ((opt_count + 1) as f32 * 36.0 - 205.0).max(0.0);
             col.spawn((
                 Node {
                     width: Val::Percent(100.0),
@@ -86,25 +217,72 @@ pub fn spawn_skirmish_screen(
                     },
                 ))
                 .with_children(|list| {
+                    // "Random" country selector row
+                    list.spawn(Node {
+                        width: Val::Percent(100.0),
+                        flex_direction: FlexDirection::Row,
+                        align_items: AlignItems::Center,
+                        column_gap: Val::Px(5.0),
+                        ..default()
+                    })
+                    .with_children(|row| {
+                        spawn_country_flag_badge(row, RANDOM_FLAG_STRIPES);
+                        spawn_styled_button(
+                            row,
+                            &format!(
+                                "{} Random Country (All 10 Nations)",
+                                if is_random { "[*]" } else { "[?]" }
+                            ),
+                            SidebarAction::SelectSkirmishCountryIndex(usize::MAX),
+                            if is_random {
+                                Color::srgb(0.26, 0.48, 0.34)
+                            } else {
+                                Color::srgb(0.20, 0.24, 0.38)
+                            },
+                            Val::Percent(90.0),
+                        );
+                    });
+
                     for idx in 0..opt_count {
                         let (cname, cfid, _, _) = resolve_mod_skirmish_descriptor(loaded, idx);
-                        let selected = idx == interaction.skirmish_country_index % opt_count;
-                        spawn_styled_button(
-                            list,
-                            &format!(
-                                "{} {} ({})",
-                                if selected { "[*]" } else { " > " },
-                                cname,
-                                cfid
-                            ),
-                            SidebarAction::SelectSkirmishCountryIndex(idx),
-                            if selected {
-                                Color::srgb(0.22, 0.48, 0.30)
-                            } else {
-                                Color::srgb(0.16, 0.24, 0.36)
-                            },
-                            Val::Percent(100.0),
-                        );
+                        let sub_pair = resolve_mod_skirmish_sub_faction_id(loaded, idx)
+                            .and_then(|sid| resolve_country_def_by_id(loaded, &sid));
+                        let (stripes, short_bonus) = if let Some((f_def, sf_def)) = sub_pair {
+                            (
+                                sf_def.resolved_flag_colors(f_def.color),
+                                sf_def.bonus_summary(),
+                            )
+                        } else {
+                            (RANDOM_FLAG_STRIPES, cfid.clone())
+                        };
+                        let selected =
+                            !is_random && idx == interaction.skirmish_country_index % opt_count;
+                        list.spawn(Node {
+                            width: Val::Percent(100.0),
+                            flex_direction: FlexDirection::Row,
+                            align_items: AlignItems::Center,
+                            column_gap: Val::Px(5.0),
+                            ..default()
+                        })
+                        .with_children(|row| {
+                            spawn_country_flag_badge(row, stripes);
+                            spawn_styled_button(
+                                row,
+                                &format!(
+                                    "{} {} — {}",
+                                    if selected { "[*]" } else { " > " },
+                                    cname,
+                                    short_bonus
+                                ),
+                                SidebarAction::SelectSkirmishCountryIndex(idx),
+                                if selected {
+                                    Color::srgb(0.22, 0.48, 0.30)
+                                } else {
+                                    Color::srgb(0.16, 0.24, 0.36)
+                                },
+                                Val::Percent(90.0),
+                            );
+                        });
                     }
                 });
             });
@@ -225,7 +403,7 @@ pub fn spawn_skirmish_screen(
             spawn_styled_button(
                 col,
                 if interaction.ai_enabled {
-                    "AI Opponent: ACTIVE (Strategic Commander)"
+                    "AI Opponent: ACTIVE (Auto-Rolls Authentic Country)"
                 } else {
                     "AI Opponent: SANDBOX IDLE"
                 },
@@ -291,7 +469,6 @@ pub fn spawn_skirmish_screen(
                 Val::Percent(100.0),
             );
 
-            // Compatible Mutator / Overlay Packages (`Task 246-LobbyUI`)
             let (mutators, cross_mod) =
                 super::mp_staging_rules::collect_compatible_and_cross_mod_mutators(
                     ui_cache, loaded,
@@ -333,7 +510,7 @@ pub fn spawn_skirmish_screen(
 
             spawn_body_text(
                 col,
-                "Includes Influence-Map Scouting, Counter-Unit Production & Multi-Resource Economy.",
+                "All 10 RA2/YR Countries active: passive bonuses & AI country rolls enabled.",
                 Color::srgb(0.75, 0.86, 0.94),
             );
 

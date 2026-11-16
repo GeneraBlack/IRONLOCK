@@ -144,6 +144,8 @@ pub(super) fn apply_attack_impact_with_grid(
         })
         .unwrap_or((1.0, 1.0));
 
+    let anti_armor_mult =
+        world.country_anti_armor_damage_multiplier(atk.attacker_id, atk.target_id, loaded);
     if let Some(target) = world.entities.get_mut(&atk.target_id) {
         let can_hit_direct = if atk.delivery == DeliveryKind::Ballistic {
             if matches!(target.kind, EntityKind::Building { .. }) {
@@ -218,13 +220,13 @@ pub(super) fn apply_attack_impact_with_grid(
                 let prev_hp = target.health;
                 let has_garrison = !target.passenger_ids.is_empty()
                     && matches!(target.kind, EntityKind::Building { .. });
-                let eff_dmg = if atk.warp_erase {
+                let eff_dmg = (if atk.warp_erase {
                     atk.damage * 2.5
                 } else if atk.clears_garrison && has_garrison {
                     atk.damage * 0.20
                 } else {
                     atk.damage * direct_cover_dmg_mult
-                };
+                }) * anti_armor_mult;
                 target.health = (target.health - eff_dmg).max(0.0);
                 target.script_ctx.health = target.health;
                 if atk.attacker_player != 0 {
@@ -454,6 +456,17 @@ pub(super) fn apply_attack_impact_with_grid(
             }
         }
     }
+    crate::world::timed_bomb::record_timed_bomb_on_impact(
+        world,
+        atk.target_id,
+        attacker_def_id.as_deref(),
+        (
+            attaches_bomb_timer,
+            attaches_bomb_dmg,
+            atk.splash_radius,
+            atk.attacker_player,
+        ),
+    );
 
     if release_oldest_mc {
         if let Some((oldest_id, _)) = oldest_controlled {

@@ -7,6 +7,7 @@ mod phase17_20_systems;
 mod phase21_24_systems;
 mod phase25_26_systems;
 mod phase27_28_systems;
+mod ra2_countries_and_mechanics;
 mod tactical_and_world;
 
 use rts_sdk::loader::LoadedMod;

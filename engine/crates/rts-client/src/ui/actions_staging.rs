@@ -245,18 +245,19 @@ pub(super) fn handle_staging_and_automatch_action(
                                 slot.occupant,
                                 LobbySlotOccupant::Human { player_id, .. } if player_id == my_pid
                             );
-                            if is_mine {
-                                let mut subs: Vec<Option<String>> = vec![None];
-                                if let Some(f_def) = mod_res.0.factions.get(&slot.faction_id) {
-                                    for sf in &f_def.sub_factions {
-                                        subs.push(Some(sf.id.clone()));
-                                    }
+                            let mut subs: Vec<Option<String>> =
+                                vec![Some("random".to_string()), None];
+                            if let Some(f_def) = mod_res.0.factions.get(&slot.faction_id) {
+                                for sf in &f_def.sub_factions {
+                                    subs.push(Some(sf.id.clone()));
                                 }
-                                let pos = subs
-                                    .iter()
-                                    .position(|s| *s == slot.sub_faction_id)
-                                    .unwrap_or(0);
-                                let next_sub = subs[(pos + 1) % subs.len()].clone();
+                            }
+                            let pos = subs
+                                .iter()
+                                .position(|s| *s == slot.sub_faction_id)
+                                .unwrap_or(0);
+                            let next_sub = subs[(pos + 1) % subs.len()].clone();
+                            if is_mine {
                                 let _ = cl.update_own_lobby_slot(
                                     slot.faction_id.clone(),
                                     next_sub,
@@ -266,11 +267,39 @@ pub(super) fn handle_staging_and_automatch_action(
                                     slot.ready,
                                     slot.map_ready,
                                 );
+                            } else if my_pid == room.host_player_id {
+                                if let Some(ref mut local_room) = client_state.active_lobby_room {
+                                    if let Some(s_mut) =
+                                        local_room.slots.get_mut(*slot_idx as usize)
+                                    {
+                                        s_mut.sub_faction_id = next_sub.clone();
+                                    }
+                                }
+                                if let Some(ref mut cl_room) = cl.lobby_room {
+                                    if let Some(s_mut) = cl_room.slots.get_mut(*slot_idx as usize) {
+                                        s_mut.sub_faction_id = next_sub;
+                                    }
+                                }
                             }
                         }
                     }
                 }
+            } else if let Some(ref mut local_room) = client_state.active_lobby_room {
+                if let Some(slot) = local_room.slots.get_mut(*slot_idx as usize) {
+                    let mut subs: Vec<Option<String>> = vec![Some("random".to_string()), None];
+                    if let Some(f_def) = mod_res.0.factions.get(&slot.faction_id) {
+                        for sf in &f_def.sub_factions {
+                            subs.push(Some(sf.id.clone()));
+                        }
+                    }
+                    let pos = subs
+                        .iter()
+                        .position(|s| *s == slot.sub_faction_id)
+                        .unwrap_or(0);
+                    slot.sub_faction_id = subs[(pos + 1) % subs.len()].clone();
+                }
             }
+            last_sig.studio_sig.clear();
             true
         }
         SidebarAction::StagingCycleSlotColor(slot_idx) => {

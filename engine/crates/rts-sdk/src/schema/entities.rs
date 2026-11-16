@@ -293,15 +293,11 @@ impl BuildingDef {
         player_faction: &str,
         player_sub_faction: Option<&str>,
     ) -> bool {
-        if self.sub_factions.is_empty() {
-            return true;
-        }
-        let Some(sub) = player_sub_faction else {
-            return true;
-        };
-        self.sub_factions
-            .iter()
-            .any(|sf| sf.eq_ignore_ascii_case(sub) || sf.eq_ignore_ascii_case(player_faction))
+        super::common_visuals::sub_faction_matches(
+            &self.sub_factions,
+            player_faction,
+            player_sub_faction,
+        )
     }
 
     pub fn container_spec(&self) -> ContainerSpec {
@@ -656,15 +652,11 @@ impl UnitDef {
         player_faction: &str,
         player_sub_faction: Option<&str>,
     ) -> bool {
-        if self.sub_factions.is_empty() {
-            return true;
-        }
-        let Some(sub) = player_sub_faction else {
-            return true;
-        };
-        self.sub_factions
-            .iter()
-            .any(|sf| sf.eq_ignore_ascii_case(sub) || sf.eq_ignore_ascii_case(player_faction))
+        super::common_visuals::sub_faction_matches(
+            &self.sub_factions,
+            player_faction,
+            player_sub_faction,
+        )
     }
 
     pub fn container_spec(&self) -> ContainerSpec {

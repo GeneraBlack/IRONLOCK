@@ -1,11 +1,15 @@
 pub mod ai_behavior_tree;
 pub mod combat_defs;
 pub mod common;
+pub mod common_visuals;
 pub mod entities;
 pub mod traits;
 pub mod trigger_graph;
 pub mod vfx_defs;
 pub mod world_defs;
+pub mod world_defs_factions;
+pub mod world_defs_maps;
+pub mod world_defs_saves;
 
 pub use crate::manifest::{PlayerColorDef, MAX_PLAYER_COLORS};
 pub use ai_behavior_tree::*;
@@ -16,6 +20,7 @@ pub use traits::*;
 pub use trigger_graph::*;
 pub use vfx_defs::*;
 pub use world_defs::*;
+pub use world_defs_factions::*;
 
 #[cfg(test)]
 mod tests {

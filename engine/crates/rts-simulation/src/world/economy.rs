@@ -453,7 +453,7 @@ pub fn step_streaming_and_research_economy(world: &mut SimWorld, loaded: &Loaded
             .copied()
             .unwrap_or(1);
         let mult = 1.0 + ((count.saturating_sub(1) as f32) * 0.25).min(1.0);
-        let eff_cost = world.effective_unit_cost(ent.player_id, u_def, loaded);
+        let eff_cost = world.effective_country_unit_cost(ent.player_id, u_def, loaded);
         let mut costs = u_def.effective_resource_costs();
         costs.insert("credits".to_string(), eff_cost);
         add_demand(

@@ -12,10 +12,17 @@ mod resolution_deaths;
 mod targeting;
 mod targeting_fire;
 mod visibility;
+pub mod weather_storm;
 
 pub use ballistics::has_ballistic_line_of_fire;
-pub use targeting::step_combat;
 pub(crate) use visibility::is_target_visible_to;
+pub use weather_storm::WeatherStormCell;
+
+pub fn step_combat(world: &mut SimWorld, loaded: &LoadedMod) {
+    let shields = crate::world::country_bonuses::pre_combat_radiation_shields(world, loaded);
+    targeting::step_combat(world, loaded);
+    crate::world::country_bonuses::post_combat_radiation_shields(world, shields);
+}
 
 use crate::world::{EntityKind, SimEntity, SimWorld, VeterancyRank};
 use rts_sdk::loader::LoadedMod;

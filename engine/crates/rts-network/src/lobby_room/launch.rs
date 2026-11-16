@@ -151,6 +151,16 @@ impl LobbyRoomState {
                 random_seed,
                 slot.slot_index,
             );
+            let is_ai_slot = matches!(slot.occupant, LobbySlotOccupant::AiBot { .. });
+            let resolved_sub_faction =
+                rts_simulation::world::country_bonuses::resolve_deterministic_sub_faction(
+                    loaded,
+                    &faction,
+                    slot.sub_faction_id.as_deref(),
+                    is_ai_slot,
+                    random_seed,
+                    slot.slot_index,
+                );
             let sp_idx = assigned_spawn_indices[pos];
             let template = &spawn_templates[sp_idx];
             custom_spawns.push(remap_spawn_for_faction(
@@ -158,7 +168,7 @@ impl LobbyRoomState {
                 pid,
                 slot.team_id,
                 &faction,
-                slot.sub_faction_id.clone(),
+                resolved_sub_faction,
                 loaded,
             ));
         }
@@ -471,7 +481,13 @@ fn remap_spawn_for_faction(
                             .units
                             .values()
                             .find(|cand| {
-                                cand.role == u_def.role && cand.is_available_to_faction(faction)
+                                cand.role == u_def.role
+                                    && cand.cost > 0
+                                    && cand.is_available_to_faction(faction)
+                                    && cand.is_available_to_sub_faction(
+                                        faction,
+                                        sub_faction.as_deref(),
+                                    )
                             })
                             .map(|cand| cand.id.clone())
                     }
@@ -521,5 +537,46 @@ pub fn parse_ai_personality(raw: &str) -> AiPersonality {
         "turtle" | "defensive" => AiPersonality::Turtle,
         "airforce" | "air_force" | "air force" | "air" => AiPersonality::AirForce,
         _ => AiPersonality::Balanced,
+    }
+}
+
+#[cfg(test)]
+mod launch_country_tests {
+    use super::super::{LobbyMatchRules, LobbyRoomState, LobbySlotOccupant};
+    use rts_sdk::loader::LoadedMod;
+    use std::path::PathBuf;
+
+    #[test]
+    fn ai_and_random_slots_receive_deterministic_ra2_countries_on_launch() {
+        let ra2_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../../rust-ra2");
+        let loaded = LoadedMod::load_from_dir(ra2_dir).expect("rust-ra2 should load");
+        let mut room = LobbyRoomState::new(8, LobbyMatchRules::default());
+        room.assign_human(1, "Host".to_string()).unwrap();
+        room.slots[0].faction_id = "allies".to_string();
+        room.slots[0].sub_faction_id = Some("random".to_string());
+        room.slots[1].occupant = LobbySlotOccupant::AiBot {
+            difficulty: "Hard".to_string(),
+            personality: "Rusher".to_string(),
+        };
+        room.slots[1].faction_id = "soviets".to_string();
+        room.slots[1].sub_faction_id = None;
+        room.slots[2].occupant = LobbySlotOccupant::AiBot {
+            difficulty: "Brutal".to_string(),
+            personality: "Balanced".to_string(),
+        };
+        room.slots[2].faction_id = "yuri".to_string();
+        room.slots[2].sub_faction_id = None;
+
+        let seed = 0x5EED_8888_4242_0001;
+        let w1 = room.build_sim_world(&loaded, seed);
+        let w2 = room.build_sim_world(&loaded, seed);
+        assert_eq!(w1.players[&1].sub_faction, w2.players[&1].sub_faction);
+        assert_eq!(w1.players[&2].sub_faction, w2.players[&2].sub_faction);
+        assert_eq!(w1.players[&3].sub_faction.as_deref(), Some("yuri"));
+        assert!(w1.players[&1].sub_faction.is_some());
+        assert!(matches!(
+            w1.players[&2].sub_faction.as_deref(),
+            Some("russia" | "iraq" | "libya" | "cuba")
+        ));
     }
 }

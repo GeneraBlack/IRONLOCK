@@ -320,7 +320,7 @@ impl SimWorld {
                                             ])
                                         }),
                                 };
-                                self.execute_unified_superweapon(
+                                self.execute_superweapon_with_weather_storm(
                                     player_id,
                                     Some(ent_id),
                                     sw,
@@ -461,9 +461,11 @@ impl SimWorld {
                             let c_def_id = ent_snapshot.def_id().to_string();
                             self.record_damage_dealt(player_id, Some(&c_def_id), total_wave_dealt);
                         }
+                        let psi_cd =
+                            12.0 * self.country_mind_control_cooldown_mult(player_id, loaded);
                         if let Some(c_mut) = self.entities.get_mut(&ent_id) {
-                            c_mut.ability_cooldown = 12.0;
-                            c_mut.ability_max_cooldown = 12.0;
+                            c_mut.ability_cooldown = psi_cd;
+                            c_mut.ability_max_cooldown = psi_cd;
                         }
                         self.combat_events.push(CombatEvent {
                             attacker_id: ent_id,
@@ -737,7 +739,7 @@ impl SimWorld {
                                             None
                                         }
                                     });
-                                self.execute_unified_superweapon(
+                                self.execute_superweapon_with_weather_storm(
                                     player_id,
                                     Some(cid),
                                     sw,

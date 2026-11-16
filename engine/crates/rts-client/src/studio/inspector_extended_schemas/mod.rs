@@ -518,6 +518,7 @@ fn show_faction_inspector(
                     name: format!("Sub-Faction {n}"),
                     specialty: "Armored Division".to_string(),
                     loading_screen: None,
+                    ..Default::default()
                 });
             }
             let mut rem_sub = None;

@@ -19,7 +19,7 @@ impl SimWorld {
         let commands: Vec<GameCommand> = std::mem::take(&mut self.pending_commands);
 
         for cmd in commands {
-            self.apply_command(cmd, loaded);
+            self.apply_command_with_country_and_ra2_hooks(cmd, loaded);
         }
         if self.winner_player_id.is_none() && !self.ai_takeover_players.is_empty() {
             let takeover_slots: Vec<(u8, crate::ai::AiDifficulty)> = self
@@ -108,6 +108,10 @@ impl SimWorld {
         }
         self.step_building_repairs(loaded);
         self.step_movement(loaded);
+        crate::world::airpad_docking::step_airpad_docking(self, loaded);
+        crate::world::slave_miner_crew::step_slave_miner_crews(self, loaded);
+        crate::world::timed_bomb::step_timed_bombs(self, loaded);
+        crate::combat::weather_storm::step_weather_storms(self, loaded);
         self.step_gates(loaded);
         self.step_support_aircraft_and_missiles(loaded);
         let movement_us = t_move_start.elapsed().as_micros() as u64;

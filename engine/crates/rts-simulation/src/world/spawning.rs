@@ -293,6 +293,7 @@ impl SimWorld {
             }
         }
 
+        self.apply_country_building_spawn_bonus(id, player_id, loaded);
         self.power_dirty = true;
         self.recalculate_power(loaded);
         if !spawn_actions.is_empty() {
@@ -587,6 +588,7 @@ impl SimWorld {
                 script_ctx,
             },
         );
+        self.apply_country_unit_spawn_bonus(id, player_id, loaded);
         if home_airfield_id.is_some() {
             self.set_home_airfield_id(id, home_airfield_id);
         }
@@ -719,6 +721,7 @@ impl SimWorld {
                 }
             }
         }
+        self.append_country_free_support_powers(player_id, loaded, &mut seen, &mut powers);
         powers
     }
 

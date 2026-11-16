@@ -329,8 +329,41 @@ pub(super) fn handle_match_and_menu_action(
         }
         SidebarAction::FinishLoadingEnterGame => {
             if !client_state.is_multiplayer && client_state.active_campaign_id.is_none() {
+                let count = mod_skirmish_option_count(&mod_res.0).max(1);
+                let seed = sim_res.0.rng_state ^ client_state.procedural_map_seed;
+                let eff_idx = if client_state.skirmish_country_index == usize::MAX {
+                    (rts_simulation::world::country_bonuses::splitmix64_country_roll(seed, 0)
+                        as usize)
+                        % count
+                } else {
+                    client_state.skirmish_country_index % count
+                };
+                let (_, fac_id, _, _) = resolve_mod_skirmish_descriptor(&mod_res.0, eff_idx);
+                let first_fac = mod_res.0.factions.keys().next().map(String::as_str);
+                client_state.local_player_id = if Some(fac_id.as_str()) == first_fac {
+                    1
+                } else {
+                    2
+                };
+                let sub_fac =
+                    crate::input::resolve_mod_skirmish_sub_faction_id(&mod_res.0, eff_idx);
+                sim_res
+                    .0
+                    .set_player_sub_faction(client_state.local_player_id, sub_fac);
                 if let Some(econ) = sim_res.0.players.get_mut(&client_state.local_player_id) {
                     econ.color_index = client_state.skirmish_color_index % 17;
+                }
+                if client_state.ai_enabled {
+                    let ai_pids: Vec<u8> = sim_res
+                        .0
+                        .players
+                        .keys()
+                        .copied()
+                        .filter(|&pid| pid != 0 && pid != client_state.local_player_id)
+                        .collect();
+                    sim_res
+                        .0
+                        .assign_deterministic_countries_for_slots(&ai_pids, seed, &mod_res.0);
                 }
             }
             client_state.app_phase = AppPhase::InGame;
@@ -374,8 +407,20 @@ pub(super) fn handle_match_and_menu_action(
             if !client_state.is_multiplayer =>
         {
             let count = mod_skirmish_option_count(&mod_res.0);
+            if matches!(
+                action,
+                SidebarAction::SelectSkirmishCountryIndex(usize::MAX)
+            ) {
+                client_state.skirmish_country_index = usize::MAX;
+                client_state.studio_status_message =
+                    "Country set to RANDOM (deterministic seed roll on launch)".to_string();
+                last_sig.sidebar_sig.clear();
+                last_sig.studio_sig.clear();
+                return;
+            }
             client_state.skirmish_country_index = match action {
                 SidebarAction::SelectSkirmishCountryIndex(i) => (*i) % count,
+                _ if client_state.skirmish_country_index == usize::MAX => 0,
                 _ => (client_state.skirmish_country_index + 1) % count,
             };
             let (country_name, faction_id, special_unit, _) =

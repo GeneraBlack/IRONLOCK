@@ -1,3 +1,7 @@
+use super::skirmish::{
+    resolve_country_def_by_id, resolve_signature_unit_label, spawn_country_flag_badge,
+    RANDOM_FLAG_STRIPES,
+};
 use super::{spawn_artwork_banner, spawn_body_text, spawn_screen_card};
 use crate::input::{resolve_mod_skirmish_descriptor, ClientInteractionState, UiAssetCache};
 use crate::rendering::resolve_ui_color_swatch;
@@ -21,6 +25,47 @@ pub fn team_label(team_id: u8) -> &'static str {
         6 => "Team F",
         7 => "Team G",
         _ => "Team H",
+    }
+}
+
+fn slot_country_badge_and_label(
+    loaded: &LoadedMod,
+    faction_id: &str,
+    sub_faction_id: Option<&str>,
+    is_ai: bool,
+) -> ([[f32; 3]; 3], String) {
+    if faction_id.eq_ignore_ascii_case("random") {
+        return (RANDOM_FLAG_STRIPES, "Random".to_string());
+    }
+    match sub_faction_id.map(str::trim).filter(|s| !s.is_empty()) {
+        Some(raw) if raw.eq_ignore_ascii_case("random") => {
+            (RANDOM_FLAG_STRIPES, "Random".to_string())
+        }
+        Some(sub_id) => {
+            if let Some((f_def, sf_def)) = resolve_country_def_by_id(loaded, sub_id) {
+                let short_name = sf_def
+                    .name
+                    .split('(')
+                    .next()
+                    .map(str::trim)
+                    .unwrap_or(&sf_def.name);
+                (
+                    sf_def.resolved_flag_colors(f_def.color),
+                    short_name.to_string(),
+                )
+            } else {
+                (RANDOM_FLAG_STRIPES, sub_id.to_string())
+            }
+        }
+        None => {
+            let base_col = loaded
+                .factions
+                .get(faction_id)
+                .map(|f| f.color)
+                .unwrap_or([0.45, 0.55, 0.72]);
+            let lbl = if is_ai { "Auto-Roll" } else { "Std" };
+            ([base_col, [0.92, 0.94, 0.96], base_col], lbl.to_string())
+        }
     }
 }
 
@@ -56,7 +101,7 @@ pub fn spawn_mp_staging_room_screen(
     let local_pid = interaction.local_player_id;
     let is_host = local_pid == room.host_player_id;
 
-    // Column 1 (48%): 8..16-Slot Synchronized Player/AI Grid
+    // Column 1 (48%): 8..16-Slot Synchronized Player/AI Grid with 3-Stripe Country Flags & Bonuses
     let title = ui_t(loaded, interaction, "ui.staging.title");
     spawn_screen_card(parent, 48.0, &title, Color::srgb(0.98, 0.86, 0.40), |col| {
         spawn_body_text(
@@ -73,6 +118,36 @@ pub fn spawn_mp_staging_room_screen(
             ),
             Color::srgb(0.76, 0.92, 0.98),
         );
+
+        // Local slot Country Passive Bonus & Signature Unit tooltip strip
+        if let Some(my_slot) = room
+            .find_human_slot(local_pid)
+            .or_else(|| room.slots.first())
+        {
+            let doctrine_line = match my_slot.sub_faction_id.as_deref() {
+                Some(sid) if !sid.is_empty() && !sid.eq_ignore_ascii_case("random") => {
+                    if let Some((_, sf)) = resolve_country_def_by_id(loaded, sid) {
+                        format!(
+                            "Active Country: {} — Sig: {} | Bonus: {}",
+                            sf.name,
+                            resolve_signature_unit_label(loaded, sf),
+                            sf.bonus_summary()
+                        )
+                    } else {
+                        format!("Active Country: {sid}")
+                    }
+                }
+                Some(_) => {
+                    "Active Country: Random (Deterministic Seed Roll + Passive Bonuses on Launch)"
+                        .to_string()
+                }
+                None => {
+                    "Country Tip: Click Country badge per slot to cycle Random / USA / Korea / France / Russia / Iraq / Yuri..."
+                        .to_string()
+                }
+            };
+            spawn_body_text(col, doctrine_line, Color::srgb(0.96, 0.88, 0.56));
+        }
 
         if is_host {
             let cap_label = if room.slots.len() > 8 {
@@ -99,7 +174,7 @@ pub fn spawn_mp_staging_room_screen(
             );
         }
 
-        let slots_max_scroll = (room.slots.len() as f32 * 35.0 - 330.0).max(0.0);
+        let slots_max_scroll = (room.slots.len() as f32 * 36.0 - 305.0).max(0.0);
         col.spawn((
             Node {
                 width: Val::Percent(100.0),
@@ -125,6 +200,7 @@ pub fn spawn_mp_staging_room_screen(
             .with_children(|list| {
                 for slot in &room.slots {
                     let s_idx = slot.slot_index;
+                    let is_ai_slot = matches!(slot.occupant, LobbySlotOccupant::AiBot { .. });
                     let occ_label = match &slot.occupant {
                         LobbySlotOccupant::Human { player_id, name } => {
                             format!("S{}: {} (P{})", s_idx + 1, name, player_id)
@@ -133,29 +209,32 @@ pub fn spawn_mp_staging_room_screen(
                             difficulty,
                             personality,
                         } => format!("S{}: AI [{}/{}]", s_idx + 1, difficulty, personality),
-                        LobbySlotOccupant::Open => format!("S{}: [OPEN SLOT]", s_idx + 1),
+                        LobbySlotOccupant::Open => format!("S{}: [OPEN]", s_idx + 1),
                         LobbySlotOccupant::Closed => format!("S{}: [CLOSED]", s_idx + 1),
                     };
 
-                    let is_active_slot = matches!(
-                        slot.occupant,
-                        LobbySlotOccupant::Human { .. } | LobbySlotOccupant::AiBot { .. }
-                    );
+                    let is_active_slot =
+                        matches!(slot.occupant, LobbySlotOccupant::Human { .. }) || is_ai_slot;
                     let (cname, [cr, cg, cb]) = resolve_ui_color_swatch(
                         slot.color_index,
                         Some(&slot.faction_id),
                         Some(loaded),
                     );
                     let fac_label = if slot.faction_id.eq_ignore_ascii_case("random") {
-                        "Random".to_string()
+                        "Rnd".to_string()
                     } else {
                         loaded
                             .factions
                             .get(&slot.faction_id)
-                            .map(|f| f.name.clone())
+                            .map(|f| f.id.to_uppercase())
                             .unwrap_or_else(|| slot.faction_id.clone())
                     };
-                    let sub_label = slot.sub_faction_id.as_deref().unwrap_or("Std");
+                    let (flag_stripes, sub_label) = slot_country_badge_and_label(
+                        loaded,
+                        &slot.faction_id,
+                        slot.sub_faction_id.as_deref(),
+                        is_ai_slot,
+                    );
                     let sp_label = slot
                         .spawn_index
                         .map(|sp| format!("Sp{}", sp + 1))
@@ -165,7 +244,7 @@ pub fn spawn_mp_staging_room_screen(
                             if !slot.map_ready {
                                 "DL MAP"
                             } else if room.rules.resume_save_hash.is_some() && !slot.save_ready {
-                                "SYNC SAVE"
+                                "SYNC"
                             } else if *player_id == room.host_player_id {
                                 "HOST"
                             } else if slot.ready {
@@ -184,7 +263,7 @@ pub fn spawn_mp_staging_room_screen(
                             width: Val::Percent(100.0),
                             flex_direction: FlexDirection::Row,
                             align_items: AlignItems::Center,
-                            column_gap: Val::Px(4.0),
+                            column_gap: Val::Px(3.0),
                             padding: UiRect::all(Val::Px(3.0)),
                             border: UiRect::all(Val::Px(1.0)),
                             ..default()
@@ -206,14 +285,22 @@ pub fn spawn_mp_staging_room_screen(
                             } else {
                                 Color::srgb(0.18, 0.30, 0.44)
                             },
-                            Val::Percent(27.0),
+                            Val::Percent(22.0),
                         );
                         spawn_styled_button(
                             row,
-                            &format!("{fac_label}/{sub_label}"),
+                            &fac_label,
                             SidebarAction::StagingCycleSlotFaction(s_idx),
-                            Color::srgb(0.20, 0.34, 0.32),
-                            Val::Percent(21.0),
+                            Color::srgb(0.18, 0.32, 0.36),
+                            Val::Percent(10.0),
+                        );
+                        spawn_country_flag_badge(row, flag_stripes);
+                        spawn_styled_button(
+                            row,
+                            &sub_label,
+                            SidebarAction::StagingCycleSlotSubFaction(s_idx),
+                            Color::srgb(0.20, 0.36, 0.30),
+                            Val::Percent(15.0),
                         );
                         spawn_styled_button(
                             row,
@@ -224,21 +311,21 @@ pub fn spawn_mp_staging_room_screen(
                                 (cg * 0.65).clamp(0.08, 0.85),
                                 (cb * 0.65).clamp(0.08, 0.85),
                             ),
-                            Val::Percent(16.0),
+                            Val::Percent(13.0),
                         );
                         spawn_styled_button(
                             row,
                             team_label(slot.team_id),
                             SidebarAction::StagingCycleSlotTeam(s_idx),
                             Color::srgb(0.24, 0.26, 0.40),
-                            Val::Percent(12.0),
+                            Val::Percent(11.0),
                         );
                         spawn_styled_button(
                             row,
                             &format!("{}%/{sp_label}", slot.handicap_pct),
                             SidebarAction::StagingCycleSlotHandicap(s_idx),
                             Color::srgb(0.26, 0.24, 0.32),
-                            Val::Percent(13.0),
+                            Val::Percent(12.0),
                         );
                         row.spawn((
                             Text::new(sanitize_ui_text(ready_badge)),
@@ -418,7 +505,6 @@ pub fn spawn_mp_staging_room_screen(
                 interaction,
             );
 
-            // Custom Map 32 KB Chunk Progress Bar
             let pct = interaction.custom_map_transfer_pct.clamp(0.0, 100.0);
             spawn_body_text(
                 col,
@@ -499,7 +585,7 @@ pub fn spawn_mp_staging_room_screen(
                     if interaction.staging_chat_history.is_empty() {
                         spawn_body_text(
                             feed,
-                            "Staging Room Radio Ready. Coordinate teams, factions & spawns below.",
+                            "Staging Room Radio Ready. Coordinate countries, teams & spawns below.",
                             Color::srgb(0.68, 0.78, 0.88),
                         );
                     }
